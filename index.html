@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script src="cordova.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CNPENAS — Panel del club</title>
@@ -15133,11 +15134,50 @@ function subscribeToMatchReportRealtime(){
      (esa nunca debe ir aquí — vive solo en la Edge Function que envía
      las notificaciones).
      ================================================================ -->
+
 <script>
   document.addEventListener('deviceready', function initOneSignal() {
-    if (!window.Capacitor || typeof window.Capacitor.isNativePlatform !== 'function' || !window.Capacitor.isNativePlatform()) {
+    // Verificamos si OneSignal nativo está disponible en el entorno del dispositivo
+    const OneSignal = window.OneSignal;
+    if (!OneSignal) {
+      console.warn('El plugin nativo de OneSignal no está cargado todavía.');
       return;
     }
+
+    // Inicialización v5
+    OneSignal.initialize('a97aab35-5383-40f1-a318-ab7a8438056b');
+
+    // 1) Solicitar permiso
+    OneSignal.Notifications.requestPermission(true)
+      .then(accepted => {
+        console.log('Permiso de notificaciones:', accepted);
+      })
+      .catch(err => console.error('Error al pedir permiso:', err));
+
+    // 2) Guardar el onesignal_id
+    OneSignal.User.pushSubscription.addEventListener('change', event => {
+      const id = event.current && event.current.id;
+      if (!id) return;
+      console.log('Id de suscripción registrado:', id);
+      
+      if (typeof currentAuthUserId !== 'undefined' && currentAuthUserId && typeof saveOneSignalId === 'function') {
+        saveOneSignalId(id);
+      } else if (typeof pendingOneSignalId !== 'undefined') {
+        pendingOneSignalId = id;
+      }
+    });
+
+    // 3) Comprobación si ya existía el ID cargado
+    const currentId = OneSignal.User.pushSubscription.id;
+    if (currentId) {
+      if (typeof currentAuthUserId !== 'undefined' && currentAuthUserId && typeof saveOneSignalId === 'function') {
+        saveOneSignalId(currentId);
+      } else if (typeof pendingOneSignalId !== 'undefined') {
+        pendingOneSignalId = currentId;
+      }
+    }
+  }, false);
+</script>
 
     // Accedemos a OneSignal una vez que el dispositivo nativo está listo
     const OneSignal = window.OneSignal;
