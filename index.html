@@ -1,7 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<script src="cordova.js"></script>
+<!-- SDK Web Oficial de OneSignal -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "a97aab35-5383-40f1-a318-ab7a8438056b",
+    });
+
+    console.log(">>> OneSignal Web SDK inicializado");
+
+    // Solicitar permiso de notificaciones
+    OneSignal.Notifications.requestPermission();
+
+    // Obtener ID actual o escuchar cambios en la suscripción
+    OneSignal.User.PushSubscription.addEventListener("change", (event) => {
+      const id = event.current.id;
+      console.log(">>> ID de OneSignal obtenido:", id);
+      if (id) registrarEnSupabase(id);
+    });
+
+    // Guardar si ya existe una suscripción activa
+    const currentId = OneSignal.User.PushSubscription.id;
+    if (currentId) {
+      console.log(">>> ID existente detectado:", currentId);
+      registrarEnSupabase(currentId);
+    }
+  });
+
+  async function registrarEnSupabase(onesignalId) {
+    if (typeof saveOneSignalId === 'function') {
+      saveOneSignalId(onesignalId);
+    } else if (window.supabase) {
+      const { data: { user } } = await window.supabase.auth.getUser();
+      if (user) {
+        await window.supabase
+          .from('profiles')
+          .update({ onesignal_id: onesignalId })
+          .eq('id', user.id);
+        console.log(">>> onesignal_id actualizado correctamente en Supabase");
+      }
+    }
+  }
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CNPENAS — Panel del club</title>
@@ -15135,8 +15178,49 @@ function subscribeToMatchReportRealtime(){
      las notificaciones).
      ================================================================ -->
 
-<script src="cordova.js"></script>
+<!-- SDK Web Oficial de OneSignal -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "a97aab35-5383-40f1-a318-ab7a8438056b",
+    });
+
+    console.log(">>> OneSignal Web SDK inicializado");
+
+    // Solicitar permiso de notificaciones
+    OneSignal.Notifications.requestPermission();
+
+    // Obtener ID actual o escuchar cambios en la suscripción
+    OneSignal.User.PushSubscription.addEventListener("change", (event) => {
+      const id = event.current.id;
+      console.log(">>> ID de OneSignal obtenido:", id);
+      if (id) registrarEnSupabase(id);
+    });
+
+    // Guardar si ya existe una suscripción activa
+    const currentId = OneSignal.User.PushSubscription.id;
+    if (currentId) {
+      console.log(">>> ID existente detectado:", currentId);
+      registrarEnSupabase(currentId);
+    }
+  });
+
+  async function registrarEnSupabase(onesignalId) {
+    if (typeof saveOneSignalId === 'function') {
+      saveOneSignalId(onesignalId);
+    } else if (window.supabase) {
+      const { data: { user } } = await window.supabase.auth.getUser();
+      if (user) {
+        await window.supabase
+          .from('profiles')
+          .update({ onesignal_id: onesignalId })
+          .eq('id', user.id);
+        console.log(">>> onesignal_id actualizado correctamente en Supabase");
+      }
+    }
+  }
   document.addEventListener('deviceready', function initOneSignal() {
     console.log('>>> DEVICEREADY EJECUTADO');
     const OneSignal = window.OneSignal;
