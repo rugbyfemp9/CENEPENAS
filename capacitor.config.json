@@ -1,0 +1,10 @@
+{
+  "appId": "com.cnpn.app",
+  "appName": "CNPN",
+  "webDir": "www",
+  "server": {
+    "url": "https://rugbyfemp9.github.io/CENEPENAS/",
+    "cleartext": true,
+    "hostname": "rugbyfemp9.github.io"
+  }
+}
