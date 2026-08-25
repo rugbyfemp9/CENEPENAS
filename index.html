@@ -15138,42 +15138,47 @@ function subscribeToMatchReportRealtime(){
 <script src="cordova.js"></script>
 <script>
   document.addEventListener('deviceready', function initOneSignal() {
+    console.log('>>> DEVICEREADY EJECUTADO');
     const OneSignal = window.OneSignal;
+
     if (!OneSignal) {
-      console.warn('El plugin nativo de OneSignal no está cargado todavía.');
+      console.warn('>>> OneSignal nativo NO disponible');
       return;
     }
 
+    console.log('>>> Inicializando OneSignal...');
     OneSignal.initialize('a97aab35-5383-40f1-a318-ab7a8438056b');
 
-    OneSignal.Notifications.requestPermission(true)
-      .then(accepted => {
-        console.log('Permiso de notificaciones:', accepted);
-      })
-      .catch(err => console.error('Error al pedir permiso:', err));
+    OneSignal.Notifications.requestPermission(true);
 
+    // Escuchar cambios de suscripción
     OneSignal.User.pushSubscription.addEventListener('change', event => {
       const id = event.current && event.current.id;
-      if (!id) return;
-      console.log('Id de suscripción registrado:', id);
-      
-      if (typeof currentAuthUserId !== 'undefined' && currentAuthUserId && typeof saveOneSignalId === 'function') {
-        saveOneSignalId(id);
-      } else if (typeof pendingOneSignalId !== 'undefined') {
-        pendingOneSignalId = id;
-      }
+      console.log('>>> Evento change OneSignal ID:', id);
+      if (id) capturarYGuardar(id);
     });
 
-    const currentId = OneSignal.User.pushSubscription.id;
-    if (currentId) {
-      console.log('Id de suscripción existente:', currentId);
-      if (typeof currentAuthUserId !== 'undefined' && currentAuthUserId && typeof saveOneSignalId === 'function') {
-        saveOneSignalId(currentId);
-      } else if (typeof pendingOneSignalId !== 'undefined') {
-        pendingOneSignalId = currentId;
+    // Leer ID existente directo si ya está generado
+    setTimeout(() => {
+      const currentId = OneSignal.User.pushSubscription.id;
+      console.log('>>> ID existente directo:', currentId);
+      if (currentId) capturarYGuardar(currentId);
+    }, 1000);
+
+    function capturarYGuardar(id) {
+      if (typeof saveOneSignalId === 'function') {
+        saveOneSignalId(id);
+      } else if (typeof window.supabase !== 'undefined') {
+        // Fallback directo si saveOneSignalId no está definida globalmente
+        window.supabase.auth.getUser().then(({ data }) => {
+          if (data?.user) {
+            window.supabase.from('profiles').update({ onesignal_id: id }).eq('id', data.user.id);
+          }
+        });
       }
     }
   }, false);
+</script>
 </script>
 </body>
 </html>
