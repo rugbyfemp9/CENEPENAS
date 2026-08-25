@@ -15135,26 +15135,23 @@ function subscribeToMatchReportRealtime(){
      las notificaciones).
      ================================================================ -->
 
+<script src="cordova.js"></script>
 <script>
   document.addEventListener('deviceready', function initOneSignal() {
-    // Verificamos si OneSignal nativo está disponible en el entorno del dispositivo
     const OneSignal = window.OneSignal;
     if (!OneSignal) {
       console.warn('El plugin nativo de OneSignal no está cargado todavía.');
       return;
     }
 
-    // Inicialización v5
     OneSignal.initialize('a97aab35-5383-40f1-a318-ab7a8438056b');
 
-    // 1) Solicitar permiso
     OneSignal.Notifications.requestPermission(true)
       .then(accepted => {
         console.log('Permiso de notificaciones:', accepted);
       })
       .catch(err => console.error('Error al pedir permiso:', err));
 
-    // 2) Guardar el onesignal_id
     OneSignal.User.pushSubscription.addEventListener('change', event => {
       const id = event.current && event.current.id;
       if (!id) return;
@@ -15167,49 +15164,6 @@ function subscribeToMatchReportRealtime(){
       }
     });
 
-    // 3) Comprobación si ya existía el ID cargado
-    const currentId = OneSignal.User.pushSubscription.id;
-    if (currentId) {
-      if (typeof currentAuthUserId !== 'undefined' && currentAuthUserId && typeof saveOneSignalId === 'function') {
-        saveOneSignalId(currentId);
-      } else if (typeof pendingOneSignalId !== 'undefined') {
-        pendingOneSignalId = currentId;
-      }
-    }
-  }, false);
-</script>
-
-    // Accedemos a OneSignal una vez que el dispositivo nativo está listo
-    const OneSignal = window.OneSignal;
-    if (!OneSignal) {
-      console.warn('El plugin de OneSignal no está disponible en esta build nativa.');
-      return;
-    }
-
-    // Inicializamos con el App ID
-    OneSignal.initialize('a97aab35-5383-40f1-a318-ab7a8438056b');
-
-    // 1) Solicitar permisos de notificación
-    OneSignal.Notifications.requestPermission(true)
-      .then(accepted => {
-        console.log('Permiso de notificaciones (OneSignal):', accepted);
-      })
-      .catch(err => console.error('Error al solicitar permiso de notificaciones:', err));
-
-    // 2) Listener de cambio en la suscripción para capturar el ID
-    OneSignal.User.pushSubscription.addEventListener('change', event => {
-      const id = event.current && event.current.id;
-      if (!id) return;
-      console.log('Id de suscripción de OneSignal:', id);
-      
-      if (typeof currentAuthUserId !== 'undefined' && currentAuthUserId && typeof saveOneSignalId === 'function') {
-        saveOneSignalId(id);
-      } else if (typeof pendingOneSignalId !== 'undefined') {
-        pendingOneSignalId = id;
-      }
-    });
-
-    // 3) Comprobación directa si el ID ya existía previamente
     const currentId = OneSignal.User.pushSubscription.id;
     if (currentId) {
       console.log('Id de suscripción existente:', currentId);
