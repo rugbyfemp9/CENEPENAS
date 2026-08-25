@@ -15181,95 +15181,52 @@ function subscribeToMatchReportRealtime(){
 <!-- SDK Web Oficial de OneSignal -->
 <!-- Carga de SDK Web oficial para GitHub Pages -->
 <script>
-  // Escuchar cuando Capacitor/Cordova están listos
-  document.addEventListener('deviceready', function() {
-    console.log('>>> deviceready detectado');
+  (function initPush() {
+    // Intentar inicializar OneSignal nativo
+    function checkAndInit() {
+      const OneSignal = (window.plugins && window.plugins.OneSignal) || window.OneSignal;
 
-    // Acceso al objeto de la build nativa instalada en el APK
-    var OneSignal = window.plugins && window.plugins.OneSignal 
-      ? window.plugins.OneSignal 
-      : window.OneSignal;
+      if (OneSignal && typeof OneSignal.initialize === 'function') {
+        console.log('>>> OneSignal nativo detectado correctamente');
+        
+        OneSignal.initialize('a97aab35-5383-40f1-a318-ab7a8438056b');
+        OneSignal.Notifications.requestPermission(true);
 
-    if (!OneSignal) {
-      console.warn('>>> OneSignal nativo no se ha encontrado en window.');
-      return;
+        OneSignal.User.pushSubscription.addEventListener('change', event => {
+          const id = event.current && event.current.id;
+          if (id) guardarIdEnSupabase(id);
+        });
+
+        const currentId = OneSignal.User.pushSubscription.id;
+        if (currentId) guardarIdEnSupabase(currentId);
+        return true;
+      }
+      return false;
     }
 
-    // Inicializar App ID
-    OneSignal.initialize('a97aab35-5383-40f1-a318-ab7a8438056b');
-    OneSignal.Notifications.requestPermission(true);
+    // Reintentar durante unos segundos mientras la WebView remota termina de cargar los puentes
+    let intentos = 0;
+    const interval = setInterval(() => {
+      intentos++;
+      if (checkAndInit() || intentos > 10) {
+        clearInterval(interval);
+      }
+    }, 500);
 
-    // Guardar ID al suscribir
-    OneSignal.User.pushSubscription.addEventListener('change', function(event) {
-      var id = event.current && event.current.id;
-      if (id) capturarYEnviar(id);
-    });
-
-    // Guardar si ya existe
-    var currentId = OneSignal.User.pushSubscription.id;
-    if (currentId) capturarYEnviar(currentId);
-
-    function capturarYEnviar(onesignalId) {
+    async function guardarIdEnSupabase(onesignalId) {
       if (typeof saveOneSignalId === 'function') {
         saveOneSignalId(onesignalId);
       } else if (window.supabase) {
-        window.supabase.auth.getUser().then(function(res) {
-          if (res.data && res.data.user) {
-            window.supabase
-              .from('profiles')
-              .update({ onesignal_id: onesignalId })
-              .eq('id', res.data.user.id);
-          }
-        });
+        const { data: { user } } = await window.supabase.auth.getUser();
+        if (user) {
+          await window.supabase
+            .from('profiles')
+            .update({ onesignal_id: onesignalId })
+            .eq('id', user.id);
+        }
       }
     }
-  }, false);
-</script>
-</body>
-</html><script>
-  // Escuchar cuando Capacitor/Cordova están listos
-  document.addEventListener('deviceready', function() {
-    console.log('>>> deviceready detectado');
-
-    // Acceso al objeto de la build nativa instalada en el APK
-    var OneSignal = window.plugins && window.plugins.OneSignal 
-      ? window.plugins.OneSignal 
-      : window.OneSignal;
-
-    if (!OneSignal) {
-      console.warn('>>> OneSignal nativo no se ha encontrado en window.');
-      return;
-    }
-
-    // Inicializar App ID
-    OneSignal.initialize('a97aab35-5383-40f1-a318-ab7a8438056b');
-    OneSignal.Notifications.requestPermission(true);
-
-    // Guardar ID al suscribir
-    OneSignal.User.pushSubscription.addEventListener('change', function(event) {
-      var id = event.current && event.current.id;
-      if (id) capturarYEnviar(id);
-    });
-
-    // Guardar si ya existe
-    var currentId = OneSignal.User.pushSubscription.id;
-    if (currentId) capturarYEnviar(currentId);
-
-    function capturarYEnviar(onesignalId) {
-      if (typeof saveOneSignalId === 'function') {
-        saveOneSignalId(onesignalId);
-      } else if (window.supabase) {
-        window.supabase.auth.getUser().then(function(res) {
-          if (res.data && res.data.user) {
-            window.supabase
-              .from('profiles')
-              .update({ onesignal_id: onesignalId })
-              .eq('id', res.data.user.id);
-          }
-        });
-      }
-    }
-  }, false);
+  })();
 </script>
 </body>
 </html>
