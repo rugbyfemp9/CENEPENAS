@@ -1,0 +1,129 @@
+js/features/actas.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-506
+css/vestuario.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-60
+js/core/navigation.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-150
+js/features/avisos.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-215
+css/asistencia.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-477
+css/auth.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-35
+js/core/permissions.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-104
+js/features/comi-tercer-temps.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-337
+js/features/test.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-206
+css/layout.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-211
+js/features/gym.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-1283
+js/core/state.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-117
+css/fantasy.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-245
+js/core/storage.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-68
+js/features/jugadoras.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-365
+css/gym.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-244
+js/main.js
+  s_1fdfe932c62174::t_8808fe353d01db 1-10
+  s_1fdfe932c62174::t_0da649311f69f5 11-105
+js/features/eventos.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-484
+manifest.json
+  s_1fdfe932c62174::t_50fc8db148ec7e 10-11
+sw.js
+  s_1fdfe932c62174::t_50fc8db148ec7e 22
+  s_1fdfe932c62174::t_00dc02552023ac 14
+js/core/dates.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-116
+firebase-messaging-sw.js
+  s_1fdfe932c62174::t_00dc02552023ac 21
+index.html
+  s_1fdfe932c62174::t_0da649311f69f5 23-35,2349,2355-2386,2393
+  s_1fdfe932c62174::t_a10d370e04981d 2351-2354
+  s_1fdfe932c62174::t_50fc8db148ec7e 18,43,138,156
+js/features/fantasy.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-648
+js/features/tricount.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-437
+css/galeria.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-60
+js/core/supabase.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-4
+css/base.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-27
+js/core/auth.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-267
+css/comisiones.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-339
+js/features/liga.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-12,19-170
+  s_1fdfe932c62174::t_50fc8db148ec7e 13-18
+js/features/wellness-staff.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-633
+js/core/utils.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-7
+js/features/tercer-tiempo.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-993
+js/features/calendario.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-147
+js/features/galeria.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-10,12-13,15-17,19-21,23-25,27-29,31-33,35-37,39-41,43-45,47-49,51-53,55-57,59-64,66-67,69-71,73-75,77-79,81-83,85-87,89-94,96-107,116-150,152-177,179-322
+  s_1fdfe932c62174::t_50fc8db148ec7e 11,14,18,22,26,30,34,38,42,46,50,54,58,65,68,72,76,80,84,88,95
+  s_1fdfe932c62174::t_2448a91decf8d0 108-115
+css/multas.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-166
+README.md
+  s_1fdfe932c62174::t_cc2a52819c997f 1-43
+js/features/wellness.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-256
+css/calendario.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-203
+js/features/asistencia.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-486
+js/features/tesoreria.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-276
+js/features/tullidas.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-149
+css/components.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-490
+js/core/names.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-52
+js/features/multas.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-895
+js/push.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-113
+js/sw-register.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-7
+js/core/i18n.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-1377
+js/features/perfil.js
+  s_1fdfe932c62174::t_50fc8db148ec7e 17
+  s_1fdfe932c62174::t_0da649311f69f5 1-16,18-599
+js/features/partidos.js
+  s_1fdfe932c62174::t_0da649311f69f5 1-435
+css/nav.css
+  s_1fdfe932c62174::t_0da649311f69f5 1-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "0524fc57963a2169174d99d937cde488e39e785e",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
