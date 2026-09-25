@@ -2,10 +2,6 @@
 // se declara aquí arriba para que ya exista cuando esas primeras llamadas se ejecuten,
 // en vez de más abajo (donde estaban antes) provocando "Cannot access before initialization".
 let fines = [];
-let tricountModalParticipants = new Set();
-// null cuando el modal de Tricount está en modo "nuevo gasto"; si no, el id del
-// gasto que se está editando (ver openEditTricountModal/saveTricountExpense).
-let editingTricountExpenseId = null;
 
 const titles = {
   inicio: ['Inicio', 'Resumen general del club'],

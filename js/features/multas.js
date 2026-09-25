@@ -264,7 +264,7 @@ function openPayFineModal(fineId){
   if(!f) return;
   fineToPayId = fineId;
 
-  const members = treasuryCommissionMembers();
+  const members = appBridge.tesoreria.commissionMembers();
   const select = document.getElementById('pay-fine-responsible-input');
   const empty = document.getElementById('pay-fine-responsible-empty');
   if(members.length){
@@ -287,7 +287,7 @@ function confirmPayFine(){
   const f = fines.find(x => x.id === fineToPayId);
   if(!f) return;
 
-  const members = treasuryCommissionMembers();
+  const members = appBridge.tesoreria.commissionMembers();
   const responsibleId = members.length ? document.getElementById('pay-fine-responsible-input').value : null;
   if(members.length && !responsibleId){
     alert('Elige a quién de Comi Tesoreria se le ha pagado.');
@@ -314,7 +314,7 @@ function confirmPayFine(){
   persistFineUpdate(f.id, { status:'pagada', paidToId:null, paid_at:f.paidAt });
   const player = rosterById[f.playerId];
   const reason = fineReasonById[f.reasonId];
-  addTreasuryEntry({
+  appBridge.tesoreria.addEntry({
     iso: todayLocalIso(),
     concept: `Multa (${reason.label})${player ? ' — ' + displayName(player) : ''}`,
     type:'ingreso',
@@ -342,7 +342,7 @@ function respondFineConfirmation(fineId, accepted){
     persistFineUpdate(f.id, { status:'pagada', paid_at:f.paidAt });
     const player = rosterById[f.playerId];
     const reason = fineReasonById[f.reasonId];
-    addTreasuryEntry({
+    appBridge.tesoreria.addEntry({
       iso: todayLocalIso(),
       concept: `Multa (${reason.label})${player ? ' — ' + displayName(player) : ''}`,
       type:'ingreso',
