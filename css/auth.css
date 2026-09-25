@@ -1,0 +1,35 @@
+/* ============ AUTENTICACIÓN (Supabase) ============ */
+.auth-overlay{
+  position:fixed; inset:0; z-index:1000;
+  background:linear-gradient(160deg, var(--navy) 0%, var(--sky-dark) 100%);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  overflow-y:auto;
+}
+.auth-overlay.hidden{ display:none; }
+.auth-box{
+  background:var(--white); border-radius:var(--radius); padding:32px 28px;
+  max-width:420px; width:100%; box-shadow:0 20px 50px -15px rgba(15,27,45,.5);
+  max-height:92vh; overflow-y:auto;
+}
+.auth-brand{ display:flex; align-items:center; gap:10px; margin-bottom:24px; }
+.auth-brand .crest{
+  width:60px; height:60px; border-radius:14px; background:transparent;
+  color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700;
+  font-family:'Oswald',sans-serif; font-size:15px; flex-shrink:0; overflow:hidden;
+}
+.auth-brand-name{ font-family:'Oswald',sans-serif; font-weight:700; font-size:17px; text-transform:uppercase; letter-spacing:.03em; color:var(--navy); }
+.auth-box h3{ margin:0 0 16px; font-size:19px; text-transform:uppercase; letter-spacing:.02em; }
+.auth-field-group{ display:flex; flex-direction:column; gap:12px; margin-bottom:6px; }
+.auth-field-group label{
+  display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600;
+  color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;
+}
+.auth-field-group input, .auth-field-group select{
+  font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px;
+  border:1.5px solid var(--line); color:var(--navy); background:var(--white);
+}
+.auth-field-group input[type="email"]{ text-transform:none; }
+.auth-error{ color:var(--bad); font-size:12.5px; margin:12px 0 0; min-height:16px; }
+.auth-submit-btn{ width:100%; margin-top:14px; text-align:center; justify-content:center; }
+.auth-switch{ text-align:center; font-size:13px; color:var(--text-muted); margin-top:16px; }
+.auth-switch a{ color:var(--sky-dark); font-weight:700; cursor:pointer; }

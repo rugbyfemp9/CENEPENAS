@@ -1,0 +1,490 @@
+/* ============ BANNER "ENTRENO PENDIENTE DE VALORAR" (Inicio) ============ */
+/* Recuerda a las jugadoras que valoren la carga (Wellness/RPE) del entreno más
+   reciente ya finalizado que todavía no tienen valorado. Solo se pinta cuando
+   renderWellnessReminderBanner() decide que hay algo pendiente (rol jugadora +
+   entreno finalizado sin fila en attendance_wellness para currentAuthUserId). */
+.wellness-reminder-banner{
+  display:none; align-items:center; gap:12px; cursor:pointer;
+  background:#F5D949; border:1.5px solid #E0B92E; border-radius:var(--radius);
+  padding:14px 18px; margin-bottom:16px;
+}
+.wellness-reminder-banner .icon{ font-size:24px; line-height:1; flex-shrink:0; }
+.wellness-reminder-banner .txt{ display:flex; flex-direction:column; gap:2px; }
+.wellness-reminder-banner .txt b{ font-size:14px; color:var(--navy); font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.02em; }
+.wellness-reminder-banner .txt span{ font-size:12.5px; color:#5C4A0A; font-weight:600; }
+
+/* ============ BANNER DE LIGA (Inicio) ============ */
+.league-banner{
+  background:linear-gradient(120deg, var(--navy) 0%, var(--sky-dark) 55%, var(--sky) 100%);
+  border-radius:var(--radius); padding:18px 22px; margin-bottom:16px;
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  box-shadow:0 10px 30px -14px rgba(15,27,45,.55);
+}
+.league-banner .lg-title{
+  font-family:'Oswald',sans-serif; font-size:22px; font-weight:700; color:#fff;
+  text-transform:uppercase; letter-spacing:.04em; line-height:1;
+}
+.league-banner .lg-sub{ font-size:12px; color:rgba(255,255,255,.75); margin-top:4px; }
+.league-banner .lg-position{ text-align:right; flex-shrink:0; }
+.league-banner .lg-position .n{
+  font-family:'Oswald',sans-serif; font-size:30px; font-weight:800; color:#fff; line-height:1;
+}
+.league-banner .lg-position .l{
+  font-size:11px; color:rgba(255,255,255,.8); text-transform:uppercase; letter-spacing:.03em; margin-top:4px;
+}
+@media (max-width:640px){
+  .league-banner{ padding:14px 16px; }
+  .league-banner .lg-title{ font-size:18px; }
+  .league-banner .lg-position .n{ font-size:24px; }
+}
+.game-day-actions{ display:flex; gap:10px; }
+.game-day-actions .scoreboard-cta{ min-width:92px; text-align:center; }
+
+/* Cards */
+.grid{ display:grid; gap:16px; }
+.grid.stats{ grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); margin-bottom:24px; }
+/* Fila de Inicio: banner de multas y tarjeta de tercer tiempo, uno junto al otro,
+   ocupando entre los dos el mismo ancho que el banner de "Próximo partido" de arriba. */
+.grid.inicio-row2{ grid-template-columns:1fr 1fr; align-items:stretch; margin-bottom:24px; }
+.grid.inicio-row2 .my-fines-card{ margin-bottom:0; height:100%; }
+/* La tarjeta blanca se estira para igualar la altura de "Tercer tiempo"; el bloque de
+   color de dentro debe rellenar esa altura entera, si no queda un margen blanco. */
+.my-fines-card .tt-personal{ height:100%; box-sizing:border-box; margin:0; }
+
+/* En móvil, en vez de apilarlas, se quedan una junto a la otra pero más compactas.
+   Las dos tarjetas ("Multas" y "Tercer tiempo") usan el mismo componente .tt-personal,
+   así que ya comparten tamaño y tipografía del título automáticamente; aquí solo se
+   ajusta para que en móvil sean más altas. */
+@media (max-width:640px){
+  .grid.inicio-row2{ gap:10px; }
+  .grid.inicio-row2 .my-fines-card{ padding:0; }
+  .grid.inicio-row2 .tt-personal{
+    flex-direction:column; align-items:flex-start; gap:10px;
+    padding:18px 14px; min-height:132px;
+  }
+  .grid.inicio-row2 .tt-personal .txt b{ font-size:15.5px; font-weight:700; }
+  .grid.inicio-row2 .tt-personal .txt span{ font-size:15px; }
+  .grid.inicio-row2 .tt-personal-actions{ width:100%; }
+  .grid.inicio-row2 .tt-swap-btn{ padding:6px 10px; font-size:9.5px; }
+}
+.card{
+  background:var(--white); border-radius:var(--radius);
+  padding:20px 20px;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+}
+.stat-card .k{ font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+.stat-card .v{ font-size:27px; font-weight:600; margin-top:6px; }
+.stat-card .d{ font-size:12.5px; margin-top:4px; }
+.stat-card.c1{ background:linear-gradient(135deg,#4A9FD8,#3785BC); color:#fff; }
+.stat-card.c2{ background:linear-gradient(135deg,#0F1B2D,#1B2C45); color:#fff; }
+.stat-card.c3{ background:var(--white); color:var(--navy); border:1.5px solid var(--line); }
+.stat-card.c3 .k{ color:var(--text-muted); }
+.stat-card.c3 .d{ color:var(--text-muted); }
+.stat-card.c4{ background:linear-gradient(135deg,#D8894A,#c96e2c); color:#fff; }
+.stat-card.c1 .k, .stat-card.c2 .k, .stat-card.c4 .k{ color:rgba(255,255,255,.75); }
+.stat-card.c1 .d, .stat-card.c2 .d, .stat-card.c4 .d{ color:rgba(255,255,255,.75); }
+
+table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); font-weight:700; padding:10px 12px; border-bottom:2px solid var(--sky-light); font-family:'Oswald',sans-serif; }
+td{ padding:12px; border-bottom:1px solid var(--line); }
+
+/* Tabla de Multas: la línea divisoria va en la <tr>, no en cada <td>, para que
+   abarque siempre toda la altura de la fila (incluidas las que tienen varios
+   motivos y ocupan dos líneas) en vez de cortarse a media altura. */
+.fines-table tbody td{ border-bottom:none; vertical-align:middle; }
+.fines-table tbody tr{ border-bottom:1px solid var(--line); }
+.fines-table tbody tr:last-child{ border-bottom:none; }
+tr:last-child td{ border-bottom:none; }
+
+.badge{ display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:999px; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+.badge.ok{ background:#E4F5EC; color:var(--ok); }
+.badge.warn{ background:#FBEEE0; color:var(--warn); }
+.badge.bad{ background:#FBE7E5; color:var(--bad); }
+.badge.info{ background:var(--sky-light); color:var(--sky-dark); }
+
+.avatar{
+  position:relative;
+  width:36px; height:36px; border-radius:12px;
+  background:linear-gradient(135deg, var(--sky), var(--sky-dark)); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:12.5px; flex-shrink:0; font-family:'Oswald',sans-serif;
+}
+/* Insignia de "lesionada"/"tocada" en la esquina superior derecha del avatar */
+.avatar-injured-badge{
+  position:absolute; top:-4px; right:-4px; width:16px; height:16px; border-radius:50%;
+  background:var(--bad); border:2px solid var(--white);
+  display:flex; align-items:center; justify-content:center; z-index:2;
+  font-size:9px; line-height:1;
+}
+.avatar-injured-badge svg{ width:9px; height:9px; }
+.avatar-injured-badge.icon-tocada{ background:#FFD34D; }
+.pf-avatar .avatar-injured-badge{ width:26px; height:26px; top:-4px; right:-4px; border-width:3px; font-size:14px; }
+.pf-avatar .avatar-injured-badge svg{ width:15px; height:15px; }
+.profile-btn{ position:relative; }
+/* El botón "TÚ" de la cabecera no tiene la clase .avatar, así que sin esta regla la
+   foto de perfil se mostraba a su tamaño real (enorme) en vez de encajar en el botón. */
+.profile-btn img{ width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+.profile-btn .avatar-injured-badge{ width:14px; height:14px; top:-3px; right:-3px; border-width:1.5px; font-size:8px; }
+.profile-btn .avatar-injured-badge svg{ width:8px; height:8px; }
+
+/* Botón "marcar lesionada/tocada" (botiquín) en la cabecera del perfil, con su
+   desplegable de dos opciones (botiquín / 🤕) encima */
+.injury-toggle-wrap{ position:relative; }
+.injury-toggle-btn{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  width:38px; height:38px; border-radius:10px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--white); border:1.5px solid var(--line); color:var(--navy);
+}
+.injury-toggle-btn:hover{ border-color:var(--bad); color:var(--bad); }
+.injury-toggle-btn.active{ background:var(--bad); border-color:var(--bad); color:#fff; }
+.injury-toggle-btn.active.icon-tocada{ background:#FFD34D; border-color:#FFD34D; color:var(--navy); }
+.injury-toggle-btn svg{ width:19px; height:19px; }
+.injury-toggle-btn .emoji{ font-size:18px; line-height:1; }
+
+.injury-picker{
+  display:none; position:absolute; top:44px; right:0; z-index:50;
+  background:var(--white); border:1.5px solid var(--line); border-radius:12px;
+  padding:6px; gap:4px; box-shadow:0 10px 30px -12px rgba(15,27,45,.35);
+}
+.injury-picker.open{ display:flex; }
+.injury-picker-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; display:flex; flex-direction:column;
+  align-items:center; gap:2px; padding:8px 10px; border-radius:9px; width:64px;
+  font-size:10px; font-weight:600; color:var(--text-muted); text-align:center;
+}
+.injury-picker-btn:hover{ background:var(--bg); }
+.injury-picker-btn svg{ width:18px; height:18px; }
+.injury-picker-btn .emoji{ font-size:18px; line-height:1; }
+.injury-picker-btn.selected{ background:var(--bg); color:var(--navy); }
+
+
+/* Banner grande de "Mi perfil" */
+.pf-hero{
+  background:linear-gradient(135deg, var(--sky) 0%, var(--navy) 100%);
+  border-radius:var(--radius); padding:28px 26px 24px; margin-bottom:16px;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.45);
+}
+.pf-hero-top{ display:flex; align-items:center; gap:18px; margin-bottom:22px; }
+.pf-avatar-wrap{ position:relative; flex-shrink:0; }
+.pf-avatar-edit-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; position:absolute; bottom:-4px; right:-4px;
+  width:30px; height:30px; border-radius:50%; background:var(--white); color:var(--navy);
+  display:flex; align-items:center; justify-content:center; border:2px solid var(--sky);
+  box-shadow:0 4px 10px -2px rgba(15,27,45,.5); transition:.15s ease;
+}
+.pf-avatar-edit-btn:hover{ background:var(--sky); color:#fff; }
+.pf-avatar-edit-btn:disabled{ opacity:.5; cursor:default; }
+.pf-avatar-edit-btn svg{ width:15px; height:15px; }
+
+/* Menú desplegable "Editar foto / Eliminar foto" bajo el botón de editar la foto de perfil */
+.pf-avatar-menu{
+  display:none; position:absolute; top:100%; margin-top:8px; left:0; z-index:50;
+  background:var(--white); border:1.5px solid var(--line); border-radius:12px;
+  box-shadow:0 12px 30px -10px rgba(15,27,45,.35); padding:6px; min-width:170px;
+  flex-direction:column; gap:2px;
+}
+.pf-avatar-menu.open{ display:flex; }
+.pf-avatar-menu button{
+  all:unset; cursor:pointer; box-sizing:border-box; width:100%;
+  display:flex; align-items:center; gap:9px; padding:9px 10px; border-radius:8px;
+  font-family:'Roboto',sans-serif; font-size:13.5px; font-weight:600; color:var(--navy);
+}
+.pf-avatar-menu button:hover{ background:var(--sky-light); }
+.pf-avatar-menu button.danger{ color:var(--bad); }
+.pf-avatar-menu button.danger:hover{ background:#FDEDEB; }
+.pf-avatar-menu button svg{ width:16px; height:16px; flex-shrink:0; }
+.pf-avatar-menu button:disabled{ opacity:.4; cursor:default; pointer-events:none; }
+.pf-avatar img, .avatar img{ width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+/* Cuando el avatar propio no tiene foto, se muestra el escudo del club entero (sin
+   recortar) y sin el cuadrado de color de fondo detrás. */
+.avatar.avatar-logo-fallback{ background:transparent; }
+.avatar.avatar-logo-fallback img{ object-fit:contain; }
+.pf-avatar{
+  width:88px; height:88px; border-radius:24px; font-size:30px;
+  background:rgba(255,255,255,.18); flex-shrink:0;
+}
+.pf-hero-info{ min-width:0; text-transform:uppercase; }
+.pf-hero-info b{
+  display:block; font-size:22px; text-transform:uppercase; letter-spacing:.02em;
+  font-family:'Oswald',sans-serif; color:#fff;
+}
+.pf-hero-info span{ font-size:13.5px; color:rgba(255,255,255,.75); }
+.pf-hero-licencia{ display:block; margin-top:2px; font-size:12px; text-transform:none; letter-spacing:normal; color:rgba(255,255,255,.6); }
+.pf-stats{ display:flex; gap:14px; border-top:1px solid rgba(255,255,255,.2); padding-top:16px; }
+.pf-stat{ flex:1; text-align:center; }
+.pf-stat b{ display:block; font-size:23px; font-weight:700; font-family:'Oswald',sans-serif; color:#fff; }
+.pf-stat span{ font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; color:rgba(255,255,255,.75); }
+
+/* Todos los campos de Mi perfil (los mostrados en la ficha y los del modal de edición) en mayúsculas */
+.profile-info-table{ text-transform:uppercase; }
+.profile-info-table #profile-email-display{ text-transform:none; }
+#edit-profile-modal input, #edit-profile-modal select, #edit-profile-modal option{ text-transform:uppercase; }
+.player-row{ display:flex; align-items:center; gap:10px; }
+.player-row .meta{ line-height:1.2; }
+.player-row .meta b{ font-size:13.5px; display:block; }
+.player-row .meta span{ font-size:12px; color:var(--text-muted); }
+
+.place-row{ display:flex; gap:8px; align-items:center; }
+.place-home-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0;
+  font-family:'Roboto',sans-serif; font-size:13px; font-weight:600; text-transform:none; letter-spacing:normal;
+  padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);
+  background:var(--white); transition:.15s ease;
+}
+.place-home-btn:hover{ border-color:var(--sky); background:var(--sky-light); }
+.place-home-btn.selected{ background:var(--sky); border-color:var(--sky); color:#fff; }
+.place-maps-preview{ display:flex; }
+.place-hint{ font-size:11.5px; font-weight:600; color:var(--text-muted); text-transform:none; letter-spacing:normal; line-height:1.3; }
+.place-maps-link{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:12px; font-weight:600; color:var(--sky-dark); text-decoration:none;
+  text-transform:none; letter-spacing:normal;
+}
+.place-maps-link:hover{ text-decoration:underline; }
+.att-detail-location-link{ color:var(--sky-dark); font-weight:700; text-decoration:none; }
+.att-detail-location-link:hover{ text-decoration:underline; }
+
+/* Lista de jugadoras/miembros del club, en formato tabla (sección "Jugadoras") */
+.players-table-card{ padding:0; overflow-x:auto; container-type:inline-size; }
+.players-table{ width:100%; border-collapse:collapse; min-width:600px; text-transform:uppercase; }
+.players-table thead th{
+  text-align:left; font-family:'Oswald',sans-serif; font-size:11.5px; text-transform:uppercase;
+  letter-spacing:.04em; color:var(--text-muted); font-weight:600;
+  padding:12px 16px; border-bottom:1.5px solid var(--line); background:var(--bg); white-space:nowrap;
+}
+.players-table tbody td{
+  padding:10px 16px; font-size:13px; color:var(--navy); border-bottom:1px solid var(--line); vertical-align:middle;
+}
+.players-table tbody tr:last-child td{ border-bottom:none; }
+.players-table tbody tr:nth-child(even){ background:var(--bg); }
+.players-table .col-player{ display:flex; align-items:center; gap:10px; white-space:nowrap; }
+.players-table .col-player .avatar{ width:36px; height:36px; border-radius:11px; font-size:12px; flex-shrink:0; }
+.players-table .col-player b{ font-size:13px; text-transform:uppercase; letter-spacing:.02em; font-family:'Oswald',sans-serif; }
+.players-table .muted-cell{ color:var(--text-muted); }
+.players-table th.num, .players-table td.num{ text-align:center; }
+.players-table .col-cards{ display:flex; align-items:center; gap:8px; white-space:nowrap; }
+.players-table .col-cards .none{ color:var(--text-muted); font-style:italic; font-size:12px; }
+
+/* En móvil, en vez de desbordar y hacer scroll lateral, la tabla se encoge para caber
+   en pantalla: quitamos el ancho mínimo fijo y escalamos texto/espaciados en proporción
+   al ancho real de la tarjeta (unidades cqw), igual que se hizo con las camisetas de Fantasy. */
+@media (max-width:900px){
+  .players-table{ min-width:0; }
+  .players-table thead th{
+    font-size:clamp(7px, 2.6cqw, 11.5px); padding:clamp(6px,1.8cqw,12px) clamp(6px,2.4cqw,16px);
+  }
+  .players-table tbody td{
+    font-size:clamp(8px, 2.8cqw, 13px); padding:clamp(6px,1.6cqw,10px) clamp(6px,2.4cqw,16px);
+  }
+  .players-table .col-player{ gap:clamp(4px,1.4cqw,10px); }
+  .players-table .col-player .avatar{
+    width:clamp(20px,7cqw,36px); height:clamp(20px,7cqw,36px); font-size:clamp(7px,2.2cqw,12px);
+  }
+  .players-table .col-player b{ font-size:clamp(8px, 2.8cqw, 13px); }
+  .players-table .col-cards{ gap:clamp(3px,1cqw,8px); }
+  .players-table .col-cards .none{ font-size:clamp(7px,2.4cqw,12px); }
+  .card-chip{ font-size:clamp(8px, 2.8cqw, 13px); gap:clamp(2px,.8cqw,5px); }
+  .card-chip .swatch{ width:clamp(6px,2.2cqw,11px); height:clamp(9px,3cqw,15px); }
+}
+.card-chip{ display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:700; color:var(--navy); font-family:'Oswald',sans-serif; }
+.card-chip .swatch{ width:11px; height:15px; border-radius:2px; display:inline-block; }
+.card-chip.yellow .swatch{ background:#F2C94C; border:1px solid #C99A1B; }
+.card-chip.red .swatch{ background:#E14B3F; border:1px solid #A8332A; }
+
+/* Banner de Tercer Tiempo: aviso personal (cocinar/limpiar) + grupo activo de la semana.
+   Los tamaños usan clamp() para escalar de forma continua con el ancho de pantalla,
+   en vez de saltar entre un tamaño de escritorio y otro de móvil. */
+.tt-banner{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+.tt-personal{
+  flex:1 1 220px; min-width:0; border-radius:var(--radius);
+  padding:clamp(12px,3vw,18px) clamp(14px,3.6vw,20px); color:#fff;
+  display:flex; align-items:center; gap:clamp(10px,2.6vw,14px);
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+}
+.tt-personal.cook{ background:linear-gradient(120deg, var(--warn) 0%, #b8672c 100%); }
+.tt-personal.clean{ background:linear-gradient(120deg, var(--sky) 0%, var(--sky-dark) 100%); }
+.tt-personal.none{
+  background:linear-gradient(120deg, #FCEEDC 0%, #F5D9A8 100%); color:#8C5A1B; border:1.5px solid #EFC989;
+  font-size:13px; font-weight:500; box-shadow:none;
+}
+.tt-personal.none .txt b{ color:#8C5A1B; }
+.tt-personal.none .txt span{ color:#A9782F; opacity:1; }
+/* Tarjeta de saldo de Tricount en Inicio: mismo componente .tt-personal que Multas y
+   Tercer tiempo, con sus propias variantes de color según si te deben, debes, o
+   estás al día (ver renderInicioTricountBanner). */
+.tt-personal.tricount-pos{ background:linear-gradient(120deg, var(--ok) 0%, #227a54 100%); }
+.tt-personal.tricount-neg{ background:linear-gradient(120deg, var(--bad) 0%, #8a2f26 100%); }
+.tt-personal.tricount-zero{
+  background:linear-gradient(120deg, var(--bg) 0%, var(--line) 100%); color:var(--text-muted); border:1.5px solid var(--line);
+  font-size:13px; font-weight:500; box-shadow:none;
+}
+.tt-personal.tricount-zero .txt b{ color:var(--text-muted); }
+.tt-personal.tricount-zero .txt span{ color:var(--text-muted); opacity:.85; }
+.tt-personal .icon{
+  width:clamp(34px,7vw,44px); height:clamp(34px,7vw,44px); border-radius:12px; background:rgba(255,255,255,.2);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.tt-personal .icon svg{ width:clamp(17px,3.6vw,23px); height:clamp(17px,3.6vw,23px); }
+.tt-personal .txt{ min-width:0; }
+.tt-personal .txt b{ display:block; font-size:clamp(14px,3.2vw,17px); text-transform:uppercase; letter-spacing:.02em; font-family:'Oswald',sans-serif; overflow-wrap:break-word; }
+.tt-personal .txt span{ font-size:clamp(12.5px,2.8vw,14px); opacity:.9; overflow-wrap:break-word; }
+
+/* Variante apilada: icono arriba del todo, título y texto debajo (banner de Multas) */
+.tt-personal.tt-personal-stacked{ flex-direction:column; align-items:flex-start; }
+.tt-personal-stacked .txt span{ display:block; margin-top:6px; }
+
+.tt-group-box{
+  flex:1 1 130px; min-width:100px; max-width:190px; background:var(--navy); border-radius:var(--radius);
+  padding:clamp(10px,2.8vw,14px) clamp(10px,2.8vw,16px); color:#fff; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:4px; text-align:center;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+  cursor:pointer; border:none; font-family:inherit; transition:transform .12s ease;
+}
+.tt-group-box:hover{ transform:translateY(-1px); }
+.tt-group-box .lbl{
+  font-size:clamp(8.5px,1.8vw,10px); text-transform:uppercase; letter-spacing:.1em; color:#8FA3C2;
+  font-weight:700; font-family:'Oswald',sans-serif;
+}
+.tt-group-box .name{
+  font-size:clamp(15px,3.6vw,19px); font-weight:700; font-family:'Oswald',sans-serif;
+  text-transform:uppercase; letter-spacing:.02em; overflow-wrap:break-word;
+}
+.tt-group-box .hint{ font-size:clamp(8px,1.6vw,9.5px); color:#8FA3C2; margin-top:1px; overflow-wrap:break-word; }
+
+/* Botón "No puedo asistir" dentro de la tarjeta personal del banner */
+.tt-swap-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0;
+  padding:8px 14px; border-radius:10px; font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.03em; font-family:'Oswald',sans-serif;
+  background:rgba(255,255,255,.18); color:#fff; white-space:nowrap;
+}
+.tt-swap-btn:hover{ background:rgba(255,255,255,.3); }
+.tt-personal.none .tt-swap-btn{ background:var(--bg); color:var(--text-muted); border:1.5px solid var(--line); }
+.tt-personal.tricount-zero .tt-swap-btn{ background:var(--white); color:var(--text-muted); border:1.5px solid var(--line); }
+.tt-personal-actions{ display:flex; gap:8px; flex-shrink:0; flex-wrap:wrap; }
+.tt-signup-btn{ background:rgba(255,255,255,.92); color:var(--warn); }
+.tt-signup-btn:hover{ background:#fff; }
+
+/* Panel "Tus cambios de turno" */
+.swap-card{ margin-bottom:18px; }
+.swap-empty{ color:var(--text-muted); font-size:13px; padding:8px 0 2px; }
+.swap-request-item{
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+  padding:11px 14px; background:var(--bg); border-radius:12px; font-size:13px;
+  flex-wrap:wrap; margin-top:8px;
+}
+.swap-request-item .txt{ display:flex; flex-direction:column; gap:2px; }
+.swap-request-item .txt b{ font-size:13.5px; }
+.swap-request-item .txt span{ font-size:12px; color:var(--text-muted); }
+.swap-request-actions{ display:flex; gap:8px; flex-shrink:0; }
+.btn-xs{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  padding:6px 11px; border-radius:8px; font-size:10.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.03em; font-family:'Oswald',sans-serif;
+  border:1.5px solid var(--line); color:var(--text-muted); white-space:nowrap;
+}
+.btn-xs.accept{ border-color:var(--ok); color:var(--ok); }
+.btn-xs.accept:hover{ background:#E4F5EC; }
+.btn-xs.reject:hover{ border-color:var(--bad); color:var(--bad); background:#FBE7E5; }
+
+/* Ventana con el detalle de integrantes del grupo */
+.tt-roster-list{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+.tt-roster-row{
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  background:var(--bg); border-radius:12px;
+}
+.tt-roster-row .dot{
+  width:11px; height:11px; border-radius:50%; flex-shrink:0;
+  box-shadow:0 0 0 3px rgba(0,0,0,.04);
+}
+.tt-roster-row .dot.ready{ background:#33B36B; }
+.tt-roster-row .dot.pending{ background:#F0B23D; }
+.tt-roster-row .info{ flex:1; min-width:0; }
+.tt-roster-row .info b{ display:block; font-size:13.5px; color:var(--navy); }
+.tt-roster-row .info span{ font-size:11.5px; color:var(--text-muted); }
+.tt-roster-row .dish{
+  font-size:11.5px; font-weight:700; color:#238350; text-align:right; max-width:40%;
+}
+.tt-roster-row.pending .dish{ color:#B8781F; font-weight:600; }
+
+/* Vista de los grupos A/B que se muestra en Tercer tiempo cuando todavía no hay
+   ningún partido programado */
+.tt-groups-preview{ display:flex; gap:14px; flex-wrap:wrap; }
+.tt-groups-preview-col{
+  flex:1 1 220px; background:var(--white); border-radius:var(--radius);
+  padding:16px 18px; box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+}
+.tt-groups-preview-title{
+  font-family:'Oswald',sans-serif; font-size:14px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.03em; color:var(--navy); margin-bottom:10px;
+}
+.tt-groups-preview-row{ display:flex; align-items:center; gap:10px; padding:7px 0; }
+.tt-groups-preview-row:not(:last-child){ border-bottom:1px solid var(--line); }
+.tt-groups-preview-row .info{ min-width:0; }
+.tt-groups-preview-row .info b{ display:block; font-size:13px; color:var(--navy); text-transform:uppercase; font-family:'Oswald',sans-serif; letter-spacing:.01em; }
+.tt-groups-preview-row .info span{ font-size:11px; color:var(--text-muted); }
+.tt-groups-preview-empty{ font-size:12.5px; color:var(--text-muted); padding:4px 0; }
+
+.event-box{ background:var(--white); border-radius:var(--radius); padding:24px; margin-bottom:16px; box-shadow:0 10px 30px -18px rgba(15,27,45,.35); }
+.event-box h3{ margin:0 0 4px; font-size:18px; text-transform:uppercase; letter-spacing:.02em; }
+.event-box .when{ color:var(--sky-dark); font-weight:700; font-size:13px; margin-bottom:14px; text-transform:uppercase; letter-spacing:.03em; }
+.todo-list{ display:flex; flex-direction:column; gap:8px; }
+.todo-item{ display:flex; justify-content:space-between; align-items:center; padding:11px 14px; background:var(--bg); border-radius:12px; font-size:13.5px; }
+
+/* Comida del tercer tiempo, por categorías con huecos limitados */
+.tt-food-grid{ display:flex; flex-direction:column; gap:12px; }
+.tt-food-cat{ background:var(--white); border-radius:var(--radius); padding:16px 18px; box-shadow:0 10px 30px -18px rgba(15,27,45,.35); }
+.tt-food-cat-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.tt-food-cat-head b{ font-size:13.5px; text-transform:uppercase; letter-spacing:.02em; font-family:'Oswald',sans-serif; color:var(--navy); }
+.tt-food-count{ font-size:11px; font-weight:700; padding:2px 9px; border-radius:999px; background:var(--bg); color:var(--text-muted); }
+.tt-food-count.full{ background:#E4F5EC; color:#238350; }
+.tt-food-slots{ display:flex; flex-direction:column; gap:7px; }
+.tt-food-slot{ display:flex; align-items:center; gap:8px; padding:9px 11px; border-radius:10px; background:var(--bg); font-size:12.5px; transition:background .15s ease; }
+.tt-food-slot.brought{ background:#E4F5EC; }
+.tt-food-slot.missing{ background:#FBEAEA; }
+.tt-food-slot-actions{ display:flex; align-items:center; gap:6px; flex-shrink:0; }
+.tt-food-status-badge{
+  display:flex; align-items:center; justify-content:center;
+  width:22px; height:22px; border-radius:7px; flex-shrink:0;
+  font-weight:700; font-size:13px; color:#fff;
+}
+.tt-food-status-badge.brought{ background:var(--ok); }
+.tt-food-status-badge.missing{ background:var(--bad); }
+.tt-food-check{
+  all:unset; cursor:pointer; box-sizing:border-box; width:22px; height:22px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;
+  border:1.5px solid var(--line); color:var(--text-muted); transition:.15s ease;
+}
+.tt-food-check.check.on{ background:#33B36B; border-color:#33B36B; color:#fff; }
+.tt-food-check.cross.on{ background:#D65C4F; border-color:#D65C4F; color:#fff; }
+
+/* Botón para apuntar a una compañera desde el modal de "Apuntarme" */
+.food-modal-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.food-modal-teammate-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0;
+  width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--line); color:var(--text-muted); transition:.15s ease;
+}
+.food-modal-teammate-btn svg{ width:17px; height:17px; }
+.food-modal-teammate-btn:hover{ border-color:var(--sky); color:var(--sky-dark); }
+.food-modal-teammate-btn.active{ background:var(--sky); border-color:var(--sky); color:#fff; }
+.tt-food-slot .txt{ flex:1; color:var(--navy); font-weight:600; }
+.tt-food-slot .del{ all:unset; cursor:pointer; color:var(--text-muted); font-size:12px; padding:2px 4px; flex-shrink:0; }
+.tt-food-slot .del:hover{ color:var(--bad); }
+.tt-food-slot.empty{
+  all:unset; cursor:pointer; box-sizing:border-box; width:100%;
+  display:flex; align-items:center; gap:8px; padding:9px 11px; border-radius:10px;
+  border:1.5px dashed var(--line); color:var(--text-muted); font-size:12.5px; transition:.15s ease;
+}
+.tt-food-slot.empty:hover{ border-color:var(--sky); color:var(--sky-dark); }
+.tt-food-slot.empty .plus{ font-weight:700; font-size:14px; line-height:1; }
+.todo-item .who{ color:var(--text-muted); font-size:12.5px; }
+
+.cal-list{ display:flex; flex-direction:column; gap:10px; }
+.cal-item{ display:flex; gap:14px; align-items:center; background:var(--white); border-radius:var(--radius); padding:14px 18px; box-shadow:0 10px 30px -18px rgba(15,27,45,.35); }
+.cal-date{ width:56px; text-align:center; flex-shrink:0; background:var(--sky-light); border-radius:12px; padding:6px 0; }
+.cal-date .d{ font-size:19px; font-weight:700; line-height:1; color:var(--sky-dark); font-family:'Oswald',sans-serif; }
+.cal-date .m{ font-size:10.5px; text-transform:uppercase; color:var(--sky-dark); font-weight:600; letter-spacing:.04em; }
+.cal-info b{ display:block; font-size:14px; text-transform:uppercase; letter-spacing:.01em; }
+.cal-info span{ font-size:12.5px; color:var(--text-muted); }

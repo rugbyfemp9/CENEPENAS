@@ -1,0 +1,339 @@
+/* ============ COMI TESORERIA ============ */
+.treasury-banner{
+  all:unset; cursor:pointer; box-sizing:border-box; display:block; width:100%;
+  background:linear-gradient(135deg, var(--sky) 0%, var(--sky-dark) 45%, var(--navy) 100%);
+  border-radius:var(--radius); padding:20px 24px; margin-bottom:18px; text-align:center;
+  box-shadow:0 10px 30px -14px rgba(15,27,45,.55); transition:.15s ease;
+}
+.treasury-banner:hover{ filter:brightness(1.06); box-shadow:0 14px 34px -14px rgba(15,27,45,.65); }
+.treasury-banner-hint{
+  font-size:11px; color:rgba(255,255,255,.65); margin-top:6px; font-weight:500;
+}
+.treasury-banner-label{
+  font-family:'Oswald',sans-serif; font-size:12.5px; text-transform:uppercase; letter-spacing:.05em;
+  color:rgba(255,255,255,.78); font-weight:600; margin-bottom:6px;
+}
+.treasury-banner-amount{
+  font-family:'Oswald',sans-serif; font-size:34px; font-weight:700; color:#fff; line-height:1;
+}
+.treasury-banner-amount.neg{ color:#FF9C92; }
+.treasury-add-btn{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  width:38px; height:38px; border-radius:10px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(90deg, var(--sky), var(--sky-dark)); color:#fff;
+}
+.treasury-add-btn:hover{ filter:brightness(1.08); }
+.treasury-add-btn svg{ width:19px; height:19px; }
+
+/* Pestañas simples de 2 opciones (p. ej. Lista / Saldo en Comi Tercer Temps) */
+.simple-tabs{ display:flex; gap:6px; margin-bottom:12px; }
+.simple-tabs button{
+  all:unset; cursor:pointer; box-sizing:border-box; flex:1; text-align:center;
+  padding:6px 12px; border-radius:9px; font-size:11.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.03em; font-family:'Oswald',sans-serif;
+  background:var(--white); border:1.5px solid var(--line); color:var(--text-muted);
+}
+.simple-tabs button.active{ background:var(--navy); border-color:var(--navy); color:#fff; }
+.comi-tercer-panel{ display:none; }
+.comi-tercer-panel.active{ display:block; }
+.liga-panel{ display:none; }
+.liga-panel.active{ display:block; }
+.liga-table-card{ padding:0; overflow:hidden; }
+.liga-table-scroll{ overflow-x:auto; }
+.liga-table{ border-collapse:collapse; width:100%; min-width:640px; font-size:12.5px; }
+.liga-table th, .liga-table td{ padding:10px 8px; text-align:center; white-space:nowrap; }
+.liga-table th{ font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); border-bottom:1.5px solid var(--line); }
+.liga-table td.liga-pos{ font-weight:700; color:var(--text-muted); }
+.liga-table td.liga-team{ text-align:left; font-weight:700; font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.01em; color:var(--navy); display:flex; align-items:center; gap:8px; }
+.liga-table td.liga-pts{ font-weight:700; color:var(--navy); }
+.liga-table tr.liga-own-team{ background:var(--sky-light); }
+.liga-table tr:not(:last-child) td{ border-bottom:1px solid var(--line); }
+/* Escudo de equipo (insignia con iniciales, ya que no usamos escudos oficiales) */
+.liga-crest{
+  width:22px; height:22px; border-radius:7px; flex-shrink:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:'Oswald',sans-serif; font-weight:700; font-size:9px; letter-spacing:.02em;
+  color:#fff;
+}
+.liga-match .teams .liga-crest{ margin:0 2px; }
+.liga-jornada-heading{
+  font-family:'Oswald',sans-serif; font-size:14px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.04em; color:var(--navy); margin:18px 0 8px;
+}
+#liga-results-list > .liga-jornada-heading:first-child{ margin-top:0; }
+.liga-match{
+  background:var(--white); border-radius:12px; padding:11px 14px; margin-bottom:8px;
+  box-shadow:0 6px 18px -14px rgba(15,27,45,.35);
+  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+}
+.liga-match.liga-own-match{ box-shadow:0 0 0 1.5px var(--sky) inset, 0 6px 18px -14px rgba(15,27,45,.35); }
+.liga-match .teams{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; font-family:'Oswald',sans-serif; text-transform:uppercase; color:var(--navy); flex-wrap:wrap; }
+.liga-match .teams .score{ color:var(--sky-dark); font-size:13.5px; }
+.liga-match .date{ font-size:11.5px; color:var(--text-muted); flex-shrink:0; }
+.liga-source-note{ font-size:11.5px; color:var(--text-muted); margin-top:16px; line-height:1.4; }
+.liga-source-note a{ color:var(--sky-dark); font-weight:600; text-decoration:none; }
+.liga-source-note a:hover{ text-decoration:underline; }
+
+/* Lista de la compra con casillas de verificación */
+.shopping-list-card{ padding:10px 10px 16px; }
+.shopping-add-row{ display:flex; gap:8px; padding:6px 6px 14px; }
+.shopping-add-row input{
+  flex:1; box-sizing:border-box; border:1.5px solid var(--line); border-radius:10px;
+  padding:11px 13px; font-family:'Roboto',sans-serif; font-size:14px; color:var(--navy);
+}
+.shopping-add-row input:focus{ outline:none; border-color:var(--sky); }
+.shopping-add-row button{
+  all:unset; cursor:pointer; box-sizing:border-box; width:44px; height:44px; border-radius:10px; flex-shrink:0;
+  background:linear-gradient(90deg, var(--sky), var(--sky-dark)); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; line-height:1;
+}
+.shopping-add-row button:hover{ filter:brightness(1.08); }
+.shopping-item{
+  display:flex; align-items:center; gap:12px; padding:12px 10px; border-radius:12px; cursor:pointer;
+}
+.shopping-item:nth-child(even){ background:var(--bg); }
+.shopping-item input[type="checkbox"]{ width:20px; height:20px; accent-color:var(--ok); flex-shrink:0; cursor:pointer; }
+.shopping-item-label{ flex:1; font-size:14px; color:var(--navy); }
+.shopping-item.checked .shopping-item-label{ text-decoration:line-through; color:var(--text-muted); }
+.shopping-item-del{
+  all:unset; cursor:pointer; box-sizing:border-box; width:28px; height:28px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; color:var(--text-muted);
+}
+.shopping-item-del:hover{ background:#FBE9E7; color:var(--bad); }
+.shopping-item-del svg{ width:15px; height:15px; }
+.shopping-empty{ padding:26px 12px; text-align:center; color:var(--text-muted); font-size:13px; }
+
+/* Tricount: balances por persona y lista de gastos compartidos */
+.tricount-balance-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:10px; }
+.tricount-panel{ display:none; }
+.tricount-panel.active{ display:block; }
+.tricount-summary-grid{
+  display:grid; grid-template-columns:repeat(2,1fr);
+  gap:clamp(8px, 3vw, 12px); margin-bottom:18px;
+}
+/* Siempre una al lado de la otra, incluso en móvil: en vez de apilarlas por
+   debajo de cierto ancho, el padding y el texto se van reduciendo poco a poco
+   según cabe la pantalla. */
+.tricount-summary-grid .stat-card{ padding:clamp(12px, 4.5vw, 20px); min-width:0; }
+.tricount-summary-grid .stat-card .k{ font-size:clamp(9.5px, 2.6vw, 12px); white-space:nowrap; }
+.tricount-summary-grid .stat-card .v{ font-size:clamp(16px, 5.5vw, 27px); margin-top:clamp(3px, 1.2vw, 6px); }
+.tricount-date-heading{
+  font-family:'Oswald',sans-serif; font-size:12.5px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.04em; color:var(--text-muted); margin:16px 0 8px;
+}
+#tricount-expense-list > .tricount-date-heading:first-child{ margin-top:0; }
+
+/* Resumen personal destacado, arriba de la pestaña Saldos */
+.tricount-my-balance{
+  background:var(--white); border-radius:var(--radius); padding:24px; text-align:center;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+}
+.tricount-my-balance .label{ font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); font-weight:600; }
+.tricount-my-balance .amt{ font-family:'Oswald',sans-serif; font-size:38px; font-weight:700; margin-top:6px; line-height:1.1; }
+.tricount-my-balance .amt.pos{ color:var(--ok); }
+.tricount-my-balance .amt.neg{ color:var(--bad); }
+.tricount-my-balance .amt.zero{ color:var(--text-muted); }
+.tricount-my-balance .hint{ font-size:12.5px; color:var(--text-muted); margin-top:4px; }
+
+/* Botón para desplegar/plegar los reembolsos sugeridos */
+.tricount-settlement-toggle{
+  all:unset; box-sizing:border-box; cursor:pointer; width:100%;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--white); border:1.5px solid var(--line); border-radius:12px;
+  padding:13px 16px; margin:22px 0 4px;
+  font-family:'Oswald',sans-serif; font-size:13.5px; font-weight:700; color:var(--navy);
+  text-transform:uppercase; letter-spacing:.02em;
+}
+.tricount-settlement-toggle:hover{ border-color:var(--sky); }
+.tricount-settlement-toggle svg{ width:16px; height:16px; flex-shrink:0; transition:transform .2s ease; }
+.tricount-settlement-toggle.open svg{ transform:rotate(180deg); }
+.tricount-settlement-collapse{ margin-top:12px; }
+.tricount-balance-card{
+  background:var(--white); border-radius:14px; padding:12px 14px;
+  box-shadow:0 8px 22px -16px rgba(15,27,45,.35);
+}
+.tricount-balance-card b{ display:block; font-size:13px; text-transform:uppercase; letter-spacing:.01em; font-family:'Oswald',sans-serif; margin-bottom:4px; }
+.tricount-balance-card .amt{ font-size:16px; font-weight:700; font-family:'Oswald',sans-serif; }
+.tricount-balance-card .amt.pos{ color:var(--ok); }
+.tricount-balance-card .amt.neg{ color:var(--bad); }
+.tricount-balance-card .amt.zero{ color:var(--text-muted); }
+.tricount-balance-card .hint{ display:block; font-size:11px; color:var(--text-muted); margin-top:2px; }
+.tricount-expense-item{
+  background:var(--white); border-radius:14px; padding:14px 16px; margin-bottom:10px;
+  box-shadow:0 8px 22px -16px rgba(15,27,45,.35);
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+}
+.tricount-expense-item .info b{ display:block; font-size:14px; text-transform:uppercase; letter-spacing:.01em; font-family:'Oswald',sans-serif; }
+.tricount-expense-item .info span{ display:block; font-size:12px; color:var(--text-muted); margin-top:2px; }
+.tricount-expense-item .right{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.tricount-expense-item .amt{ font-size:15px; font-weight:700; font-family:'Oswald',sans-serif; color:var(--navy); }
+.tricount-expense-del{
+  all:unset; cursor:pointer; box-sizing:border-box; width:30px; height:30px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center; color:var(--text-muted); transition:.15s ease;
+}
+.tricount-expense-del:hover{ background:#FBE9E7; color:var(--bad); }
+.tricount-expense-del svg{ width:15px; height:15px; }
+.tricount-participants-list{ display:flex; flex-direction:column; gap:4px; max-height:34vh; overflow-y:auto; }
+.tricount-participant-row{ display:flex; align-items:center; gap:10px; padding:7px 4px; font-size:14px; color:var(--navy); }
+.tricount-participant-row input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--sky); flex-shrink:0; cursor:pointer; }
+
+.tricount-settlement-hint{ font-size:12px; color:var(--text-muted); margin:2px 0 10px; }
+.tricount-settlement-empty{ font-size:13px; color:var(--text-muted); padding:10px 2px; }
+.tricount-settlement-item{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--white); border-radius:12px; padding:12px 14px; margin-bottom:8px;
+  box-shadow:0 6px 18px -14px rgba(15,27,45,.35);
+}
+.tricount-settlement-item .txt{ font-size:13.5px; color:var(--navy); }
+.tricount-settlement-item .txt b{ font-family:'Oswald',sans-serif; }
+.tricount-settlement-item .amt{ color:var(--sky-dark); font-weight:700; }
+.tricount-settlement-item .settle-btn{
+  flex-shrink:0; border:none; border-radius:9px; padding:8px 14px; font-size:12.5px; font-weight:700;
+  background:var(--ok); color:#fff; cursor:pointer;
+}
+.tricount-settlement-item .settle-btn:hover{ filter:brightness(1.05); }
+
+.tricount-settled-item{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--bg); border-radius:12px; padding:10px 14px; margin-bottom:6px; font-size:12.5px; color:var(--text-muted);
+}
+.tricount-settled-item .txt b{ color:var(--navy); }
+.tricount-settled-item .undo-btn{
+  all:unset; cursor:pointer; flex-shrink:0; font-size:11.5px; font-weight:600; color:var(--sky-dark);
+}
+.tricount-settled-item .undo-btn:hover{ text-decoration:underline; }
+.shopping-item-add{
+  display:flex; align-items:center; gap:10px; padding:9px 10px;
+}
+.shopping-item-add button{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0;
+  width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  background:var(--sky); color:#fff; font-size:16px; font-weight:700; line-height:1;
+}
+.shopping-item-add button:hover{ filter:brightness(1.08); }
+.shopping-item-add input{
+  flex:1; min-width:0; border:none; outline:none; background:none;
+  font-family:'Roboto',sans-serif; font-size:14px; color:var(--navy);
+}
+.shopping-item-add input::placeholder{ color:var(--text-muted); }
+
+/* Desglose del saldo por integrante (modal abierto desde el banner) */
+.tv-breakdown-list{ display:flex; flex-direction:column; margin-top:6px; }
+.tv-breakdown-row{
+  display:flex; align-items:center; gap:12px; padding:12px 2px; border-bottom:1px solid var(--line);
+}
+.tv-breakdown-row:last-child{ border-bottom:none; }
+.tv-breakdown-row .meta{ flex:1; min-width:0; }
+.tv-breakdown-row .meta b{ display:block; font-size:13.5px; }
+.tv-breakdown-row .meta span{ font-size:11.5px; color:var(--text-muted); }
+.tv-breakdown-row .net{
+  font-family:'Oswald',sans-serif; font-size:15px; font-weight:700; flex-shrink:0; text-align:right;
+}
+.tv-breakdown-row .net.pos{ color:var(--ok); }
+.tv-breakdown-row .net.neg{ color:var(--bad); }
+.tv-breakdown-row .net.zero{ color:var(--text-muted); }
+.tv-breakdown-row.unassigned .avatar{ background:var(--line); color:var(--text-muted); }
+
+.treasury-table-card{ padding:0; overflow-x:auto; }
+
+/* Barra de herramientas encima de la tabla, con el botón de editar a la derecha */
+.treasury-table-toolbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 10px; border-bottom:1.5px solid var(--line);
+}
+.treasury-table-toolbar-label{
+  font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--text-muted); font-family:'Oswald',sans-serif;
+}
+.treasury-table-toolbar-actions{ display:flex; align-items:center; gap:6px; }
+.treasury-table-toolbar-actions .treasury-add-btn{ width:25px; height:25px; border-radius:7px; }
+.treasury-table-toolbar-actions .treasury-add-btn svg{ width:13px; height:13px; }
+.treasury-edit-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; display:flex; align-items:center; gap:4px;
+  padding:5px 9px; border-radius:7px; border:1.5px solid var(--line);
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  color:var(--navy); font-family:'Oswald',sans-serif;
+}
+.treasury-edit-btn svg{ width:12px; height:12px; }
+.treasury-edit-btn:hover{ border-color:var(--sky); color:var(--sky-dark); }
+.treasury-edit-btn.active{ background:var(--navy); border-color:var(--navy); color:#fff; }
+
+/* Edición inline: inputs compactos dentro de las celdas */
+.tv-input{
+  width:100%; box-sizing:border-box; border:1.5px solid var(--line); border-radius:8px;
+  padding:6px 8px; font-family:'Roboto',sans-serif; font-size:13px; color:var(--navy); background:var(--white);
+}
+.tv-input:focus{ outline:none; border-color:var(--sky); }
+.tv-amount{ text-align:right; }
+.type-pill.clickable{ all:unset; cursor:pointer; box-sizing:border-box; }
+.tv-del-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; width:30px; height:30px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; color:var(--bad);
+}
+.tv-del-btn:hover{ background:#FBE9E7; }
+.tv-del-btn svg{ width:16px; height:16px; }
+.col-actions{ width:44px; }
+
+.treasury-table{ width:100%; border-collapse:collapse; min-width:460px; }
+.treasury-table thead th{
+  text-align:left; font-family:'Oswald',sans-serif; font-size:11.5px; text-transform:uppercase;
+  letter-spacing:.04em; color:var(--text-muted); font-weight:600;
+  padding:12px 16px; border-bottom:1.5px solid var(--line); background:var(--bg);
+}
+.treasury-table tbody td{
+  padding:12px 16px; font-size:13.5px; color:var(--navy); border-bottom:1px solid var(--line);
+}
+.treasury-table .col-concept{
+  max-width:150px; width:150px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.tv-responsible{
+  display:block; font-size:11px; color:var(--text-muted); font-weight:500;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.treasury-table tbody tr:last-child td{ border-bottom:none; }
+.treasury-table tbody tr:nth-child(even){ background:var(--bg); }
+.treasury-table .amount-ingreso{ color:var(--ok); font-weight:700; }
+.treasury-table .amount-gasto{ color:var(--bad); font-weight:700; }
+.treasury-table .type-pill{
+  display:inline-block; font-size:10.5px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.03em; padding:3px 10px; border-radius:999px;
+}
+.treasury-table .type-pill.ingreso{ background:#E4F5EC; color:#238350; }
+.treasury-table .type-pill.gasto{ background:#FBE9E7; color:#B8382C; }
+.treasury-table .type-pill.hecho{ background:#E4F5EC; color:#238350; }
+.treasury-table .type-pill.pendiente{ background:#FBF0DE; color:#B8781F; }
+.treasury-table-empty{ padding:24px 16px; color:var(--text-muted); font-size:13px; text-align:center; }
+
+/* ============ AVISOS (Inicio) ============ */
+.notices-empty{ color:var(--text-muted); font-size:13px; text-align:center; padding:20px 12px; }
+.notice-card{
+  display:flex; align-items:flex-start; gap:10px;
+  background:var(--bg); border-radius:12px; padding:12px 14px; margin-bottom:10px;
+}
+.notice-card:last-child{ margin-bottom:0; }
+.notice-card .notice-body{ flex:1; min-width:0; }
+.notice-card .notice-text{ font-size:13.5px; color:var(--navy); line-height:1.4; white-space:pre-wrap; word-break:break-word; }
+.notice-card .notice-date{ font-size:11px; color:var(--text-muted); margin-top:6px; }
+.notice-delete-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0;
+  width:26px; height:26px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; color:var(--text-muted);
+}
+.notice-delete-btn:hover{ background:#FBE9E7; color:var(--bad); }
+.notice-delete-btn svg{ width:14px; height:14px; }
+
+/* Cajas de "Tipo" (Gastos / Ingresos) en el formulario de añadir movimiento */
+.tx-type-toggle{ display:flex; gap:10px; }
+.tx-type-btn{
+  all:unset; box-sizing:border-box; cursor:pointer; flex:1;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:14px 8px; border-radius:12px; border:2px solid var(--line);
+  font-family:'Oswald',sans-serif; font-size:13px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.03em; text-align:center;
+  background:var(--white); color:var(--text-muted); transition:.15s ease;
+}
+.tx-type-btn svg{ width:20px; height:20px; }
+.tx-type-btn.gasto.active{ background:#FBE9E7; border-color:var(--bad); color:#B8382C; }
+.tx-type-btn.ingreso.active{ background:#E4F5EC; border-color:var(--ok); color:#238350; }

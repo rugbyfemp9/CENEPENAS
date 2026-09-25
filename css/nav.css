@@ -1,0 +1,93 @@
+/* ============ NAV INFERIOR (sólo móvil) ============ */
+.bottom-nav{
+  display:none;
+  position:fixed; left:0; right:0; bottom:0; z-index:200;
+  background:var(--navy);
+  justify-content:space-around; align-items:center;
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  box-shadow:0 -8px 24px rgba(15,27,45,.28);
+}
+/* Mientras hay un <select> nativo abierto (p.ej. el de "Partido" en Fantasy), esta barra fija
+   y oscura puede quedar por encima de su panel desplegable en algunos móviles, cortándolo
+   con una franja oscura. La ocultamos mientras el desplegable está en uso. */
+body.select-open .bottom-nav{ visibility:hidden; }
+.bottom-nav button{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:6px clamp(8px, 4vw, 18px); border-radius:14px;
+  color:#8FA3C2; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.03em;
+  transition:.15s ease;
+}
+.bottom-nav button svg{ width:22px; height:22px; }
+.bottom-nav button.active{ color:#fff; background:rgba(255,255,255,.08); }
+.bottom-nav button.active svg{ stroke:var(--sky); }
+
+@media (max-width:900px){
+  .app{ flex-direction:column; }
+  .sidebar{ display:none; }
+  .main{ padding:86px 16px 100px; }
+  .bottom-nav{ display:flex; }
+  .top-bar-mobile{ display:flex; }
+  .back-link{ display:inline-flex; }
+  .scoreboard{ flex-direction:column; align-items:flex-start; }
+  .scoreboard .right-group{ align-self:stretch; width:100%; align-items:flex-end; justify-content:space-between; }
+
+  /* Banner de Tercer tiempo más compacto y cuadrado en móvil: icono arriba,
+     texto y botones debajo, en vez de la fila ancha y baja de escritorio. */
+  /* Banner de Tercer tiempo en móvil: las dos cajas siguen una al lado de la otra
+     (no apiladas); simplemente se van encogiendo de forma proporcional gracias al
+     flex-shrink y a los clamp() de las reglas base, así que nunca hace falta forzar
+     un ancho fijo aquí. Dentro de la tarjeta personal, el icono pasa a ir encima del
+     texto para aprovechar mejor el poco ancho disponible. */
+  .tt-banner{ gap:8px; flex-wrap:nowrap; }
+  .tt-personal{
+    flex:1 1 0; min-width:0;
+    flex-direction:column; align-items:flex-start; gap:8px;
+  }
+  .tt-personal-actions{ width:100%; }
+  .tt-swap-btn{ padding:7px 12px; font-size:10px; }
+  .tt-group-box{ flex:0 1 96px; min-width:76px; max-width:150px; }
+
+  /* Tabla de tesorería: la columna "Tipo" se oculta en móvil (el color +/- del
+     importe ya indica si es ingreso o gasto) para ganar sitio en pantallas estrechas */
+  .treasury-table .col-type{ display:none; }
+
+  /* Y la tabla entera se ajusta al ancho de la pantalla, sin scroll horizontal:
+     ancho fijo por columna (Fecha/Importe/Acciones estrechas, Concepto se lleva
+     el resto del espacio) en vez de un ancho mínimo que obligaba a hacer scroll. */
+  .treasury-table-card{ overflow-x:hidden; }
+  .treasury-table{ min-width:0; width:100%; table-layout:fixed; }
+  .treasury-table .col-date{ width:23%; }
+  .treasury-table .col-amount{ width:27%; }
+  .treasury-table .col-actions{ width:34px; }
+  .treasury-table .col-concept{ width:auto; max-width:none; }
+  .treasury-table thead th, .treasury-table tbody td{ padding:10px 8px; font-size:12.5px; }
+  .treasury-table .tv-input{ padding:5px 6px; font-size:12px; }
+  .treasury-table .type-pill{ padding:3px 8px; font-size:9.5px; }
+
+  /* Meta-info del detalle de evento (lugar/convocatoria/inicio): centrada y a un tamaño
+     proporcional al ancho de la pantalla, para que quepa siempre en una sola línea. */
+  .att-detail-meta{
+    justify-content:center; flex-wrap:nowrap;
+  }
+  .att-detail-meta .meta-item{
+    font-size:clamp(9px, 3.3cqw, 13px);
+    gap:clamp(3px, 1.1cqw, 7px);
+    padding-right:clamp(6px, 2.6cqw, 16px);
+    margin-right:clamp(6px, 2.6cqw, 16px);
+    white-space:nowrap;
+  }
+
+  /* Pestañas Asistirán / No asistirán / Sin contestar: mismo criterio, siempre en una fila */
+  .att-tabs{ justify-content:center; flex-wrap:nowrap; }
+  .att-tabs button{
+    font-size:clamp(9px, 3.2cqw, 16px);
+    padding:clamp(7px, 2.4cqw, 16px) clamp(8px, 3cqw, 26px);
+    gap:clamp(3px, 1.2cqw, 9px);
+    white-space:nowrap;
+  }
+  .att-tabs button .count{
+    font-size:clamp(8px, 2.6cqw, 14px);
+    padding:2px clamp(4px, 1.6cqw, 11px);
+  }
+}

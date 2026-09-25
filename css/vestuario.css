@@ -1,0 +1,60 @@
+/* ============ VESTUARIO (hub sólo visible como tal en móvil) ============ */
+.vestuario-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:14px; }
+.vest-card{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:flex; align-items:center; gap:14px;
+  background:var(--white); border-radius:var(--radius); padding:18px 20px;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+}
+.vest-card .ic{
+  width:46px; height:46px; border-radius:14px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; color:#fff;
+}
+.vest-card .ic svg{ width:22px; height:22px; }
+.vest-card .ic.emoji{ font-size:22px; line-height:1; }
+.vest-card.i-multas .ic{ background:linear-gradient(135deg,#2ECC71,#1B8F4C); }
+.vest-card.i-tercer .ic{ background:linear-gradient(135deg,#F2A93C,#C97A1B); }
+.vest-card.i-tricount .ic{ background:linear-gradient(135deg,#26C6DA,#0E7A8A); }
+.vest-card.i-liga .ic{ background:linear-gradient(135deg,#C9A13B,#8C6D1F); }
+.vest-card.i-jugadores .ic{ background:linear-gradient(135deg,#0F1B2D,#1B2C45); }
+.vest-card.i-plantilla .ic{ background:linear-gradient(135deg,#5B6EE1,#3A4BB0); }
+.vest-card.i-perfil .ic{ background:linear-gradient(135deg,#66748C,#4d5870); }
+.vest-card.i-fantasy .ic{ background:linear-gradient(135deg,#7C5CD8,#5c3fb0); }
+.vest-card.i-galeria .ic{ background:linear-gradient(135deg,#EC7FA9,#B0356F); }
+.vest-card.i-comisiones .ic{ background:linear-gradient(135deg,#4FACFE,#1565C0); }
+.vest-card.i-comi-activitats .ic{ background:linear-gradient(135deg,#17A398,#0D6E66); }
+.vest-card.i-comi-xarxes .ic{ background:linear-gradient(135deg,#E1306C,#8134AF); }
+.vest-card.i-comi-tercer-temps .ic{ background:linear-gradient(135deg,#F2A93C,#C97A1B); }
+.vest-card.i-comi-tesoreria .ic{ background:linear-gradient(135deg,#2ECC71,#1B8F4C); }
+.vest-card.i-comi-gira .ic{ background:linear-gradient(135deg,#4FACFE,#1565C0); }
+.vest-card.i-partidos .ic{ background:linear-gradient(135deg,#3E7CB8,#1F4E7A); }
+.vest-card.i-test .ic{ background:linear-gradient(135deg,#95A5A6,#5D6D7E); }
+.vest-card .txt b{ display:block; font-size:14.5px; text-transform:uppercase; letter-spacing:.02em; font-family:'Oswald',sans-serif; }
+.vest-card .txt span{ font-size:12.5px; color:var(--text-muted); }
+.vest-card .arrow{ margin-left:auto; color:var(--text-muted); flex-shrink:0; }
+.vest-card .arrow svg{ width:16px; height:16px; }
+
+/* ============ TEST (quiz de 10 preguntas) ============ */
+.test-quiz-intro-card{ text-align:center; padding:32px 24px; }
+.test-quiz-intro-card p{ margin:0 0 20px; color:var(--text-muted); font-size:14.5px; }
+.test-quiz-progress{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.test-quiz-progress-bar{ flex:1; height:8px; border-radius:99px; background:var(--line); overflow:hidden; }
+.test-quiz-progress-bar .fill{ height:100%; background:linear-gradient(90deg, var(--sky), var(--sky-dark)); border-radius:99px; transition:width .25s ease; }
+.test-quiz-progress span{ font-size:12.5px; font-weight:600; color:var(--text-muted); white-space:nowrap; }
+.test-quiz-card h3{ margin:0 0 18px; font-size:17px; line-height:1.35; }
+.test-quiz-options{ display:flex; flex-direction:column; gap:10px; }
+.test-quiz-option{
+  all:unset; cursor:pointer; box-sizing:border-box; width:100%;
+  background:var(--bg); border:1.5px solid var(--line); border-radius:14px;
+  padding:13px 16px; font-size:14px; color:var(--navy); font-weight:500;
+}
+.test-quiz-option:hover:not(.correct):not(.incorrect):not(.disabled){ border-color:var(--sky); }
+.test-quiz-option.disabled{ cursor:default; }
+.test-quiz-option.correct{ background:rgba(46,158,108,.12); border-color:var(--ok); color:var(--ok); font-weight:700; }
+.test-quiz-option.incorrect{ background:rgba(216,86,74,.12); border-color:var(--bad); color:var(--bad); font-weight:700; }
+.test-quiz-explanation{ margin-top:18px; padding:14px 16px; background:var(--bg); border-radius:14px; border:1.5px solid var(--line); }
+.test-quiz-explanation b{ display:block; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:5px; }
+.test-quiz-explanation p{ margin:0; font-size:13.5px; color:var(--navy); line-height:1.45; }
+.test-quiz-next-btn{ display:block; width:100%; margin-top:16px; }
+.test-quiz-score{ font-family:'Oswald',sans-serif; font-size:44px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+#test-quiz-score-text{ margin:0 0 20px; color:var(--text-muted); font-size:14.5px; }

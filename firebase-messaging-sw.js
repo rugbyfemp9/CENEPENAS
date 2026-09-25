@@ -18,7 +18,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title || 'Nueva notificación';
   const notificationOptions = {
     body: payload.notification.body || '',
-    icon: '/icon.png'
+    icon: 'assets/img/applogo.png'
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
