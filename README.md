@@ -1,43 +1,71 @@
 # CENEPENAS
 
-Panel del club CN Peñas. Es una web estática (sin framework ni paso de compilación)
-publicada en GitHub Pages; la app de Capacitor carga esa misma URL. Los datos viven
-en Supabase y las notificaciones push van por Firebase.
+Panel del club CN Peñas. Web estática publicada en GitHub Pages (la app de Capacitor
+carga esa misma URL). Los datos viven en Supabase y las notificaciones push van por
+Firebase. Se compila con [Vite](https://vite.dev) y se está migrando a
+[Svelte](https://svelte.dev) sección a sección.
+
+## Desarrollo
+
+Hace falta Node 22 o superior.
+
+```
+npm install
+npm run dev        # servidor de desarrollo con recarga al guardar
+npm run build      # compila en dist/
+npm run preview    # sirve dist/ tal cual se publicará
+npm run test:e2e   # tests en un navegador de verdad, con un Supabase simulado
+```
+
+Los tests nunca tocan la base de datos real: `tests/e2e/support/fake-supabase.js`
+responde a todas las llamadas con los datos de `tests/e2e/fixtures/seed.js`. Ojo: con
+`npm run dev` la web sí usa el Supabase real, así que lo que guardes ahí es de verdad.
+
+Al fusionar en `main`, GitHub Actions compila y publica la web
+(`.github/workflows/deploy.yml`). Requisito, una sola vez: en el repositorio,
+Settings → Pages → Source: **GitHub Actions**.
 
 ## Estructura
 
 ```
-index.html            Marcado de todas las pantallas y el orden de carga de CSS/JS
-css/                  Estilos, uno por sección (el orden de los <link> es la cascada)
-js/
-  push.js             Notificaciones push (Capacitor / Firebase / Web Push)
-  core/               Piezas compartidas: almacenamiento, idioma, Supabase, sesión,
-                      estado global, fechas, permisos por rol, navegación...
-  features/           Una sección de la app por archivo (asistencia, multas, gym,
-                      galería, fantasy, tesorería, tercer tiempo...)
-  main.js             Arranque: lo que se ejecuta al cargar la página
-  sw-register.js      Registro del service worker
-assets/img/           Logos, escudos y portadas de la galería
-sw.js                 Service worker (instalación como PWA + caché del cascarón)
-firebase-messaging-sw.js  Service worker de las notificaciones en segundo plano
+index.html            Marcado de las pantallas aún no migradas + orden de carga
+src/                  La parte en Svelte
+  main.js             Arranque: monta las secciones migradas y luego llama a legacyBoot()
+  lib/                Piezas compartidas (idioma, sesión, puente con el código antiguo...)
+  features/<sección>/ Una carpeta por sección migrada: estado (*.svelte.js) + componentes
+public/               Se copia tal cual a dist/
+  js/                 Código antiguo, <script> clásicos (se va vaciando con la migración)
+    core/             Almacenamiento, idioma, Supabase, sesión, estado, navegación...
+    features/         Una sección por archivo
+    main.js           legacyBoot(): lo que el código antiguo ejecuta al arrancar
+  css/                Estilos, uno por sección (el orden de los <link> es la cascada)
+  assets/img/         Logos, escudos y portadas de la galería
+  sw.js               Service worker (instalación como PWA + caché)
+tests/e2e/            Tests de Playwright
 config.toml           Configuración local de Supabase
 ```
 
-## Cómo funciona la carga de JS
+## Cómo conviven el código antiguo y Svelte
 
-Los archivos de `js/` son `<script>` clásicos, no módulos: todos comparten el ámbito
-global, así que una función declarada en cualquier archivo se puede llamar desde otro
-y desde los `onclick="..."` del HTML.
+- El código de `public/js/` son `<script>` clásicos: comparten el ámbito global, así
+  que sus funciones se pueden llamar desde cualquier archivo y desde los
+  `onclick="..."` del HTML. No arrancan solos: solo declaran funciones y estado.
+- `src/main.js` se ejecuta después. Monta los componentes de las secciones migradas,
+  deja en `window.appBridge` lo que el código antiguo puede llamar de ellas y, al final,
+  llama a `legacyBoot()` para arrancar el resto.
+- Desde Svelte, todo lo que se lee del código antiguo pasa por `src/lib/legacy.js`.
+- El idioma: `setLang()` lanza el evento `app:langchange` y `src/lib/i18n.svelte.js`
+  lo convierte en estado reactivo, así que los componentes se traducen solos.
 
-La única regla: **el código que se ejecuta al cargar la página va en `js/main.js`**,
-que se carga el último. Los demás archivos solo declaran funciones y variables. Si un
-archivo llamara al cargarse a una función de otro archivo que todavía no se ha
-cargado, fallaría.
-
-## Probar en local
+Para migrar una sección: mover su estado y su lógica a
+`src/features/<sección>/<sección>.svelte.js`, su marcado a componentes, sustituir en el
+código antiguo las llamadas a esa sección por `appBridge.<sección>.…`, borrar su
+archivo de `public/js/features/` y comprobar que los tests siguen pasando. Para
+comparar pantallas antes y después:
 
 ```
-python3 -m http.server 8000
+SNAPSHOT_DIR=.snapshots/antes npx playwright test snapshot
+# ...cambios...
+SNAPSHOT_DIR=.snapshots/despues npx playwright test snapshot
+node scripts/compare-snapshots.mjs .snapshots/antes .snapshots/despues
 ```
-
-y abrir http://localhost:8000/.

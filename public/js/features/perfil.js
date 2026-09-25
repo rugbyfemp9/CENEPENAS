@@ -246,7 +246,7 @@ async function saveProfileEdits(){
     // sin esperar a la próxima vez que se inicie sesión.
     toggleAttAddButtonVisibility();
     toggleFineAddButtonVisibility();
-    toggleAddAlbumButtonVisibility();
+    appBridge.sessionChanged();
     toggleClubTreasuryButtonsVisibility();
     toggleTercerTempsButtonsVisibility();
     renderGymRoutine();
