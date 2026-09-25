@@ -9,6 +9,11 @@ import { test } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { setupApp, openApp, goToSection, SECTIONS, USERS, VIEWPORTS, relevantErrors } from './support/app.js';
+import { IDS } from './fixtures/seed.js';
+
+// Commission members: the only accounts that see the editing UI of their commission
+// (the admin counts as staff and is redirected away from those sections).
+const member = (id, email) => ({ id, email, aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {} });
 
 const dir = process.env.SNAPSHOT_DIR;
 test.skip(!dir, 'SNAPSHOT_DIR not set');
@@ -20,6 +25,8 @@ const scenarios = [
   { name: 'admin-mobile', user: USERS.admin, viewport: VIEWPORTS.mobile, sections: SECTIONS },
   { name: 'player-desktop', user: USERS.player, viewport: VIEWPORTS.desktop, sections: SECTIONS },
   { name: 'admin-desktop-ca', user: USERS.admin, viewport: VIEWPORTS.desktop, sections: SECTIONS, lang: 'ca' },
+  { name: 'treasurer-desktop', user: member(IDS.carla, 'carla@cnpenas.test'), viewport: VIEWPORTS.desktop, sections: SECTIONS },
+  { name: 'tercer-temps-mobile', user: member(IDS.paula, 'paula@cnpenas.test'), viewport: VIEWPORTS.mobile, sections: SECTIONS },
 ];
 
 for (const sc of scenarios) {
@@ -32,6 +39,16 @@ for (const sc of scenarios) {
     fs.mkdirSync(out, { recursive: true });
 
     const capture = async (label) => {
+      // Lazy images load whenever the browser gets to them, which makes screenshots
+      // flaky: load them all now and wait until every one has loaded or failed.
+      await page.evaluate(() => Promise.all([...document.images].map((img) => {
+        img.loading = 'eager';
+        return img.complete ? null : new Promise((done) => {
+          img.addEventListener('load', done, { once: true });
+          img.addEventListener('error', done, { once: true });
+          setTimeout(done, 3000);
+        });
+      })));
       await page.screenshot({ path: path.join(out, `${label}.png`), fullPage: true, animations: 'disabled', caret: 'hide' });
       const text = await page.evaluate(() => document.body.innerText);
       fs.writeFileSync(path.join(out, `${label}.txt`), text);

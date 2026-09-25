@@ -247,8 +247,8 @@ async function saveProfileEdits(){
     toggleAttAddButtonVisibility();
     toggleFineAddButtonVisibility();
     appBridge.sessionChanged();
-    toggleClubTreasuryButtonsVisibility();
-    toggleTercerTempsButtonsVisibility();
+    appBridge.tesoreria.permissionsChanged();
+    appBridge.comiTercerTemps.permissionsChanged();
     renderGymRoutine();
     if(typeof renderThirdTimeFood === 'function') renderThirdTimeFood();
   }

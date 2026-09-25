@@ -276,9 +276,8 @@
           <!-- Se rellena con renderInicioFinesBanner() -->
         </div>
         <div class="card my-fines-card" id="inicio-tercer-banner" onclick="setSection('tercer')" style="cursor:pointer;"></div>
-        <div class="card my-fines-card" id="inicio-tricount-banner" onclick="setSection('tricount')" style="cursor:pointer; grid-column:1 / -1;">
-          <!-- Se rellena con renderInicioTricountBanner() -->
-        </div>
+        <!-- Contenido: lo pinta Svelte (src/features/tricount/TricountBanner.svelte) -->
+        <div class="card my-fines-card" id="inicio-tricount-banner" onclick="setSection('tricount')" style="cursor:pointer; grid-column:1 / -1;"></div>
       </div>
       <div data-mount="inicio-notices-card"></div>
     </section>
@@ -790,93 +789,11 @@
       <div class="card"><span style="color:var(--text-muted); font-size:13.5px;" data-i18n="comi.noContent">Todavía no hay contenido en esta comisión.</span></div>
     </section>
 
-    <!-- COMI TERCER TEMPS -->
-    <section class="section" id="sec-comi-tercer-temps">
-      <div class="back-link" onclick="setSection('comisiones')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="nav.comisiones">Comisiones</span></div>
-      <div class="section-head"><h2>Comi Tercer Temps</h2></div>
+    <!-- Comi Tercer Temps: la pinta Svelte (src/features/comi-tercer-temps/ComiTercerTemps.svelte) -->
+    <section class="section" id="sec-comi-tercer-temps"></section>
 
-      <div class="simple-tabs comi-tercer-tabs">
-        <button class="active" data-comi-tercer-tab="lista" onclick="setComiTercerTab('lista')" data-i18n="comi.tabList">Lista</button>
-        <button data-comi-tercer-tab="saldo" onclick="setComiTercerTab('saldo')" data-i18n="comi.tabBalance">Saldo</button>
-      </div>
-
-      <!-- LISTA: lista de la compra con casillas de verificación -->
-      <div class="comi-tercer-panel active" id="comi-tercer-panel-lista">
-        <div class="card shopping-list-card">
-          <div class="shopping-add-row" id="tercer-shopping-add-row">
-            <input type="text" id="tercer-shopping-input" data-i18n-attr="placeholder:comi.addToListPlaceholder" placeholder="Añadir algo a la lista…" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addTercerShoppingItem(); }">
-            <button type="button" onclick="addTercerShoppingItem()" data-i18n-attr="aria-label:comi.addAria" aria-label="Añadir">+</button>
-          </div>
-          <div id="tercer-shopping-list"></div>
-        </div>
-      </div>
-
-      <!-- SALDO: banner de saldo total + tabla de movimientos -->
-      <div class="comi-tercer-panel" id="comi-tercer-panel-saldo">
-        <button class="treasury-banner" onclick="openTercerTreasuryBreakdownModal()">
-          <div class="treasury-banner-label" data-i18n="comi.teamBalance">Saldo total del equipo</div>
-          <div class="treasury-banner-amount" id="tercer-treasury-balance">0 €</div>
-          <div class="treasury-banner-hint" data-i18n="comi.viewBreakdown">Ver desglose por integrante ›</div>
-        </button>
-
-        <div class="card treasury-table-card">
-          <div class="treasury-table-toolbar">
-            <span class="treasury-table-toolbar-label" data-i18n="comi.movements">Movimientos</span>
-            <div class="treasury-table-toolbar-actions">
-              <button class="treasury-add-btn" id="tercer-treasury-add-btn" onclick="openAddTercerTreasuryModal()" data-i18n-attr="aria-label:comi.addMovement,title:comi.addMovement" aria-label="Añadir movimiento" title="Añadir movimiento">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-              </button>
-              <button class="treasury-edit-btn" id="tercer-treasury-edit-btn" onclick="toggleTercerTreasuryEditMode()" data-i18n-attr="aria-label:comi.editTable,title:comi.editTable" aria-label="Editar tabla" title="Editar tabla">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                <span id="tercer-treasury-edit-btn-label" data-i18n="comi.edit">Editar</span>
-              </button>
-            </div>
-          </div>
-          <table class="treasury-table">
-            <thead id="tercer-treasury-table-head">
-              <tr><th class="col-date" data-i18n="tricount.date">Fecha</th><th class="col-concept" data-i18n="tricount.concept">Concepto</th><th class="col-type" data-i18n="comi.type">Tipo</th><th class="col-amount" style="text-align:right;" data-i18n="fines.amount">Importe</th></tr>
-            </thead>
-            <tbody id="tercer-treasury-table-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- COMI TESORERIA -->
-    <section class="section" id="sec-comi-tesoreria">
-      <div class="back-link" onclick="setSection('comisiones')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="nav.comisiones">Comisiones</span></div>
-
-      <div class="section-head">
-        <h2>Comi Tesoreria</h2>
-        <button class="treasury-add-btn" id="treasury-add-btn" onclick="openAddTreasuryModal()" data-i18n-attr="aria-label:comi.addMovement,title:comi.addMovement" aria-label="Añadir movimiento" title="Añadir movimiento">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-      </div>
-
-      <!-- Banner con el saldo total del equipo -->
-      <button class="treasury-banner" onclick="openTreasuryBreakdownModal()">
-        <div class="treasury-banner-label" data-i18n="comi.pot">Bote</div>
-        <div class="treasury-banner-amount" id="treasury-balance">0 €</div>
-        <div class="treasury-banner-hint" data-i18n="comi.viewBreakdown">Ver desglose por integrante ›</div>
-      </button>
-
-      <!-- Resumen de ingresos y gastos, en formato tabla tipo Excel -->
-      <div class="card treasury-table-card">
-        <div class="treasury-table-toolbar">
-          <span class="treasury-table-toolbar-label" data-i18n="comi.movements">Movimientos</span>
-          <button class="treasury-edit-btn" id="treasury-edit-btn" onclick="toggleTreasuryEditMode()" data-i18n-attr="aria-label:comi.editTable,title:comi.editTable" aria-label="Editar tabla" title="Editar tabla">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            <span id="treasury-edit-btn-label" data-i18n="comi.edit">Editar</span>
-          </button>
-        </div>
-        <table class="treasury-table">
-          <thead id="treasury-table-head">
-            <tr><th class="col-date" data-i18n="tricount.date">Fecha</th><th class="col-concept" data-i18n="tricount.concept">Concepto</th><th class="col-type" data-i18n="comi.type">Tipo</th><th class="col-amount" style="text-align:right;" data-i18n="fines.amount">Importe</th></tr>
-          </thead>
-          <tbody id="treasury-table-body"></tbody>
-        </table>
-      </div>
-    </section>
+    <!-- Comi Tesoreria: la pinta Svelte (src/features/tesoreria/Tesoreria.svelte) -->
+    <section class="section" id="sec-comi-tesoreria"></section>
 
     <!-- COMI GIRA -->
     <section class="section" id="sec-comi-gira">
@@ -917,96 +834,11 @@
       </div>
     </section>
 
-    <!-- TRICOUNT -->
-    <section class="section" id="sec-tricount">
-      <div class="back-link" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-
-      <div class="section-head">
-        <h2 data-i18n="tricount.title">Tricount</h2>
-        <button class="cal-open-btn" onclick="openAddTricountModal()" data-i18n-attr="aria-label:tricount.addExpense,title:tricount.addExpense" aria-label="Añadir gasto" title="Añadir gasto">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-      </div>
-
-      <div class="simple-tabs tricount-tabs">
-        <button class="active" data-tricount-tab="gastos" onclick="setTricountTab('gastos')" data-i18n="tricount.tabExpenses">Gastos</button>
-        <button data-tricount-tab="saldos" onclick="setTricountTab('saldos')" data-i18n="tricount.tabBalances">Saldos</button>
-      </div>
-
-      <!-- PESTAÑA GASTOS -->
-      <div class="tricount-panel active" id="tricount-panel-gastos">
-        <div class="tricount-summary-grid">
-          <div class="card stat-card c1">
-            <div class="k" data-i18n="tricount.mineLabel">Gastos tuyos</div>
-            <div class="v" id="tricount-summary-mine">0 €</div>
-          </div>
-          <div class="card stat-card c2">
-            <div class="k" data-i18n="tricount.totalLabel">Gastos totales</div>
-            <div class="v" id="tricount-summary-total">0 €</div>
-          </div>
-        </div>
-        <div id="tricount-expense-list"></div>
-      </div>
-
-      <!-- PESTAÑA SALDOS -->
-      <div class="tricount-panel" id="tricount-panel-saldos">
-        <!-- Resumen personal destacado -->
-        <div class="tricount-my-balance" id="tricount-my-balance"></div>
-
-        <!-- Reembolsos sugeridos: colapsado por defecto -->
-        <button type="button" class="tricount-settlement-toggle" id="tricount-settlement-toggle" onclick="toggleTricountSettlementPanel()" style="margin-top:22px;">
-          <span data-i18n="tricount.viewSettlements">Ver reembolsos sugeridos</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="tricount-settlement-collapse" id="tricount-settlement-collapse" style="display:none;">
-          <p class="tricount-settlement-hint" data-i18n="tricount.settlementHint">La forma más rápida de saldar todas las deudas, con el mínimo de pagos posible.</p>
-          <div id="tricount-settlement-list"></div>
-
-          <div class="section-head" id="tricount-settled-head" style="margin-top:22px; display:none;">
-            <h3 style="margin:0; text-transform:uppercase; font-size:15px; letter-spacing:.03em;" data-i18n="tricount.settledHeading">Pagos ya liquidados</h3>
-          </div>
-          <div id="tricount-settled-list"></div>
-        </div>
-
-        <div class="section-head" style="margin-top:22px;">
-          <h3 style="margin:0; text-transform:uppercase; font-size:15px; letter-spacing:.03em;" data-i18n="tricount.breakdownHeading">Desglose por jugadora</h3>
-        </div>
-        <div class="tricount-balance-grid" id="tricount-balance-grid"></div>
-      </div>
-    </section>
+    <!-- Tricount: lo pinta Svelte (src/features/tricount/Tricount.svelte) -->
+    <section class="section" id="sec-tricount"></section>
 
     <!-- MODAL: AÑADIR GASTO TRICOUNT -->
-    <div class="modal-overlay" id="add-tricount-modal" onclick="if(event.target===this) closeAddTricountModal()">
-      <div class="modal-box" style="max-width:400px;">
-        <h3 style="margin-top:0;" id="tricount-modal-title" data-i18n="tricount.newExpense">Nuevo gasto</h3>
-        <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-          <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-            <span data-i18n="tricount.concept">Concepto</span>
-            <input type="text" id="tricount-desc" placeholder="Ej. Cena de equipo" data-i18n-attr="placeholder:tricount.conceptPlaceholder" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-          </label>
-          <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-            <span data-i18n="tricount.amount">Importe</span>
-            <input type="number" id="tricount-amount" min="0" step="0.01" placeholder="0.00" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-          </label>
-          <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-            <span data-i18n="tricount.date">Fecha</span>
-            <input type="date" id="tricount-date" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-          </label>
-          <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-            <span data-i18n="tricount.paidByLabel">Pagado por</span>
-            <select id="tricount-paidby" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);"></select>
-          </label>
-          <div>
-            <div style="font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;" data-i18n="tricount.splitBetween">Entre quién se reparte</div>
-            <div class="tricount-participants-list" id="tricount-participants-list"></div>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button class="btn-ghost" onclick="closeAddTricountModal()" data-i18n="tricount.cancel">Cancelar</button>
-          <button class="btn" id="tricount-modal-save-btn" onclick="saveTricountExpense()" data-i18n="tricount.saveExpense">Guardar gasto</button>
-        </div>
-      </div>
-    </div>
+    <div data-mount="add-tricount-modal"></div>
 
     <!-- LIGA -->
     <!-- Liga: la pinta Svelte (src/features/liga/Liga.svelte) -->
@@ -1361,62 +1193,10 @@
 </div>
 
 <!-- MODAL: AÑADIR MOVIMIENTO DE COMI TERCER TEMPS -->
-<div class="modal-overlay" id="add-tercer-treasury-modal" onclick="if(event.target===this) closeAddTercerTreasuryModal()">
-  <div class="modal-box" style="max-width:380px;">
-    <h3 style="margin-top:0;">Añadir movimiento</h3>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Fecha
-        <input type="date" id="tercer-treasury-date-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Concepto
-        <input type="text" id="tercer-treasury-concept-input" placeholder="Bebida y hielo" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Tipo
-        <div class="tx-type-toggle">
-          <button type="button" class="tx-type-btn gasto" id="tx-tercer-type-gasto" onclick="setTercerTreasuryType('gasto')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7 7 7-7"/></svg>
-            Gastos
-          </button>
-          <button type="button" class="tx-type-btn ingreso" id="tx-tercer-type-ingreso" onclick="setTercerTreasuryType('ingreso')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
-            Ingresos
-          </button>
-        </div>
-        <input type="hidden" id="tercer-treasury-type-input" value="ingreso">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Importe (€)
-        <input type="number" id="tercer-treasury-amount-input" placeholder="60" min="0" step="0.01" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Responsable
-        <select id="tercer-treasury-responsible-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);"></select>
-        <span id="tercer-treasury-responsible-empty" style="display:none; font-size:12px; font-weight:500; text-transform:none; letter-spacing:normal; color:var(--text-muted);">
-          Todavía nadie tiene marcado "Comi Tercer Temps" en su perfil.
-        </span>
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeAddTercerTreasuryModal()">Cancelar</button>
-      <button class="btn" onclick="saveTercerTreasuryEntry()">Guardar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="add-tercer-treasury-modal"></div>
 
 <!-- MODAL: DESGLOSE DEL SALDO POR INTEGRANTE DE COMI TERCER TEMPS -->
-<div class="modal-overlay" id="tercer-treasury-breakdown-modal" onclick="if(event.target===this) closeTercerTreasuryBreakdownModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" data-i18n="comi.breakdownTitle">Desglose por integrante</h3>
-    <div class="modal-sub" data-i18n="comi.breakdownSubTercer">Lo que ha movido cada persona de Comi Tercer Temps</div>
-    <div class="tv-breakdown-list" id="tercer-treasury-breakdown-list"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeTercerTreasuryBreakdownModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="tercer-treasury-breakdown-modal"></div>
 
 <!-- MODAL: LISTA COMPLETA DE JUGADORAS DE UNA ALERTA DE WELLNESS (molestias / mal descanso / carga alta) -->
 <div class="modal-overlay" id="wstaff-alert-modal" onclick="if(event.target===this) closeWellnessAlertModal()">
@@ -1443,62 +1223,10 @@
 </div>
 
 <!-- MODAL: CONFIRMAR ELIMINAR MOVIMIENTO DE COMI TERCER TEMPS -->
-<div class="modal-overlay" id="delete-tercer-treasury-confirm-modal" onclick="if(event.target===this) closeDeleteTercerTreasuryConfirm()">
-  <div class="modal-box" style="max-width:340px; text-align:center;">
-    <h3 style="margin-top:0;">Eliminar movimiento</h3>
-    <p class="modal-sub" style="margin-bottom:20px;">¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.</p>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeDeleteTercerTreasuryConfirm()">No</button>
-      <button class="btn" style="background:var(--bad);" onclick="confirmDeleteTercerTreasuryEntry()">Sí, eliminar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="delete-tercer-treasury-confirm-modal"></div>
 
 <!-- MODAL: AÑADIR MOVIMIENTO DE TESORERÍA -->
-<div class="modal-overlay" id="add-treasury-modal" onclick="if(event.target===this) closeAddTreasuryModal()">
-  <div class="modal-box" style="max-width:380px;">
-    <h3 style="margin-top:0;">Añadir movimiento</h3>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Fecha
-        <input type="date" id="treasury-date-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Concepto
-        <input type="text" id="treasury-concept-input" placeholder="Cuotas de agosto" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Tipo
-        <div class="tx-type-toggle">
-          <button type="button" class="tx-type-btn gasto" id="tx-type-gasto" onclick="setTreasuryType('gasto')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7 7 7-7"/></svg>
-            Gastos
-          </button>
-          <button type="button" class="tx-type-btn ingreso" id="tx-type-ingreso" onclick="setTreasuryType('ingreso')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
-            Ingresos
-          </button>
-        </div>
-        <input type="hidden" id="treasury-type-input" value="ingreso">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Importe (€)
-        <input type="number" id="treasury-amount-input" placeholder="150" min="0" step="0.01" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Responsable
-        <select id="treasury-responsible-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);"></select>
-        <span id="treasury-responsible-empty" style="display:none; font-size:12px; font-weight:500; text-transform:none; letter-spacing:normal; color:var(--text-muted);">
-          Todavía nadie tiene marcado "Comi Tesoreria" en su perfil.
-        </span>
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeAddTreasuryModal()">Cancelar</button>
-      <button class="btn" onclick="saveTreasuryEntry()">Guardar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="add-treasury-modal"></div>
 
 <!-- MODAL: AÑADIR AVISO -->
 <div data-mount="add-notice-modal"></div>
@@ -1704,16 +1432,7 @@
 
 
 <!-- MODAL: DESGLOSE DEL SALDO POR INTEGRANTE DE LA COMISIÓN -->
-<div class="modal-overlay" id="treasury-breakdown-modal" onclick="if(event.target===this) closeTreasuryBreakdownModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" data-i18n="comi.breakdownTitle">Desglose por integrante</h3>
-    <div class="modal-sub" data-i18n="comi.breakdownSubTesoreria">Lo que ha movido cada persona de Comi Tesoreria</div>
-    <div class="tv-breakdown-list" id="treasury-breakdown-list"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeTreasuryBreakdownModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="treasury-breakdown-modal"></div>
 
 <!-- MODAL DE COMENTARIO / JUSTIFICACIÓN -->
 <div class="modal-overlay" id="food-slot-modal" onclick="if(event.target===this) closeFoodSlotModal()">
@@ -2111,16 +1830,7 @@
 </div>
 
 <!-- MODAL: CONFIRMAR ELIMINAR MOVIMIENTO DE TESORERÍA -->
-<div class="modal-overlay" id="delete-treasury-confirm-modal" onclick="if(event.target===this) closeDeleteTreasuryConfirm()">
-  <div class="modal-box" style="max-width:340px; text-align:center;">
-    <h3 style="margin-top:0;" data-i18n="comi.deleteMovementTitle">Eliminar movimiento</h3>
-    <p class="modal-sub" style="margin-bottom:20px;" data-i18n="comi.deleteMovementConfirm">¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.</p>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeDeleteTreasuryConfirm()" data-i18n="att.no">No</button>
-      <button class="btn" style="background:var(--bad);" onclick="confirmDeleteTreasuryEntry()" data-i18n="att.yesDelete">Sí, eliminar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="delete-treasury-confirm-modal"></div>
 
 <!-- MODAL: GUARDAR ALINEACIÓN -->
 <div class="modal-overlay" id="save-lineup-modal" onclick="if(event.target===this) closeSaveLineupModal()">
@@ -2224,9 +1934,6 @@
 <script src="js/features/wellness-staff.js"></script>
 <script src="js/features/multas.js"></script>
 <script src="js/features/perfil.js"></script>
-<script src="js/features/tesoreria.js"></script>
-<script src="js/features/comi-tercer-temps.js"></script>
-<script src="js/features/tricount.js"></script>
 <script src="js/features/gym.js"></script>
 <script src="js/features/fantasy.js"></script>
 <script src="js/main.js"></script>

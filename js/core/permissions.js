@@ -44,48 +44,9 @@ function toggleFineAddButtonVisibility(){
   }
 }
 
-// Solo Comi Tesoreria puede añadir/editar/borrar movimientos de la tesorería del
-// club ("Comi Tesoreria"); el resto del equipo puede consultar el saldo y la tabla
-// con total normalidad (la escritura real también la bloquea la política RLS de
-// "treasury_entries" en Supabase).
-function canManageClubTreasury(){
-  const me = rosterById[currentUserId];
-  return isAdmin || !!(me && me.comision === 'Comi Tesoreria');
-}
-function toggleClubTreasuryButtonsVisibility(){
-  const addBtn = document.getElementById('treasury-add-btn');
-  const editBtn2 = document.getElementById('treasury-edit-btn');
-  const canManage = canManageClubTreasury();
-  if(addBtn) addBtn.style.display = canManage ? '' : 'none';
-  if(editBtn2) editBtn2.style.display = canManage ? '' : 'none';
-  if(!canManage && treasuryEditMode){
-    treasuryEditMode = false;
-    renderTreasury();
-  }
-}
-
-// Solo Comi Tercer Temps puede añadir/marcar/borrar cosas de la lista de la compra y
-// de su saldo ("Comi Tercer Temps"); el resto del equipo puede consultar todo con
-// total normalidad (la escritura real también la bloquea la política RLS de
-// "tercer_shopping_items" y "tercer_treasury_entries" en Supabase).
-function canManageTercerTemps(){
-  const me = rosterById[currentUserId];
-  return isAdmin || !!(me && me.comision === 'Comi Tercer Temps');
-}
-function toggleTercerTempsButtonsVisibility(){
-  const addRow = document.getElementById('tercer-shopping-add-row');
-  const treasuryAddBtn = document.getElementById('tercer-treasury-add-btn');
-  const treasuryEditBtn = document.getElementById('tercer-treasury-edit-btn');
-  const canManage = canManageTercerTemps();
-  if(addRow) addRow.style.display = canManage ? '' : 'none';
-  if(treasuryAddBtn) treasuryAddBtn.style.display = canManage ? '' : 'none';
-  if(treasuryEditBtn) treasuryEditBtn.style.display = canManage ? '' : 'none';
-  if(!canManage && tercerTreasuryEditMode){
-    tercerTreasuryEditMode = false;
-    renderTercerTreasury();
-  }
-  renderTercerShoppingList();
-}
+// Los permisos de Comi Tesoreria y Comi Tercer Temps (canManageClubTreasury,
+// canManageTercerTemps) viven ahora en Svelte: src/features/tesoreria/ y
+// src/features/comi-tercer-temps/.
 
 // Modo edición de la tabla de multas: mientras está activo, un clic en una multa
 // abre el panel de editar/eliminar en vez de marcarla como pagada.
