@@ -181,8 +181,8 @@ async function onAuthenticated(user){
     toggleAttAddButtonVisibility();
     toggleFineAddButtonVisibility();
     appBridge.sessionChanged();
-    toggleClubTreasuryButtonsVisibility();
-    toggleTercerTempsButtonsVisibility();
+    appBridge.tesoreria.permissionsChanged();
+    appBridge.comiTercerTemps.permissionsChanged();
     toggleWellnessStaffCardVisibility();
     toggleStaffOnlyPagesVisibility();
   }

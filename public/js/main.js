@@ -47,18 +47,10 @@ function legacyBoot(){
 
   renderProfile();
 
-  renderTreasury();
-  // No se llama a loadTreasuryEntries() aquí: se cargaba de más en TODAS las
-  // sesiones, incluso antes de iniciar sesión y aunque nadie entrara nunca en esta
-  // pestaña. setSection() ya llama a loadTreasuryEntries() cada vez que se entra de
-  // verdad en "comi-tesoreria", así que con eso basta.
-
-  renderTercerShoppingList();
-  // Igual que con Tesorería: setSection() ya recarga esto al entrar de verdad en
-  // "comi-tercer-temps", así que no hace falta pedirlo también aquí al arrancar.
-
-  renderTercerTreasury();
-  // Mismo caso: setSection() recarga esto al entrar en "comi-tercer-temps".
+  // Comi Tesoreria, Comi Tercer Temps y Tricount (Svelte) se pintan solas al montarse;
+  // sus datos no se piden aquí al arrancar (se pedían de más en TODAS las sesiones,
+  // aunque nadie entrara nunca en esas pestañas): setSection() los carga cada vez
+  // que se entra de verdad en cada una.
 
   appBridge.avisos.refreshPinned();
 
@@ -69,10 +61,6 @@ function legacyBoot(){
   renderGymRankingExerciseOptions();
   renderGymAttendanceToday();
   renderGymRanking();
-
-  renderTricount();
-  // Mismo caso que Tesorería y Comi Tercer Temps: setSection() ya recarga los gastos
-  // y las liquidaciones de Tricount cada vez que se entra de verdad en esa pestaña.
 
   initFantasy();
   renderThirdTime();

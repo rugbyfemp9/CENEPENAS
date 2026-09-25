@@ -5,9 +5,10 @@
 // archivo para que quede a la vista qué depende todavía del código antiguo: cuando
 // una pieza se migra, sale de aquí. Al final de la migración este archivo desaparece.
 
-/* global supabaseClient, isAdmin, rosterById, currentUserId, currentAuthUserId, myProfile,
-   currentLang, t, readCache, writeCache, setSection, displayName, initials,
-   monthAbbrLabel, autoMonthAbbr */
+/* global supabaseClient, isAdmin, roster, rosterById, currentUserId, currentAuthUserId, myProfile,
+   currentLang, t, readCache, writeCache, setSection, displayName, initials, computeDisplayNames,
+   monthAbbrLabel, autoMonthAbbr, monthFullLabel, withDePrefix, todayLocalIso,
+   effectiveRoleForPermissions, toRemotePlayerId */
 
 export const legacy = {
   get supabase() { return supabaseClient; },
@@ -15,11 +16,21 @@ export const legacy = {
   get authUserId() { return currentAuthUserId; },
   // La propia cuenta vive en el roster bajo la clave especial 'me', no bajo su UUID.
   get me() { return rosterById[currentUserId]; },
+  get currentUserId() { return currentUserId; },
   get myProfile() { return myProfile; },
+  get roster() { return roster; },
+  get rosterById() { return rosterById; },
   rosterEntry: (profileId) => (profileId === currentAuthUserId ? rosterById.me : rosterById[profileId]),
   displayName: (p) => displayName(p),
+  computeDisplayNames: (players) => computeDisplayNames(players),
   initials: (name) => initials(name),
+  effectiveRole: (rol) => effectiveRoleForPermissions(rol),
+  // 'me' → id real de auth.users, para escribir en Supabase (vive en multas.js).
+  toRemotePlayerId: (localId) => toRemotePlayerId(localId),
   monthAbbrLabel: (monthIndex) => monthAbbrLabel(autoMonthAbbr[monthIndex]),
+  monthFullLabel: (monthIndex) => monthFullLabel(monthIndex),
+  withDePrefix: (word) => withDePrefix(word),
+  todayIso: () => todayLocalIso(),
   get storage() { return window.storage; },
   get lang() { return currentLang; },
   t: (key, vars) => t(key, vars),

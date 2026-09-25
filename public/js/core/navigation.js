@@ -117,15 +117,15 @@ function setSection(id, opts){
   // Al entrar en las comisiones con datos guardados en Supabase, se recargan por si
   // han cambiado desde otro dispositivo.
   if(id === 'comi-tesoreria'){
-    loadTreasuryEntries();
+    appBridge.tesoreria.load();
   }
   if(id === 'comi-tercer-temps'){
-    loadTercerShoppingItems();
-    loadTercerTreasuryEntries();
+    appBridge.comiTercerTemps.loadShoppingItems();
+    appBridge.comiTercerTemps.loadTreasury();
   }
   if(id === 'tricount'){
-    loadTricountExpenses();
-    loadTricountSettlements();
+    appBridge.tricount.loadExpenses();
+    appBridge.tricount.loadSettlements();
   }
 
   // Sidebar de escritorio: cada sección tiene su propio enlace directo (igual que el

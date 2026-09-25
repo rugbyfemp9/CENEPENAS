@@ -1334,7 +1334,6 @@ function setLang(lang){
   if(typeof renderNextMatchBanner === 'function') renderNextMatchBanner();
   if(typeof renderWellnessReminderBanner === 'function') renderWellnessReminderBanner();
   if(typeof renderInicioFinesBanner === 'function') renderInicioFinesBanner();
-  if(typeof renderInicioTricountBanner === 'function') renderInicioTricountBanner();
   if(typeof renderInicioTercerBanner === 'function') renderInicioTercerBanner();
   if(typeof checkInicioSharedLineupBanner === 'function') checkInicioSharedLineupBanner();
   if(typeof renderProfile === 'function' && typeof currentUserId !== 'undefined' && currentUserId) renderProfile();
@@ -1349,7 +1348,6 @@ function setLang(lang){
   if(typeof renderThirdTimeFood === 'function') renderThirdTimeFood();
   if(typeof renderMatchReport === 'function' && typeof currentPartidoId !== 'undefined' && currentPartidoId) renderMatchReport(currentPartidoId);
   if(typeof renderGymRoutineDayDetalle === 'function' && typeof gymRoutineSelectedDayIndex !== 'undefined' && gymRoutineSelectedDayIndex !== null) renderGymRoutineDayDetalle();
-  if(typeof renderTricount === 'function') renderTricount();
   if(typeof renderPlantillaTable === 'function' && typeof plantillaData !== 'undefined' && plantillaData.length) renderPlantillaTable();
   if(typeof plantillaActiveTab !== 'undefined' && plantillaActiveTab === 'estadisticas' && typeof loadPlantillaStats === 'function') loadPlantillaStats();
   if(document.getElementById('comment-modal') && document.getElementById('comment-modal').classList.contains('active') && typeof commentModalCtx !== 'undefined' && commentModalCtx){
