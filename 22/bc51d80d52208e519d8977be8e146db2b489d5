@@ -1,0 +1,23 @@
+index.html
+  s_1fdfe932c62174::t_2f66565bf49a89 1669,1673,1677,1681
+js/core/i18n.js
+  s_1fdfe932c62174::t_2f66565bf49a89 29,670
+tests/e2e/bottom-nav-i18n.spec.js
+  s_1fdfe932c62174::t_81187783b99817 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "22bc51d80d52208e519d8977be8e146db2b489d5",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
