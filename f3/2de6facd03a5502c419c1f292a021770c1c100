@@ -1,0 +1,85 @@
+src/features/tricount/TricountBanner.svelte
+  s_1fdfe932c62174::t_581292a520ef68 1-29
+src/features/tricount/index.js
+  s_1fdfe932c62174::t_581292a520ef68 1-19
+index.html
+  s_1fdfe932c62174::t_ad44abec6d9c14 279-280,792-793,795-796,837-838,841,1196,1199,1226,1229,1435,1833
+public/js/core/auth.js
+  s_1fdfe932c62174::t_a17d31913ea638 184-185
+src/features/tesoreria/tesoreria.svelte.js
+  s_1fdfe932c62174::t_e1fe6e93226112 3-7,9-14,18-32
+tests/e2e/snapshot.spec.js
+  s_1fdfe932c62174::t_d630b69eba43d2 12-16,28-29
+public/js/features/perfil.js
+  s_1fdfe932c62174::t_a17d31913ea638 250-251
+src/lib/legacy.js
+  s_1fdfe932c62174::t_df3a573ad79a56 8-11,19,21-22,25,27-29,31-33
+public/js/core/navigation.js
+  s_1fdfe932c62174::t_a17d31913ea638 120,123-124,127-128
+src/features/tesoreria/index.js
+  s_1fdfe932c62174::t_e1fe6e93226112 1-44
+tests/e2e/tesoreria.spec.js
+  s_1fdfe932c62174::t_9449bfbe563130 1-79,81-314
+  s_1fdfe932c62174::t_774d10961b2f1b 80
+src/lib/treasury/TreasuryDeleteModal.svelte
+  s_1fdfe932c62174::t_39d751553d7637 1-17
+src/features/tricount/Tricount.svelte
+  s_1fdfe932c62174::t_581292a520ef68 1-179
+src/lib/format.js
+  s_1fdfe932c62174::t_df3a573ad79a56 3-5
+  s_1fdfe932c62174::t_08d2be9b2df84f 1-2
+public/js/features/multas.js
+  s_1fdfe932c62174::t_a17d31913ea638 267,290,317,345
+src/features/comi-tercer-temps/comi-tercer-temps.svelte.js
+  s_1fdfe932c62174::t_8bb54c495ef64f 1-7,9-14,17-18,20-21,24-27,29,31-33,35-37,40-47,50-56,59-63,66,68-82
+src/lib/treasury/TreasuryEditButton.svelte
+  s_1fdfe932c62174::t_53a5443e3f614f 2-3,10
+  s_1fdfe932c62174::t_8f06d6eb26e54e 1,4-9,11-13
+src/lib/treasury/TreasuryAddModal.svelte
+  s_1fdfe932c62174::t_39d751553d7637 1-59
+src/main.js
+  s_1fdfe932c62174::t_a17d31913ea638 15-17,19
+src/lib/treasury/treasury.svelte.js
+  s_1fdfe932c62174::t_10bbd9ad61c602 1-249
+src/features/comi-tercer-temps/index.js
+  s_1fdfe932c62174::t_8bb54c495ef64f 1-42
+tests/e2e/comi-tercer-temps.spec.js
+  s_1fdfe932c62174::t_eea7189ae7a3ad 1-75,80-83,89-338
+public/js/core/permissions.js
+  s_1fdfe932c62174::t_a17d31913ea638 47-49
+src/features/comi-tercer-temps/ComiTercerTemps.svelte
+  s_1fdfe932c62174::t_efc995c03e7237 37
+  s_1fdfe932c62174::t_8bb54c495ef64f 1-36,38-71
+tests/e2e/tricount.spec.js
+  s_1fdfe932c62174::t_fd91bc74cb295f 1-10,13-36,38-442
+  s_1fdfe932c62174::t_b64ddfaf155a82 11-12,37
+src/features/tricount/tricount.svelte.js
+  s_1fdfe932c62174::t_fddd9b3f634a9c 3-7,12-51,59,63-66,70-71,74-75,78-80,83-84,87-89,92-94,97,101,111,115,118-119,126,130-131,135-136,141-144,147-153,157-158,160,163-165,168-169,172-175,178-185,188-191,194-198,203-212,214,217-220,224-232,234-242,245-252,256,260,265-266,270-271,273,276,281-282,284,288-290,294,299,304-310
+src/features/tricount/TricountExpenseModal.svelte
+  s_1fdfe932c62174::t_581292a520ef68 1-47
+public/js/main.js
+  s_1fdfe932c62174::t_a17d31913ea638 50-53
+src/lib/treasury/TreasuryBreakdownModal.svelte
+  s_1fdfe932c62174::t_39d751553d7637 1-34
+src/lib/treasury/TreasuryTable.svelte
+  s_1fdfe932c62174::t_8f06d6eb26e54e 1-2,5-59
+  s_1fdfe932c62174::t_53a5443e3f614f 3-4
+src/features/tesoreria/Tesoreria.svelte
+  s_1fdfe932c62174::t_e1fe6e93226112 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f32de6facd03a5502c419c1f292a021770c1c100",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
