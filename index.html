@@ -562,185 +562,16 @@
     </section>
 
     <!-- GYM -->
-    <section class="section" id="sec-gym">
-      <div class="back-link" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-      <div class="section-head"><h2 data-i18n="nav.gym">Gym</h2></div>
-
-      <!-- Navegación por 2 tarjetones: cada uno abre su propia pantalla completa -->
-      <div class="gym-tab-cards">
-        <button class="gym-tab-card" data-gym-tab="entrenamiento" onclick="setSection('gym-entrenamiento')">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5l11 11M4 9l3-3M17 20l3-3M2 11l3-3 3 3-3 3-3-3zM16 5l3-3 3 3-3 3-3-3z"/></svg></div>
-          <b data-i18n="gym.myTraining">Mi Entrenamiento</b>
-          <span data-i18n="gym.myTrainingSubtitle">Rutina de esta semana y tus marcas</span>
-        </button>
-        <button class="gym-tab-card" data-gym-tab="equipo" onclick="setSection('gym-equipo')">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6M17 8a3 3 0 100-6M22 20c0-2.6-2.1-4.8-5-5.6"/></svg></div>
-          <b data-i18n="gym.team">Equipo</b>
-          <span data-i18n="gym.teamSubtitle">Asistencia y ranking</span>
-        </button>
-      </div>
-    </section>
+    <section class="section" id="sec-gym"></section>
 
     <!-- GYM: MI ENTRENAMIENTO (pantalla completa propia) -->
-    <section class="section" id="sec-gym-entrenamiento">
-      <div class="back-link" onclick="setSection('gym')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="nav.gym">Gym</span></div>
-      <div class="section-head"><h2 data-i18n="gym.myTraining">Mi Entrenamiento</h2></div>
-
-      <div class="card" style="margin-bottom:16px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px;">
-          <h3 style="margin:0; font-size:15px; text-transform:uppercase;" data-i18n="gym.weekRoutine">Rutina de esta semana</h3>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span id="gym-week-label" style="font-size:11.5px; color:var(--text-muted); font-weight:600;"></span>
-            <button class="cal-open-btn small" id="gym-routine-upload-btn" onclick="openGymRoutineUploadModal()" data-i18n-attr="aria-label:gym.uploadRoutinePdf,title:gym.uploadRoutinePdf" aria-label="Subir PDF de la rutina" title="Subir PDF de la rutina" style="display:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
-            </button>
-            <div class="gym-routine-more" id="gym-routine-more" style="display:none;">
-              <button class="cal-open-btn small" id="gym-routine-more-btn" onclick="toggleGymRoutineMoreMenu(event)" data-i18n-attr="aria-label:gym.moreOptionsRoutine,title:gym.moreOptions" aria-label="Más opciones de la rutina" title="Más opciones">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-              <div class="gym-routine-more-menu" id="gym-routine-more-menu">
-                <button type="button" onclick="loadLastGymRoutine()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                  <span data-i18n="gym.loadLastRoutine">Cargar la última rutina</span>
-                </button>
-                <button type="button" onclick="openGymRoutineArchiveTab()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8M10 13h4"/></svg>
-                  <span data-i18n="gym.viewOldRoutines">Ver antiguas rutinas</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="gym-routine-days"></div>
-      </div>
-
-      <div class="card" id="gym-marks-section">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
-          <h3 style="margin:0; font-size:15px; text-transform:uppercase;" data-i18n="gym.myMarks">Mis Marcas</h3>
-          <span style="font-size:11.5px; color:var(--text-muted); font-weight:600;" data-i18n="gym.myRmRecord">Tu registro de RM</span>
-        </div>
-        <div class="liga-table-scroll">
-          <table class="treasury-table" id="gym-marks-table">
-            <thead>
-              <tr><th data-i18n="gym.colExercise">Ejercicio</th><th data-i18n="gym.colMark1rm">Tu marca (1RM)</th><th data-i18n="gym.colUpdated">Actualizado</th><th></th></tr>
-            </thead>
-            <tbody id="gym-marks-table-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+    <section class="section" id="sec-gym-entrenamiento"></section>
 
     <!-- GYM: MI ENTRENAMIENTO — DETALLE DE UN DÍA -->
-    <section class="section" id="sec-gym-entrenamiento-dia">
-      <div class="back-link" onclick="setSection('gym-entrenamiento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="gym.myTraining">Mi Entrenamiento</span></div>
-      <div class="section-head"><h2 id="gym-routine-day-detalle-title">Día 1</h2></div>
-
-      <div class="card">
-        <span id="gym-routine-day-detalle-focus" style="display:block; font-size:11.5px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.02em; margin-bottom:12px;"></span>
-        <div id="gym-routine-day-detalle-split-note" class="gym-split-note" style="display:none;"><span class="dot"></span><span id="gym-routine-day-detalle-split-note-text"></span></div>
-        <div class="gym-day-group-tabs">
-          <button class="gym-day-group-tab active" data-group="forwards" onclick="setGymRoutineDayGroup('forwards')">Forwards</button>
-          <button class="gym-day-group-tab" data-group="backs" onclick="setGymRoutineDayGroup('backs')">Backs</button>
-        </div>
-        <table class="gym-exercise-table">
-          <thead>
-            <tr>
-              <th data-i18n="gym.colExercise">Ejercicio</th>
-              <th class="num" data-i18n="gym.colSeries">Series</th>
-              <th data-i18n="gym.colReps">Repeticiones</th>
-              <th data-i18n="gym.colLoad">Carga</th>
-              <th data-i18n="gym.colRest">Descanso</th>
-            </tr>
-          </thead>
-          <tbody id="gym-routine-day-detalle-exercises"></tbody>
-        </table>
-
-        <div class="gym-quick-calc-inline">
-          <div class="gym-quick-calc-head">
-            <h3 style="margin:0 0 4px; font-size:13.5px; text-transform:uppercase;" data-i18n="gym.quickCalc">Calculadora rápida</h3>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <div class="gym-quick-calc-player" id="gym-quick-calc-player">
-                <button type="button" class="cal-open-btn small" id="gym-quick-calc-player-btn" onclick="toggleGymQuickCalcPlayerMenu(event)" data-i18n-attr="aria-label:gym.changePlayer,title:gym.changePlayer" aria-label="Cambiar jugadora" title="Cambiar jugadora">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </button>
-                <div class="gym-quick-calc-player-menu" id="gym-quick-calc-player-menu"></div>
-              </div>
-              <button type="button" class="cal-open-btn small" id="gym-rm-calc-toggle-btn" onclick="toggleGymRmCalcBanner()" data-i18n-attr="aria-label:gym.advancedRmCalc,title:gym.advancedRmCalc" aria-label="Calculadora de % RM avanzada" title="Calculadora de % RM avanzada">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-              </button>
-            </div>
-          </div>
-          <div class="gym-rm-calc-banner" id="gym-rm-calc-banner" style="display:none;">
-            <div class="gym-rm-calc-banner-head">
-              <h4 data-i18n="gym.rmCalcTitle">Calculadora de % RM</h4>
-              <button type="button" class="modal-close" onclick="closeGymRmCalcBanner()" data-i18n-attr="aria-label:att.close" aria-label="Cerrar">✕</button>
-            </div>
-            <p class="modal-sub" style="margin-bottom:14px;" data-i18n="gym.rmCalcSub">Calcula el peso exacto para cada porcentaje a partir de una marca máxima (o de un peso y unas repeticiones hechas).</p>
-            <div class="gym-rm-calc-inputs">
-              <label>
-                <span data-i18n="gym.known1rm">1RM conocido (kg)</span>
-                <input type="number" id="gym-calc-1rm" placeholder="80" min="0" step="0.5">
-              </label>
-              <span class="gym-rm-calc-or" data-i18n="gym.or">ó</span>
-              <label>
-                <span data-i18n="gym.liftedWeight">Peso levantado (kg)</span>
-                <input type="number" id="gym-calc-weight" placeholder="70" min="0" step="0.5">
-              </label>
-              <label>
-                <span data-i18n="gym.colReps">Repeticiones</span>
-                <input type="number" id="gym-calc-reps" placeholder="5" min="1" max="15" step="1">
-              </label>
-            </div>
-            <button class="btn" style="margin-top:12px;" onclick="calculateGymRmTable()" data-i18n="gym.calculate">Calcular</button>
-            <div id="gym-rm-calc-result"></div>
-          </div>
-          <p class="modal-sub" style="margin-bottom:10px;" data-i18n="gym.quickCalcSub">Elige el ejercicio y el % que toca hoy: calcula el peso a partir de la marca (1RM) guardada en el perfil.</p>
-          <div id="gym-quick-calc-player-badge" class="gym-quick-calc-player-badge" style="display:none;"></div>
-          <div class="gym-rm-calc-inputs">
-            <label>
-              <span data-i18n="gym.colExercise">Ejercicio</span>
-              <select id="gym-quick-calc-exercise" onchange="calculateGymQuickRm()"></select>
-            </label>
-            <label>
-              <span data-i18n="gym.pctOfRm">% del RM</span>
-              <select id="gym-quick-calc-pct" onchange="calculateGymQuickRm()"></select>
-            </label>
-          </div>
-          <div id="gym-quick-calc-result"></div>
-        </div>
-      </div>
-    </section>
+    <section class="section" id="sec-gym-entrenamiento-dia"></section>
 
     <!-- GYM: EQUIPO (pantalla completa propia) -->
-    <section class="section" id="sec-gym-equipo">
-      <div class="back-link" onclick="setSection('gym')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="nav.gym">Gym</span></div>
-      <div class="section-head"><h2 data-i18n="gym.team">Equipo</h2></div>
-
-      <div class="card" style="margin-bottom:16px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
-          <h3 style="margin:0; font-size:15px; text-transform:uppercase;" data-i18n="gym.gymAttendanceToday">Asistencia al gimnasio hoy</h3>
-          <button class="cal-open-btn small" id="gym-checkin-btn" onclick="openGymCheckinModal()" data-i18n-attr="aria-label:gym.signUpToday,title:gym.signUpToday" aria-label="Apuntarme hoy" title="Apuntarme hoy">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-          </button>
-        </div>
-        <div id="gym-attendance-today"></div>
-      </div>
-
-      <div class="card" style="padding:0; overflow:hidden;">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:16px 16px 12px;">
-          <h3 style="margin:0; font-size:15px; text-transform:uppercase;" data-i18n="gym.ranking">Ranking</h3>
-          <select id="gym-ranking-exercise" onchange="renderGymRanking()" style="font-family:'Roboto',sans-serif; font-size:12.5px; padding:6px 10px; border-radius:9px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);"></select>
-        </div>
-        <div class="liga-table-scroll">
-          <table class="treasury-table gym-ranking-table">
-            <thead>
-              <tr><th data-i18n="gym.colHash">#</th><th data-i18n="nav.plantilla">Jugadora</th><th data-i18n="gym.colMarkRm">Marca (1RM)</th><th data-i18n="gym.colUpdated">Actualizado</th></tr>
-            </thead>
-            <tbody id="gym-ranking-table-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+    <section class="section" id="sec-gym-equipo"></section>
 
     <!-- COMISIONES -->
     <section class="section" id="sec-comisiones">
@@ -1232,69 +1063,16 @@
 <div data-mount="add-notice-modal"></div>
 
 <!-- MODAL: REGISTRAR MARCA (1RM) -->
-<div class="modal-overlay" id="gym-rm-modal" onclick="if(event.target===this) closeGymRmModal()">
-  <div class="modal-box" style="max-width:360px;">
-    <h3 style="margin-top:0;" id="gym-rm-modal-title">Registrar marca</h3>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="gym.myRm">Tu 1RM (kg)</span>
-        <input type="number" id="gym-rm-input" placeholder="80" min="0" step="0.5" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeGymRmModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="saveGymRm()" data-i18n="gym.saveGeneric">Guardar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="gym-rm-modal"></div>
 
 <!-- MODAL: HISTÓRICO DE MARCAS DE UN EJERCICIO -->
-<div class="modal-overlay" id="gym-rm-history-modal" onclick="if(event.target===this) closeGymRmHistoryModal()">
-  <div class="modal-box" style="max-width:360px;">
-    <h3 style="margin-top:0;" id="gym-rm-history-modal-title">Histórico</h3>
-    <p class="modal-sub" data-i18n="gym.historySub">Todas las marcas que has registrado para este ejercicio, de la más reciente a la más antigua.</p>
-    <div id="gym-rm-history-list"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeGymRmHistoryModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="gym-rm-history-modal"></div>
 
 <!-- MODAL: APUNTARME AL GYM HOY -->
-<div class="modal-overlay" id="gym-checkin-modal" onclick="if(event.target===this) closeGymCheckinModal()">
-  <div class="modal-box" style="max-width:340px;">
-    <h3 style="margin-top:0;" data-i18n="gym.goingToday">Voy al gimnasio hoy</h3>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="gym.whatTime">¿A qué hora?</span>
-        <input type="time" id="gym-checkin-time-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeGymCheckinModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="saveGymCheckin()" data-i18n="gym.signMeUp">Apuntarme</button>
-    </div>
-  </div>
-</div>
+<div data-mount="gym-checkin-modal"></div>
 
 <!-- MODAL: SUBIR PDF DE LA RUTINA SEMANAL -->
-<div class="modal-overlay" id="gym-routine-upload-modal" onclick="if(event.target===this) closeGymRoutineUploadModal()">
-  <div class="modal-box" style="max-width:380px;">
-    <h3 style="margin-top:0;" data-i18n="gym.uploadRoutinePdfModalTitle">Subir rutina en PDF</h3>
-    <p class="modal-sub" style="margin-bottom:14px;" data-i18n="gym.uploadRoutinePdfSub">Sube el PDF de la rutina de esta semana: se lee automáticamente y se actualiza para todo el equipo.</p>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:0 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="partido.pdfFileLabel">Archivo PDF</span>
-        <input type="file" id="gym-routine-pdf-input" accept="application/pdf" style="font-family:'Roboto',sans-serif; font-size:13px;">
-      </label>
-      <div id="gym-routine-upload-status" style="font-size:12.5px; color:var(--text-muted);"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" id="gym-routine-upload-cancel-btn" onclick="closeGymRoutineUploadModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" id="gym-routine-upload-submit-btn" onclick="uploadGymRoutinePdf()" data-i18n="partido.uploadAndProcess">Subir y procesar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="gym-routine-upload-modal"></div>
 
 <!-- MODAL: RANKING DEL TEST -->
 <div data-mount="test-ranking-modal"></div>
@@ -1934,7 +1712,6 @@
 <script src="js/features/wellness-staff.js"></script>
 <script src="js/features/multas.js"></script>
 <script src="js/features/perfil.js"></script>
-<script src="js/features/gym.js"></script>
 <script src="js/features/fantasy.js"></script>
 <script src="js/main.js"></script>
 

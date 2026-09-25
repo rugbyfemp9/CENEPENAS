@@ -1347,7 +1347,6 @@ function setLang(lang){
   if(typeof renderThirdTime === 'function') renderThirdTime();
   if(typeof renderThirdTimeFood === 'function') renderThirdTimeFood();
   if(typeof renderMatchReport === 'function' && typeof currentPartidoId !== 'undefined' && currentPartidoId) renderMatchReport(currentPartidoId);
-  if(typeof renderGymRoutineDayDetalle === 'function' && typeof gymRoutineSelectedDayIndex !== 'undefined' && gymRoutineSelectedDayIndex !== null) renderGymRoutineDayDetalle();
   if(typeof renderPlantillaTable === 'function' && typeof plantillaData !== 'undefined' && plantillaData.length) renderPlantillaTable();
   if(typeof plantillaActiveTab !== 'undefined' && plantillaActiveTab === 'estadisticas' && typeof loadPlantillaStats === 'function') loadPlantillaStats();
   if(document.getElementById('comment-modal') && document.getElementById('comment-modal').classList.contains('active') && typeof commentModalCtx !== 'undefined' && commentModalCtx){

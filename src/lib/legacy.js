@@ -8,10 +8,12 @@
 /* global supabaseClient, isAdmin, roster, rosterById, currentUserId, currentAuthUserId, myProfile,
    currentLang, t, readCache, writeCache, setSection, displayName, initials, computeDisplayNames,
    monthAbbrLabel, autoMonthAbbr, monthFullLabel, withDePrefix, todayLocalIso,
-   effectiveRoleForPermissions, toRemotePlayerId */
+   effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate */
 
 export const legacy = {
   get supabase() { return supabaseClient; },
+  // Para llamar a las funciones Edge (p.ej. process-gym-routine-pdf) con fetch.
+  get supabaseUrl() { return SUPABASE_URL; },
   get isAdmin() { return isAdmin; },
   get authUserId() { return currentAuthUserId; },
   // La propia cuenta vive en el roster bajo la clave especial 'me', no bajo su UUID.
@@ -31,6 +33,8 @@ export const legacy = {
   monthFullLabel: (monthIndex) => monthFullLabel(monthIndex),
   withDePrefix: (word) => withDePrefix(word),
   todayIso: () => todayLocalIso(),
+  // yyyy-mm-dd → dd/mm/aa
+  formatShortDate: (iso) => formatShortDate(iso),
   get storage() { return window.storage; },
   get lang() { return currentLang; },
   t: (key, vars) => t(key, vars),

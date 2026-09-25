@@ -249,7 +249,7 @@ async function saveProfileEdits(){
     appBridge.sessionChanged();
     appBridge.tesoreria.permissionsChanged();
     appBridge.comiTercerTemps.permissionsChanged();
-    renderGymRoutine();
+    appBridge.gym.refresh();
     if(typeof renderThirdTimeFood === 'function') renderThirdTimeFood();
   }
 
@@ -306,7 +306,7 @@ function refreshAvatarEverywhere(){
   renderFinePlayerGrid();
   renderFineConfirmRequests();
   renderRollCallList();
-  renderGymAttendanceToday();
+  appBridge.gym.refresh();
   loadPlantilla();
   if(currentEventId) renderEventDetail();
 }

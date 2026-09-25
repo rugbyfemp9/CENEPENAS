@@ -23,8 +23,7 @@ function setSection(id, opts){
   // (inputs, resultado y banner), para que no arrastre valores de un ejercicio a
   // otro la próxima vez que se entre. No hace nada si ya estaba vacía.
   if(prevId === 'gym-entrenamiento-dia' && id !== 'gym-entrenamiento-dia'){
-    if(typeof resetGymRmCalcBanner === 'function') resetGymRmCalcBanner();
-    if(typeof resetGymQuickCalc === 'function') resetGymQuickCalc();
+    appBridge.gym.onLeaveDayDetail();
   }
 
   // Al entrar en Galería desde fuera, siempre se empieza por las temporadas, y se
@@ -66,17 +65,15 @@ function setSection(id, opts){
   // se vuelve a pintar lo que ya había en memoria), por si ha cambiado desde otro
   // dispositivo: rutina subida, marca registrada, alguien se ha apuntado...
   if(id === 'gym-entrenamiento'){
-    loadGymWeeklyRoutine(); // trae la rutina real de Supabase (ya dispara el archivado si toca)
-    loadGymRm();
+    appBridge.gym.onEnterTraining(); // rutina (ya dispara el archivado si toca) y marcas
   }
   // La calculadora rápida vive ahora al final de la tabla de cada día (no en la
   // vista general), así que se refresca al entrar en el detalle del día.
   if(id === 'gym-entrenamiento-dia'){
-    calculateGymQuickRm();
+    appBridge.gym.onEnterDayDetail();
   }
   if(id === 'gym-equipo'){
-    loadGymAttendanceToday(); // trae la asistencia real de Supabase, no solo lo que había en memoria
-    renderGymRanking();
+    appBridge.gym.onEnterTeam(); // asistencia real de Supabase y ranking
   }
   // Al entrar en Vestuario → Partidos se repinta con los eventos que haya ahora
   // mismo (por si se han creado o editado partidos desde que se cargó la página).

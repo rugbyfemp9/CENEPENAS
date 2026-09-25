@@ -205,17 +205,7 @@ async function onAuthenticated(user){
   }catch(e){ console.error('No se han podido refrescar Asistencia/Wellness al iniciar sesión', e); }
 
   try{
-    await loadGymExercises();
-    subscribeToGymExercisesRealtime();
-    await loadGymRemovedDefaultExercises();
-    subscribeToGymRemovedDefaultExercisesRealtime();
-    await loadGymRm();
-    subscribeToGymRmRealtime();
-    renderGymRoutine();
-    await loadGymWeeklyRoutine();
-    subscribeToGymRoutineRealtime();
-    await loadGymAttendanceToday();
-    subscribeToGymAttendanceRealtime();
+    await appBridge.gym.loadAfterLogin();
   }catch(e){ console.error('No se ha podido cargar el módulo de Gimnasio al iniciar sesión', e); }
 
   subscribeToMatchReportRealtime();

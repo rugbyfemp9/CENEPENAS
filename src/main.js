@@ -15,8 +15,9 @@ import * as avisos from './features/avisos/index.js';
 import * as tricount from './features/tricount/index.js';
 import * as tesoreria from './features/tesoreria/index.js';
 import * as comiTercerTemps from './features/comi-tercer-temps/index.js';
+import * as gym from './features/gym/index.js';
 
-for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps]) feature.install(appBridge);
+for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym]) feature.install(appBridge);
 
 refreshSession();
 window.legacyBoot();
