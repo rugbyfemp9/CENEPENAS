@@ -1,0 +1,245 @@
+/* ============ FANTASY ============ */
+.fantasy-note{ color:var(--text-muted); font-size:12.5px; margin:-6px 0 16px; }
+.fantasy-top{ width:100%; margin-bottom:12px; }
+.fantasy-label{
+  font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted);
+  font-weight:700; margin-bottom:8px; font-family:'Oswald',sans-serif;
+  display:flex; align-items:center; gap:6px;
+}
+/* Dentro de la columna "Disponibles" el texto también es proporcional a su ancho (cqw);
+   fuera de ella (p.ej. la etiqueta "Partido") no hay contenedor cqw y se queda en 11px. */
+.fantasy-side .fantasy-label{ font-size:clamp(10px, 9.5cqw, 12.5px); }
+.fantasy-count{
+  background:var(--sky-light); color:var(--sky-dark); border-radius:999px;
+  font-size:10.5px; padding:1px 8px; font-family:'Roboto',sans-serif;
+  text-transform:none; letter-spacing:0; font-weight:700;
+}
+.fantasy-side .fantasy-count{ font-size:clamp(9px, 9cqw, 12px); }
+.fantasy-select{
+  width:100%; font-family:'Roboto',sans-serif; font-size:14.5px; padding:12px 14px;
+  border-radius:12px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);
+  font-weight:700;
+}
+.fantasy-actions{ display:flex; gap:10px; width:100%; margin-bottom:18px; }
+.fantasy-actions .btn, .fantasy-actions .btn-ghost{ flex:1; text-align:center; justify-content:center; }
+
+.fantasy-main{ display:flex; gap:16px; align-items:flex-start; }
+.fantasy-side{
+  /* Ancho fluido: crece y encoge de forma continua con la pantalla (igual que el campo),
+     en vez de saltar de golpe en un punto de corte. */
+  width:clamp(56px, 15vw, 132px); flex-shrink:0; display:flex; flex-direction:column; gap:14px;
+  position:sticky; top:14px;
+  /* Convierte esta columna en el "contenedor de referencia" para las unidades cqw de abajo:
+     así el tamaño de la camiseta y del texto son proporcionales al ancho REAL de la columna,
+     no a la pantalla directamente. */
+  container-type:inline-size;
+}
+.fantasy-bench{
+  display:flex; flex-direction:column; gap:8px; min-height:56px;
+  max-height:640px; overflow-y:auto; padding-right:6px;
+  scrollbar-width:thin; scrollbar-color:var(--sky) var(--bg);
+}
+.fantasy-bench::-webkit-scrollbar{ width:6px; }
+.fantasy-bench::-webkit-scrollbar-track{ background:var(--bg); border-radius:10px; }
+.fantasy-bench::-webkit-scrollbar-thumb{ background:var(--sky); border-radius:10px; }
+.fantasy-saved-list{ max-height:260px; overflow-y:auto; padding-right:4px; }
+.fantasy-bench-empty, .fantasy-saved-empty{ color:var(--text-muted); font-size:12.5px; padding:6px 2px; }
+
+/* Tarjeta camiseta (banquillo) — fila vertical navegable */
+.jersey-card{
+  all:unset; cursor:pointer; box-sizing:border-box; width:100%;
+  display:flex; flex-direction:row; align-items:center; gap:8px; user-select:none;
+  padding:6px; border-radius:10px; background:var(--bg); transition:.15s ease;
+  touch-action:none;
+}
+.jersey-card:hover{ background:var(--sky-light); }
+.jersey-shape{
+  position:relative; overflow:hidden; flex-shrink:0;
+  /* Proporcional al ancho de la columna "Disponibles" — algo mayor que el ratio
+     original (36x34px sobre 132px) para que se vean más grandes. */
+  width:clamp(21px, 32cqw, 47px); height:clamp(20px, 30cqw, 45px);
+  border:1.5px solid var(--navy); background:#fff;
+  clip-path: polygon(30% 0%, 70% 0%, 82% 14%, 100% 24%, 87% 40%, 76% 32%, 76% 100%, 24% 100%, 24% 32%, 13% 40%, 0% 24%, 18% 14%);
+}
+/* Rayas horizontales azules y blancas */
+.jstripes{
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(to bottom, var(--sky) 0 6px, #fff 6px 12px);
+}
+/* Mangas negras a ambos lados */
+.jsleeve{ position:absolute; top:0; bottom:0; width:27%; background:#12181f; }
+.jsleeve.l{ left:0; }
+.jsleeve.r{ right:0; }
+.jersey-card .jname{
+  font-size:clamp(8px, 9.8cqw, 14px); font-weight:700; text-align:left; color:var(--navy);
+  line-height:1.15; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* Campo */
+.fantasy-pitch-col{
+  min-width:0; width:100%; flex:1 1 auto;
+  /* "Mis alineaciones" vive aquí debajo del campo y usa unidades cqw: este
+     contenedor pasa a ser su referencia de ancho. */
+  container-type:inline-size;
+}
+.fantasy-pitch-refresh-btn{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  position:absolute; top:10px; right:10px; z-index:20;
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(15,27,45,.55); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  transition:.15s ease;
+}
+.fantasy-pitch-refresh-btn:hover{ background:rgba(15,27,45,.8); }
+.fantasy-pitch-refresh-btn:active svg{ transform:rotate(180deg); }
+.fantasy-pitch-refresh-btn svg{ width:17px; height:17px; transition:transform .3s ease; }
+.shared-lineup-item{ display:flex; align-items:center; gap:8px; background:var(--bg); border-radius:10px; padding:9px 10px; cursor:pointer; }
+.shared-lineup-item:hover{ background:var(--sky-light); }
+.shared-lineup-item .info{ flex:1; min-width:0; }
+.shared-lineup-item .info b{ display:block; font-size:13px; color:var(--navy); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.shared-lineup-item .info span{ font-size:11px; color:var(--text-muted); }
+.fantasy-pitch{
+  /* Campo real: 70m de ancho x 120m de largo (10m ensayo + 100m juego + 10m ensayo) → 7:12 */
+  position:relative; width:100%; aspect-ratio:7/12; border-radius:var(--radius); overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.12) 100%),
+    repeating-linear-gradient(0deg, #2E9E6C 0 10%, #2B9761 10% 20%);
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+  border:3px solid #fff;
+  /* Contenedor de referencia para las unidades cqw de los dorsales: el texto de los
+     números queda así proporcional al tamaño REAL del campo (y por tanto de cada
+     camiseta), crezca o encoja lo que crezca o encoja la pantalla. */
+  container-type:inline-size;
+}
+/* Zona de ensayo: 10m de 120m totales = 7% de alto; queda dentro del margen decorativo del 8% */
+.pitch-ingoal{ position:absolute; left:8%; right:13%; height:7%; background:rgba(14,27,45,.12); }
+.pitch-ingoal.top{ top:8%; }
+.pitch-ingoal.bottom{ bottom:8%; }
+/* Margen decorativo: 8% a la izquierda (banquillo) y 13% a la derecha (suplentes) + 8% arriba/abajo; el campo vive dentro de ese margen */
+.pitch-line{ position:absolute; left:8%; right:13%; height:1.5px; background:rgba(255,255,255,.35); }
+/* Perímetro (bandas + línea de ensayo): línea continua y con grosor, mismo estilo que medio campo */
+.pitch-line.try-top{ top:15%; height:2px; background:rgba(255,255,255,.65); }
+.pitch-line.try-bottom{ bottom:15%; height:2px; background:rgba(255,255,255,.65); }
+/* Línea de fondo de campo (final del área de ensayo): mismo estilo que la línea de ensayo */
+.pitch-line.dead-top{ top:8%; height:2px; background:rgba(255,255,255,.65); }
+.pitch-line.dead-bottom{ bottom:8%; height:2px; background:rgba(255,255,255,.65); }
+.pitch-line.half{ top:50%; height:2px; background:rgba(255,255,255,.55); }
+.pitch-sideline{ position:absolute; top:8%; bottom:8%; width:0; border-left:2px solid rgba(255,255,255,.6); }
+.pitch-sideline.left{ left:8%; }
+.pitch-sideline.right{ right:13%; }
+/* Línea de 22m (22m desde la línea de ensayo = 15%+15.4% = 30.4%): continua pero más fina que medio campo */
+.pitch-line.line-22-top{ top:30.4%; height:1.5px; background:rgba(255,255,255,.4); }
+.pitch-line.line-22-bottom{ bottom:30.4%; height:1.5px; background:rgba(255,255,255,.4); }
+/* Línea de 5m (5m desde la línea de ensayo = 15%+3.5% = 18.5%): discontinua, trazos muy largos */
+.pitch-line.dashed-long{ background:repeating-linear-gradient(to right, rgba(255,255,255,.4) 0 32px, transparent 32px 48px); }
+.pitch-line.line-5-top{ top:18.5%; height:1.5px; }
+.pitch-line.line-5-bottom{ bottom:18.5%; height:1.5px; }
+/* Línea de 10m (10m antes de medio campo = 50%-7% = 43%): igual de discontinua que la de 5m */
+.pitch-line.line-10-top{ top:43%; height:1.5px; }
+.pitch-line.line-10-bottom{ bottom:43%; height:1.5px; }
+/* Marcas perpendiculares a 5m y 15m de banda, cruzando todas las líneas horizontales */
+.pitch-tick{ position:absolute; width:0; height:1.4%; border-left:2px solid rgba(255,255,255,.6); transform:translate(-50%,-50%); }
+.pitch-centerspot{ position:absolute; left:50%; top:50%; width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.5); transform:translate(-50%,-50%); }
+/* Suplentes dentro del margen derecho del campo */
+.pitch-slot.sub-pitch-slot{ width:11%; }
+.pitch-slot.sub-pitch-slot .slot-shape{ border-color:rgba(255,255,255,.6); background:rgba(255,255,255,.06); }
+.pitch-slot.sub-pitch-slot .slot-num{ font-size:clamp(8px, 3cqw, 15px); }
+/* El dorsal amarillo (posición ya ocupada) de los suplentes debe escalar en la misma
+   proporción respecto a su camiseta que el de las posiciones del campo (13% de ancho
+   → 5.2cqw), ya que el hueco de suplente es más estrecho (11% de ancho). */
+.pitch-slot.sub-pitch-slot .slot-num-filled{ font-size:clamp(12px, 4.4cqw, 22px); }
+.pitch-slot.sub-pitch-slot .slot-pname{ font-size:clamp(6px, 2.2cqw, 10px); padding:clamp(1px,.25cqw,2px) clamp(3px,1.4cqw,6px); }
+
+.pitch-slot{
+  position:absolute; width:13%; transform:translate(-50%,-50%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+}
+.slot-shape{
+  all:unset; cursor:pointer; box-sizing:border-box; position:relative; overflow:hidden;
+  width:100%; aspect-ratio:52/48;
+  border:2px dashed rgba(255,255,255,.85); border-radius:10px;
+  clip-path: polygon(30% 0%, 70% 0%, 82% 14%, 100% 24%, 87% 40%, 76% 32%, 76% 100%, 24% 100%, 24% 32%, 13% 40%, 0% 24%, 18% 14%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.08); transition:.15s ease; touch-action:none;
+}
+/* Número (posición vacía): proporcional al ancho del propio campo — 3.8% de su ancho —
+   así crece y encoge en la misma medida que la camiseta que lo contiene. */
+.slot-shape .slot-num{ font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(10px, 3.8cqw, 20px); color:rgba(255,255,255,.9); position:relative; z-index:2; }
+.pitch-slot.drag-over .slot-shape{ background:rgba(255,255,255,.28); border-color:#fff; }
+.pitch-slot.filled .slot-shape{
+  cursor:pointer; border-style:solid; border-color:var(--navy); background:#fff;
+}
+.slot-shape .slot-num-filled{
+  position:relative; z-index:2;
+  font-family:'Oswald',sans-serif; font-weight:800; color:#FFD400;
+  /* El dorsal amarillo escala igual que el campo/la camiseta: nunca queda desproporcionado. */
+  font-size:clamp(14px, 5.2cqw, 26px);
+  -webkit-text-stroke:1.5px #0e1b2d; paint-order:stroke fill;
+  text-shadow:-1px -1px 0 #0e1b2d, 1px -1px 0 #0e1b2d, -1px 1px 0 #0e1b2d, 1px 1px 0 #0e1b2d;
+}
+.slot-pname{
+  font-size:clamp(7px, 2.8cqw, 13px); font-weight:700; color:var(--navy); text-align:center; line-height:1.15;
+  background:#fff; padding:clamp(1px,.3cqw,3px) clamp(4px,1.8cqw,8px); border-radius:6px;
+  max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* Alineaciones guardadas — ahora debajo del campo */
+.fantasy-saved-card{ margin-top:16px; }
+.fantasy-saved-list{ display:flex; flex-direction:column; gap:8px; }
+.fantasy-saved-item{ display:flex; align-items:center; gap:8px; background:var(--bg); border-radius:10px; padding:9px 10px; }
+.fantasy-saved-item .info{ flex:1; min-width:0; cursor:pointer; }
+.fantasy-saved-item .info b{ display:block; font-size:clamp(9px, 9.5cqw, 12.5px); color:var(--navy); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fantasy-saved-item .info span{ font-size:clamp(8px, 8cqw, 10.5px); color:var(--text-muted); }
+.fantasy-saved-item .del-btn{ all:unset; cursor:pointer; color:var(--text-muted); font-size:13px; flex-shrink:0; padding:4px; }
+.fantasy-saved-item .del-btn:hover{ color:var(--bad); }
+
+/* ============ FANTASY — móvil: disposición + tamaño de "Disponibles" ============ */
+/* El ancho de la columna "Disponibles" (.fantasy-side) y el del campo NO cambian aquí.
+   Para que la camiseta y el nombre se vean más grandes dentro de ese mismo ancho,
+   recortamos el padding/gap de la tarjeta y subimos la proporción cqw que ocupan. */
+@media (max-width:900px){
+  .fantasy-main{ gap:8px; }
+
+  /* Botones "Limpiar campo" / "Guardar alineación" / "Publicar": tamaño proporcional
+     al ancho de la pantalla, no fijo, para que quepan bien en móviles pequeños y
+     grandes por igual. */
+  .fantasy-actions{ gap:clamp(4px, 1.6vw, 10px); }
+  .fantasy-actions .btn, .fantasy-actions .btn-ghost{
+    font-size:clamp(8.5px, 3vw, 13px);
+    padding:clamp(7px, 2.6vw, 10px) clamp(5px, 2.4vw, 18px);
+    letter-spacing:.02em;
+    white-space:nowrap;
+  }
+
+  /* Camisetas del banquillo en columna: escudo arriba, nombre debajo */
+  .fantasy-bench{ gap:4px; }
+  .jersey-card{
+    flex-direction:column; gap:2px; padding:3px 1px; text-align:center; border-radius:8px;
+  }
+  .jersey-shape{
+    width:clamp(25px, 46cqw, 56px); height:clamp(24px, 44cqw, 54px);
+  }
+  .jersey-card .jname{
+    font-size:clamp(10px, 15cqw, 16px);
+    text-align:center; white-space:normal; overflow-wrap:break-word; line-height:1.08; max-width:100%;
+  }
+  .fantasy-label{ gap:4px; margin-bottom:6px; flex-wrap:wrap; row-gap:2px; }
+  /* "Disponibles" y su contador: parten de un tamaño pequeño (para no invadir el
+     campo en pantallas estrechas) y escalan de forma proporcional a la pantalla */
+  .fantasy-side .fantasy-label{ font-size:clamp(7.5px, 2.3vw, 11px); }
+  .fantasy-side .fantasy-count{ font-size:clamp(7px, 2vw, 10px); padding:1px 6px; }
+
+  /* Alineaciones guardadas: se apilan en vez de ir en fila */
+  .fantasy-saved-item{ flex-direction:column; align-items:stretch; gap:4px; padding:6px; }
+  .fantasy-saved-item .del-btn{ align-self:flex-end; padding:2px; }
+}
+
+/* Modal publicar */
+.publish-audience-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:6px; }
+.publish-audience-opt{
+  all:unset; cursor:pointer; box-sizing:border-box; text-align:center;
+  padding:12px 10px; border-radius:12px; border:1.5px solid var(--line);
+  font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  font-family:'Oswald',sans-serif; color:var(--navy); transition:.15s ease;
+}
+.publish-audience-opt.selected{ background:linear-gradient(90deg,#7C5CD8,#5c3fb0); border-color:transparent; color:#fff; }

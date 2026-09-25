@@ -1,0 +1,477 @@
+/* ============ ASISTENCIA — tarjetas de evento clicables ============ */
+.att-detail-header{
+  position:relative;
+  background:var(--white); border-radius:var(--radius); padding:22px 24px; margin-bottom:20px;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+}
+.att-detail-top{ display:flex; flex-direction:row; align-items:center; justify-content:center; gap:14px; margin-bottom:18px; }
+.att-detail-date-badge{
+  width:62px; height:62px; border-radius:14px; background:var(--sky-light); flex-shrink:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.att-detail-date-badge .d{ font-size:23px; font-weight:700; line-height:1; color:var(--sky-dark); font-family:'Oswald',sans-serif; }
+.att-detail-date-badge .m{ font-size:10.5px; text-transform:uppercase; color:var(--sky-dark); font-weight:600; letter-spacing:.04em; }
+.att-detail-titleblock{ min-width:0; text-align:left; }
+.att-detail-header h2{
+  margin:0 0 3px; font-size:20px; text-transform:uppercase; letter-spacing:.02em;
+  font-family:'Oswald',sans-serif; color:var(--navy);
+}
+.att-detail-when{ font-size:13px; color:var(--text-muted); font-weight:500; }
+.att-detail-meta{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0;
+  border-top:1px solid var(--line); padding-top:14px;
+}
+.att-detail-meta .meta-item{
+  font-size:13px; font-weight:600; color:var(--navy);
+  display:flex; align-items:center; gap:6px;
+  padding-right:16px; margin-right:16px; border-right:1px solid var(--line);
+}
+.att-detail-meta .meta-item:last-child{ border-right:none; margin-right:0; padding-right:0; }
+.att-event{
+  position:relative;
+  background:var(--white); border-radius:var(--radius); padding:18px 20px; margin-bottom:14px;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:space-between;
+  cursor:pointer; transition:.15s ease;
+}
+.att-event:hover{ box-shadow:0 14px 34px -16px rgba(15,27,45,.45); }
+.att-event .left{ display:flex; align-items:center; gap:14px; }
+.att-event .cal-date{ margin:0; }
+.att-event .info b{ display:block; font-size:14.5px; text-transform:uppercase; letter-spacing:.01em; font-family:'Oswald',sans-serif; }
+.att-event .info span{ font-size:12.5px; color:var(--text-muted); }
+.att-event .info .rsvp-state{ display:block; margin-top:4px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+.att-event .info .rsvp-state.ok{ color:var(--ok); }
+.att-event .info .rsvp-state.bad{ color:var(--bad); }
+.att-event .actions{ display:flex; gap:8px; flex-shrink:0; }
+.att-event .actions button, .att-detail-actions button{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  padding:9px 16px; border-radius:12px; font-size:12px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.03em; font-family:'Oswald',sans-serif;
+  border:1.5px solid var(--line); color:var(--text-muted);
+}
+.att-event .actions button.confirm.is-active, .att-detail-actions button.confirm.is-active{ background:var(--ok); border-color:var(--ok); color:#fff; }
+.att-event .actions button.decline.is-active, .att-detail-actions button.decline.is-active{ background:var(--bad); border-color:var(--bad); color:#fff; }
+.att-event .actions button:hover, .att-detail-actions button:hover{ border-color:var(--sky); color:var(--sky-dark); }
+.att-detail-actions{ display:flex; justify-content:center; gap:8px; margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+
+/* Botón 📊 de acceso directo al Panel de Análisis Wellness/RPE, en la tarjeta de cada
+   entreno/partido — solo visible para Cos Tècnic (ver canViewWellnessStaff() y
+   attEventCardHtml()). Mismo tamaño que decline/confirm pero solo icono, sin texto. */
+.att-event .actions button.wstaff-quicklink{ padding:9px 12px; flex:0 0 auto; }
+.att-event.att-event--match .actions button.wstaff-quicklink{ border-color:rgba(255,255,255,.4); color:rgba(255,255,255,.85); }
+.att-event.att-event--match .actions button.wstaff-quicklink:hover{ border-color:#fff; color:#fff; }
+
+/* Corazones que salen del botón al confirmar/declinar asistencia */
+.rsvp-heart-burst{
+  position:fixed; z-index:9999; pointer-events:none; line-height:1;
+  will-change:transform, opacity; animation:rsvpHeartFloat .95s ease-out forwards;
+}
+@keyframes rsvpHeartFloat{
+  0%{ transform:translate(-50%,-50%) scale(.5) rotate(0deg); opacity:0; }
+  18%{ opacity:1; transform:translate(-50%,-50%) scale(1.15) rotate(var(--rot,0deg)); }
+  100%{ transform:translate(calc(-50% + var(--dx,0px)), calc(-50% - 64px)) scale(.85) rotate(var(--rot,0deg)); opacity:0; }
+}
+
+/* Selector de intensidad del entreno (modal de crear/editar evento) */
+.intensity-picker{ display:flex; gap:8px; }
+.intensity-picker button{
+  all:unset; box-sizing:border-box; cursor:pointer; flex:1; text-align:center;
+  padding:10px 6px; border-radius:10px; border:1.5px solid var(--line); font-size:20px;
+  display:flex; align-items:center; justify-content:center;
+}
+.intensity-picker button.selected{ border-color:var(--sky); background:#EAF6FA; }
+
+/* Emoji de intensidad fijo en la tarjeta/cabecera del entreno */
+.att-event-intensity{ font-size:15px; margin-left:4px; }
+.att-detail-intensity-badge{
+  display:inline-flex; font-size:22px; line-height:1; margin-left:6px;
+  opacity:0; transform:scale(.5); transition:opacity .4s ease, transform .4s ease;
+}
+.att-detail-intensity-badge.show{ opacity:1; transform:scale(1); }
+
+/* "Floating Reaction" — lluvia de emojis de intensidad al entrar en el detalle de un
+   entreno: suben de abajo hacia arriba en línea recta (solo eje vertical, sin
+   desplazamiento lateral), cada uno con su propia velocidad, rotación y pulso de
+   tamaño (según --dur/--rot/--scale-peak puestos por spawnIntensityBurst()), y se
+   desdibujan/desvanecen al llegar arriba antes de eliminarse del DOM. Los puntos
+   intermedios van suavizados y la animación va en "linear" (en vez de ease-in-out)
+   para que el movimiento sea fluido y no vaya "a saltos". */
+.intensity-burst-emoji{
+  position:fixed; z-index:9999; bottom:-60px; left:0; pointer-events:none;
+  will-change:transform, opacity, filter;
+  filter:blur(0px);
+  animation:floatingReaction var(--dur,.9s) linear forwards;
+}
+@keyframes floatingReaction{
+  0%   { transform:translateY(0) rotate(0deg) scale(.35); opacity:0; filter:blur(0px); }
+  12%  { transform:translateY(calc(var(--fall,100vh) * -.12)) rotate(calc(var(--rot,220deg) * .12)) scale(.75); opacity:1; filter:blur(0px); }
+  24%  { transform:translateY(calc(var(--fall,100vh) * -.24)) rotate(calc(var(--rot,220deg) * .24)) scale(var(--scale-peak, 1.2)); }
+  36%  { transform:translateY(calc(var(--fall,100vh) * -.36)) rotate(calc(var(--rot,220deg) * .36)) scale(1.08); }
+  50%  { transform:translateY(calc(var(--fall,100vh) * -.50)) rotate(calc(var(--rot,220deg) * .50)) scale(.95); }
+  64%  { transform:translateY(calc(var(--fall,100vh) * -.64)) rotate(calc(var(--rot,220deg) * .64)) scale(1.05); }
+  78%  { transform:translateY(calc(var(--fall,100vh) * -.78)) rotate(calc(var(--rot,220deg) * .78)) scale(.95); filter:blur(1px); }
+  90%  { transform:translateY(calc(var(--fall,100vh) * -.90)) rotate(calc(var(--rot,220deg) * .90)) scale(.8); opacity:.55; filter:blur(4px); }
+  100% { transform:translateY(calc(var(--fall,100vh) * -1)) rotate(var(--rot,220deg)) scale(.6); opacity:0; filter:blur(7px); }
+}
+
+/* Tarjeta de PARTIDO en Asistencia: degradado azul → negro para diferenciarla de un entreno */
+.att-event.att-event--match{
+  background:linear-gradient(135deg, var(--sky) 0%, var(--sky-dark) 32%, var(--navy) 100%);
+  box-shadow:0 10px 30px -14px rgba(15,27,45,.55);
+}
+.att-event.att-event--match:hover{ box-shadow:0 14px 34px -12px rgba(15,27,45,.65); }
+.att-event.att-event--match .cal-date{ background:rgba(255,255,255,.14); }
+.att-event.att-event--match .cal-date .d,
+.att-event.att-event--match .cal-date .m{ color:#fff; }
+.att-event.att-event--match .info b{ color:#fff; }
+.att-event.att-event--match .info span{ color:rgba(255,255,255,.72); }
+.att-event.att-event--match .info .rsvp-state.ok{ color:#7BE0B0; }
+.att-event.att-event--match .info .rsvp-state.bad{ color:#FF9C92; }
+.att-event.att-event--match .actions button{ border-color:rgba(255,255,255,.4); color:rgba(255,255,255,.85); }
+.att-event.att-event--match .actions button:hover{ border-color:#fff; color:#fff; }
+.att-event.att-event--match .actions button.confirm.is-active{ background:var(--ok); border-color:var(--ok); color:#fff; }
+.att-event.att-event--match .actions button.decline.is-active{ background:var(--bad); border-color:var(--bad); color:#fff; }
+.att-event.att-event--match .att-event-edit-btn{ background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.4); color:#fff; }
+.att-event.att-event--match .att-event-edit-btn:hover{ background:rgba(255,255,255,.24); border-color:#fff; color:#fff; }
+
+/* Botón pequeño en la esquina superior derecha de cada tarjeta para editar el evento */
+.att-event-edit-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; position:absolute; top:10px; right:10px; z-index:2;
+  width:24px; height:24px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg); border:1.5px solid var(--line); color:var(--text-muted);
+  transition:.15s ease;
+}
+.att-event-edit-btn:hover{ background:var(--sky-light); border-color:var(--sky); color:var(--sky-dark); }
+.att-event-edit-btn svg{ width:12px; height:12px; }
+
+/* Botón "Tullidas" (parte de vendajes) — mismo estilo que el de editar, a su izquierda */
+.att-detail-tullides-btn{ font-size:13px; }
+.att-event.att-event--match .att-detail-tullides-btn{ background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.4); color:#fff; }
+.att-event.att-event--match .att-detail-tullides-btn:hover{ background:rgba(255,255,255,.24); border-color:#fff; color:#fff; }
+
+/* Botón "Wellness / RPE" — solo visible para jugadoras (ver toggleAttWellnessButtonVisibility) */
+.att-detail-wellness-btn{ font-size:13px; }
+.att-event.att-event--match .att-detail-wellness-btn{ background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.4); color:#fff; }
+.att-event.att-event--match .att-detail-wellness-btn:hover{ background:rgba(255,255,255,.24); border-color:#fff; color:#fff; }
+
+/* Modal Wellness / RPE: slider gigante con emoji + color dinámicos, y toggle de molestias */
+.wellness-rpe-display{ text-align:center; margin-bottom:6px; }
+.wellness-rpe-emoji{ font-size:56px; line-height:1.1; transition:transform .12s ease; }
+.wellness-rpe-value{ font-family:'Oswald',sans-serif; font-size:22px; font-weight:700; color:var(--navy); margin-top:2px; }
+.wellness-rpe-desc{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-top:2px; transition:color .12s ease; }
+.wellness-rpe-slider{
+  -webkit-appearance:none; appearance:none; width:100%; height:10px; border-radius:999px; margin:16px 0 4px;
+  background:linear-gradient(90deg,#2E9E6C 0%,#2E9E6C 10%,#E3B23C 30%,#D8894A 50%,#D8564A 70%,#7A1E1E 100%);
+  outline:none; cursor:pointer;
+}
+.wellness-rpe-slider::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none; width:26px; height:26px; border-radius:50%;
+  background:var(--rpe-color, var(--sky)); border:3px solid #fff; box-shadow:0 2px 8px rgba(15,27,45,.35); cursor:pointer;
+}
+.wellness-rpe-slider::-moz-range-thumb{
+  width:26px; height:26px; border-radius:50%; border:3px solid #fff;
+  background:var(--rpe-color, var(--sky)); box-shadow:0 2px 8px rgba(15,27,45,.35); cursor:pointer;
+}
+.wellness-rpe-scale{ display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-bottom:18px; }
+
+/* Campo "Horas de sueño": selector de un solo clic, tres opciones en horizontal */
+.wellness-field-label{ font-size:13px; font-weight:600; color:var(--navy); margin-bottom:8px; }
+.wellness-phase-sleep{ margin-top:4px; padding-top:16px; border-top:1.5px solid var(--line); }
+.wellness-sleep-options{ display:flex; gap:8px; }
+.wellness-pill-opt{
+  all:unset; cursor:pointer; box-sizing:border-box; flex:1; text-align:center;
+  padding:10px 6px; border-radius:12px; border:1.5px solid var(--line); background:var(--bg);
+  font-size:13px; font-weight:700; color:var(--text-muted); font-family:'Oswald',sans-serif; transition:.15s ease;
+}
+.wellness-pill-opt:hover{ border-color:var(--sky); color:var(--sky-dark); }
+.wellness-pill-opt.selected{ background:var(--sky); border-color:var(--sky); color:#fff; }
+
+/* Campo "Estado de ánimo": 5 emojis de un solo clic */
+.wellness-phase-mood{ margin-top:4px; padding-top:16px; border-top:1.5px solid var(--line); }
+.wellness-mood-options{ display:flex; justify-content:space-between; gap:6px; }
+.wellness-mood-opt{
+  all:unset; cursor:pointer; box-sizing:border-box; flex:1; text-align:center;
+  font-size:26px; line-height:1; padding:8px 0; border-radius:12px; border:1.5px solid transparent; transition:.15s ease;
+}
+.wellness-mood-opt:hover{ background:var(--bg); }
+.wellness-mood-opt.selected{ background:var(--sky-light); border-color:var(--sky); transform:scale(1.12); }
+
+.wellness-phase-molesties{ margin-top:4px; padding-top:16px; border-top:1.5px solid var(--line); }
+.wellness-toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.wellness-toggle-label{ font-size:13px; font-weight:600; color:var(--navy); flex:1; }
+.wellness-toggle-pill{ display:flex; background:var(--bg); border-radius:999px; padding:3px; border:1.5px solid var(--line); flex-shrink:0; }
+.wellness-toggle-opt{
+  all:unset; cursor:pointer; box-sizing:border-box; padding:7px 16px; border-radius:999px; font-size:12.5px;
+  font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); font-family:'Oswald',sans-serif;
+  transition:.15s ease;
+}
+.wellness-toggle-opt.selected{ background:var(--sky); color:#fff; }
+.wellness-toggle-opt.selected[data-val="yes"]{ background:var(--bad); }
+.wellness-discomfort-detail{ margin-top:12px; }
+.wellness-discomfort-detail textarea{
+  width:100%; min-height:70px; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px;
+  font-family:'Roboto',sans-serif; font-size:13.5px; color:var(--navy); resize:vertical; box-sizing:border-box;
+}
+.wellness-discomfort-detail textarea:focus{ outline:none; border-color:var(--sky); }
+
+/* ===== WELLNESS COS TÈCNIC (staff/entrenadors/fisios) =====
+   Vista d'anàlisi agregada del Wellness/RPE de totes les jugadores d'un entrenament,
+   només visible per a rols de gestió (ver STAFF_WELLNESS_ROLES / canViewWellnessStaff()). */
+.vest-card.i-wellness-staff .ic{ background:linear-gradient(135deg,#D8564A,#8C2A22); }
+
+.wstaff-event-select-row{ margin-bottom:16px; }
+.wstaff-event-select-row label{ display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; }
+.wstaff-event-select-row select{
+  font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px;
+  border:1.5px solid var(--line); color:var(--navy); background:var(--white); text-transform:none; font-weight:500;
+}
+
+.wstaff-alerts-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:12px; margin-bottom:18px; }
+.wstaff-alert-card{
+  border-radius:16px; padding:14px 16px; border:1.5px solid var(--line); background:var(--white);
+}
+.wstaff-alert-card .wstaff-alert-head{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.wstaff-alert-card .wstaff-alert-icon{ font-size:19px; line-height:1; }
+.wstaff-alert-card .wstaff-alert-title{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--navy); }
+.wstaff-alert-card .wstaff-alert-count{ font-family:'Oswald',sans-serif; font-size:24px; font-weight:700; margin-left:auto; }
+.wstaff-alert-card.discomfort{ background:#FBE7E5; border-color:#F3C6C1; }
+.wstaff-alert-card.discomfort .wstaff-alert-count{ color:var(--bad); }
+.wstaff-alert-card.sleep{ background:#FBEEE0; border-color:#F0D5B0; }
+.wstaff-alert-card.sleep .wstaff-alert-count{ color:var(--warn); }
+.wstaff-alert-card.load{ background:#FBE7E5; border-color:#F3C6C1; }
+.wstaff-alert-card.load .wstaff-alert-count{ color:#B33A2E; }
+.wstaff-alert-card{ transition:filter .15s ease, box-shadow .15s ease; }
+.wstaff-alert-card:hover{ filter:brightness(.97); box-shadow:0 10px 24px -14px rgba(15,27,45,.4); }
+.wstaff-alert-list{ display:flex; flex-direction:column; gap:4px; }
+.wstaff-alert-list .row{ font-size:12.5px; color:var(--navy); line-height:1.4; }
+.wstaff-alert-list .row b{ font-weight:700; }
+.wstaff-alert-list .row span{ color:var(--text-muted); }
+.wstaff-alert-empty{ font-size:12.5px; color:var(--text-muted); font-style:italic; }
+
+.wstaff-table-card{ padding:0; overflow-x:auto; container-type:inline-size; }
+.wstaff-table{ width:100%; border-collapse:collapse; min-width:640px; text-transform:uppercase; }
+.wstaff-table thead th{
+  text-align:left; font-size:11px; font-weight:700; letter-spacing:.04em; color:var(--text-muted);
+  padding:12px 16px; border-bottom:1.5px solid var(--line); white-space:nowrap;
+}
+.wstaff-table tbody td{ padding:11px 16px; font-size:13px; border-bottom:1px solid var(--line); color:var(--navy); white-space:nowrap; }
+.wstaff-table tbody tr:last-child td{ border-bottom:none; }
+.wstaff-table tbody tr:nth-child(even){ background:var(--bg); }
+.wstaff-table th.num, .wstaff-table td.num{ text-align:center; }
+.wstaff-table .col-player{ display:flex; align-items:center; gap:10px; white-space:nowrap; }
+.wstaff-table .col-player b{ font-size:13px; text-transform:uppercase; letter-spacing:.02em; font-family:'Oswald',sans-serif; }
+.wstaff-sleep-pill{ display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:700; }
+.wstaff-sleep-pill.lt6{ background:#FBE9E7; color:var(--bad); }
+.wstaff-sleep-pill.mid{ background:#FBEEE0; color:var(--warn); }
+.wstaff-sleep-pill.gt8{ background:#E4F5EC; color:var(--ok); }
+.wstaff-sleep-pill.none{ background:var(--bg); color:var(--text-muted); }
+.wstaff-rpe-pill{ display:inline-flex; align-items:center; justify-content:center; min-width:26px; padding:3px 8px; border-radius:8px; font-family:'Oswald',sans-serif; font-weight:700; font-size:13px; color:#fff; }
+.wstaff-table .discomfort-yes{ color:var(--bad); font-weight:700; }
+.wstaff-table .discomfort-no{ color:var(--ok); font-weight:600; }
+.wstaff-table .muted-cell{ color:var(--text-muted); font-style:italic; }
+.wstaff-empty-state{ padding:26px 16px; text-align:center; color:var(--text-muted); font-size:13.5px; }
+
+/* Subpestañas "Sesión" / "Histórico y tendencias" dentro del panel Wellness/RPE staff */
+.wstaff-subtabs{ display:flex; gap:8px; margin-bottom:18px; border-bottom:1.5px solid var(--line); }
+.wstaff-subtab{
+  appearance:none; border:none; background:none; cursor:pointer; padding:10px 4px 12px;
+  font-family:'Oswald',sans-serif; font-size:13.5px; font-weight:600; letter-spacing:.02em;
+  text-transform:uppercase; color:var(--text-muted); border-bottom:2.5px solid transparent; margin-bottom:-1.5px;
+}
+.wstaff-subtab.active{ color:var(--sky-dark); border-bottom-color:var(--sky); }
+.wstaff-tab-panel{ display:none; }
+.wstaff-tab-panel.active{ display:block; }
+
+/* Pestaña 2 — Carga acumulada semanal */
+.wstaff-week-card{ margin-bottom:18px; }
+.wstaff-week-head{ padding:16px 16px 4px; }
+.wstaff-week-head h3{ margin:0; font-family:'Oswald',sans-serif; font-size:14.5px; text-transform:uppercase; letter-spacing:.02em; color:var(--navy); }
+.wstaff-week-table{ min-width:560px; }
+.wstaff-week-cell{ font-weight:600; }
+.wstaff-week-cell.rising{ background:#FBEEE0; color:var(--warn); border-radius:8px; }
+.wstaff-week-cell.spike{ background:#FBE7E5; color:var(--bad); border-radius:8px; font-weight:700; }
+.wstaff-history-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; display:inline-flex; align-items:center;
+  justify-content:center; width:30px; height:30px; border-radius:8px; font-size:15px;
+  color:var(--text-muted); transition:background .15s ease, color .15s ease;
+}
+.wstaff-history-btn:hover{ background:var(--bg); color:var(--sky-dark); }
+
+/* Pestaña 2 — Evolución individual / equipo */
+.wstaff-evo-card{ display:flex; flex-direction:column; gap:14px; margin-bottom:22px; }
+.wstaff-evo-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.wstaff-evo-head h3{ margin:0; font-family:'Oswald',sans-serif; font-size:14.5px; text-transform:uppercase; letter-spacing:.02em; color:var(--navy); }
+.wstaff-evo-select-wrap{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em; }
+.wstaff-evo-select-wrap select{
+  padding:8px 10px; border-radius:10px; border:1.5px solid var(--line); background:var(--white);
+  font-size:13px; font-weight:600; color:var(--navy); text-transform:none; letter-spacing:0;
+}
+.wstaff-evo-summary-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(84px,1fr)); gap:8px; }
+.wstaff-evo-summary-item{ background:var(--bg); border-radius:12px; padding:8px 6px; text-align:center; }
+.wstaff-evo-summary-item span{ display:block; font-family:'Oswald',sans-serif; font-size:16px; font-weight:700; color:var(--navy); }
+.wstaff-evo-summary-item small{ display:block; font-size:9.5px; line-height:1.25; color:var(--text-muted); text-transform:uppercase; letter-spacing:.02em; margin-top:3px; }
+.wstaff-evo-summary-item.warn span{ color:var(--warn); }
+.wstaff-evo-summary-item.bad span{ color:var(--bad); }
+.wstaff-evo-chart-wrap{ width:100%; }
+.wstaff-evo-chart-wrap svg{ width:100%; height:auto; display:block; }
+
+@media (max-width:640px){
+  .wstaff-table{ min-width:0; }
+  .wstaff-table thead th{ padding:clamp(6px,2.4cqw,12px) clamp(6px,2.6cqw,16px); font-size:clamp(8px,2.6cqw,11px); }
+  .wstaff-table tbody td{ padding:clamp(6px,2.2cqw,11px) clamp(6px,2.6cqw,16px); font-size:clamp(10px,3cqw,13px); }
+  .wstaff-alerts-grid{
+    grid-template-columns:repeat(3, 1fr); gap:6px; container-type:inline-size;
+  }
+  .wstaff-alert-card{ padding:clamp(8px,2.6cqw,12px) clamp(6px,2.4cqw,10px); border-radius:12px; }
+  .wstaff-alert-card .wstaff-alert-head{ flex-wrap:wrap; gap:3px; margin-bottom:4px; }
+  .wstaff-alert-card .wstaff-alert-icon{ font-size:clamp(12px,4cqw,15px); }
+  .wstaff-alert-card .wstaff-alert-title{ font-size:clamp(7.5px,2.6cqw,9.5px); letter-spacing:.01em; }
+  .wstaff-alert-card .wstaff-alert-count{ font-size:clamp(16px,6cqw,20px); margin-left:0; width:100%; }
+  .wstaff-alert-list{
+    max-height:70px; overflow-y:auto; gap:2px;
+  }
+  .wstaff-alert-list .row{ font-size:clamp(8px,2.6cqw,10.5px); line-height:1.3; }
+  .wstaff-alert-empty{ font-size:clamp(8px,2.6cqw,10.5px); }
+  .wstaff-week-table{ min-width:0; }
+  .wstaff-evo-summary-grid{ grid-template-columns:repeat(3,1fr); gap:6px; }
+  .wstaff-evo-summary-item{ padding:7px 3px; border-radius:9px; }
+  .wstaff-evo-summary-item span{ font-size:16px; }
+  .wstaff-evo-summary-item small{ font-size:9px; line-height:1.2; letter-spacing:0; }
+}
+
+/* Lista de "Tullidas": una fila por jugadora apuntada + lo que necesita */
+.tullides-list{ display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto; margin-bottom:14px; }
+.tullides-row{
+  display:flex; align-items:flex-start; gap:10px;
+  background:var(--bg); border-radius:12px; padding:10px 12px;
+}
+.tullides-row .meta{ flex:1; min-width:0; line-height:1.3; }
+.tullides-row .meta b{ font-size:13px; display:block; }
+.tullides-row .meta span{ font-size:12.5px; color:var(--text-muted); }
+.tullides-row .del{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0;
+  width:22px; height:22px; border-radius:7px; display:flex; align-items:center; justify-content:center;
+  color:var(--text-muted); font-size:13px; margin-top:1px;
+}
+.tullides-row .del:hover{ background:#FBEAEA; color:var(--bad); }
+.tullides-add-row{ display:flex; gap:8px; }
+.tullides-add-row input[type="text"]{
+  flex:1; box-sizing:border-box; font-family:'Roboto',sans-serif; font-size:13.5px;
+  padding:11px 13px; border-radius:12px; border:1.5px solid var(--line); background:var(--bg); color:var(--navy);
+}
+.tullides-add-row input[type="text"]:focus{ outline:none; border-color:var(--sky); background:var(--white); }
+.tullides-add-row button{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0;
+  width:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  background:var(--navy); color:#fff; font-size:20px; font-weight:700;
+}
+.tullides-add-row button:hover{ background:var(--sky-dark); }
+
+/* Botón "eliminar evento" arriba a la derecha del modal de edición */
+.event-delete-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0; margin-top:2px;
+  width:30px; height:30px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg); border:1.5px solid var(--line); color:var(--text-muted);
+  transition:.15s ease;
+}
+.event-delete-btn:hover{ background:#FBE9E7; border-color:var(--bad); color:var(--bad); }
+.event-delete-btn svg{ width:15px; height:15px; }
+
+/* Tarjetas de la lista de Tercer tiempo (una por partido) */
+.tt-list-status{
+  display:inline-flex; align-items:center; gap:5px; white-space:nowrap;
+  font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  padding:6px 12px; border-radius:999px; background:var(--bg); color:var(--text-muted);
+}
+.tt-list-status.open{ background:#E4F5EC; color:#238350; }
+.tt-list-status.soon{ background:#FCF1DE; color:#B8791E; }
+.tt-list-status.closed{ background:var(--bg); color:var(--text-muted); }
+.tt-list-role{ display:block; margin-top:4px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+.tt-list-role.cook{ color:#C96E2C; }
+.tt-list-role.clean{ color:var(--sky-dark); }
+.tt-list-role.free{ color:var(--text-muted); }
+.att-month-heading{
+  font-family:'Oswald',sans-serif; font-size:15px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.04em; color:var(--navy); margin:22px 0 10px;
+}
+#att-event-list > .att-month-heading:first-child{ margin-top:0; }
+.att-month-heading.att-month-heading--with-toggle{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+.att-history-toggle{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:inline-flex; align-items:center; gap:5px; flex-shrink:0;
+  font-family:'Roboto',sans-serif; font-size:12px; font-weight:600;
+  text-transform:none; letter-spacing:normal; color:var(--sky-dark);
+  padding:5px 9px; border-radius:8px; transition:.15s ease;
+}
+.att-history-toggle:hover{ background:var(--sky-light); }
+.att-history-toggle svg{ width:14px; height:14px; flex-shrink:0; }
+
+/* Pestañas de asistencia por jugador (dentro del detalle de un evento) */
+.att-tabs{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.att-tabs button{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  padding:16px 26px; border-radius:14px; font-size:16px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.03em; font-family:'Oswald',sans-serif;
+  background:var(--white); border:1.5px solid var(--line); color:var(--text-muted);
+  display:flex; align-items:center; gap:9px;
+}
+.att-tabs button .count{
+  background:var(--sky-light); color:var(--sky-dark); border-radius:999px;
+  font-size:14px; padding:3px 11px;
+}
+.att-tabs button.active{ background:var(--navy); border-color:var(--navy); color:#fff; }
+.att-tabs button.active .count{ background:rgba(255,255,255,.18); color:#fff; }
+
+.att-roster{ display:none; }
+.att-roster.active{ display:block; }
+.att-roster-list{ display:flex; flex-direction:column; gap:8px; }
+.att-roster-group{ display:flex; flex-direction:column; gap:8px; }
+.att-roster-group + .att-roster-group{ margin-top:18px; }
+.att-roster-group .att-roster-group{ margin-left:16px; padding-left:12px; border-left:2px solid var(--line); }
+.att-roster-group .att-roster-group + .att-roster-group{ margin-top:14px; }
+.att-roster-group-title{
+  display:flex; align-items:center; gap:9px;
+  font-family:'Oswald',sans-serif; font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--text-muted);
+}
+.att-roster-group-title .count{
+  background:var(--sky-light); color:var(--sky-dark); border-radius:999px;
+  font-size:13px; padding:2px 10px; font-family:'Roboto',sans-serif; text-transform:none; letter-spacing:normal;
+}
+.att-roster-row{
+  display:flex; align-items:center; gap:12px;
+  background:var(--white); border-radius:14px; padding:12px 16px;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35);
+}
+.att-roster-row .meta{ flex:1; line-height:1.2; min-width:0; }
+.att-roster-row .meta b{ font-size:13.5px; display:block; }
+.att-roster-row .meta .comment{ display:block; font-size:12px; color:var(--text-muted); font-style:italic; margin-top:3px; }
+
+/* Pasar lista en convocatoria (botón "Lista" del banner de día de partido) */
+.rollcall-row{
+  display:flex; align-items:center; gap:12px;
+  background:var(--white); border-radius:14px; padding:10px 12px;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35); margin-bottom:8px;
+}
+.rollcall-row:last-child{ margin-bottom:0; }
+.rollcall-row .meta{ flex:1; min-width:0; }
+.rollcall-row .meta b{ font-size:13.5px; display:block; }
+.rollcall-toggle{ display:flex; gap:6px; flex-shrink:0; }
+.rollcall-toggle button{
+  all:unset; cursor:pointer; box-sizing:border-box; width:36px; height:36px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700;
+  border:1.5px solid var(--line); color:var(--text-muted);
+}
+.rollcall-toggle button.v.is-active{ background:var(--ok); border-color:var(--ok); color:#fff; }
+.rollcall-toggle button.x.is-active{ background:var(--bad); border-color:var(--bad); color:#fff; }
+.rollcall-summary{ font-size:12px; color:var(--text-muted); margin:2px 2px 12px; }
+.att-comment-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0;
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  color:var(--sky-dark); font-family:'Oswald',sans-serif; padding:6px 10px; border-radius:8px;
+}
+.att-comment-btn:hover{ background:var(--sky-light); }

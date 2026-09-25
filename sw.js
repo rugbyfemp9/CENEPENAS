@@ -11,7 +11,7 @@
 // Google Fonts o el CDN de supabase-js sigue yendo siempre directo a la red,
 // sin pasar por caché, para no servir nunca datos del club desactualizados.
 
-const CACHE_NAME = 'cnpenas-v1';
+const CACHE_NAME = 'cnpenas-v2';
 
 // Rutas relativas a la carpeta donde vive este sw.js (CENEPENAS/), para que
 // funcione igual si algún día cambia el nombre del repo.
@@ -19,7 +19,7 @@ const APP_SHELL = [
   '.',
   'index.html',
   'manifest.json',
-  'foto/applogo.png',
+  'assets/img/applogo.png',
 ];
 
 self.addEventListener('install', (event) => {

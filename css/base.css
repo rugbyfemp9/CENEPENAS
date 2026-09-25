@@ -1,0 +1,27 @@
+:root{
+  color-scheme: light;
+  --sky:#4A9FD8;
+  --sky-dark:#3785BC;
+  --sky-light:#EAF4FB;
+  --navy:#0F1B2D;
+  --navy-soft:#1B2C45;
+  --bg:#F5F7FA;
+  --white:#FFFFFF;
+  --line:#E2E8F0;
+  --text-muted:#66748C;
+  --ok:#2E9E6C;
+  --warn:#D8894A;
+  --bad:#D8564A;
+  --radius:20px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--navy);
+  font-family:'Roboto',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.brand .name b,.nav button,.stat-card .v,.roster-card .num,.pill-user .dot,.bottom-nav button{
+  font-family:'Oswald',sans-serif;
+}
