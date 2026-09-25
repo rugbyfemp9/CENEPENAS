@@ -6,3 +6,10 @@
 .env.keys
 .env.local
 .env.*.local
+
+# Node / Vite
+node_modules/
+dist/
+test-results/
+playwright-report/
+.snapshots/
