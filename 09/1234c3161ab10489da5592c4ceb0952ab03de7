@@ -1,0 +1,57 @@
+src/features/gym/GymCheckinModal.svelte
+  s_1fdfe932c62174::t_14186aa37581c7 1-19
+src/features/gym/GymRoutineUploadModal.svelte
+  s_1fdfe932c62174::t_14186aa37581c7 1-21
+src/features/gym/GymEntrenamiento.svelte
+  s_1fdfe932c62174::t_f74a8be1e36d08 1-122
+public/js/main.js
+  s_1fdfe932c62174::t_792519c6937739 57
+src/features/gym/GymDia.svelte
+  s_1fdfe932c62174::t_a7ed18942b5fcd 79
+  s_1fdfe932c62174::t_597dc832177ff9 1-78,80-180
+src/features/gym/GymHub.svelte
+  s_1fdfe932c62174::t_ffc20c4dbddd78 1-22
+src/features/gym/GymRmHistoryModal.svelte
+  s_1fdfe932c62174::t_14186aa37581c7 1-36
+public/js/core/auth.js
+  s_1fdfe932c62174::t_792519c6937739 208
+src/features/gym/GymEquipo.svelte
+  s_1fdfe932c62174::t_71864472f27dd5 1-67,69-75,77-88
+  s_1fdfe932c62174::t_14186aa37581c7 68,76
+src/features/gym/GymRmModal.svelte
+  s_1fdfe932c62174::t_14186aa37581c7 1-19
+public/js/features/jugadoras.js
+  s_1fdfe932c62174::t_792519c6937739 104
+src/features/gym/gym.svelte.js
+  s_1fdfe932c62174::t_b1aeb4ce98d5f2 158,162-169,195
+  s_1fdfe932c62174::t_84ec9a03b77e99 66-69,76,708-709,712,894-895,903
+  s_1fdfe932c62174::t_98a61404a8bb0a 1-65,70-75,77-157,159-161,170-194,196-707,710-711,713-893,896-902,904-1107
+public/js/core/navigation.js
+  s_1fdfe932c62174::t_792519c6937739 26,68,73,76
+index.html
+  s_1fdfe932c62174::t_05dd06fc310f02 565,568,571,574,1066,1069,1072,1075
+src/main.js
+  s_1fdfe932c62174::t_df0f04ea680482 18,20
+public/js/features/perfil.js
+  s_1fdfe932c62174::t_792519c6937739 252,309
+tests/e2e/gym.spec.js
+  s_1fdfe932c62174::t_22d73a193c7275 288,480,483-484,486
+  s_1fdfe932c62174::t_6cd9708f02077e 1-6,8,11-287,289-479,481-482,485,487-1087
+  s_1fdfe932c62174::t_4edcc5339677e9 7,9-10,1088
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "091234c3161ab10489da5592c4ceb0952ab03de7",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
