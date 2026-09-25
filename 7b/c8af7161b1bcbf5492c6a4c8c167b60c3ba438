@@ -1,0 +1,76 @@
+src/main.js
+  s_1fdfe932c62174::t_9b4e9898d2f8c7 12-14,16
+tests/e2e/liga.spec.js
+  s_1fdfe932c62174::t_fa6bdd81a575f5 19
+  s_1fdfe932c62174::t_c500f37fdcf85a 148-149
+  s_1fdfe932c62174::t_9704dcbade7cd9 62,83,175
+  s_1fdfe932c62174::t_083971008d1693 1-18,20-61,63-82,84-147,150-174,176-205
+src/features/liga/LeaguePosition.svelte
+  s_1fdfe932c62174::t_b35ee9a0380d83 1-5
+src/features/avisos/avisos.svelte.js
+  s_1fdfe932c62174::t_ac8bdab0302abf 1-4,6,10-33,36-39,46,49,52-53,55,58-63,65-70,75-84,87-89,92-95,97,99,102-117,119-123,125-128,132-133,139-141,143-147,150-153,158-159
+src/features/avisos/index.js
+  s_1fdfe932c62174::t_ac8bdab0302abf 1-19
+public/js/main.js
+  s_1fdfe932c62174::t_9b4e9898d2f8c7 63
+tests/e2e/support/fake-supabase.js
+  s_1fdfe932c62174::t_79afb49610240d 98-100,277
+src/features/avisos/TopNotices.svelte
+  s_1fdfe932c62174::t_ac8bdab0302abf 1-19
+index.html
+  s_1fdfe932c62174::t_9b4e9898d2f8c7 283,531-532,1012-1013,1504,1572
+src/features/test/Test.svelte
+  s_1fdfe932c62174::t_85d7ac630cce18 65
+  s_1fdfe932c62174::t_26e9bbd622af16 1-64,66-67
+tests/e2e/test-quiz.spec.js
+  s_1fdfe932c62174::t_bafa17ed0e22e2 1-2,5,7-23,26-154,156-178,180-279,282-347,349
+  s_1fdfe932c62174::t_78f54cf12c9473 3-4,6,24-25,155,179,348
+  s_1fdfe932c62174::t_c500f37fdcf85a 280-281
+src/features/test/index.js
+  s_1fdfe932c62174::t_26e9bbd622af16 1-8
+tests/e2e/avisos.spec.js
+  s_1fdfe932c62174::t_68176c598eb71c 16-19,177-178,261
+  s_1fdfe932c62174::t_c500f37fdcf85a 296-297
+  s_1fdfe932c62174::t_178ddd9055306c 1-15,20-176,179-260,262-295,298-302
+src/features/liga/Liga.svelte
+  s_1fdfe932c62174::t_b35ee9a0380d83 1-66
+src/features/test/TestRankingModal.svelte
+  s_1fdfe932c62174::t_26e9bbd622af16 1-31
+src/features/liga/liga.js
+  s_1fdfe932c62174::t_85d7ac630cce18 1-2,8,13,22,31,91-92,95-97
+  s_1fdfe932c62174::t_b35ee9a0380d83 14-19
+src/features/liga/index.js
+  s_1fdfe932c62174::t_b35ee9a0380d83 1-12
+src/features/avisos/NoticesCard.svelte
+  s_1fdfe932c62174::t_ac8bdab0302abf 1-34
+public/js/core/navigation.js
+  s_1fdfe932c62174::t_9b4e9898d2f8c7 56
+src/features/avisos/AddNoticeModal.svelte
+  s_1fdfe932c62174::t_ac8bdab0302abf 1-29
+src/features/liga/TeamCrest.svelte
+  s_1fdfe932c62174::t_b35ee9a0380d83 1-17
+src/lib/Avatar.svelte
+  s_1fdfe932c62174::t_b64ddfaf155a82 1-10
+src/lib/legacy.js
+  s_1fdfe932c62174::t_b64ddfaf155a82 8-10,16,18-23
+src/features/test/test.svelte.js
+  s_1fdfe932c62174::t_26e9bbd622af16 1-2,6-7,9-20,22,29-32,34,39,44-48,52-53,56-59,62-65,67,71-73,75-76,83-87,90,92,97,99-101,106-109,112,114,116,119-124
+public/js/core/auth.js
+  s_1fdfe932c62174::t_9b4e9898d2f8c7 240
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7bc8af7161b1bcbf5492c6a4c8c167b60c3ba438",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
