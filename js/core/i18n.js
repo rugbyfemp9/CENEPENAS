@@ -1329,6 +1329,8 @@ function setLang(lang){
   currentLang = lang;
   localStorage.setItem('cnpenas:lang', lang);
   applyI18n();
+  // Las secciones ya migradas a Svelte se repintan solas al recibir este evento.
+  window.dispatchEvent(new CustomEvent('app:langchange', { detail: lang }));
   if(typeof renderNextMatchBanner === 'function') renderNextMatchBanner();
   if(typeof renderWellnessReminderBanner === 'function') renderWellnessReminderBanner();
   if(typeof renderLeagueBanner === 'function') renderLeagueBanner();
@@ -1353,9 +1355,6 @@ function setLang(lang){
   if(typeof renderTricount === 'function') renderTricount();
   if(typeof renderPlantillaTable === 'function' && typeof plantillaData !== 'undefined' && plantillaData.length) renderPlantillaTable();
   if(typeof plantillaActiveTab !== 'undefined' && plantillaActiveTab === 'estadisticas' && typeof loadPlantillaStats === 'function') loadPlantillaStats();
-  if(typeof galeriaShowView === 'function' && typeof galeriaView !== 'undefined') galeriaShowView(galeriaView);
-  if(typeof renderGallerySeasons === 'function') renderGallerySeasons();
-  if(typeof galeriaView !== 'undefined' && galeriaView === 'albums' && typeof renderGalleryAlbums === 'function') renderGalleryAlbums();
   if(typeof renderLeagueStandings === 'function') renderLeagueStandings();
   if(document.getElementById('comment-modal') && document.getElementById('comment-modal').classList.contains('active') && typeof commentModalCtx !== 'undefined' && commentModalCtx){
     const evForComment = attEvents.find(e => e.id === commentModalCtx.eventId);

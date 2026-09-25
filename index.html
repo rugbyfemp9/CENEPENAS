@@ -1258,21 +1258,8 @@
     </section>
 
     <!-- GALERÍA -->
-    <section class="section" id="sec-galeria">
-      <div class="back-link" id="galeria-back-link" onclick="galeriaGoBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span id="galeria-back-label">Vestuario</span></div>
-      <div class="section-head">
-        <h2 id="galeria-title" data-i18n="nav.galeria">Galería</h2>
-        <button class="cal-open-btn" id="add-album-btn" onclick="openAddAlbumModal()" data-i18n-attr="aria-label:galeria.addAlbum,title:galeria.addAlbum" aria-label="Añadir álbum" title="Añadir álbum" style="display:none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-      </div>
-
-      <!-- Nivel 1: temporadas -->
-      <div class="gallery-seasons" id="galeria-seasons-view"></div>
-
-      <!-- Nivel 2: álbumes de una temporada — cada uno abre su álbum de Google Photos -->
-      <div class="gallery-albums" id="galeria-albums-view" style="display:none;"></div>
-    </section>
+    <!-- Galería: la pinta Svelte (src/features/galeria/Galeria.svelte) -->
+    <section class="section" id="sec-galeria"></section>
 
     <!-- PERFIL DE USUARIO -->
     <section class="section" id="sec-perfil">
@@ -2292,38 +2279,7 @@
 </div>
 
 <!-- MODAL: AÑADIR ÁLBUM DE GALERÍA -->
-<div class="modal-overlay" id="add-album-modal" onclick="if(event.target===this) closeAddAlbumModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" data-i18n="galeria.addAlbum">Añadir álbum</h3>
-    <p class="modal-sub" data-i18n="galeria.modalSub">Las fotos se quedan en Google Photos: solo hace falta el enlace del álbum compartido.</p>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="galeria.seasonLabel">Temporada</span>
-        <select id="album-season-input" onchange="toggleNewSeasonField()" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);"></select>
-      </label>
-      <label id="album-new-season-wrap" style="display:none; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="galeria.newSeasonNameLabel">Nombre de la nueva temporada</span>
-        <input type="text" id="album-new-season-input" data-i18n-attr="placeholder:galeria.newSeasonPlaceholder" placeholder="Temporada 2027/2028" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="galeria.albumTitleLabel">Título del álbum</span>
-        <input type="text" id="album-title-input" data-i18n-attr="placeholder:galeria.albumTitlePlaceholder" placeholder="Partido vs CR Sagunt" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="galeria.coverLabel">Foto de portada (URL)</span>
-        <input type="url" id="album-cover-input" placeholder="https://..." style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="galeria.albumUrlLabel">Enlace del álbum de Google Photos</span>
-        <input type="url" id="album-url-input" placeholder="https://photos.app.goo.gl/..." style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeAddAlbumModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="saveNewAlbum()" data-i18n="att.saveGeneric">Guardar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="add-album-modal"></div>
 
 <!-- NAV INFERIOR — solo visible en móvil -->
 <nav class="bottom-nav">
@@ -2350,8 +2306,9 @@
 
 <!-- 2. LA APP. Son <script> clásicos (no módulos): comparten el ámbito global, así
      que las funciones siguen estando disponibles para los onclick="..." del HTML.
-     El orden importa: primero js/core/, luego js/features/ y js/main.js el último,
-     porque es el que arranca la app y llama a funciones de todos los demás. -->
+     El orden importa: primero js/core/, luego js/features/ y js/main.js el último.
+     Nada de esto arranca solo: src/main.js (Svelte, <script type="module"> al final,
+     que siempre se ejecuta después) monta las secciones migradas y llama a legacyBoot(). -->
 <script src="js/core/storage.js"></script>
 <script src="js/core/i18n.js"></script>
 <script src="js/core/supabase.js"></script>
@@ -2380,7 +2337,6 @@
 <script src="js/features/tricount.js"></script>
 <script src="js/features/liga.js"></script>
 <script src="js/features/gym.js"></script>
-<script src="js/features/galeria.js"></script>
 <script src="js/features/fantasy.js"></script>
 <script src="js/features/test.js"></script>
 <script src="js/main.js"></script>
@@ -2391,5 +2347,6 @@
      service worker para el "Añadir a pantalla de inicio"), así que no
      afecta a lo que ya funcionaba ahí. -->
 <script src="js/sw-register.js"></script>
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>

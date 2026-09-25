@@ -1,105 +1,105 @@
 /* ================= ARRANQUE =================
    Todos los demás archivos de js/ solo declaran funciones y estado (más algún
-   addEventListener). Lo que se ejecuta al cargar la página vive aquí, en el mismo
-   orden en que se ejecutaba cuando todo estaba en un único <script> de index.html.
+   addEventListener). Lo que se ejecuta al arrancar la app vive aquí, dentro de
+   legacyBoot(), en el mismo orden en que se ejecutaba cuando todo estaba en un único
+   <script> de index.html.
 
-   Este archivo tiene que cargarse el ÚLTIMO (ver el orden de los <script> en
-   index.html): llama a funciones repartidas por todos los demás archivos, y una
-   función de un <script> todavía no cargado no existe. Si añades código que deba
-   ejecutarse al arrancar, ponlo aquí y no suelto en el archivo de su sección. */
+   legacyBoot() la llama src/main.js (la parte en Svelte) cuando ya ha montado sus
+   componentes y ha dejado listo window.appBridge, que es por donde este código llama
+   a las secciones ya migradas. Si añades código que deba ejecutarse al arrancar,
+   ponlo aquí y no suelto en el archivo de su sección. */
+function legacyBoot(){
+  applyI18n();
 
-applyI18n();
+  // Si ya había una sesión abierta (recarga de página), entramos directos sin pedir login
+  supabaseClient.auth.getSession().then(({ data }) => {
+    if(data.session){
+      onAuthenticated(data.session.user);
+    }
+  });
 
-// Si ya había una sesión abierta (recarga de página), entramos directos sin pedir login
-supabaseClient.auth.getSession().then(({ data }) => {
-  if(data.session){
-    onAuthenticated(data.session.user);
-  }
-});
+  attEvents.push(...generateAutoTrainings());
 
-attEvents.push(...generateAutoTrainings());
+  // Partido añadido manualmente: CNPN (casa) vs Santboi, sábado 26/09/2026.
+  attEvents.push({
+    id: 'ce1',
+    type: 'match',
+    label: 'Partido vs Santboi',
+    date: 26,
+    month: 'Sep',
+    iso: '2026-09-26',
+    when: `${weekdayFullLabel(6)} ${formatShortDate('2026-09-26')} · ${HOME_VENUE.display} · 17:30h`,
+    place: HOME_VENUE.display,
+    placeMapsUrl: buildMapsSearchUrl(HOME_VENUE.mapsQuery),
+    isHome: true,
+    meetTime: '',
+    startTime: '17:30h',
+    endTime: '',
+    attendance: Object.fromEntries(roster.map(p => [p.id, 'pending'])),
+    comments: {}
+  });
 
-// Partido añadido manualmente: CNPN (casa) vs Santboi, sábado 26/09/2026.
-attEvents.push({
-  id: 'ce1',
-  type: 'match',
-  label: 'Partido vs Santboi',
-  date: 26,
-  month: 'Sep',
-  iso: '2026-09-26',
-  when: `${weekdayFullLabel(6)} ${formatShortDate('2026-09-26')} · ${HOME_VENUE.display} · 17:30h`,
-  place: HOME_VENUE.display,
-  placeMapsUrl: buildMapsSearchUrl(HOME_VENUE.mapsQuery),
-  isHome: true,
-  meetTime: '',
-  startTime: '17:30h',
-  endTime: '',
-  attendance: Object.fromEntries(roster.map(p => [p.id, 'pending'])),
-  comments: {}
-});
+  renderEventList();
+  renderNextMatchBanner();
+  renderWellnessReminderBanner();
+  toggleAttAddButtonVisibility();
+  toggleFineAddButtonVisibility();
 
-renderEventList();
-renderNextMatchBanner();
-renderWellnessReminderBanner();
-toggleAttAddButtonVisibility();
-toggleFineAddButtonVisibility();
+  renderProfile();
 
-renderProfile();
+  renderTreasury();
+  // No se llama a loadTreasuryEntries() aquí: se cargaba de más en TODAS las
+  // sesiones, incluso antes de iniciar sesión y aunque nadie entrara nunca en esta
+  // pestaña. setSection() ya llama a loadTreasuryEntries() cada vez que se entra de
+  // verdad en "comi-tesoreria", así que con eso basta.
 
-renderTreasury();
-// No se llama a loadTreasuryEntries() aquí: se cargaba de más en TODAS las
-// sesiones, incluso antes de iniciar sesión y aunque nadie entrara nunca en esta
-// pestaña. setSection() ya llama a loadTreasuryEntries() cada vez que se entra de
-// verdad en "comi-tesoreria", así que con eso basta.
+  renderTercerShoppingList();
+  // Igual que con Tesorería: setSection() ya recarga esto al entrar de verdad en
+  // "comi-tercer-temps", así que no hace falta pedirlo también aquí al arrancar.
 
-renderTercerShoppingList();
-// Igual que con Tesorería: setSection() ya recarga esto al entrar de verdad en
-// "comi-tercer-temps", así que no hace falta pedirlo también aquí al arrancar.
+  renderTercerTreasury();
+  // Mismo caso: setSection() recarga esto al entrar en "comi-tercer-temps".
 
-renderTercerTreasury();
-// Mismo caso: setSection() recarga esto al entrar en "comi-tercer-temps".
+  renderNotices();
 
-renderNotices();
+  renderLeague();
 
-renderLeague();
+  renderGymRoutine();
+  renderGymQuickCalcSelectors();
+  calculateGymQuickRm();
+  renderGymMarks();
+  renderGymRankingExerciseOptions();
+  renderGymAttendanceToday();
+  renderGymRanking();
 
-renderGymRoutine();
-renderGymQuickCalcSelectors();
-calculateGymQuickRm();
-renderGymMarks();
-renderGymRankingExerciseOptions();
-renderGymAttendanceToday();
-renderGymRanking();
+  renderTricount();
+  // Mismo caso que Tesorería y Comi Tercer Temps: setSection() ya recarga los gastos
+  // y las liquidaciones de Tricount cada vez que se entra de verdad en esa pestaña.
 
-renderGallerySeasons();
-galeriaShowView('seasons');
+  initFantasy();
+  renderThirdTime();
+  initThirdTimeFood();
 
-renderTricount();
-// Mismo caso que Tesorería y Comi Tercer Temps: setSection() ya recarga los gastos
-// y las liquidaciones de Tricount cada vez que se entra de verdad en esa pestaña.
+  // Estado inicial del historial: la app siempre arranca en "Inicio", así que dejamos
+  // esa como primera entrada (reemplazando la que ya puso el navegador al cargar la
+  // URL) para que el primer "atrás" tenga con qué comparar.
+  history.replaceState({ section: 'inicio' }, '', location.href);
 
-initFantasy();
-renderThirdTime();
-initThirdTimeFood();
-
-// Estado inicial del historial: la app siempre arranca en "Inicio", así que dejamos
-// esa como primera entrada (reemplazando la que ya puso el navegador al cargar la
-// URL) para que el primer "atrás" tenga con qué comparar.
-history.replaceState({ section: 'inicio' }, '', location.href);
-
-// Botón/gesto "atrás" del móvil (y también el de escritorio): en vez de salir de la
-// web, navega hacia atrás dentro de la propia app.
-//  1) Si hay algún modal abierto, el "atrás" solo lo cierra (no cambia de sección).
-//  2) Si no hay modal abierto, se vuelve a la sección anterior del historial.
-window.addEventListener('popstate', function(event){
-  const openModal = document.querySelector('.modal-overlay.active');
-  if(openModal){
-    openModal.classList.remove('active');
-    // Esta pulsada de "atrás" ya se ha consumido en cerrar el modal: reponemos la
-    // entrada de historial para que la sección de debajo no cambie todavía.
-    history.pushState(event.state || { section: 'inicio' }, '', location.href);
-    return;
-  }
-  const id = (event.state && event.state.section) || 'inicio';
-  setSection(id, { fromPopState: true });
-});
+  // Botón/gesto "atrás" del móvil (y también el de escritorio): en vez de salir de la
+  // web, navega hacia atrás dentro de la propia app.
+  //  1) Si hay algún modal abierto, el "atrás" solo lo cierra (no cambia de sección).
+  //  2) Si no hay modal abierto, se vuelve a la sección anterior del historial.
+  window.addEventListener('popstate', function(event){
+    const openModal = document.querySelector('.modal-overlay.active');
+    if(openModal){
+      openModal.classList.remove('active');
+      openModal.dispatchEvent(new Event('modal:close'));
+      // Esta pulsada de "atrás" ya se ha consumido en cerrar el modal: reponemos la
+      // entrada de historial para que la sección de debajo no cambie todavía.
+      history.pushState(event.state || { section: 'inicio' }, '', location.href);
+      return;
+    }
+    const id = (event.state && event.state.section) || 'inicio';
+    setSection(id, { fromPopState: true });
+  });
+}

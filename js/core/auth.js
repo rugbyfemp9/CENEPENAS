@@ -180,7 +180,7 @@ async function onAuthenticated(user){
     // se conocen a partir de aquí.
     toggleAttAddButtonVisibility();
     toggleFineAddButtonVisibility();
-    toggleAddAlbumButtonVisibility();
+    appBridge.sessionChanged();
     toggleClubTreasuryButtonsVisibility();
     toggleTercerTempsButtonsVisibility();
     toggleWellnessStaffCardVisibility();
@@ -261,7 +261,7 @@ async function onAuthenticated(user){
   // Galería: se recarga aquí con el id real fijado (para saber si esta cuenta es
   // Comi Xarxes) y queda sincronizada en directo entre todas las cuentas.
   try{
-    await loadGalleryData();
-    subscribeToGalleryRealtime();
+    await appBridge.galeria.load();
+    appBridge.galeria.subscribe();
   }catch(e){ console.error('No se ha podido cargar la Galería al iniciar sesión', e); }
 }

@@ -29,11 +29,7 @@ function setSection(id, opts){
 
   // Al entrar en Galería desde fuera, siempre se empieza por las temporadas, y se
   // recarga por si Comi Xarxes ha añadido algún álbum desde otra cuenta.
-  if(id === 'galeria' && typeof galeriaShowView === 'function'){
-    galeriaActiveSeasonId = null;
-    galeriaShowView('seasons');
-    if(typeof loadGalleryData === 'function') loadGalleryData();
-  }
+  if(id === 'galeria') appBridge.galeria.onEnter();
 
   // Al entrar en Fantasy, se refresca el desplegable de partidos y el banquillo de
   // disponibles por si han llegado partidos nuevos o jugadoras nuevas desde que se
