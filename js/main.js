@@ -54,13 +54,7 @@ function legacyBoot(){
 
   appBridge.avisos.refreshPinned();
 
-  renderGymRoutine();
-  renderGymQuickCalcSelectors();
-  calculateGymQuickRm();
-  renderGymMarks();
-  renderGymRankingExerciseOptions();
-  renderGymAttendanceToday();
-  renderGymRanking();
+  // Gym (Svelte) se pinta solo al montarse.
 
   initFantasy();
   renderThirdTime();

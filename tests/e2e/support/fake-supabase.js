@@ -96,7 +96,12 @@ function orPredicate(expr, isAnd = false) {
 }
 
 // Tables whose primary key is not "id" (an upsert without onConflict uses the primary key).
-const PRIMARY_KEYS = { test_scores: ['profile_id'] };
+const PRIMARY_KEYS = {
+  test_scores: ['profile_id'],
+  att_attendance: ['event_id', 'user_id'],
+  matchday_checklist_state: ['owner_id'],
+  matchday_rollcall: ['match_id'],
+};
 
 const RESERVED = new Set(['select', 'order', 'limit', 'offset', 'on_conflict', 'columns']);
 
@@ -148,8 +153,9 @@ export class FakeSupabase {
   }
 
   nextId() {
+    // Own prefix, so generated ids never collide with the seed's (00000000-…).
     const n = String(this.idCounter++).padStart(12, '0');
-    return `00000000-0000-4000-8000-${n}`;
+    return `f0000000-0000-4000-8000-${n}`;
   }
 
   withDefaults(row) {
@@ -182,7 +188,7 @@ export class FakeSupabase {
     return route.fulfill({
       status,
       contentType: 'application/json',
-      headers: { 'Access-Control-Allow-Origin': '*', ...headers },
+      headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Expose-Headers': 'Content-Range', ...headers },
       body: body === undefined ? '' : JSON.stringify(body),
     });
   }
@@ -265,7 +271,7 @@ export class FakeSupabase {
       result = result.slice(offset, limit ? offset + Number(limit) : undefined);
       result = this.embed(tableName, clone(result), url.searchParams.get('select'));
       const extra = prefer.includes('count=') ? { 'Content-Range': `${offset}-${offset + result.length - 1}/${total}` } : {};
-      if (method === 'HEAD') return route.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', ...extra }, body: '' });
+      if (method === 'HEAD') return route.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Expose-Headers': 'Content-Range', ...extra }, body: '' });
       return respond(result, extra);
     }
 

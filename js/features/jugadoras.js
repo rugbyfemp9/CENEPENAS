@@ -101,8 +101,7 @@ function applyPlantillaRows(data){
   // fresco, para que un cambio de foto de perfil llegue en directo sin recargar. Cada
   // función se protege sola si la vista correspondiente no está abierta ahora mismo.
   if(typeof renderProfile === 'function') renderProfile();
-  if(typeof renderGymAttendanceToday === 'function') renderGymAttendanceToday();
-  if(typeof renderGymRanking === 'function') renderGymRanking();
+  appBridge.gym.refresh(); // asistencia de hoy y ranking del Gym
   if(typeof renderRollCallList === 'function') renderRollCallList();
   if(typeof renderEventDetail === 'function') renderEventDetail();
   if(typeof renderFinesTable === 'function') renderFinesTable();

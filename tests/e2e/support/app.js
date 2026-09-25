@@ -59,7 +59,10 @@ export function relevantErrors(errors) {
 
 export async function openApp(page) {
   await page.goto('./index.html');
-  // Startup does several async Supabase reads; wait until the network settles.
+  // With a session, wait until login has finished (the overlay is hidden) — on a
+  // loaded machine that can take a while — then until the Supabase reads settle.
+  await page.waitForFunction((key) => !localStorage.getItem(key)
+    || document.getElementById('auth-overlay')?.classList.contains('hidden'), `sb-${PROJECT_REF}-auth-token`, { timeout: 20_000 });
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(300);
 }
