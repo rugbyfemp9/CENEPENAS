@@ -237,8 +237,7 @@ async function onAuthenticated(user){
   // Los avisos son compartidos entre toda la plantilla: se refrescan también al
   // iniciar sesión, para traer los que hayan publicado otras personas.
   try{
-    renderNotices();
-    renderInicioTopNotices();
+    appBridge.avisos.refreshAll();
   }catch(e){ console.error('No se han podido cargar los avisos al iniciar sesión', e); }
 
   // Multas: se recargan aquí, ya con el id real fijado, para que el botón "Añadir

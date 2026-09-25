@@ -9,8 +9,11 @@
 import { appBridge } from './lib/bridge.js';
 import { refreshSession } from './lib/session.svelte.js';
 import * as galeria from './features/galeria/index.js';
+import * as test from './features/test/index.js';
+import * as liga from './features/liga/index.js';
+import * as avisos from './features/avisos/index.js';
 
-for (const feature of [galeria]) feature.install(appBridge);
+for (const feature of [galeria, test, liga, avisos]) feature.install(appBridge);
 
 refreshSession();
 window.legacyBoot();
