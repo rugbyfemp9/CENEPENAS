@@ -26,6 +26,7 @@ const I18N = {
     'nav.gym': 'Gym',
     'nav.partidos': 'Partidos',
     'nav.perfil': 'Mi perfil',
+    'nav.perfilShort': 'Perfil',
     'topbar.you': 'TÚ',
 
     'vestuario.title': 'Vestuario',
@@ -666,6 +667,7 @@ const I18N = {
     'nav.gym': 'Gym',
     'nav.partidos': 'Partits',
     'nav.perfil': 'El meu perfil',
+    'nav.perfilShort': 'Perfil',
     'topbar.you': 'TU',
 
     'vestuario.title': 'Vestidor',
