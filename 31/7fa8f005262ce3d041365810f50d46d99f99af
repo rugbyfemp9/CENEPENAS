@@ -1,0 +1,21 @@
+tests/e2e/support/fake-supabase.js
+  s_1fdfe932c62174::t_65e2bd89271375 99-104,156,158,191,274
+tests/e2e/support/app.js
+  s_1fdfe932c62174::t_65e2bd89271375 62-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "317fa8f005262ce3d041365810f50d46d99f99af",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
