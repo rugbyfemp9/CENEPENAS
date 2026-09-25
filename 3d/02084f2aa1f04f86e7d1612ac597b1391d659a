@@ -1,0 +1,95 @@
+src/features/galeria/index.js
+  s_1fdfe932c62174::t_6c489d981b3db2 1-20
+src/lib/bridge.js
+  s_1fdfe932c62174::t_e8e0a5020523db 1-11
+tests/e2e/snapshot.spec.js
+  s_1fdfe932c62174::t_419c04a9a6eab2 1-50
+public/js/core/navigation.js
+  s_1fdfe932c62174::t_1beb047eca3dec 32
+public/js/features/perfil.js
+  s_1fdfe932c62174::t_1beb047eca3dec 249
+.github/workflows/ci.yml
+  s_1fdfe932c62174::t_dbe466c27a4bba 1-22
+README.md
+  s_1fdfe932c62174::t_665ddc02e10201 3-26,31-44,48,50-58,60-64,67-70
+vite.config.js
+  s_1fdfe932c62174::t_1be84fc3cf7956 1-8,11
+  s_1fdfe932c62174::t_6c489d981b3db2 9-10
+public/js/main.js
+  s_1fdfe932c62174::t_1beb047eca3dec 3-105
+tests/e2e/support/app.js
+  s_1fdfe932c62174::t_8dfbad38ebdea2 1-70
+src/lib/mount.js
+  s_1fdfe932c62174::t_6c489d981b3db2 1-20
+tests/e2e/galeria.spec.js
+  s_1fdfe932c62174::t_dfe4eaeb9beea3 1-116
+src/features/galeria/galeria.svelte.js
+  s_1fdfe932c62174::t_d7806fc72fad01 1-2,7,9-13,106-115,117-120,126,131-134,136-138,143-145,148,150,153-157,159,161,163,167-168,170,172-174,176-177,183,186,191,195-197,199,204,208-210,214-215,217-218,220,222,228-229,231
+  s_1fdfe932c62174::t_a61aa830cb5858 234-262
+svelte.config.js
+  s_1fdfe932c62174::t_1be84fc3cf7956 1-5
+package.json
+  s_1fdfe932c62174::t_1be84fc3cf7956 10-13,16-17
+  s_1fdfe932c62174::t_419c04a9a6eab2 14-15
+public/js/core/auth.js
+  s_1fdfe932c62174::t_1beb047eca3dec 183,264-265
+src/lib/session.svelte.js
+  s_1fdfe932c62174::t_e8e0a5020523db 1-11
+src/lib/i18n.svelte.js
+  s_1fdfe932c62174::t_e8e0a5020523db 1-14
+tests/e2e/smoke.spec.js
+  s_1fdfe932c62174::t_dfe4eaeb9beea3 1-27
+src/lib/legacy.js
+  s_1fdfe932c62174::t_e8e0a5020523db 1-21
+index.html
+  ai_agent 1261-1262,2282,2305,2309-2311
+  s_1fdfe932c62174::t_1be84fc3cf7956 2350
+public/js/core/i18n.js
+  s_1fdfe932c62174::t_1beb047eca3dec 1332-1333
+src/main.js
+  s_1fdfe932c62174::t_6c489d981b3db2 1-16
+src/lib/Modal.svelte
+  s_1fdfe932c62174::t_e8e0a5020523db 1-15,17-27
+  s_1fdfe932c62174::t_fb47c45af14065 16
+src/features/galeria/AddAlbumModal.svelte
+  s_1fdfe932c62174::t_a61aa830cb5858 1-42
+playwright.config.js
+  s_1fdfe932c62174::t_419c04a9a6eab2 1-19
+scripts/compare-snapshots.mjs
+  s_1fdfe932c62174::t_419c04a9a6eab2 1-45
+tests/e2e/fixtures/seed.js
+  s_1fdfe932c62174::t_3fb169ffcf22b8 1-612
+.gitignore
+  s_1fdfe932c62174::t_1be84fc3cf7956 9-14
+  s_1fdfe932c62174::t_419c04a9a6eab2 15
+tests/e2e/support/fake-supabase.js
+  s_1fdfe932c62174::t_40bf41c0003c42 1-222,237-262,264-265,267-327,329-332,336-337,339-342
+  s_1fdfe932c62174::t_d4d1c25ce539e5 328,333-335,338
+  s_1fdfe932c62174::t_3616df063283c0 223-236,263,266
+package-lock.json
+  ai_agent 1-1176
+src/features/galeria/Galeria.svelte
+  s_1fdfe932c62174::t_a61aa830cb5858 1-11,14-40,42-52
+  s_1fdfe932c62174::t_fb47c45af14065 12-13
+  s_1fdfe932c62174::t_dbe466c27a4bba 41
+.github/workflows/deploy.yml
+  s_1fdfe932c62174::t_dbe466c27a4bba 1-42
+src/lib/url.js
+  s_1fdfe932c62174::t_e8e0a5020523db 1-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3d02084f2aa1f04f86e7d1612ac597b1391d659a",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
