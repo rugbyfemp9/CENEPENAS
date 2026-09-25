@@ -10,12 +10,13 @@ export const VIEWPORTS = {
   mobile: { width: 390, height: 844 },
 };
 
-// Every section id the app can navigate to (keys of `titles` in js/core/state.js).
+// Every section of the app (the <section id="sec-..."> elements in index.html).
 export const SECTIONS = [
-  'inicio', 'asistencia', 'asistencia-detalle', 'vestuario', 'multas', 'tricount', 'liga',
-  'tercer', 'tercer-historial', 'tercer-detalle', 'plantilla', 'fantasy', 'galeria', 'gym',
-  'partidos', 'partido-detalle', 'wellness-staff', 'comisiones', 'comi-activitats',
-  'comi-xarxes', 'comi-tercer-temps', 'comi-tesoreria', 'comi-gira', 'perfil',
+  'inicio', 'asistencia', 'asistencia-detalle', 'vestuario', 'wellness-staff', 'test',
+  'partidos', 'partido-detalle', 'gym', 'gym-entrenamiento', 'gym-entrenamiento-dia',
+  'gym-equipo', 'comisiones', 'comi-activitats', 'comi-xarxes', 'comi-tercer-temps',
+  'comi-tesoreria', 'comi-gira', 'multas', 'tricount', 'liga', 'tercer', 'tercer-historial',
+  'tercer-detalle', 'plantilla', 'fantasy', 'galeria', 'perfil',
 ];
 
 export { USERS };
