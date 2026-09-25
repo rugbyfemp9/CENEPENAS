@@ -95,6 +95,9 @@ function orPredicate(expr, isAnd = false) {
   return isAnd ? (row) => preds.every((p) => p(row)) : (row) => preds.some((p) => p(row));
 }
 
+// Tables whose primary key is not "id" (an upsert without onConflict uses the primary key).
+const PRIMARY_KEYS = { test_scores: ['profile_id'] };
+
 const RESERVED = new Set(['select', 'order', 'limit', 'offset', 'on_conflict', 'columns']);
 
 function filtersFrom(url) {
@@ -271,7 +274,7 @@ export class FakeSupabase {
     if (method === 'POST') {
       const incoming = Array.isArray(body) ? body : [body];
       const upsert = prefer.includes('resolution=merge-duplicates') || prefer.includes('resolution=ignore-duplicates');
-      const conflictCols = (url.searchParams.get('on_conflict') || 'id').split(',');
+      const conflictCols = url.searchParams.get('on_conflict') ? url.searchParams.get('on_conflict').split(',') : (PRIMARY_KEYS[tableName] || ['id']);
       this.mutations.push({ kind: 'rest', method: upsert ? 'UPSERT' : 'INSERT', table: tableName, body: incoming, onConflict: upsert ? conflictCols : undefined });
       const written = [];
       for (const item of incoming) {

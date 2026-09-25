@@ -60,9 +60,7 @@ function legacyBoot(){
   renderTercerTreasury();
   // Mismo caso: setSection() recarga esto al entrar en "comi-tercer-temps".
 
-  renderNotices();
-
-  renderLeague();
+  appBridge.avisos.refreshPinned();
 
   renderGymRoutine();
   renderGymQuickCalcSelectors();

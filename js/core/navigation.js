@@ -53,8 +53,7 @@ function setSection(id, opts){
   // Al entrar en Inicio también se refrescan los avisos, por si alguien ha publicado
   // uno nuevo (fijado o notificación) desde otro dispositivo.
   if(id === 'inicio'){
-    renderNotices();
-    renderInicioTopNotices();
+    appBridge.avisos.refreshAll();
   }
 
   // Al entrar en Perfil, se recalculan las estadísticas (partidos jugados, % de

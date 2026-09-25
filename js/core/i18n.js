@@ -1333,12 +1333,9 @@ function setLang(lang){
   window.dispatchEvent(new CustomEvent('app:langchange', { detail: lang }));
   if(typeof renderNextMatchBanner === 'function') renderNextMatchBanner();
   if(typeof renderWellnessReminderBanner === 'function') renderWellnessReminderBanner();
-  if(typeof renderLeagueBanner === 'function') renderLeagueBanner();
   if(typeof renderInicioFinesBanner === 'function') renderInicioFinesBanner();
   if(typeof renderInicioTricountBanner === 'function') renderInicioTricountBanner();
   if(typeof renderInicioTercerBanner === 'function') renderInicioTercerBanner();
-  if(typeof renderNotices === 'function') renderNotices();
-  if(typeof renderInicioTopNotices === 'function') renderInicioTopNotices();
   if(typeof checkInicioSharedLineupBanner === 'function') checkInicioSharedLineupBanner();
   if(typeof renderProfile === 'function' && typeof currentUserId !== 'undefined' && currentUserId) renderProfile();
   if(typeof renderEventList === 'function') renderEventList();
@@ -1355,19 +1352,9 @@ function setLang(lang){
   if(typeof renderTricount === 'function') renderTricount();
   if(typeof renderPlantillaTable === 'function' && typeof plantillaData !== 'undefined' && plantillaData.length) renderPlantillaTable();
   if(typeof plantillaActiveTab !== 'undefined' && plantillaActiveTab === 'estadisticas' && typeof loadPlantillaStats === 'function') loadPlantillaStats();
-  if(typeof renderLeagueStandings === 'function') renderLeagueStandings();
   if(document.getElementById('comment-modal') && document.getElementById('comment-modal').classList.contains('active') && typeof commentModalCtx !== 'undefined' && commentModalCtx){
     const evForComment = attEvents.find(e => e.id === commentModalCtx.eventId);
     if(evForComment) document.getElementById('comment-modal-sub').textContent = `${evForComment.label} · ${eventWhenDisplay(evForComment)}`;
-  }
-  if(typeof testQuizAnswered !== 'undefined' && document.getElementById('test-quiz-play') && document.getElementById('test-quiz-play').style.display !== 'none'){
-    if(testQuizAnswered && typeof testQuizSelected !== 'undefined' && testQuizSelected.length){
-      const total = testQuizSelected.length;
-      document.getElementById('test-quiz-next-btn').textContent = (testQuizIndex === total - 1) ? t('test.finishBtn') : t('test.nextBtn');
-    }
-  }
-  if(document.getElementById('test-quiz-results') && document.getElementById('test-quiz-results').style.display !== 'none'){
-    document.getElementById('test-quiz-score-text').textContent = t('test.resultDefault');
   }
 }
 

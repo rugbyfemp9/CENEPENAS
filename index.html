@@ -280,15 +280,7 @@
           <!-- Se rellena con renderInicioTricountBanner() -->
         </div>
       </div>
-      <div class="card" id="inicio-notices-card">
-        <div class="section-head" style="margin-bottom:14px;">
-          <h3 style="margin:0; text-transform:uppercase; font-size:16px;" data-i18n="notices.title">Avisos</h3>
-          <button class="cal-open-btn small" onclick="openAddNoticeModal()" data-i18n-attr="aria-label:notices.add,title:notices.add" aria-label="Añadir aviso" title="Añadir aviso">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-          </button>
-        </div>
-        <div id="notices-list"></div>
-      </div>
+      <div data-mount="inicio-notices-card"></div>
     </section>
 
     <!-- ASISTENCIA -->
@@ -536,47 +528,8 @@
     </section>
 
     <!-- TEST (sección de pruebas) -->
-    <section class="section" id="sec-test">
-      <div class="back-link" id="test-back-vestuario" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-      <div class="back-link" id="test-back-intro" onclick="exitTestQuiz()" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="nav.test">Test</span></div>
-      <div class="section-head">
-        <h2 data-i18n="nav.test">Test</h2>
-        <button class="cal-open-btn small" onclick="openTestRankingModal()" data-i18n-attr="aria-label:test.rankingAria,title:test.rankingAria" aria-label="Ranking de puntuación" title="Ranking de puntuación">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19h20"/><path d="M3.5 19l-1-9.5 5 3.5 4.5-7 4.5 7 5-3.5-1 9.5"/></svg>
-        </button>
-      </div>
-
-      <div id="test-quiz-intro">
-        <div class="card test-quiz-intro-card">
-          <p data-i18n="test.introText">Ponte a prueba con 10 preguntas tipo test.</p>
-          <button class="btn" onclick="startTestQuiz()" data-i18n="test.startBtn">Iniciar test</button>
-        </div>
-      </div>
-
-      <div id="test-quiz-play" style="display:none;">
-        <div class="test-quiz-progress">
-          <div class="test-quiz-progress-bar"><div class="fill" id="test-quiz-progress-fill"></div></div>
-          <span id="test-quiz-progress-label">1 / 10</span>
-        </div>
-        <div class="card test-quiz-card">
-          <h3 id="test-quiz-question"></h3>
-          <div class="test-quiz-options" id="test-quiz-options"></div>
-          <div class="test-quiz-explanation" id="test-quiz-explanation" style="display:none;">
-            <b data-i18n="test.explanationLabel">Explicación</b>
-            <p id="test-quiz-explanation-text"></p>
-          </div>
-        </div>
-        <button class="btn test-quiz-next-btn" id="test-quiz-next-btn" onclick="nextTestQuizQuestion()" style="display:none;" data-i18n="test.nextBtn">Siguiente</button>
-      </div>
-
-      <div id="test-quiz-results" style="display:none;">
-        <div class="card test-quiz-intro-card">
-          <div class="test-quiz-score" id="test-quiz-score">0/10</div>
-          <p id="test-quiz-score-text" data-i18n="test.resultDefault">¡Test completado!</p>
-          <button class="btn" onclick="startTestQuiz()" data-i18n="test.restartBtn">Volver a intentarlo</button>
-        </div>
-      </div>
-    </section>
+    <!-- Test: lo pinta Svelte (src/features/test/Test.svelte) -->
+    <section class="section" id="sec-test"></section>
 
     <!-- PARTIDOS -->
     <section class="section" id="sec-partidos">
@@ -1056,38 +1009,8 @@
     </div>
 
     <!-- LIGA -->
-    <section class="section" id="sec-liga">
-      <div class="back-link" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-      <div class="section-head">
-        <h2 data-i18n="nav.liga">Liga</h2>
-        <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Divisió d'Honor Catalana AON</span>
-      </div>
-
-      <div class="simple-tabs liga-tabs">
-        <button class="active" data-liga-tab="clasificacion" onclick="setLigaTab('clasificacion')" data-i18n="liga.tabStandings">Clasificación</button>
-        <button data-liga-tab="resultados" onclick="setLigaTab('resultados')" data-i18n="liga.tabResults">Resultados</button>
-      </div>
-
-      <!-- rugby.cat bloquea que su widget (matchready.es) se incruste en otras páginas
-           (X-Frame-Options), así que no es viable mostrarlo en directo aquí dentro.
-           Esta tabla es una foto fija de los datos; para verla siempre al día usa el
-           enlace de abajo, o pídeme que la actualice y la repaso a mano. -->
-      <div class="liga-panel active" id="liga-panel-clasificacion">
-        <div class="card liga-table-card">
-          <div class="liga-table-scroll">
-            <table class="liga-table" id="liga-standings-table"></table>
-          </div>
-        </div>
-      </div>
-
-      <div class="liga-panel" id="liga-panel-resultados">
-        <div id="liga-results-list"></div>
-      </div>
-
-      <div class="liga-source-note">
-        <span data-i18n="liga.sourceNotePrefix">Datos de la temporada 2025-26, según</span> <a href="https://rugby.cat/dhc-femenina/divisio-dhonor-catalana-aon/" target="_blank" rel="noopener">rugby.cat</a><span data-i18n="liga.sourceNoteSuffix">. rugby.cat no permite incrustar su tabla en directo en otras páginas, así que esto es una foto fija: para verla siempre actualizada, abre el enlace, o pídeme que la revise y la ponga al día.</span>
-      </div>
-    </section>
+    <!-- Liga: la pinta Svelte (src/features/liga/Liga.svelte) -->
+    <section class="section" id="sec-liga"></section>
 
     <!-- TERCER TIEMPO — LISTA DE PARTIDOS -->
     <section class="section" id="sec-tercer">
@@ -1578,29 +1501,7 @@
 </div>
 
 <!-- MODAL: AÑADIR AVISO -->
-<div class="modal-overlay" id="add-notice-modal" onclick="if(event.target===this) closeAddNoticeModal()">
-  <div class="modal-box" style="max-width:380px;">
-    <h3 style="margin-top:0;">Añadir aviso</h3>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Tipo de aviso
-        <div class="notice-type-quick" id="notice-type-quick">
-          <button type="button" data-type="pinned" class="active" onclick="setNoticeType('pinned')">📌 Fijado en Avisos</button>
-          <button type="button" data-type="banner" onclick="setNoticeType('banner')">📢 Notificación arriba</button>
-        </div>
-        <div class="notice-type-hint" id="notice-type-hint">Se queda fijado en "Avisos" hasta que tú lo borres.</div>
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        Texto del aviso
-        <textarea id="notice-text-input" placeholder="Escribe aquí el aviso..." style="min-height:90px;"></textarea>
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeAddNoticeModal()">Cancelar</button>
-      <button class="btn" onclick="saveNotice()">Publicar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="add-notice-modal"></div>
 
 <!-- MODAL: REGISTRAR MARCA (1RM) -->
 <div class="modal-overlay" id="gym-rm-modal" onclick="if(event.target===this) closeGymRmModal()">
@@ -1668,15 +1569,7 @@
 </div>
 
 <!-- MODAL: RANKING DEL TEST -->
-<div class="modal-overlay" id="test-ranking-modal" onclick="if(event.target===this) closeTestRankingModal()">
-  <div class="modal-box" style="max-width:380px;">
-    <h3 style="margin-top:0;" data-i18n="test.rankingTitle">Ranking del test</h3>
-    <div id="test-ranking-list"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeTestRankingModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="test-ranking-modal"></div>
 
 <!-- MODAL: SUBIR PDF DEL ACTA DEL PARTIDO -->
 <div class="modal-overlay" id="match-report-upload-modal" onclick="if(event.target===this) closeMatchReportUploadModal()">
@@ -2333,12 +2226,9 @@
 <script src="js/features/perfil.js"></script>
 <script src="js/features/tesoreria.js"></script>
 <script src="js/features/comi-tercer-temps.js"></script>
-<script src="js/features/avisos.js"></script>
 <script src="js/features/tricount.js"></script>
-<script src="js/features/liga.js"></script>
 <script src="js/features/gym.js"></script>
 <script src="js/features/fantasy.js"></script>
-<script src="js/features/test.js"></script>
 <script src="js/main.js"></script>
 
 <!-- Registro del service worker: imprescindible para que Chrome (Android y
