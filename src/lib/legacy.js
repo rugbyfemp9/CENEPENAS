@@ -9,7 +9,8 @@
    currentLang, t, readCache, writeCache, setSection, displayName, initials, computeDisplayNames,
    monthAbbrLabel, autoMonthAbbr, monthFullLabel, withDePrefix, todayLocalIso,
    effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate, attEvents, attEventType,
-   fines:writable, loadPlantilla, formatFullDate */
+   fines:writable, formatFullDate, thirdTimeGroups, renderThirdTime, renderRollCallList, renderEventDetail,
+   findRosterMatchForReportPlayer, renderProfile, openEditProfileModal */
 
 export const legacy = {
   get supabase() { return supabaseClient; },
@@ -49,9 +50,23 @@ export const legacy = {
   // src/features/multas/multas.svelte.js).
   get fines() { return fines; },
   set fines(value) { fines = value; },
-  // Recarga la Plantilla (tabla profiles) y el roster; lo que se pinta con él (tarjetas
-  // de cada jugadora, que cuentan sus multas) se refresca solo.
-  loadPlantilla: () => loadPlantilla(),
+  // Grupos A/B del Tercer tiempo (js/features/tercer-tiempo.js): los rellena la carga de
+  // la Plantilla (src/features/jugadoras) a partir de profiles.grupo_tercer_tiempo.
+  get thirdTimeGroups() { return thirdTimeGroups; },
+  renderThirdTime: () => renderThirdTime(),
+  // Repintan, con el roster recién cargado, la Lista del partido (partidos.js) y el
+  // detalle del evento abierto en Asistencia (asistencia.js). Se protegen solas si esa
+  // vista no está abierta.
+  renderRollCallList: () => renderRollCallList(),
+  renderEventDetail: () => renderEventDetail(),
+  // Cruza una fila de match_report_players con el roster (por perfil, licencia o nombre),
+  // igual que en el acta de cada partido (js/features/actas.js).
+  findRosterMatchForReportPlayer: (row) => findRosterMatchForReportPlayer(row),
+  // Mi perfil sigue en el código antiguo (js/features/perfil.js).
+  renderProfile: () => renderProfile(),
+  // Modal de editar perfil; con un id, la cuenta admin edita el de otra jugadora (botón
+  // "Editar" de Jugadoras).
+  openEditProfileModal: (targetId) => openEditProfileModal(targetId),
   attEventType: (ev) => attEventType(ev),
   get lang() { return currentLang; },
   t: (key, vars) => t(key, vars),

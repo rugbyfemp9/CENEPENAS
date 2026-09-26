@@ -140,3 +140,12 @@ function setSection(id, opts){
 
   window.scrollTo({top:0, behavior:'instant'});
 }
+
+// Mientras cualquier <select> de la app tiene el foco (su panel puede estar desplegado),
+// ocultamos el menú inferior fijo para que no lo tape con su franja oscura en móvil.
+document.addEventListener('focusin', (e) => {
+  if(e.target.tagName === 'SELECT') document.body.classList.add('select-open');
+});
+document.addEventListener('focusout', (e) => {
+  if(e.target.tagName === 'SELECT') document.body.classList.remove('select-open');
+});

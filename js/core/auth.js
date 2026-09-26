@@ -192,8 +192,8 @@ async function onAuthenticated(user){
     toggleStaffOnlyPagesVisibility();
   }
 
-  await loadPlantilla();
-  subscribeToProfilesRealtime();
+  await appBridge.jugadoras.load();
+  appBridge.jugadoras.subscribeRealtime();
 
   // Asistencia/Calendario y el módulo de Wellness (banner de Inicio + botón directo
   // de Cos Tècnic en cada evento) dependen de refreshSharedEventsAndUI(): se llama

@@ -59,8 +59,8 @@ supabaseClient
     if(eventId) loadMatchReport(eventId);
     // Si tienes abierta la pestaña "Estadísticas" de Jugadoras, se refresca con el
     // nuevo acta sin necesidad de recargar la página.
-    if(document.getElementById('sec-plantilla')?.classList.contains('active') && plantillaActiveTab === 'estadisticas'){
-      loadPlantillaStats();
+    if(document.getElementById('sec-plantilla')?.classList.contains('active') && appBridge.jugadoras.activeTab === 'estadisticas'){
+      appBridge.jugadoras.loadStats();
     }
     // Lo mismo con "Partidos jugados" en tu Perfil, si lo tienes abierto.
     if(document.getElementById('sec-perfil')?.classList.contains('active')){

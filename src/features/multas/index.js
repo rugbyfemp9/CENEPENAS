@@ -39,7 +39,7 @@ export function install(bridge) {
     canManage: canManageFines,
     // Tras iniciar sesión o editar el perfil, después de appBridge.sessionChanged().
     permissionsChanged,
-    // Cuando cambian avatares/nombres del roster (jugadoras.js, perfil.js).
+    // Cuando cambian avatares/nombres del roster (perfil.js; Jugadoras lo importa directamente).
     renderTable: renderFinesTable,
     renderConfirmRequests: renderFineConfirmRequests,
     renderPlayerSearch: renderFinePlayerGrid,

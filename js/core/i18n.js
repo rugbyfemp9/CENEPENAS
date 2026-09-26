@@ -1344,8 +1344,6 @@ function setLang(lang){
   if(typeof renderThirdTime === 'function') renderThirdTime();
   if(typeof renderThirdTimeFood === 'function') renderThirdTimeFood();
   if(typeof renderMatchReport === 'function' && typeof currentPartidoId !== 'undefined' && currentPartidoId) renderMatchReport(currentPartidoId);
-  if(typeof renderPlantillaTable === 'function' && typeof plantillaData !== 'undefined' && plantillaData.length) renderPlantillaTable();
-  if(typeof plantillaActiveTab !== 'undefined' && plantillaActiveTab === 'estadisticas' && typeof loadPlantillaStats === 'function') loadPlantillaStats();
   if(document.getElementById('comment-modal') && document.getElementById('comment-modal').classList.contains('active') && typeof commentModalCtx !== 'undefined' && commentModalCtx){
     const evForComment = attEvents.find(e => e.id === commentModalCtx.eventId);
     if(evForComment) document.getElementById('comment-modal-sub').textContent = `${evForComment.label} · ${eventWhenDisplay(evForComment)}`;

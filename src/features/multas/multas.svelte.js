@@ -17,6 +17,7 @@ import { legacy } from '../../lib/legacy.js';
 import { session } from '../../lib/session.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { treasury, treasuryCommissionMembers } from '../tesoreria/tesoreria.svelte.js';
+import { loadPlantilla } from '../jugadoras/jugadoras.svelte.js';
 
 // Los 4 motivos fijos, cada uno con su importe
 export const fineReasons = [
@@ -128,7 +129,7 @@ export async function loadFines() {
   renderFinesHistory();
   renderFineConfirmRequests();
   updateFinesSummaries();
-  legacy.loadPlantilla();
+  loadPlantilla();
 }
 
 // Inserta una multa nueva en Supabase y, si sale bien, sustituye su id local (temporal)
@@ -641,7 +642,7 @@ export function saveFine() {
   });
   closeFineModal();
   refreshAfterChange();
-  legacy.loadPlantilla();
+  loadPlantilla();
 }
 
 // ---- Editar multa: mismo patrón que el modal de alta, pero centrado en una
@@ -707,7 +708,7 @@ export async function saveEditFine() {
   const idToUpdate = editFineModal.fineId;
   closeEditFineModal();
   refreshAfterChange();
-  legacy.loadPlantilla();
+  loadPlantilla();
 
   await persistFineUpdate(idToUpdate, { playerId: editFineModal.playerId, reasonId: newReasonId });
 }

@@ -680,97 +680,7 @@
     </section>
 
     <!-- JUGADORES -->
-    <section class="section" id="sec-plantilla">
-      <div class="back-link" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-      <div class="section-head">
-        <h2 data-i18n="plantilla.title">Jugadoras</h2>
-        <div style="display:flex; gap:8px;">
-          <button class="cal-open-btn" onclick="loadPlantilla()" data-i18n-attr="aria-label:plantilla.refresh,title:plantilla.refresh" aria-label="Actualizar" title="Actualizar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="gym-day-group-tabs">
-        <button class="gym-day-group-tab active" data-plantilla-tab="datos" onclick="setPlantillaTab('datos')" data-i18n="plantilla.tabData">Datos</button>
-        <button class="gym-day-group-tab" data-plantilla-tab="estadisticas" onclick="setPlantillaTab('estadisticas')" data-i18n="plantilla.tabStats">Estadísticas</button>
-      </div>
-
-      <div id="plantilla-panel-datos">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
-          <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-            <span data-i18n="plantilla.positionLabel">Posición</span>
-            <select id="plantilla-position-filter" onchange="setPlantillaPositionFilter(this.value)" style="font-family:'Roboto',sans-serif; font-size:13px; padding:6px 10px; border-radius:8px; border:1.5px solid var(--line); color:var(--navy); background:var(--white); text-transform:none; font-weight:500;">
-              <option value="" data-i18n="plantilla.allPositions">Todas</option>
-              <option value="delantera" data-i18n="plantilla.posForward">Delantera</option>
-              <option value="3/4">3/4</option>
-            </select>
-          </label>
-          <div class="sort-menu-wrap">
-            <button class="cal-open-btn" id="plantilla-sort-btn" onclick="togglePlantillaSortMenu()" data-i18n-attr="aria-label:plantilla.sort,title:plantilla.sort" aria-label="Ordenar" title="Ordenar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
-            </button>
-            <div class="sort-menu" id="plantilla-sort-menu">
-              <button type="button" data-sort="alfabetico" class="active" onclick="setPlantillaSort('alfabetico')" data-i18n="plantilla.sortAlpha">Alfabéticamente</button>
-              <button type="button" data-sort="nacimiento" onclick="setPlantillaSort('nacimiento')" data-i18n="plantilla.birthdate">Fecha de nacimiento</button>
-              <button type="button" data-sort="comision" onclick="setPlantillaSort('comision')" data-i18n="plantilla.commission">Comisión</button>
-              <button type="button" data-sort="tarjetas" onclick="setPlantillaSort('tarjetas')" data-i18n="plantilla.sortCardsDesc">Nº de tarjetas (de más a menos)</button>
-            </div>
-          </div>
-        </div>
-        <div class="card players-table-card">
-          <table class="players-table">
-            <thead>
-              <tr>
-                <th data-i18n="fines.player">Jugadora</th>
-                <th data-i18n="plantilla.birthdate">Fecha de nacimiento</th>
-                <th data-i18n="plantilla.role">Rol</th>
-                <th data-i18n="plantilla.rango">Rango</th>
-                <th data-i18n="plantilla.positionLabel">Posición</th>
-                <th data-i18n="plantilla.commission">Comisión</th>
-                <th data-i18n="plantilla.license">Núm. de licencia</th>
-                <th id="plantilla-th-actions" style="display:none;" data-i18n="att.edit">Editar</th>
-              </tr>
-            </thead>
-            <tbody id="plantilla-grid">
-              <tr><td colspan="7"><div class="att-roster-empty" data-i18n="plantilla.loading">Cargando jugadoras…</div></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="plantilla-panel-estadisticas" style="display:none;">
-        <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
-          <div class="sort-menu-wrap">
-            <button class="cal-open-btn" id="plantilla-stats-sort-btn" onclick="togglePlantillaStatsSortMenu()" data-i18n-attr="aria-label:plantilla.sort,title:plantilla.sort" aria-label="Ordenar" title="Ordenar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
-            </button>
-            <div class="sort-menu" id="plantilla-stats-sort-menu">
-              <button type="button" data-sort="alfabetico" class="active" onclick="setPlantillaStatsSort('alfabetico')" data-i18n="plantilla.sortAlpha">Alfabéticamente</button>
-              <button type="button" data-sort="minutos" onclick="setPlantillaStatsSort('minutos')" data-i18n="plantilla.minutesPlayed">Minutos jugados</button>
-              <button type="button" data-sort="ensayos" onclick="setPlantillaStatsSort('ensayos')" data-i18n="plantilla.tries">Ensayos</button>
-              <button type="button" data-sort="tarjetas" onclick="setPlantillaStatsSort('tarjetas')" data-i18n="plantilla.cardsCount">Tarjetas</button>
-              <button type="button" data-sort="puntos" onclick="setPlantillaStatsSort('puntos')" data-i18n="plantilla.points">Puntos</button>
-            </div>
-          </div>
-        </div>
-        <div class="card players-table-card">
-          <table class="players-table">
-            <thead>
-              <tr>
-                <th data-i18n="fines.player">Jugadora</th>
-                <th class="num" data-i18n="plantilla.minutesPlayed">Minutos jugados</th>
-                <th class="num" data-i18n="plantilla.tries">Ensayos</th>
-                <th class="num" data-i18n="plantilla.points">Puntos</th>
-                <th class="num" data-i18n="plantilla.cardsCount">Tarjetas</th>
-              </tr>
-            </thead>
-            <tbody id="plantilla-stats-grid">
-              <tr><td colspan="5"><div class="att-roster-empty" data-i18n="plantilla.loadingStats">Cargando estadísticas…</div></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+    <section class="section" id="sec-plantilla"></section>
 
     <!-- FANTASY -->
     <!-- Fantasy: la pinta Svelte (src/features/fantasy/Fantasy.svelte) -->
@@ -1497,13 +1407,13 @@
 <script src="js/core/i18n.js"></script>
 <script src="js/core/supabase.js"></script>
 <script src="js/core/utils.js"></script>
+<script src="js/core/avatars.js"></script>
 <script src="js/core/names.js"></script>
 <script src="js/core/state.js"></script>
 <script src="js/core/dates.js"></script>
 <script src="js/core/permissions.js"></script>
 <script src="js/core/navigation.js"></script>
 <script src="js/core/auth.js"></script>
-<script src="js/features/jugadoras.js"></script>
 <script src="js/features/calendario.js"></script>
 <script src="js/features/tercer-tiempo.js"></script>
 <script src="js/features/eventos.js"></script>

@@ -20,8 +20,7 @@ export function install(bridge) {
     // Al iniciar sesión (auth.js): borrador de esta persona, partidos/banquillo y el
     // aviso de Inicio de alineaciones compartidas.
     loadAfterLogin,
-    // Al entrar en Fantasy (setSection) o cuando llega la Plantilla estando en Fantasy
-    // (jugadoras.js): el desplegable y el banquillo se releen de los partidos, sus
+    // Al entrar en Fantasy (setSection): el desplegable y el banquillo se releen de los partidos, sus
     // respuestas y el roster del código antiguo.
     refresh: refreshFantasyMatchesAndUI,
     // Al entrar en Inicio (setSection).
