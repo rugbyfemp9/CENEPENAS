@@ -1,0 +1,62 @@
+src/main.js
+  s_1fdfe932c62174::t_848ec945242448 20,22
+src/features/multas/FinesHistoryModal.svelte
+  s_1fdfe932c62174::t_d7aa8266de86c7 1-37
+js/features/tercer-tiempo.js
+  s_1fdfe932c62174::t_ae3d5fb45418b1 793,798
+src/features/multas/EditFineModal.svelte
+  s_1fdfe932c62174::t_d7aa8266de86c7 1-37
+src/lib/legacy.js
+  s_1fdfe932c62174::t_a190095bfd193d 11-12,31,41-42,47-54
+js/features/partidos.js
+  s_1fdfe932c62174::t_ae3d5fb45418b1 249,325,352,358
+src/features/multas/PayFineModal.svelte
+  s_1fdfe932c62174::t_d7aa8266de86c7 1-29
+src/features/multas/FineModal.svelte
+  s_1fdfe932c62174::t_d7aa8266de86c7 1-33
+src/features/multas/Multas.svelte
+  s_1fdfe932c62174::t_4b80f26d4a31ac 1-22,24-30,32-109
+  s_1fdfe932c62174::t_da4f2ab227a787 23,31
+index.html
+  s_1fdfe932c62174::t_d91df6b290aa11 269-270,360,630-631,1255,1258,1261,1264
+js/features/perfil.js
+  s_1fdfe932c62174::t_ae3d5fb45418b1 65-66,249,305-307
+js/core/auth.js
+  s_1fdfe932c62174::t_ae3d5fb45418b1 140-144,188,240-241
+js/features/jugadoras.js
+  s_1fdfe932c62174::t_ae3d5fb45418b1 107
+js/core/permissions.js
+  s_1fdfe932c62174::t_ae3d5fb45418b1 28-30
+js/main.js
+  s_1fdfe932c62174::t_ae3d5fb45418b1 46
+src/features/multas/multas.svelte.js
+  s_1fdfe932c62174::t_4e6d0777983d4e 2-19,22-26,28-92,99,102-103,111,115-116,119-120,124,131,136-137,140,143-144,149,153-154,163,165-168,170-171,179-181,185,187-188,190-191,194,206-207,209,215,217-222,225-227,229-239,244-250,252-260,262-274,277-282,284-324,327-332,334-344,346-368,370-376,378-381,384-397,402,404,406,417,419-426,431,439-441,443,445-453,457,461,469,471-498,501,503-507,514-515,519-520,523-525,528-530,532-533,540,542,544,547-549,553,555-570,575-582,584-589,592-594,597-598,601-610,614-632,636,638-639,643-644,653-659,661-662,666-668,670-671,674-675,678-681,683,686-688,691-692,696,700-702,704,707,709-710,712,718-719,723,727,732-733,735,738,742,746-748,750-751,754
+src/features/multas/FinePlayerSearch.svelte
+  s_1fdfe932c62174::t_d7aa8266de86c7 1-31
+src/features/multas/FinesBanner.svelte
+  s_1fdfe932c62174::t_a46602b6812958 1-27
+src/features/multas/index.js
+  s_1fdfe932c62174::t_5c1cd14aa6fd95 1-47
+src/features/multas/VestTotal.svelte
+  s_1fdfe932c62174::t_a46602b6812958 1-7
+src/features/multas/FineReasonGrid.svelte
+  s_1fdfe932c62174::t_d7aa8266de86c7 1-13
+tests/e2e/multas.spec.js
+  ai_agent 1-779
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5b07dd59ce47486974a8e766222410f44d688429",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
