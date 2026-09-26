@@ -227,13 +227,7 @@
     <section class="section active" id="sec-inicio">
       <div class="section-head"><h2 data-i18n="inicio.title">Inicio</h2></div>
       <div id="inicio-top-notices"></div>
-      <div class="inicio-shared-lineup-banner" id="inicio-shared-lineup-banner" style="display:none;" onclick="openInicioSharedLineup()">
-        <div class="icon">🏉</div>
-        <div class="txt" id="inicio-shared-lineup-text"></div>
-        <button type="button" class="dismiss" onclick="dismissInicioSharedLineupBanner(event)" data-i18n-attr="aria-label:sharedLineup.dismiss,title:sharedLineup.dismissShort" aria-label="Descartar aviso" title="Descartar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </div>
+      <div data-mount="inicio-shared-lineup-banner"></div>
       <div class="scoreboard" id="next-match-banner" onclick="goToNextMatch()" style="cursor:pointer;">
         <button class="scoreboard-tullides-btn" id="next-match-tullides-btn" onclick="event.stopPropagation(); openTullidesModalForNextMatch();" style="display:none;" data-i18n-attr="aria-label:att.tullidesButton,title:att.tullidesButton" aria-label="Tullidas" title="Tullidas">🩹</button>
         <div class="msg">
@@ -808,40 +802,8 @@
     </section>
 
     <!-- FANTASY -->
-    <section class="section" id="sec-fantasy">
-      <div class="back-link" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-      <div class="section-head">
-        <h2 data-i18n="nav.fantasy">Fantasy</h2>
-      </div>
-      <div class="fantasy-top">
-        <label class="fantasy-label" for="fantasy-match-select" data-i18n="fantasy.matchLabel">Partido</label>
-        <select id="fantasy-match-select" class="fantasy-select" onchange="onFantasyMatchChange(this.value)"></select>
-      </div>
-
-      <div class="fantasy-actions">
-        <button class="btn-ghost" onclick="openSharedLineupsModal()" data-i18n="fantasy.shared">Compartidas</button>
-        <button class="btn" onclick="openSaveLineupModal()" data-i18n="fantasy.saveLineup">Guardar alineación</button>
-        <button class="btn" style="background:linear-gradient(90deg,#7C5CD8,#5c3fb0);" onclick="openPublishModal()" data-i18n="fantasy.publish">Publicar</button>
-      </div>
-
-      <div class="fantasy-main">
-        <aside class="fantasy-side">
-          <div>
-            <div class="fantasy-label"><span data-i18n="fantasy.available">Disponibles</span> <span id="fantasy-bench-count" class="fantasy-count">0</span></div>
-            <div class="fantasy-bench" id="fantasy-bench" ondragover="event.preventDefault()" ondrop="onBenchDrop(event)"></div>
-          </div>
-        </aside>
-
-        <div class="fantasy-pitch-col">
-          <div class="fantasy-pitch" id="fantasy-pitch" ondragover="event.preventDefault()"></div>
-
-          <div id="fantasy-saved-card" class="fantasy-saved-card">
-            <div class="fantasy-label" data-i18n="fantasy.myLineups">Mis alineaciones</div>
-            <div class="fantasy-saved-list" id="fantasy-saved-list"></div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- Fantasy: la pinta Svelte (src/features/fantasy/Fantasy.svelte) -->
+    <section class="section" id="sec-fantasy"></section>
 
     <!-- GALERÍA -->
     <!-- Galería: la pinta Svelte (src/features/galeria/Galeria.svelte) -->
@@ -1611,53 +1573,13 @@
 <div data-mount="delete-treasury-confirm-modal"></div>
 
 <!-- MODAL: GUARDAR ALINEACIÓN -->
-<div class="modal-overlay" id="save-lineup-modal" onclick="if(event.target===this) closeSaveLineupModal()">
-  <div class="modal-box" style="max-width:380px;">
-    <h3 style="margin-top:0;" data-i18n="fantasy.saveLineup">Guardar alineación</h3>
-    <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-      <span data-i18n="fantasy.nameLabel">Nombre</span>
-      <input type="text" id="lineup-name-input" data-i18n-attr="placeholder:fantasy.namePlaceholder" placeholder="Ej. Plan A vs Sagunt" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-    </label>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeSaveLineupModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="confirmSaveLineup()" data-i18n="gym.saveGeneric">Guardar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="save-lineup-modal"></div>
 
 <!-- MODAL: PUBLICAR ALINEACIÓN -->
-<div class="modal-overlay" id="publish-modal" onclick="if(event.target===this) closePublishModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" data-i18n="fantasy.shareWithTitle">Compartir alineación con</h3>
-    <div class="publish-audience-grid" id="publish-audience-grid">
-      <button class="publish-audience-opt" data-audience="jugadoras" onclick="selectPublishAudience('jugadoras')" data-i18n="nav.plantilla">Jugadoras</button>
-      <button class="publish-audience-opt" data-audience="staff" onclick="selectPublishAudience('staff')" data-i18n="fantasy.audienceStaff">Staff</button>
-      <button class="publish-audience-opt" data-audience="capitanas" onclick="selectPublishAudience('capitanas')" data-i18n="fantasy.audienceCaptains">Capitanas</button>
-      <button class="publish-audience-opt" data-audience="persona" onclick="selectPublishAudience('persona')" data-i18n="fantasy.audiencePerson">Una persona</button>
-    </div>
-    <div id="publish-person-wrap" style="display:none; margin-top:12px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="fantasy.personLabel">Persona</span>
-        <select id="publish-person-select" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);"></select>
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closePublishModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="confirmPublish()" data-i18n="fantasy.publish">Publicar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="publish-modal"></div>
 
 <!-- MODAL: ALINEACIONES COMPARTIDAS CONTIGO -->
-<div class="modal-overlay" id="shared-lineups-modal" onclick="if(event.target===this) closeSharedLineupsModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" data-i18n="fantasy.sharedWithYou">Compartidas contigo</h3>
-    <div class="fantasy-saved-list" id="shared-lineups-list"></div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeSharedLineupsModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="shared-lineups-modal"></div>
 
 <!-- MODAL: AÑADIR ÁLBUM DE GALERÍA -->
 <div data-mount="add-album-modal"></div>
@@ -1712,7 +1634,6 @@
 <script src="js/features/wellness-staff.js"></script>
 <script src="js/features/multas.js"></script>
 <script src="js/features/perfil.js"></script>
-<script src="js/features/fantasy.js"></script>
 <script src="js/main.js"></script>
 
 <!-- Registro del service worker: imprescindible para que Chrome (Android y

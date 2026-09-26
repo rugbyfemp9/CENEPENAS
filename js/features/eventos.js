@@ -211,7 +211,7 @@ function saveNewEvent(){
   renderThirdTime();
   renderNextMatchBanner();
   renderProfile();
-  initFantasy();
+  appBridge.fantasy.init();
 }
 
 // ---- Eliminar evento (desde el modal de edición) ----
@@ -246,7 +246,7 @@ function confirmDeleteEvent(){
   renderCalendarGrid();
   renderThirdTime();
   renderNextMatchBanner();
-  initFantasy();
+  appBridge.fantasy.init();
 }
 
 // Evento que se está mostrando ahora mismo en el popover del calendario (null si es

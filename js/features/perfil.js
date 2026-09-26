@@ -597,3 +597,12 @@ async function saveAvatarAdjust(){
   const ok = await uploadAvatarBlob(blob, 'jpg');
   if(ok) closeAvatarAdjustModal();
 }
+
+// Cierra el desplegable de "lesionada / tocada" si se hace clic fuera de él
+document.addEventListener('click', function(e){
+  const wrap = document.querySelector('.injury-toggle-wrap');
+  const picker = document.getElementById('injury-picker');
+  if(wrap && picker && picker.classList.contains('open') && !wrap.contains(e.target)){
+    picker.classList.remove('open');
+  }
+});

@@ -93,7 +93,7 @@ function applyPlantillaRows(data){
   // Si ya estabas en la pestaña Fantasy cuando ha terminado de cargar la Plantilla,
   // se refresca sola para que aparezcan las jugadoras recién llegadas.
   if(document.getElementById('sec-fantasy')?.classList.contains('active')){
-    refreshFantasyMatchesAndUI();
+    appBridge.fantasy.refresh();
   }
 
   // Cualquier avatar ya pintado en pantalla (el tuyo propio en el header/sidebar/perfil,
