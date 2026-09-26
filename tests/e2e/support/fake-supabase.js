@@ -153,9 +153,9 @@ export class FakeSupabase {
   }
 
   nextId() {
-    // Own prefix, so generated ids never collide with the seed's (00000000-…).
+    // Own prefix, not used by any seeded row, so generated ids never collide with them.
     const n = String(this.idCounter++).padStart(12, '0');
-    return `f0000000-0000-4000-8000-${n}`;
+    return `9e9e9e9e-0000-4000-8000-${n}`;
   }
 
   withDefaults(row) {
