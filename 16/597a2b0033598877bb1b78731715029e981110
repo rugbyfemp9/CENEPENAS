@@ -1,0 +1,51 @@
+src/features/fantasy/SharedLineupsModal.svelte
+  s_1fdfe932c62174::t_d1723bfa2d80ce 1-29
+js/core/auth.js
+  s_1fdfe932c62174::t_63d8d32fa89eb0 220-223
+tests/e2e/fantasy.spec.js
+  s_1fdfe932c62174::t_2b204545e4671a 1-830
+src/features/fantasy/index.js
+  s_1fdfe932c62174::t_13c8931d9eba10 1-30
+js/main.js
+  s_1fdfe932c62174::t_63d8d32fa89eb0 59
+src/lib/legacy.js
+  s_1fdfe932c62174::t_d947ebd11607f6 11,33-34,41-44
+src/features/fantasy/Fantasy.svelte
+  s_1fdfe932c62174::t_b35a32f35816a7 1-145
+src/features/fantasy/PublishModal.svelte
+  s_1fdfe932c62174::t_3a386c654a4a41 1-35
+src/features/fantasy/SharedLineupBanner.svelte
+  s_1fdfe932c62174::t_4587d45826bea7 1-28
+src/features/fantasy/fantasy.svelte.js
+  s_1fdfe932c62174::t_e45f5056b5d95f 2-13,16-31,35-43,46-71,78-79,84-87,90-93,95-102,105-107,110,116-117,119-122,124-128,131-132,142-143,150-171,175-177,182-184,192-194,199-202,208-219,221,223-224,226,228,230-231,234,237-239,246-247,249-252,255,278,282-287,298-299,301,305-306,308-309,313,319-322,327-329,334-338,340-341,343-345,350-352,354,357,366-371,375,378,381-383,386-388,390-394,397-398,404-405,408-411,416-431,433-439,441,443-444,450-454,456,459,469-525,531-547,549-550,552,555,559,562,564,566-567,569-574,579-581,583,585,589-591,593-594,597,601,603-604,606-607
+js/features/eventos.js
+  s_1fdfe932c62174::t_63d8d32fa89eb0 214,249
+src/features/fantasy/SaveLineupModal.svelte
+  s_1fdfe932c62174::t_cde5c36797b630 1-17
+js/features/perfil.js
+  s_1fdfe932c62174::t_63d8d32fa89eb0 600-608
+src/main.js
+  s_1fdfe932c62174::t_63d8d32fa89eb0 19,21
+js/core/navigation.js
+  s_1fdfe932c62174::t_63d8d32fa89eb0 36-37,48-49
+index.html
+  s_1fdfe932c62174::t_1fa8ba52343e46 230,805-806,1576,1579,1582
+js/features/jugadoras.js
+  s_1fdfe932c62174::t_63d8d32fa89eb0 96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "16597a2b0033598877bb1b78731715029e981110",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
