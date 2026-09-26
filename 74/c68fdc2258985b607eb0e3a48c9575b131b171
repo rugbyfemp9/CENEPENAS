@@ -1,0 +1,21 @@
+playwright.config.js
+  ai_agent 15-17
+tests/e2e/support/fake-supabase.js
+  s_1fdfe932c62174::t_8692edbc910aff 156,158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "74c68fdc2258985b607eb0e3a48c9575b131b171",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
