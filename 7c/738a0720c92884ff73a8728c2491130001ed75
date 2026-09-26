@@ -1,0 +1,63 @@
+src/lib/Avatar.svelte
+  s_1fdfe932c62174::t_e4b8bba7ed80c8 4-5,11
+src/features/jugadoras/jugadoras.svelte.js
+  s_1fdfe932c62174::t_38fee5e520f164 38-40,43-44
+  s_1fdfe932c62174::t_ad5abd82909a23 49
+  s_1fdfe932c62174::t_856e755d5106a6 16-17,136
+  s_1fdfe932c62174::t_4e91eaeb44ae77 1,4-10,12-14,24-27,30-37,41-42,45,47,51-52,55,58,60-62,67,75-78,81-83,86,95-96,99,106,109,113,116,120-121,125,128-129,137-140,146-147,149,153-157,159-163,165-166,173,175-176,183-186,188-189,191-192,196-215,221-223,226,229,234-236,241,249,251-253,255,266-267,273-282,285,287,290-292,295,298-300,303,311-312,314-315,317-318,326-331,334-335,337-338,340-341,346-363
+  s_1fdfe932c62174::t_e70ef71d366734 11,15,18-22
+src/features/jugadoras/index.js
+  s_1fdfe932c62174::t_5a801dd42d4fff 1-26
+src/features/multas/multas.svelte.js
+  s_1fdfe932c62174::t_d2cdf53caa247d 20,132,645,711
+index.html
+  s_1fdfe932c62174::t_42078f2b66444f 683,1410
+src/features/jugadoras/PlantillaStats.svelte
+  s_1fdfe932c62174::t_b338315138c436 1-73
+js/core/navigation.js
+  s_1fdfe932c62174::t_7c0665b7522156 143-151
+src/features/gym/index.js
+  s_1fdfe932c62174::t_1bead980beb883 46
+js/core/auth.js
+  s_1fdfe932c62174::t_e185751b6d5e24 195-196
+src/features/jugadoras/Jugadoras.svelte
+  s_1fdfe932c62174::t_b9ce9bfe564f81 1-28
+src/features/jugadoras/PlantillaDatos.svelte
+  s_1fdfe932c62174::t_64bc6c6471ee5f 1-88
+src/lib/InjuryBadge.svelte
+  s_1fdfe932c62174::t_e4b8bba7ed80c8 1-7
+js/core/avatars.js
+  s_1fdfe932c62174::t_2692cd87a75ee7 1-2,6-19
+  s_1fdfe932c62174::t_ee406a89d545ae 3-5
+src/main.js
+  s_1fdfe932c62174::t_e185751b6d5e24 21,23
+js/features/actas.js
+  s_1fdfe932c62174::t_e185751b6d5e24 62-63
+tests/e2e/jugadoras.spec.js
+  ai_agent 1-412
+src/lib/legacy.js
+  s_1fdfe932c62174::t_98c6d4a61e4391 12-13,53-69
+src/features/fantasy/index.js
+  s_1fdfe932c62174::t_1bead980beb883 23
+js/features/perfil.js
+  s_1fdfe932c62174::t_ee406a89d545ae 1
+  s_1fdfe932c62174::t_e185751b6d5e24 50,146,269,293
+src/features/multas/index.js
+  s_1fdfe932c62174::t_1bead980beb883 42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7c738a0720c92884ff73a8728c2491130001ed75",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
