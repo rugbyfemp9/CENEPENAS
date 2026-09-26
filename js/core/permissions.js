@@ -25,38 +25,10 @@ function toggleAttAddButtonVisibility(){
   if(btn) btn.style.display = canManageEvents() ? '' : 'none';
 }
 
-// Solo Comi Tesoreria puede dar de alta multas nuevas (el resto del equipo puede
-// ver la lista, pagar las suyas y confirmar pagos recibidos con total normalidad).
-function canManageFines(){
-  const me = rosterById[currentUserId];
-  return isAdmin || !!(me && me.comision === 'Comi Tesoreria');
-}
-function toggleFineAddButtonVisibility(){
-  const btn = document.getElementById('add-fine-btn');
-  if(btn) btn.style.display = canManageFines() ? '' : 'none';
-  const editBtn = document.getElementById('edit-fines-toggle-btn');
-  if(editBtn) editBtn.style.display = canManageFines() ? '' : 'none';
-  // Si deja de tener permiso mientras el modo edición estaba activo, se desactiva.
-  if(!canManageFines() && finesEditMode){
-    finesEditMode = false;
-    if(editBtn) editBtn.classList.remove('active');
-    renderFinesTable();
-  }
-}
-
-// Los permisos de Comi Tesoreria y Comi Tercer Temps (canManageClubTreasury,
-// canManageTercerTemps) viven ahora en Svelte: src/features/tesoreria/ y
+// Los permisos de Multas (canManageFines y el modo edición de la tabla), Comi
+// Tesoreria y Comi Tercer Temps (canManageClubTreasury, canManageTercerTemps) viven
+// ahora en Svelte: src/features/multas/, src/features/tesoreria/ y
 // src/features/comi-tercer-temps/.
-
-// Modo edición de la tabla de multas: mientras está activo, un clic en una multa
-// abre el panel de editar/eliminar en vez de marcarla como pagada.
-let finesEditMode = false;
-function toggleFinesEditMode(){
-  if(!canManageFines()) return;
-  finesEditMode = !finesEditMode;
-  document.getElementById('edit-fines-toggle-btn').classList.toggle('active', finesEditMode);
-  renderFinesTable();
-}
 
 let currentEventId = null;
 let currentAttTab = 'yes';

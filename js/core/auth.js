@@ -137,6 +137,11 @@ async function handleLogout(){
 // Id real de Supabase de la persona que ha iniciado sesión (para saber qué fila de
 // la lista de Jugadoras es "yo" y mostrarle ahí sus propias tarjetas/lesión).
 let currentAuthUserId = null;
+function toRemotePlayerId(localId){
+  // Para escribir en Supabase hace falta el id real de auth.users; 'me' se traduce
+  // al id de quien ha iniciado sesión.
+  return localId === 'me' ? currentAuthUserId : localId;
+}
 let isAdmin = false;
 
 async function onAuthenticated(user){
@@ -179,8 +184,8 @@ async function onAuthenticated(user){
     // "Añadir álbum" y los de tesorería de las comisiones reales: todos ellos solo
     // se conocen a partir de aquí.
     toggleAttAddButtonVisibility();
-    toggleFineAddButtonVisibility();
     appBridge.sessionChanged();
+    appBridge.multas.permissionsChanged();
     appBridge.tesoreria.permissionsChanged();
     appBridge.comiTercerTemps.permissionsChanged();
     toggleWellnessStaffCardVisibility();
@@ -232,8 +237,8 @@ async function onAuthenticated(user){
   // Multas: se recargan aquí, ya con el id real fijado, para que el botón "Añadir
   // multa" y la sincronización en directo funcionen desde el primer momento.
   try{
-    await loadFines();
-    subscribeToFinesRealtime();
+    await appBridge.multas.load();
+    appBridge.multas.subscribeRealtime();
   }catch(e){ console.error('No se han podido cargar las multas al iniciar sesión', e); }
 
   // Tercer tiempo (cambios de turno, deudas y comida): igual que las multas, se

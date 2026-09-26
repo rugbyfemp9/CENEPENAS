@@ -43,7 +43,7 @@ function legacyBoot(){
   renderNextMatchBanner();
   renderWellnessReminderBanner();
   toggleAttAddButtonVisibility();
-  toggleFineAddButtonVisibility();
+  // Los botones "Añadir multa" / "Editar multas" (Svelte) dependen solos de la sesión.
 
   renderProfile();
 

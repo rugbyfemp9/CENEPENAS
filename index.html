@@ -266,9 +266,8 @@
         </div>
       </div>
       <div class="grid inicio-row2">
-        <div class="card my-fines-card" id="inicio-fines-banner" onclick="setSection('multas')" style="cursor:pointer;">
-          <!-- Se rellena con renderInicioFinesBanner() -->
-        </div>
+        <!-- Contenido: lo pinta Svelte (src/features/multas/FinesBanner.svelte) -->
+        <div class="card my-fines-card" id="inicio-fines-banner" onclick="setSection('multas')" style="cursor:pointer;"></div>
         <div class="card my-fines-card" id="inicio-tercer-banner" onclick="setSection('tercer')" style="cursor:pointer;"></div>
         <!-- Contenido: lo pinta Svelte (src/features/tricount/TricountBanner.svelte) -->
         <div class="card my-fines-card" id="inicio-tricount-banner" onclick="setSection('tricount')" style="cursor:pointer; grid-column:1 / -1;"></div>
@@ -358,7 +357,7 @@
         </button>
         <button class="vest-card i-multas" onclick="setSection('multas')">
           <div class="ic emoji">💰</div>
-          <div class="txt"><b data-i18n="nav.multas">Multas</b><span id="vest-multas-total">0 € pendientes</span></div>
+          <div class="txt"><b data-i18n="nav.multas">Multas</b><span data-mount="vest-multas-total"></span></div>
           <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
         </button>
         <button class="vest-card i-tercer" id="vest-card-tercer" onclick="setSection('tercer')">
@@ -628,36 +627,8 @@
     </section>
 
     <!-- MULTAS -->
-    <section class="section" id="sec-multas">
-      <div class="back-link" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-
-      <div class="fine-confirm-requests" id="fine-confirm-requests" style="display:none;">
-        <!-- Se rellena con renderFineConfirmRequests() -->
-      </div>
-
-      <div class="card my-fines-card" id="my-fines-card">
-        <!-- Se rellena con renderMyFinesSummary() -->
-      </div>
-
-      <div class="section-head">
-        <h2 data-i18n="fines.teamTitle">Multas del equipo</h2>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button class="cal-open-btn" onclick="openFinesHistoryModal()" data-i18n-attr="aria-label:fines.history,title:fines.history" aria-label="Histórico de multas pagadas" title="Histórico de multas pagadas">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
-          </button>
-          <button class="cal-open-btn" id="edit-fines-toggle-btn" onclick="toggleFinesEditMode()" data-i18n-attr="aria-label:fines.editFines,title:fines.editFines" aria-label="Editar multas" title="Editar multas" style="display:none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          </button>
-          <button class="btn" id="add-fine-btn" onclick="openFineModal()" data-i18n="fines.addFine" style="display:none;">Añadir multa</button>
-        </div>
-      </div>
-      <div class="card">
-        <table class="fines-table">
-          <tr><th data-i18n="fines.player">Jugadora</th><th data-i18n="fines.reason">Motivo</th><th data-i18n="fines.amount">Importe</th><th data-i18n="fines.colStatus">Estado</th></tr>
-          <tbody id="fines-table-body"></tbody>
-        </table>
-      </div>
-    </section>
+    <!-- Multas: la pinta Svelte (src/features/multas/Multas.svelte) -->
+    <section class="section" id="sec-multas"></section>
 
     <!-- Tricount: lo pinta Svelte (src/features/tricount/Tricount.svelte) -->
     <section class="section" id="sec-tricount"></section>
@@ -1281,106 +1252,16 @@
 </div>
 
 <!-- MODAL DE ALTA DE MULTA -->
-<div class="modal-overlay" id="fine-modal" onclick="if(event.target===this) closeFineModal()">
-  <div class="modal-box" style="max-width:460px;">
-    <h3 data-i18n="fines.addFine">Añadir multa</h3>
-    <div class="modal-sub" data-i18n="fines.addFineSub">Elige la jugadora y uno o varios motivos</div>
-
-    <div class="fine-modal-section">
-      <div class="fine-modal-label" data-i18n="fines.player">Jugadora</div>
-      <div class="fine-player-search" id="fine-player-search">
-        <input type="text" id="fine-player-search-input" class="fine-player-search-input"
-               data-i18n-attr="placeholder:fines.searchPlaceholder" placeholder="Busca por nombre o mote…" autocomplete="off"
-               oninput="onFinePlayerSearchInput()" onfocus="onFinePlayerSearchFocus()">
-        <div class="fine-player-search-results" id="fine-player-search-results"></div>
-      </div>
-    </div>
-
-    <div class="fine-modal-section">
-      <div class="fine-modal-label" data-i18n="fines.reasonMulti">Motivo (puedes elegir varios)</div>
-      <div class="fine-reason-grid" id="fine-reason-grid"></div>
-    </div>
-
-    <div class="fine-total-row">
-      <span data-i18n="fines.amount">Importe</span>
-      <b id="fine-total-amount">0 €</b>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeFineModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="saveFine()" data-i18n="fines.save">Guardar multa</button>
-    </div>
-  </div>
-</div>
+<div data-mount="fine-modal"></div>
 
 <!-- MODAL DE EDICIÓN DE MULTA -->
-<div class="modal-overlay" id="edit-fine-modal" onclick="if(event.target===this) closeEditFineModal()">
-  <div class="modal-box" style="max-width:460px;">
-    <h3 data-i18n="fines.editTitle">Editar multa</h3>
-    <div class="modal-sub" data-i18n="fines.editSub">Marca los motivos y elimínalos, o deja solo uno para cambiar jugadora/motivo</div>
-
-    <div class="fine-modal-section">
-      <div class="fine-modal-label" data-i18n="fines.player">Jugadora</div>
-      <div class="fine-player-search" id="edit-fine-player-search">
-        <input type="text" id="edit-fine-player-search-input" class="fine-player-search-input"
-               data-i18n-attr="placeholder:fines.searchPlaceholder" placeholder="Busca por nombre o mote…" autocomplete="off"
-               oninput="onEditFinePlayerSearchInput()" onfocus="onEditFinePlayerSearchFocus()">
-        <div class="fine-player-search-results" id="edit-fine-player-search-results"></div>
-      </div>
-    </div>
-
-    <div class="fine-modal-section">
-      <div class="fine-modal-label" data-i18n="fines.reason">Motivo</div>
-      <div class="fine-reason-grid" id="edit-fine-reason-grid"></div>
-    </div>
-
-    <div class="fine-total-row">
-      <span data-i18n="fines.amount">Importe</span>
-      <b id="edit-fine-total-amount">0 €</b>
-    </div>
-
-    <div class="modal-actions" style="justify-content:space-between;">
-      <button class="btn-ghost" onclick="deleteFineFromEditModal()" data-i18n="fines.deleteFine" style="color:var(--bad);">Eliminar multa</button>
-      <div style="display:flex; gap:10px;">
-        <button class="btn-ghost" onclick="closeEditFineModal()" data-i18n="att.cancel">Cancelar</button>
-        <button class="btn" onclick="saveEditFine()" data-i18n="fines.saveChanges">Guardar cambios</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div data-mount="edit-fine-modal"></div>
 
 <!-- MODAL: PAGAR MULTA -->
-<div class="modal-overlay" id="pay-fine-modal" onclick="if(event.target===this) closePayFineModal()">
-  <div class="modal-box" style="max-width:380px;">
-    <h3 style="margin-top:0;" data-i18n="fines.payTitle">Pagar multa</h3>
-    <div class="modal-sub" data-i18n="fines.payToWhom">¿A quién de Comi Tesoreria se le ha pagado? El ingreso se añadirá solo a su tabla de movimientos.</div>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="fines.paidToLabel">Se le ha pagado a</span>
-        <select id="pay-fine-responsible-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);"></select>
-        <span id="pay-fine-responsible-empty" data-i18n="fines.noTreasuryPerson" style="display:none; font-size:12px; font-weight:500; text-transform:none; letter-spacing:normal; color:var(--text-muted);">
-          Todavía nadie tiene marcado "Comi Tesoreria" en su perfil.
-        </span>
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closePayFineModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="confirmPayFine()" data-i18n="fines.confirmPayment">Confirmar pago</button>
-    </div>
-  </div>
-</div>
+<div data-mount="pay-fine-modal"></div>
 
 <!-- HISTÓRICO DE MULTAS PAGADAS -->
-<div class="modal-overlay" id="fines-history-modal" onclick="if(event.target===this) closeFinesHistoryModal()">
-  <div class="modal-box" style="max-width:440px;">
-    <h3 style="margin-top:0;" data-i18n="fines.history">Histórico de multas pagadas</h3>
-    <div class="modal-sub" data-i18n="fines.historySub">Cada multa se archiva aquí en cuanto se marca como pagada.</div>
-    <div id="fines-history-list" style="max-height:60vh; overflow-y:auto; display:flex; flex-direction:column; gap:8px; margin:14px 0 18px;"></div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeFinesHistoryModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="fines-history-modal"></div>
 
 <!-- MODAL DE CALENDARIO -->
 <div class="modal-overlay" id="calendar-modal" onclick="if(event.target===this) closeCalendarModal()">
@@ -1632,7 +1513,6 @@
 <script src="js/features/tullidas.js"></script>
 <script src="js/features/wellness.js"></script>
 <script src="js/features/wellness-staff.js"></script>
-<script src="js/features/multas.js"></script>
 <script src="js/features/perfil.js"></script>
 <script src="js/main.js"></script>
 

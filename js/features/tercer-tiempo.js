@@ -316,10 +316,6 @@ function thirdTimeCookIconSvg(){
 function thirdTimeCleanIconSvg(){
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.4 4.2L18 8.5l-4.6 1.3L12 14l-1.4-4.2L6 8.5l4.6-1.3L12 3z"/><path d="M19 15l.6 1.8 1.8.6-1.8.6-.6 1.8-.6-1.8L17 17.4l1.8-.6z"/></svg>`;
 }
-// Bolsa de dinero para el banner de "Multas" en Inicio
-function fineMoneyBagIconSvg(){
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3h4l1 3.2c2.6.9 4.5 3 4.5 6.3 0 4.1-3.6 7.5-7.5 7.5S4.5 16.6 4.5 12.5c0-3.3 1.9-5.4 4.5-6.3L10 3z"/><path d="M12 10.5c-1.1 0-2 .6-2 1.4s.9 1.4 2 1.4 2 .6 2 1.4-.9 1.4-2 1.4M12 9.5v1M12 14.5v1"/></svg>`;
-}
 
 // Tarjeta de "Tercer tiempo" en Inicio: mismo componente visual (.tt-personal) que el
 // banner de Vestuario, con tu rol para el próximo partido en casa y un botón para apuntarte.
@@ -794,15 +790,12 @@ function checkThirdTimeAutoFines(){
     const tempId = crypto.randomUUID();
     const newFine = { id:tempId, playerId:id, reasonId:'tercer', status:'pendiente', autoMatchIso:matchIso };
     fines.push(newFine);
-    persistFineInsert(tempId, newFine);
+    appBridge.multas.persistInsert(tempId, newFine);
     changed = true;
   });
 
   if(changed){
-    renderFinesTable();
-    renderMyFinesSummary();
-    renderInicioFinesBanner();
-    updateFinesSummaries();
+    appBridge.multas.refresh();
   }
 }
 

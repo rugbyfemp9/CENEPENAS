@@ -17,8 +17,9 @@ import * as tesoreria from './features/tesoreria/index.js';
 import * as comiTercerTemps from './features/comi-tercer-temps/index.js';
 import * as gym from './features/gym/index.js';
 import * as fantasy from './features/fantasy/index.js';
+import * as multas from './features/multas/index.js';
 
-for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy]) feature.install(appBridge);
+for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas]) feature.install(appBridge);
 
 refreshSession();
 window.legacyBoot();
