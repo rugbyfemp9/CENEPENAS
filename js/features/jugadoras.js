@@ -104,7 +104,7 @@ function applyPlantillaRows(data){
   appBridge.gym.refresh(); // asistencia de hoy y ranking del Gym
   if(typeof renderRollCallList === 'function') renderRollCallList();
   if(typeof renderEventDetail === 'function') renderEventDetail();
-  if(typeof renderFinesTable === 'function') renderFinesTable();
+  appBridge.multas.renderTable();
 }
 
 // Cualquier alta, baja o cambio de un perfil (nombre, mote, rango, y sobre todo la

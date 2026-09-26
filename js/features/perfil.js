@@ -62,8 +62,8 @@ function chooseInjuryIcon(icon){
 
   // Refresca cualquier otra vista que ya esté pintando avatares del roster,
   // para que la insignia aparezca al momento en todas las interacciones donde salga su perfil.
-  renderFinesTable();
-  renderFinePlayerGrid();
+  appBridge.multas.renderTable();
+  appBridge.multas.renderPlayerSearch();
   loadPlantilla();
   if(currentEventId) renderEventDetail();
 }
@@ -245,8 +245,8 @@ async function saveProfileEdits(){
     // (añadir evento, multa, álbum, subir rutina...): se refrescan todos aquí mismo,
     // sin esperar a la próxima vez que se inicie sesión.
     toggleAttAddButtonVisibility();
-    toggleFineAddButtonVisibility();
     appBridge.sessionChanged();
+    appBridge.multas.permissionsChanged();
     appBridge.tesoreria.permissionsChanged();
     appBridge.comiTercerTemps.permissionsChanged();
     appBridge.gym.refresh();
@@ -302,9 +302,9 @@ function chooseEditAvatarPhoto(){
 // no hacen nada si su pantalla no está en el DOM), para que la foto nueva (o su
 // ausencia, tras borrarla) aparezca al momento en toda la app sin recargar.
 function refreshAvatarEverywhere(){
-  renderFinesTable();
-  renderFinePlayerGrid();
-  renderFineConfirmRequests();
+  appBridge.multas.renderTable();
+  appBridge.multas.renderPlayerSearch();
+  appBridge.multas.renderConfirmRequests();
   renderRollCallList();
   appBridge.gym.refresh();
   loadPlantilla();

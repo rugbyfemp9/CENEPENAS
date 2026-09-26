@@ -8,7 +8,8 @@
 /* global supabaseClient, isAdmin, roster, rosterById, currentUserId, currentAuthUserId, myProfile,
    currentLang, t, readCache, writeCache, setSection, displayName, initials, computeDisplayNames,
    monthAbbrLabel, autoMonthAbbr, monthFullLabel, withDePrefix, todayLocalIso,
-   effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate, attEvents, attEventType */
+   effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate, attEvents, attEventType,
+   fines:writable, loadPlantilla, formatFullDate */
 
 export const legacy = {
   get supabase() { return supabaseClient; },
@@ -27,7 +28,7 @@ export const legacy = {
   computeDisplayNames: (players) => computeDisplayNames(players),
   initials: (name) => initials(name),
   effectiveRole: (rol) => effectiveRoleForPermissions(rol),
-  // 'me' → id real de auth.users, para escribir en Supabase (vive en multas.js).
+  // 'me' → id real de auth.users, para escribir en Supabase (vive en js/core/auth.js).
   toRemotePlayerId: (localId) => toRemotePlayerId(localId),
   monthAbbrLabel: (monthIndex) => monthAbbrLabel(autoMonthAbbr[monthIndex]),
   // Igual, pero a partir de la abreviatura en castellano que guardan los eventos (ev.month, p.ej. 'Sep').
@@ -37,10 +38,20 @@ export const legacy = {
   todayIso: () => todayLocalIso(),
   // yyyy-mm-dd → dd/mm/aa
   formatShortDate: (iso) => formatShortDate(iso),
+  // yyyy-mm-dd → dd/mm/aaaa
+  formatFullDate: (iso) => formatFullDate(iso),
   get storage() { return window.storage; },
   // Entrenos/partidos de Asistencia (con sus respuestas en ev.attendance), que siguen
   // viviendo en el código antiguo (js/core/state.js) y no son reactivos.
   get attEvents() { return attEvents; },
+  // Multas (js/core/state.js): también las leen y modifican la Lista de partidos, el
+  // Tercer tiempo y Jugadoras, que siguen en el código antiguo. No son reactivas (ver
+  // src/features/multas/multas.svelte.js).
+  get fines() { return fines; },
+  set fines(value) { fines = value; },
+  // Recarga la Plantilla (tabla profiles) y el roster; lo que se pinta con él (tarjetas
+  // de cada jugadora, que cuentan sus multas) se refresca solo.
+  loadPlantilla: () => loadPlantilla(),
   attEventType: (ev) => attEventType(ev),
   get lang() { return currentLang; },
   t: (key, vars) => t(key, vars),

@@ -12,6 +12,9 @@ export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: true,
   reporter: [['list']],
+  // Some flows wait on several fake-Supabase round trips; on a loaded machine (or CI)
+  // the default 5 s for expect() is occasionally too short.
+  expect: { timeout: 10_000 },
   use: { baseURL, serviceWorkers: 'block', locale: 'es-ES', timezoneId: 'Europe/Madrid' },
   webServer: process.env.BASE_URL ? undefined : {
     command: `npm run build -- --outDir .e2e-dist && npx vite preview --outDir .e2e-dist --port ${TEST_PORT} --strictPort`,

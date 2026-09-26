@@ -1335,16 +1335,12 @@ function setLang(lang){
   window.dispatchEvent(new CustomEvent('app:langchange', { detail: lang }));
   if(typeof renderNextMatchBanner === 'function') renderNextMatchBanner();
   if(typeof renderWellnessReminderBanner === 'function') renderWellnessReminderBanner();
-  if(typeof renderInicioFinesBanner === 'function') renderInicioFinesBanner();
   if(typeof renderInicioTercerBanner === 'function') renderInicioTercerBanner();
   if(typeof renderProfile === 'function' && typeof currentUserId !== 'undefined' && currentUserId) renderProfile();
   if(typeof renderEventList === 'function') renderEventList();
   if(typeof renderEventDetail === 'function' && typeof currentEventId !== 'undefined' && currentEventId) renderEventDetail();
   if(typeof renderCalendarGrid === 'function') renderCalendarGrid();
   if(typeof renderPartidosList === 'function') renderPartidosList();
-  if(typeof renderMyFinesSummary === 'function') renderMyFinesSummary();
-  if(typeof renderFinesTable === 'function') renderFinesTable();
-  if(document.getElementById('fines-history-modal') && document.getElementById('fines-history-modal').classList.contains('active') && typeof renderFinesHistory === 'function') renderFinesHistory();
   if(typeof renderThirdTime === 'function') renderThirdTime();
   if(typeof renderThirdTimeFood === 'function') renderThirdTimeFood();
   if(typeof renderMatchReport === 'function' && typeof currentPartidoId !== 'undefined' && currentPartidoId) renderMatchReport(currentPartidoId);

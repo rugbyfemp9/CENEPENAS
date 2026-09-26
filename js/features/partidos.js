@@ -246,7 +246,7 @@ async function openRollCallModal(){
   const savedAt = data ? data.saved_at : null;
   matchdayRollCallSavedAt[rollCallMatchId] = savedAt;
 
-  if(savedAt && !canManageFines()){
+  if(savedAt && !appBridge.multas.canManage()){
     alert('Esta lista ya se ha pasado y guardado. Solo Comi Tesoreria puede volver a abrirla para corregirla.');
     return;
   }
@@ -322,7 +322,7 @@ async function saveRollCall(){
     const tempId = crypto.randomUUID();
     const newFine = { id:tempId, playerId, reasonId:'retraso', status:'pendiente', autoMatchIso:matchIso };
     fines.push(newFine);
-    await persistFineInsert(tempId, newFine);
+    await appBridge.multas.persistInsert(tempId, newFine);
     changed = true;
   }
 
@@ -349,16 +349,13 @@ async function saveRollCall(){
     }else if(!data || data.length === 0){
       // 0 filas borradas sin error suele ser una política de RLS bloqueando el borrado.
       console.error('La multa automática no se ha borrado en Supabase (revisa permisos de borrado en "fines").');
-      loadFines();
+      appBridge.multas.load();
     }
     changed = true;
   }
 
   if(changed){
-    renderFinesTable();
-    renderMyFinesSummary();
-    renderInicioFinesBanner();
-    updateFinesSummaries();
+    appBridge.multas.refresh();
   }
 
   // La primera vez que se guarda fija saved_at; las siguientes veces se mantiene ese
