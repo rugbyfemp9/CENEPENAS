@@ -56,7 +56,7 @@ function legacyBoot(){
 
   // Gym (Svelte) se pinta solo al montarse.
 
-  initFantasy();
+  appBridge.fantasy.init();
   renderThirdTime();
   initThirdTimeFood();
 

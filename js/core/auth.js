@@ -216,12 +216,11 @@ async function onAuthenticated(user){
   // navegador aparte de Supabase: se recargan aquí, ya con el id real fijado, para
   // traer las de esta persona y no las de quien usara antes este dispositivo.
   try{
-    await loadFantasyDraft();
-    refreshFantasyMatchesAndUI();
     // Por si alguien te ha compartido una alineación de Fantasy mientras no tenías la
-    // app abierta, se comprueba también justo al iniciar sesión (no solo al entrar en
-    // Inicio, que ya está activo por defecto y por tanto no dispara ese aviso).
-    checkInicioSharedLineupBanner();
+    // app abierta, loadAfterLogin() comprueba también el aviso justo al iniciar sesión
+    // (no solo al entrar en Inicio, que ya está activo por defecto y por tanto no
+    // dispara ese aviso).
+    await appBridge.fantasy.loadAfterLogin();
   }catch(e){ console.error('No se ha podido cargar Fantasy al iniciar sesión', e); }
 
   // Los avisos son compartidos entre toda la plantilla: se refrescan también al

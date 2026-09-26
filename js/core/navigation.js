@@ -33,8 +33,8 @@ function setSection(id, opts){
   // Al entrar en Fantasy, se refresca el desplegable de partidos y el banquillo de
   // disponibles por si han llegado partidos nuevos o jugadoras nuevas desde que se
   // cargó la página (los datos de Supabase llegan de forma asíncrona).
-  if(id === 'fantasy' && typeof refreshFantasyMatchesAndUI === 'function'){
-    refreshFantasyMatchesAndUI();
+  if(id === 'fantasy'){
+    appBridge.fantasy.refresh();
   }
 
   // Al entrar en Asistencia, se traen los entrenos/partidos que haya creado o editado
@@ -45,8 +45,8 @@ function setSection(id, opts){
 
   // Al entrar en Inicio, se comprueba si hay alguna alineación de Fantasy que alguien
   // haya compartido contigo desde que cargaste la página, para mostrar el avisito.
-  if(id === 'inicio' && typeof checkInicioSharedLineupBanner === 'function'){
-    checkInicioSharedLineupBanner();
+  if(id === 'inicio'){
+    appBridge.fantasy.checkInicioSharedLineupBanner();
   }
 
   // Al entrar en Inicio también se refrescan los avisos, por si alguien ha publicado

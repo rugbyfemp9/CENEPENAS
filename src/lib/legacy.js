@@ -8,7 +8,7 @@
 /* global supabaseClient, isAdmin, roster, rosterById, currentUserId, currentAuthUserId, myProfile,
    currentLang, t, readCache, writeCache, setSection, displayName, initials, computeDisplayNames,
    monthAbbrLabel, autoMonthAbbr, monthFullLabel, withDePrefix, todayLocalIso,
-   effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate */
+   effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate, attEvents, attEventType */
 
 export const legacy = {
   get supabase() { return supabaseClient; },
@@ -30,12 +30,18 @@ export const legacy = {
   // 'me' → id real de auth.users, para escribir en Supabase (vive en multas.js).
   toRemotePlayerId: (localId) => toRemotePlayerId(localId),
   monthAbbrLabel: (monthIndex) => monthAbbrLabel(autoMonthAbbr[monthIndex]),
+  // Igual, pero a partir de la abreviatura en castellano que guardan los eventos (ev.month, p.ej. 'Sep').
+  monthAbbrFromEs: (esAbbr) => monthAbbrLabel(esAbbr),
   monthFullLabel: (monthIndex) => monthFullLabel(monthIndex),
   withDePrefix: (word) => withDePrefix(word),
   todayIso: () => todayLocalIso(),
   // yyyy-mm-dd → dd/mm/aa
   formatShortDate: (iso) => formatShortDate(iso),
   get storage() { return window.storage; },
+  // Entrenos/partidos de Asistencia (con sus respuestas en ev.attendance), que siguen
+  // viviendo en el código antiguo (js/core/state.js) y no son reactivos.
+  get attEvents() { return attEvents; },
+  attEventType: (ev) => attEventType(ev),
   get lang() { return currentLang; },
   t: (key, vars) => t(key, vars),
   readCache: (key) => readCache(key),
