@@ -1,0 +1,93 @@
+src/features/tercer-tiempo/FoodGrid.svelte
+  s_1fdfe932c62174::t_31808815cb6b81 1-38
+src/features/multas/multas.svelte.js
+  s_1fdfe932c62174::t_e03ae34e0c60d9 81-82
+src/features/tercer-tiempo/CookIcon.svelte
+  s_1fdfe932c62174::t_c90115e4fe01b3 1-2
+src/features/tercer-tiempo/CleanIcon.svelte
+  s_1fdfe932c62174::t_c90115e4fe01b3 1-2
+src/features/tercer-tiempo/InicioTercerBanner.svelte
+  s_1fdfe932c62174::t_3e88b661e2930f 1-23
+src/features/tercer-tiempo/index.js
+  s_1fdfe932c62174::t_3a394cc449f1d3 1-40
+src/features/tercer-tiempo/groups.js
+  s_1fdfe932c62174::t_c1712891f42c89 1-94
+index.html
+  s_1fdfe932c62174::t_4044517b3ac2e6 249,500-501,503-504,506-507,586,588,591,600
+src/features/tercer-tiempo/SwapModal.svelte
+  s_1fdfe932c62174::t_1f66a4923eacaf 1-23
+src/features/jugadoras/jugadoras.svelte.js
+  s_1fdfe932c62174::t_57fe19f77bd4a8 14,187
+  s_1fdfe932c62174::t_0fb747ebc73813 18-19,90,129
+  s_1fdfe932c62174::t_f216f2c05ecc46 6
+  s_1fdfe932c62174::t_7d87cb378675de 7-8
+src/features/tercer-tiempo/GroupsOverviewModal.svelte
+  s_1fdfe932c62174::t_11b1830d0ca094 1-16
+src/features/tercer-tiempo/GroupModal.svelte
+  s_1fdfe932c62174::t_11b1830d0ca094 1-23
+src/features/tercer-tiempo/food.svelte.js
+  s_1fdfe932c62174::t_56f7c04ff344e9 1-229
+src/features/tercer-tiempo/FoodSlotModal.svelte
+  s_1fdfe932c62174::t_ce9133fdf7b68c 1-34
+src/features/tercer-tiempo/views.js
+  s_1fdfe932c62174::t_b008b46f3cd624 6,8
+  s_1fdfe932c62174::t_f7ea9ff4e59893 1-5,7,9-112
+src/features/tercer-tiempo/GroupPreviewCol.svelte
+  s_1fdfe932c62174::t_e2504269604da6 1-19
+src/features/multas/index.js
+  s_1fdfe932c62174::t_e03ae34e0c60d9 9
+tests/e2e/tercer-tiempo.spec.js
+  ai_agent 1-727
+src/features/tercer-tiempo/SwapSummary.svelte
+  s_1fdfe932c62174::t_2ff589ecf5609e 1-31
+src/features/perfil/perfil.svelte.js
+  s_1fdfe932c62174::t_0fb747ebc73813 187
+  s_1fdfe932c62174::t_f216f2c05ecc46 21
+src/lib/legacy.js
+  s_1fdfe932c62174::t_a42321d8a54201 12,14
+src/features/tercer-tiempo/tercer-tiempo.svelte.js
+  s_1fdfe932c62174::t_29fe897a5a10f3 1-115
+js/main.js
+  s_1fdfe932c62174::t_b416d947017898 60-62
+src/features/tercer-tiempo/auto-fines.js
+  s_1fdfe932c62174::t_08c15517b09cb5 1-52
+js/core/auth.js
+  s_1fdfe932c62174::t_934b5ac899464d 122
+  s_1fdfe932c62174::t_b416d947017898 247-250
+js/features/eventos.js
+  s_1fdfe932c62174::t_b416d947017898 211,247
+src/features/tercer-tiempo/TercerHistorial.svelte
+  s_1fdfe932c62174::t_610c254b1ccf94 1-22
+src/features/tercer-tiempo/MatchRow.svelte
+  s_1fdfe932c62174::t_3ddff90992e948 1-22
+src/features/tercer-tiempo/PersonalBanner.svelte
+  s_1fdfe932c62174::t_08aba21c4c00f8 1-46
+src/features/tercer-tiempo/covers.svelte.js
+  s_1fdfe932c62174::t_f906c272a9438c 2-12,15,19,25-27,34,37-39,47,51-53,57-59,66-67,71-72,74,78,82-83,86-88,93-94,97-98,101,105,111,113-116,124-126,128,131-132,137,139-140,143,151,155-168,170,173-177,179-180,183-186,189,197-199,202,211,213,219,221-223,226
+src/features/partidos/rollcall.svelte.js
+  s_1fdfe932c62174::t_57fe19f77bd4a8 6,110,114,125,128
+src/features/tercer-tiempo/TercerDetalle.svelte
+  s_1fdfe932c62174::t_aec8ec914b5a24 1-22
+src/main.js
+  s_1fdfe932c62174::t_b416d947017898 27,29
+src/features/tercer-tiempo/TercerList.svelte
+  s_1fdfe932c62174::t_f568d0705cacce 1-40
+src/features/tercer-tiempo/detail-views.js
+  s_1fdfe932c62174::t_0090db7d4b61c6 1-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d671c704698b411e083c57f89ab40e4492d3ba11",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
