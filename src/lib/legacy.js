@@ -9,8 +9,8 @@
    currentLang, t, readCache, writeCache, setSection, displayName, initials, computeDisplayNames,
    monthAbbrLabel, autoMonthAbbr, monthFullLabel, withDePrefix, todayLocalIso,
    effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate, attEvents, attEventType,
-   fines:writable, formatFullDate, thirdTimeGroups, renderThirdTime, renderRollCallList, renderEventDetail,
-   findRosterMatchForReportPlayer, attEventIso, currentEventId, normalizeRosterName,
+   fines:writable, formatFullDate, thirdTimeGroups, renderThirdTime, renderEventDetail,
+   attEventIso, currentEventId:writable, openEventDetail, rolesWithEventManagement,
    toggleAttAddButtonVisibility, renderThirdTimeFood, handleLogout, eventWhenDisplay, hasEventEnded,
    canUseWellness, canViewWellnessStaff */
 
@@ -56,20 +56,19 @@ export const legacy = {
   // la Plantilla (src/features/jugadoras) a partir de profiles.grupo_tercer_tiempo.
   get thirdTimeGroups() { return thirdTimeGroups; },
   renderThirdTime: () => renderThirdTime(),
-  // Repintan, con el roster recién cargado, la Lista del partido (partidos.js) y el
-  // detalle del evento abierto en Asistencia (asistencia.js). Se protegen solas si esa
-  // vista no está abierta.
-  renderRollCallList: () => renderRollCallList(),
+  // Repinta, con el roster recién cargado, el detalle del evento abierto en Asistencia
+  // (asistencia.js). Se protege sola si esa vista no está abierta.
   renderEventDetail: () => renderEventDetail(),
-  // Cruza una fila de match_report_players con el roster (por perfil, licencia o nombre),
-  // igual que en el acta de cada partido (js/features/actas.js).
-  findRosterMatchForReportPlayer: (row) => findRosterMatchForReportPlayer(row),
+  // Abre el detalle de un evento en Asistencia (asistencia.js).
+  openEventDetail: (eventId) => openEventDetail(eventId),
   // Fecha yyyy-mm-dd de un evento de Asistencia (js/features/calendario.js).
   attEventIso: (ev) => attEventIso(ev),
-  // Evento abierto en el detalle de Asistencia (js/core/permissions.js), o null.
+  // Evento abierto en el detalle de Asistencia (js/core/permissions.js), o null. Lo
+  // cambia también "Tullidas" desde el banner de Inicio (src/features/tullidas).
   get currentEventId() { return currentEventId; },
-  // Nombre sin tildes/mayúsculas/espacios de más, para cruzarlo con las actas (js/features/actas.js).
-  normalizeRosterName: (s) => normalizeRosterName(s),
+  set currentEventId(value) { currentEventId = value; },
+  // Roles que gestionan eventos (js/core/permissions.js): también pueden subir el acta.
+  get rolesWithEventManagement() { return rolesWithEventManagement; },
   // Botón "Añadir evento" de Asistencia según el rol (js/core/permissions.js).
   toggleAttAddButtonVisibility: () => toggleAttAddButtonVisibility(),
   // Comida del Tercer tiempo (js/features/tercer-tiempo.js), que depende del perfil propio.

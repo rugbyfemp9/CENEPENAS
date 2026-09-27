@@ -3,7 +3,7 @@ import Perfil from './Perfil.svelte';
 import ProfileBtn from './ProfileBtn.svelte';
 import EditProfileModal from './EditProfileModal.svelte';
 import AvatarAdjustModal from './AvatarAdjustModal.svelte';
-import { renderProfile, loadProfileMatchesPlayedStat, setEmail } from './perfil.svelte.js';
+import { renderProfile, setEmail } from './perfil.svelte.js';
 
 export function install(bridge) {
   mountAt(ProfileBtn, 'profile-btn');
@@ -19,8 +19,6 @@ export function install(bridge) {
     // Tras iniciar sesión (auth.js), al arrancar (legacyBoot), al entrar en Perfil
     // (navigation.js) y al cambiar asistencias o eventos (asistencia.js, eventos.js).
     render: renderProfile,
-    // Cuando llega un acta nueva y tienes abierto tu Perfil (actas.js).
-    loadMatchesPlayed: loadProfileMatchesPlayedStat,
     // Email de la cuenta, al iniciar sesión (auth.js).
     setEmail,
   };

@@ -229,24 +229,7 @@
       <div class="section-head"><h2 data-i18n="inicio.title">Inicio</h2></div>
       <div id="inicio-top-notices"></div>
       <div data-mount="inicio-shared-lineup-banner"></div>
-      <div class="scoreboard" id="next-match-banner" onclick="goToNextMatch()" style="cursor:pointer;">
-        <button class="scoreboard-tullides-btn" id="next-match-tullides-btn" onclick="event.stopPropagation(); openTullidesModalForNextMatch();" style="display:none;" data-i18n-attr="aria-label:att.tullidesButton,title:att.tullidesButton" aria-label="Tullidas" title="Tullidas">🩹</button>
-        <div class="msg">
-          <b id="next-match-title" data-i18n="nextMatch.title">Próximo partido</b>
-          <span id="next-match-subtitle" data-i18n="nextMatch.subtitleNone">Todavía no hay ningún partido programado</span>
-        </div>
-        <div class="right-group">
-          <div class="chips" id="next-match-chips">
-            <div class="chip"><div class="n" id="next-match-confirmed">—</div><div class="l" data-i18n="nextMatch.confirmed">Confirmadas</div></div>
-          </div>
-          <button class="scoreboard-cta" id="next-match-cta" onclick="event.stopPropagation(); goToNextMatch()" style="display:none;" data-i18n="nextMatch.confirmCta">Confirmar</button>
-          <span class="scoreboard-status" id="next-match-status" style="display:none;"></span>
-          <div class="game-day-actions" id="game-day-actions" style="display:none;">
-            <button class="scoreboard-cta" onclick="event.stopPropagation(); openMatchdayChecklistModal()" data-i18n="nextMatch.remindCta">Recuerda</button>
-            <button class="scoreboard-cta" onclick="event.stopPropagation(); openRollCallModal()" data-i18n="nextMatch.listCta">Lista</button>
-          </div>
-        </div>
-      </div>
+      <div data-mount="next-match-banner"></div>
       <!-- Recordatorio de valoración Wellness/RPE del entreno más reciente ya finalizado
            y todavía sin valorar. Solo jugadoras: lo pinta Svelte (src/features/wellness/WellnessReminderBanner.svelte). -->
       <div data-mount="wellness-reminder-banner"></div>
@@ -298,7 +281,7 @@
         <button class="att-event-edit-btn" id="att-detail-edit-btn" onclick="openEditEventModal(currentEventId)" data-i18n-attr="aria-label:att.editEvent,title:att.editEvent" aria-label="Editar evento" title="Editar evento" style="display:none;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </button>
-        <button class="att-event-edit-btn att-detail-tullides-btn" id="att-detail-tullides-btn" onclick="openTullidesModal()" data-i18n-attr="aria-label:att.tullidesButton,title:att.tullidesButton" aria-label="Tullidas" title="Tullidas" style="display:none; right:44px;">
+        <button class="att-event-edit-btn att-detail-tullides-btn" id="att-detail-tullides-btn" onclick="appBridge.tullidas.open()" data-i18n-attr="aria-label:att.tullidesButton,title:att.tullidesButton" aria-label="Tullidas" title="Tullidas" style="display:none; right:44px;">
           🩹
         </button>
         <!-- Wellness / RPE: solo visible para el rol jugadora (ver toggleAttWellnessButtonVisibility) -->
@@ -422,35 +405,10 @@
     <section class="section" id="sec-test"></section>
 
     <!-- PARTIDOS -->
-    <section class="section" id="sec-partidos">
-      <div class="back-link" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-      <div class="section-head"><h2 data-i18n="nav.partidos">Partidos</h2></div>
-      <div id="partidos-list"></div>
-    </section>
+    <section class="section" id="sec-partidos"></section>
 
     <!-- PARTIDO: DETALLE -->
-    <section class="section" id="sec-partido-detalle">
-      <div class="back-link" onclick="setSection('partidos')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="nav.partidos">Partidos</span></div>
-      <div class="section-head"><h2 id="partido-detalle-title" data-i18n="partido.defaultTitle">Partido</h2></div>
-
-      <div class="card" style="margin-bottom:16px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px;">
-          <h3 style="margin:0; font-size:15px; text-transform:uppercase;" data-i18n="partido.actaTitle">Acta del partido</h3>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <button class="cal-open-btn small" id="match-report-create-btn" onclick="openMatchReportBuilderModal()" data-i18n-attr="aria-label:partido.createManual,title:partido.createManual" aria-label="Crear acta a mano" title="Crear acta a mano" style="display:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
-            </button>
-            <button class="cal-open-btn small" id="match-report-upload-btn" onclick="openMatchReportUploadModal()" data-i18n-attr="aria-label:partido.uploadPdf,title:partido.uploadPdf" aria-label="Subir acta en PDF" title="Subir acta en PDF" style="display:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
-            </button>
-            <button class="cal-open-btn small" id="match-report-delete-btn" onclick="deleteMatchReport()" data-i18n-attr="aria-label:partido.deleteActa,title:partido.deleteActa" aria-label="Eliminar acta" title="Eliminar acta" style="display:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
-            </button>
-          </div>
-        </div>
-        <div id="match-report-box"></div>
-      </div>
-    </section>
+    <section class="section" id="sec-partido-detalle"></section>
 
     <!-- GYM -->
     <section class="section" id="sec-gym"></section>
@@ -636,39 +594,10 @@
 <div data-mount="test-ranking-modal"></div>
 
 <!-- MODAL: SUBIR PDF DEL ACTA DEL PARTIDO -->
-<div class="modal-overlay" id="match-report-upload-modal" onclick="if(event.target===this) closeMatchReportUploadModal()">
-  <div class="modal-box" style="max-width:380px;">
-    <h3 style="margin-top:0;" data-i18n="partido.uploadPdf">Subir acta en PDF</h3>
-    <p class="modal-sub" style="margin-bottom:14px;" data-i18n="partido.uploadPdfSub">Sube el PDF del acta de este partido: se leen automáticamente licencias, titulares/suplentes, cambios y minutos, ensayos y transformaciones, y tarjetas.</p>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:0 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="partido.pdfFileLabel">Archivo PDF</span>
-        <input type="file" id="match-report-pdf-input" accept="application/pdf" style="font-family:'Roboto',sans-serif; font-size:13px;">
-      </label>
-      <div id="match-report-upload-status" style="font-size:12.5px; color:var(--text-muted);"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" id="match-report-upload-cancel-btn" onclick="closeMatchReportUploadModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" id="match-report-upload-submit-btn" onclick="uploadMatchReportPdf()" data-i18n="partido.uploadAndProcess">Subir y procesar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="match-report-upload-modal"></div>
 
 <!-- TULLIDAS: lista de jugadoras apuntadas para vendaje antes de un partido -->
-<div class="modal-overlay" id="tullides-modal" onclick="if(event.target===this) closeTullidesModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" id="tullides-modal-title" data-i18n="att.tullidesTitle">Tullidas🤕</h3>
-    <div class="modal-sub" id="tullides-modal-sub" style="margin-bottom:14px;"></div>
-    <div class="tullides-list" id="tullides-list"></div>
-    <div class="tullides-add-row">
-      <input type="text" id="tullides-input" maxlength="120" data-i18n-attr="placeholder:att.tullidesPlaceholder" placeholder="¿Qué vendaje necesitas?" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addTullidesItem(); }">
-      <button onclick="addTullidesItem()" data-i18n-attr="aria-label:att.tullidesAdd,title:att.tullidesAdd" aria-label="Añadir" title="Añadir">+</button>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeTullidesModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="tullides-modal"></div>
 
 <!-- WELLNESS / RPE: valoración de dos fases (esfuerzo percibido + molestias físicas),
      visible y accesible SOLO para el rol jugadora (ver toggleAttWellnessButtonVisibility) -->
@@ -676,38 +605,7 @@
 
 
 <!-- MODAL: CREAR/EDITAR ACTA A MANO -->
-<div class="modal-overlay" id="match-report-builder-modal" onclick="if(event.target===this) closeMatchReportBuilderModal()">
-  <div class="modal-box" style="max-width:960px;">
-    <h3 style="margin-top:0;" data-i18n="partido.createManual">Crear acta a mano</h3>
-    <p class="modal-sub" style="margin-bottom:14px;" data-i18n="partido.manualSub">
-      Minuto de entrada 0 = titular. Minuto de salida 80 = jugó hasta el final. Si al abrir esto ya había un acta subida, se han rellenado los datos que ya teníamos para que solo tengas que corregir lo que haga falta (los minutos de entrada/salida son una aproximación a partir de los minutos jugados guardados).
-    </p>
-    <div style="overflow-x:auto; margin:0 0 10px;">
-      <table class="gym-exercise-table" id="acta-builder-table">
-        <thead>
-          <tr>
-            <th data-i18n="partido.colNum">Nº</th>
-            <th data-i18n="partido.colPlayer">Jugadora</th>
-            <th data-i18n="partido.colMinIn">Min. entra</th>
-            <th data-i18n="partido.colMinOut">Min. sale</th>
-            <th>A</th>
-            <th>T</th>
-            <th>CC</th>
-            <th data-i18n="partido.colCards">Tarjetas</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="acta-builder-rows"></tbody>
-      </table>
-    </div>
-    <button class="btn-ghost" type="button" onclick="addActaBuilderRow()" data-i18n="partido.addPlayer">+ Añadir jugadora</button>
-    <div id="acta-builder-status" style="font-size:12.5px; color:var(--text-muted); margin-top:12px;"></div>
-    <div class="modal-actions">
-      <button class="btn-ghost" id="acta-builder-cancel-btn" onclick="closeMatchReportBuilderModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" id="acta-builder-save-btn" onclick="saveActaBuilder()" data-i18n="partido.saveActa">Guardar acta</button>
-    </div>
-  </div>
-</div>
+<div data-mount="match-report-builder-modal"></div>
 
 
 <!-- MODAL: DESGLOSE DEL SALDO POR INTEGRANTE DE LA COMISIÓN -->
@@ -766,30 +664,10 @@
 </div>
 
 <!-- MODAL: RECUERDA (qué llevar al partido) -->
-<div class="modal-overlay" id="matchday-checklist-modal" onclick="if(event.target===this) closeMatchdayChecklistModal()">
-  <div class="modal-box" style="max-width:420px;">
-    <h3 style="margin-top:0;">Qué llevar al partido</h3>
-    <div class="modal-sub">Márcalo con la casilla cuando ya lo tengas listo</div>
-    <div id="matchday-checklist-list" style="max-height:48vh; overflow-y:auto;"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeMatchdayChecklistModal()">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="matchday-checklist-modal"></div>
 
 <!-- MODAL: LISTA (pasar lista en convocatoria) -->
-<div class="modal-overlay" id="rollcall-modal" onclick="if(event.target===this) closeRollCallModal()">
-  <div class="modal-box" style="max-width:440px;">
-    <h3 style="margin-top:0;">Pasar lista</h3>
-    <div class="modal-sub">Jugadoras confirmadas para el partido — marca quién ha llegado (✓) o falta/llega tarde (✗)</div>
-    <div class="rollcall-summary" id="rollcall-summary"></div>
-    <div id="rollcall-list" style="max-height:48vh; overflow-y:auto;"></div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeRollCallModal()">Cancelar</button>
-      <button class="btn" onclick="saveRollCall()">Guardar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="rollcall-modal"></div>
 
 <!-- MODAL: NO PUEDO ASISTIR (cambio de turno del tercer tiempo) -->
 <div class="modal-overlay" id="swap-modal" onclick="if(event.target===this) closeSwapModal()">
@@ -1076,9 +954,6 @@
 <script src="js/features/tercer-tiempo.js"></script>
 <script src="js/features/eventos.js"></script>
 <script src="js/features/asistencia.js"></script>
-<script src="js/features/partidos.js"></script>
-<script src="js/features/actas.js"></script>
-<script src="js/features/tullidas.js"></script>
 <script src="js/main.js"></script>
 
 <!-- Registro del service worker: imprescindible para que Chrome (Android y

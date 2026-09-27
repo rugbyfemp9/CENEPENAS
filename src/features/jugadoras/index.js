@@ -1,7 +1,7 @@
 import { mountInto } from '../../lib/mount.js';
 import Jugadoras from './Jugadoras.svelte';
 import {
-  plantilla, loadPlantilla, subscribeToProfilesRealtime, loadPlantillaStats, onLangChange,
+  loadPlantilla, subscribeToProfilesRealtime, onLangChange,
 } from './jugadoras.svelte.js';
 
 export function install(bridge) {
@@ -16,8 +16,5 @@ export function install(bridge) {
     // que es lo que rellena roster/rosterById y los grupos del Tercer tiempo.
     load: loadPlantilla,
     subscribeRealtime: subscribeToProfilesRealtime,
-    // Para refrescar las estadísticas cuando llega un acta nueva (actas.js).
-    get activeTab() { return plantilla.activeTab; },
-    loadStats: loadPlantillaStats,
   };
 }

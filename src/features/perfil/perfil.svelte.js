@@ -16,6 +16,8 @@ import {
 import { treasury } from '../tesoreria/tesoreria.svelte.js';
 import { tercerTreasury } from '../comi-tercer-temps/comi-tercer-temps.svelte.js';
 import { loadPlantilla, posicionLabel } from '../jugadoras/jugadoras.svelte.js';
+import { renderRollCallList } from '../partidos/rollcall.svelte.js';
+import { normalizeRosterName } from '../actas/actas.svelte.js';
 
 export const perfil = $state({
   // Lo que pintó el último renderProfile(); null = todavía no se ha pintado nunca (se ve
@@ -140,14 +142,14 @@ export async function loadProfileMatchesPlayedStat() {
 
   const myProfile = legacy.myProfile;
   const myLicense = (myProfile.licencia || '').toString().trim();
-  const myName = legacy.normalizeRosterName(myProfile.name);
+  const myName = normalizeRosterName(myProfile.name);
 
   const matchIds = new Set();
   (data || []).forEach(row => {
     const rowLicense = (row.license_number || '').toString().trim();
     const isMe =
       (myLicense && rowLicense && rowLicense === myLicense) ||
-      (myName && legacy.normalizeRosterName(row.player_name) === myName);
+      (myName && normalizeRosterName(row.player_name) === myName);
     if (isMe) matchIds.add(row.match_id);
   });
 
@@ -166,7 +168,7 @@ export function refreshAvatarEverywhere() {
   renderFinesTable();
   renderFinePlayerGrid();
   renderFineConfirmRequests();
-  legacy.renderRollCallList();
+  renderRollCallList();
   refreshGym();
   loadPlantilla();
   if (legacy.currentEventId) legacy.renderEventDetail();

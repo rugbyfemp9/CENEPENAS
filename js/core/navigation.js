@@ -78,7 +78,7 @@ function setSection(id, opts){
   // Al entrar en Vestuario → Partidos se repinta con los eventos que haya ahora
   // mismo (por si se han creado o editado partidos desde que se cargó la página).
   if(id === 'partidos'){
-    renderPartidosList();
+    appBridge.partidos.renderList();
   }
 
   // Wellness / RPE equipo: solo Cos Tècnic (ver canViewWellnessStaff()). Si alguien

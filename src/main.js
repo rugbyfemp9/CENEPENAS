@@ -21,8 +21,11 @@ import * as multas from './features/multas/index.js';
 import * as jugadoras from './features/jugadoras/index.js';
 import * as perfil from './features/perfil/index.js';
 import * as wellness from './features/wellness/index.js';
+import * as partidos from './features/partidos/index.js';
+import * as actas from './features/actas/index.js';
+import * as tullidas from './features/tullidas/index.js';
 
-for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas, jugadoras, perfil, wellness]) feature.install(appBridge);
+for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas, jugadoras, perfil, wellness, partidos, actas, tullidas]) feature.install(appBridge);
 
 refreshSession();
 window.legacyBoot();

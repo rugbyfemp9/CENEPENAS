@@ -42,7 +42,7 @@ function renderEventList(){
         <div class="att-month-heading att-month-heading--with-toggle"><span></span>${toggleHtml}</div>
         <div class="att-roster-empty">${attListMode === 'upcoming' ? t('att.noUpcoming') : t('att.noPast')}</div>
       `;
-    renderPartidosList();
+    appBridge.partidos.renderList();
     return;
   }
 
@@ -56,7 +56,7 @@ function renderEventList(){
   // Vestuario → Partidos usa los mismos datos, así que se mantiene sincronizado
   // cada vez que se repinta Asistencia (alta/edición/borrado de evento, RSVP, o
   // sincronización en tiempo real).
-  renderPartidosList();
+  appBridge.partidos.renderList();
 }
 
 function setMyRsvp(eventId, status, btnEl){
@@ -72,7 +72,7 @@ function setMyRsvp(eventId, status, btnEl){
 
   renderEventList();
   if(currentEventId === eventId) renderEventDetail();
-  renderNextMatchBanner();
+  appBridge.partidos.renderNextMatchBanner();
   appBridge.perfil.render();
 
   // Guarda mi respuesta de forma compartida para que la vean todas las jugadoras
@@ -166,7 +166,7 @@ function subscribeToAttAttendanceRealtime(){
         else delete ev.comments[row.user_id];
       }
 
-      renderNextMatchBanner();
+      appBridge.partidos.renderNextMatchBanner();
       if(typeof renderEventList === 'function' && document.getElementById('sec-asistencia')?.classList.contains('active')){
         renderEventList();
       }

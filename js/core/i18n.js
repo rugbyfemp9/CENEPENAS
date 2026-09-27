@@ -1333,15 +1333,12 @@ function setLang(lang){
   applyI18n();
   // Las secciones ya migradas a Svelte se repintan solas al recibir este evento.
   window.dispatchEvent(new CustomEvent('app:langchange', { detail: lang }));
-  if(typeof renderNextMatchBanner === 'function') renderNextMatchBanner();
   if(typeof renderInicioTercerBanner === 'function') renderInicioTercerBanner();
   if(typeof renderEventList === 'function') renderEventList();
   if(typeof renderEventDetail === 'function' && typeof currentEventId !== 'undefined' && currentEventId) renderEventDetail();
   if(typeof renderCalendarGrid === 'function') renderCalendarGrid();
-  if(typeof renderPartidosList === 'function') renderPartidosList();
   if(typeof renderThirdTime === 'function') renderThirdTime();
   if(typeof renderThirdTimeFood === 'function') renderThirdTimeFood();
-  if(typeof renderMatchReport === 'function' && typeof currentPartidoId !== 'undefined' && currentPartidoId) renderMatchReport(currentPartidoId);
   if(document.getElementById('comment-modal') && document.getElementById('comment-modal').classList.contains('active') && typeof commentModalCtx !== 'undefined' && commentModalCtx){
     const evForComment = attEvents.find(e => e.id === commentModalCtx.eventId);
     if(evForComment) document.getElementById('comment-modal-sub').textContent = `${evForComment.label} · ${eventWhenDisplay(evForComment)}`;

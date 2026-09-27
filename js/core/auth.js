@@ -212,9 +212,9 @@ async function onAuthenticated(user){
     await appBridge.gym.loadAfterLogin();
   }catch(e){ console.error('No se ha podido cargar el módulo de Gimnasio al iniciar sesión', e); }
 
-  subscribeToMatchReportRealtime();
+  appBridge.actas.subscribeRealtime();
   subscribeToAttAttendanceRealtime();
-  subscribeToTullidesRealtime();
+  appBridge.tullidas.subscribeRealtime();
 
   // Fantasy guarda su borrador y las alineaciones guardadas en almacenamiento de
   // navegador aparte de Supabase: se recargan aquí, ya con el id real fijado, para

@@ -209,7 +209,7 @@ function saveNewEvent(){
   closeAddEventModal();
   renderCalendarGrid();
   renderThirdTime();
-  renderNextMatchBanner();
+  appBridge.partidos.renderNextMatchBanner();
   appBridge.perfil.render();
   appBridge.fantasy.init();
 }
@@ -245,7 +245,7 @@ function confirmDeleteEvent(){
   renderEventList();
   renderCalendarGrid();
   renderThirdTime();
-  renderNextMatchBanner();
+  appBridge.partidos.renderNextMatchBanner();
   appBridge.fantasy.init();
 }
 
@@ -445,7 +445,7 @@ async function deleteEventFromStorage(eventId){
     .delete()
     .eq('event_id', eventId);
   if(eTullides) console.error('No se ha podido borrar la lista de tullidas del evento borrado', eTullides);
-  delete tullidesByEventId[eventId];
+  appBridge.tullidas.forgetEvent(eventId);
 }
 
 // Trae todos los eventos creados/editados a mano por cualquier persona y los añade
@@ -479,6 +479,6 @@ async function refreshSharedEventsAndUI(){
   await loadMyAttendanceFromStorage();
   renderEventList();
   renderCalendarGrid();
-  renderNextMatchBanner();
+  appBridge.partidos.renderNextMatchBanner();
   appBridge.wellness.renderReminderBanner();
 }

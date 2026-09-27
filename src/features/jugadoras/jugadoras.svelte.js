@@ -13,6 +13,8 @@ import { refresh as refreshGym } from '../gym/gym.svelte.js';
 import { refreshFantasyMatchesAndUI } from '../fantasy/fantasy.svelte.js';
 import { renderFinesTable } from '../multas/multas.svelte.js';
 import { renderProfile } from '../perfil/perfil.svelte.js';
+import { renderRollCallList } from '../partidos/rollcall.svelte.js';
+import { findRosterMatchForReportPlayer } from '../actas/actas.svelte.js';
 
 // Etiqueta legible para el campo "posicion" ('delantera' | '3/4') en la tabla de
 // Jugadoras y en Mi perfil (src/features/perfil).
@@ -136,7 +138,7 @@ function applyPlantillaRows(data) {
   // función se protege sola si la vista correspondiente no está abierta ahora mismo.
   renderProfile();
   refreshGym(); // asistencia de hoy y ranking del Gym
-  legacy.renderRollCallList();
+  renderRollCallList();
   legacy.renderEventDetail();
   renderFinesTable();
 }
@@ -250,7 +252,7 @@ export async function loadPlantillaStats() {
 function renderPlantillaStatsRows(data) {
   const statsByProfileId = {};
   (data || []).forEach((row) => {
-    const matched = legacy.findRosterMatchForReportPlayer(row);
+    const matched = findRosterMatchForReportPlayer(row);
     if (!matched || !matched.id) return; // solo jugadoras con perfil/cuenta en la app
 
     if (!statsByProfileId[matched.id]) {

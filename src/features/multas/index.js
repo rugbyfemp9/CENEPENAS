@@ -7,7 +7,7 @@ import EditFineModal from './EditFineModal.svelte';
 import PayFineModal from './PayFineModal.svelte';
 import FinesHistoryModal from './FinesHistoryModal.svelte';
 import {
-  loadFines, subscribeToFinesRealtime, persistFineInsert, canManageFines, permissionsChanged,
+  loadFines, subscribeToFinesRealtime, persistFineInsert, permissionsChanged,
   refreshAfterChange, onLangChange,
 } from './multas.svelte.js';
 
@@ -25,18 +25,15 @@ export function install(bridge) {
   window.addEventListener('app:langchange', onLangChange);
 
   bridge.multas = {
-    // Al iniciar sesión (auth.js), ya con el id real fijado; y desde la Lista de
-    // partidos (partidos.js) si el borrado de una multa automática no llega a Supabase.
+    // Al iniciar sesión (auth.js), ya con el id real fijado.
     load: loadFines,
     subscribeRealtime: subscribeToFinesRealtime,
-    // Multas automáticas de "Retraso" (Lista del partido, partidos.js) y de "Tercer
-    // tiempo" (tercer-tiempo.js): se añaden al array `fines` y se guardan con esto.
+    // Multas automáticas de "Tercer tiempo" (tercer-tiempo.js): se añaden al array
+    // `fines` y se guardan con esto.
     persistInsert: persistFineInsert,
     // Tras cambiar el array `fines` desde fuera: tabla, tarjeta personal (y avisos de
     // pago), banner de Inicio y total de Vestuario.
     refresh: refreshAfterChange,
-    // La Lista ya guardada de un partido solo la puede reabrir Comi Tesoreria (partidos.js).
-    canManage: canManageFines,
     // Tras iniciar sesión o editar el perfil, después de appBridge.sessionChanged().
     permissionsChanged,
   };
