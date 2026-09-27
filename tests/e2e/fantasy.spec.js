@@ -48,9 +48,11 @@ async function openFantasyWithMatchAttendance(page, expectedBench = ['Rovi', 'Ca
   await expect(page.locator('#sec-asistencia-detalle')).toHaveClass(/active/);
   await page.waitForLoadState('networkidle');
   // Entering Fantasy re-renders the bench; retry in case the answers arrive late.
+  // expectedBench: the bench names, or just how many players (a number).
   await expect(async () => {
     await goToSection(page, 'fantasy');
-    if (expectedBench) await expect(benchNames(page)).toHaveText(expectedBench, { timeout: 500 });
+    if (typeof expectedBench === 'number') await expect(benchCount(page)).toHaveText(String(expectedBench), { timeout: 500 });
+    else if (expectedBench) await expect(benchNames(page)).toHaveText(expectedBench, { timeout: 500 });
   }).toPass();
 }
 
@@ -214,7 +216,7 @@ test('after the 15 positions players go to the substitutes, and with all 23 fill
   const dialogs = recordDialogs(page);
   const { errors } = await setupApp(page, { seed: withExtraPlayers(20) });
   await openApp(page);
-  await openFantasyWithMatchAttendance(page, null);
+  await openFantasyWithMatchAttendance(page, 24);
   await expect(benchCount(page)).toHaveText('24');
 
   for (let i = 0; i < 15; i++) await benchCards(page).first().click();
