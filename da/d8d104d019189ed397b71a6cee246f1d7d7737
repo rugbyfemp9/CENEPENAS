@@ -1,0 +1,173 @@
+src/lib/push.js
+  s_1fdfe932c62174::t_e6cef4a6ebc751 1-7,11-13,21,33,39,86-88,117-126
+src/features/comi-tercer-temps/ComiTercerTemps.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,16
+src/shell/auth.svelte.js
+  s_1fdfe932c62174::t_fcd9f014a46f3d 1-42,44-48,53-54,60,62-63,68-89,101,108-109,117-118,121-122,127,131-132,136-139,141-142,146-148,168-171,175-184,190,203,212,216-220,225-226,238-240,242-244,246-248,253,258-259,263-265,269-272,277-282,286-289
+vite.config.js
+  s_1fdfe932c62174::t_b01d75029688fd 5-10,17
+  s_1fdfe932c62174::t_ed25068e61056a 38-40
+src/shell/BottomNav.svelte
+  s_1fdfe932c62174::t_cfa8ffbcba7783 1-24
+src/features/jugadoras/Jugadoras.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 5,12
+src/lib/mount.js
+  s_1fdfe932c62174::t_37969fb54319e5 3-5
+  s_1fdfe932c62174::t_230477b5802f03 8,15,18
+src/features/perfil/PerfilDatos.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 5,26
+src/lib/Modal.svelte
+  s_1fdfe932c62174::t_230477b5802f03 3
+src/features/multas/index.js
+  s_1fdfe932c62174::t_ac6964c6657239 9
+src/features/asistencia/AsistenciaDetalle.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 4,22
+src/features/perfil/PerfilHead.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 5,22
+src/features/galeria/galeria.svelte.js
+  s_1fdfe932c62174::t_1d7ddc2dff3294 9,147
+src/features/asistencia/events.js
+  s_1fdfe932c62174::t_230477b5802f03 105
+src/shell/TopBar.svelte
+  s_1fdfe932c62174::t_08eb0edca1380c 1-24
+src/features/liga/Liga.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,11
+src/lib/sw-register.js
+  s_1fdfe932c62174::t_4050c7624f07a3 1-10,12
+src/shell/RegisterView.svelte
+  s_1fdfe932c62174::t_45e1271e504dd4 1-73
+src/features/tesoreria/Tesoreria.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,11
+src/features/gym/GymEquipo.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,22
+src/features/multas/Multas.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 6,24
+src/features/wellness/wellness-staff.svelte.js
+  s_1fdfe932c62174::t_230477b5802f03 48
+  s_1fdfe932c62174::t_1d7ddc2dff3294 12,99
+index.html
+  s_1fdfe932c62174::t_12e1054eddb412 38-39
+src/shell/Sidebar.svelte
+  s_1fdfe932c62174::t_ca172fdfc35d82 11
+  s_1fdfe932c62174::t_cfa8ffbcba7783 1-10,12-79
+src/features/gym/GymDia.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,35
+src/shell/visibility.svelte.js
+  s_1fdfe932c62174::t_5ed81fb06e9659 1-8,10-20,23-24
+src/shell/Crest.svelte
+  s_1fdfe932c62174::t_680a6fc8430b68 1-10
+src/features/gym/GymEntrenamiento.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,25
+src/shell/ComiStatic.svelte
+  s_1fdfe932c62174::t_93ae4cda8c58da 1-15
+src/features/multas/FinesBanner.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 7,23
+  s_1fdfe932c62174::t_230477b5802f03 4
+src/features/partidos/PartidoDetalle.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 4,10
+src/shell/navigation.svelte.js
+  s_1fdfe932c62174::t_df8db21b4f77de 1-3,8-34,36,38,43,47-54,59-61,66-69,74-75,80-81,86-87,92-93,98-99,105-107,111-112,114-116,120-121,127-128,133-134,138,140-142,149-150,152-154,156-158,163,166-167,169-198,203-210
+src/features/tercer-tiempo/InicioTercerBanner.svelte
+  s_1fdfe932c62174::t_230477b5802f03 3-4
+src/shell/Vestuario.svelte
+  s_1fdfe932c62174::t_cfa8ffbcba7783 1-73
+src/features/partidos/Partidos.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 4,11
+src/features/tercer-tiempo/TercerHistorial.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 4,12
+src/features/gym/GymHub.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,7,12,17
+src/features/fantasy/fantasy.svelte.js
+  s_1fdfe932c62174::t_1d7ddc2dff3294 13,604
+src/features/perfil/perfil.svelte.js
+  s_1fdfe932c62174::t_230477b5802f03 5,7-8
+src/features/perfil/ProfileBtn.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,8
+src/shell/sections.js
+  s_1fdfe932c62174::t_01bd77ad4b507f 1-5,31,33-34,66
+src/features/wellness/WellnessStaff.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 6,13
+src/features/tercer-tiempo/index.js
+  s_1fdfe932c62174::t_ac6964c6657239 10
+src/lib/i18n.svelte.js
+  s_1fdfe932c62174::t_d4aabbf10d17fe 7-8,40-41,51-52
+src/main.js
+  s_1fdfe932c62174::t_503204451b991e 1,3-9,11-15,34-42,44-54,57-95
+src/lib/permissions.js
+  s_1fdfe932c62174::t_230477b5802f03 26
+src/features/liga/index.js
+  s_1fdfe932c62174::t_230477b5802f03 8
+src/shell/Inicio.svelte
+  s_1fdfe932c62174::t_cfa8ffbcba7783 1-33,35-36,38-40
+  s_1fdfe932c62174::t_ca172fdfc35d82 34,37
+src/features/test/Test.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,14
+src/features/fantasy/Fantasy.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 5,33
+src/features/asistencia/editor.svelte.js
+  s_1fdfe932c62174::t_1d7ddc2dff3294 5,269
+src/features/comi-tercer-temps/index.js
+  s_1fdfe932c62174::t_ac6964c6657239 7
+src/features/tricount/Tricount.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 3,74
+src/features/tercer-tiempo/TercerList.svelte
+  s_1fdfe932c62174::t_1d7ddc2dff3294 4,17,24
+src/features/partidos/partidos.svelte.js
+  s_1fdfe932c62174::t_1d7ddc2dff3294 8,134
+src/features/tricount/TricountBanner.svelte
+  s_1fdfe932c62174::t_230477b5802f03 4-5
+  s_1fdfe932c62174::t_1d7ddc2dff3294 7,28
+src/features/tercer-tiempo/tercer-tiempo.svelte.js
+  s_1fdfe932c62174::t_230477b5802f03 5,9-10
+  s_1fdfe932c62174::t_1d7ddc2dff3294 11,49,52
+src/shell/Main.svelte
+  s_1fdfe932c62174::t_cfa8ffbcba7783 1-7,9-110
+  s_1fdfe932c62174::t_595031cb92fce9 8
+src/features/asistencia/index.js
+  s_1fdfe932c62174::t_ac6964c6657239 11-12
+src/features/gym/gym.svelte.js
+  s_1fdfe932c62174::t_1d7ddc2dff3294 13,159,637
+src/features/actas/index.js
+  s_1fdfe932c62174::t_ac6964c6657239 4
+src/features/partidos/index.js
+  s_1fdfe932c62174::t_ac6964c6657239 7
+src/features/perfil/index.js
+  s_1fdfe932c62174::t_ac6964c6657239 6
+src/shell/AuthOverlay.svelte
+  s_1fdfe932c62174::t_d1e7096afc565b 1-36
+src/shell/Comisiones.svelte
+  s_1fdfe932c62174::t_cfa8ffbcba7783 1-38
+src/features/multas/multas.svelte.js
+  s_1fdfe932c62174::t_230477b5802f03 56
+src/lib/session.svelte.js
+  s_1fdfe932c62174::t_230477b5802f03 5,9
+src/shell/ModalMounts.svelte
+  s_1fdfe932c62174::t_230477b5802f03 55
+  s_1fdfe932c62174::t_cfa8ffbcba7783 1-54,56-127
+src/features/jugadoras/index.js
+  s_1fdfe932c62174::t_ac6964c6657239 3
+src/features/tesoreria/index.js
+  s_1fdfe932c62174::t_ac6964c6657239 7
+src/features/asistencia/asistencia.svelte.js
+  s_1fdfe932c62174::t_1d7ddc2dff3294 10,304
+src/lib/roster.js
+  s_1fdfe932c62174::t_230477b5802f03 9
+src/shell/App.svelte
+  s_1fdfe932c62174::t_c2a6e8393295f4 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "dad8d104d019189ed397b71a6cee246f1d7d7737",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
