@@ -57,8 +57,9 @@ function legacyBoot(){
   // Gym (Svelte) se pinta solo al montarse.
 
   appBridge.fantasy.init();
-  renderThirdTime();
-  initThirdTimeFood();
+  // Tercer tiempo (Svelte): primer pintado y comprobación cada minuto de las multas 3T.
+  appBridge.tercerTiempo.render();
+  appBridge.tercerTiempo.startAutoFinesTimer();
 
   // Estado inicial del historial: la app siempre arranca en "Inicio", así que dejamos
   // esa como primera entrada (reemplazando la que ya puso el navegador al cargar la

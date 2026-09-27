@@ -4,14 +4,15 @@
 // de Comi Tesoreria), modales de alta / edición / borrado, histórico de pagadas, el
 // banner de Inicio y el total de la tarjeta de Vestuario.
 //
-// El array `fines` sigue declarado en el código antiguo (js/core/state.js), porque
-// también lo leen y modifican secciones sin migrar (la Lista de partidos crea/quita las
-// multas automáticas de "Retraso", el Tercer tiempo las de "Tercer tiempo", Jugadoras
-// cuenta tarjetas...). No es reactivo: igual que antes, cada parte de la pantalla solo
-// se vuelve a leer de ahí cuando se "pinta". Cada parte tiene su propio contador en
-// `multas` (0 = todavía no se ha pintado nunca, y se queda vacía como el marcado
-// original) que las funciones render*() incrementan, y el código antiguo las llama por
-// appBridge.multas.
+// Las multas viven aquí (finesState.list), como estado reactivo; también las leen y
+// modifican otras secciones (la Lista de partidos crea/quita las multas automáticas de
+// "Retraso", el Tercer tiempo las de "Tercer tiempo", Jugadoras cuenta tarjetas...).
+// La tabla, los avisos de pago y el histórico también muestran nombres y avatares del
+// roster, que sigue en el código antiguo y no es reactivo: por eso cada una tiene su
+// propio contador en `multas` (0 = todavía no se ha pintado nunca, y se queda vacía como
+// el marcado original) que las funciones render*() incrementan. La tarjeta "Tu
+// situación" y el banner de Inicio solo dependen de las multas: basta con saber si ya
+// se han pintado alguna vez (`multas.shown`).
 import { SvelteSet } from 'svelte/reactivity';
 import { legacy } from '../../lib/legacy.js';
 import { session } from '../../lib/session.svelte.js';
@@ -28,14 +29,16 @@ export const fineReasons = [
 ];
 export const fineReasonById = Object.fromEntries(fineReasons.map((r) => [r.id, r]));
 
+// Multas del equipo (antes el array `fines` de js/core/state.js).
+export const finesState = $state({ list: [] });
+
 export const multas = $state({
   // Contadores de pintado de cada parte (ver arriba)
   table: 0,      // tabla "Multas del equipo"
-  summary: 0,    // tarjeta "Tu situación" / "Debes"
   requests: 0,   // avisos "X te ha pagado su multa"
-  banner: 0,     // banner de Inicio
-  totals: 0,     // total de la tarjeta de Vestuario
   history: 0,    // histórico de multas pagadas
+  // Si la tarjeta "Tu situación" / "Debes" y el banner de Inicio ya se han pintado.
+  shown: false,
   // Modo edición de la tabla de multas: mientras está activo, un clic en una multa
   // abre el panel de editar/eliminar en vez de marcarla como pagada.
   editMode: false,
@@ -66,27 +69,24 @@ export function toggleFinesEditMode() {
 // ---- "Pintar" cada parte (ver comentario de arriba)
 export function renderFinesTable() { multas.table++; }
 export function renderFineConfirmRequests() { multas.requests++; }
+// Tarjeta "Tu situación" y banner de Inicio (siempre se pintaban juntos).
 export function renderMyFinesSummary() {
   // Independiente de la propia situación de multas: refresca los avisos de pago
   // pendientes de confirmar que le tocan a esta persona (si es de Comi Tesoreria).
   renderFineConfirmRequests();
-  multas.summary++;
+  multas.shown = true;
 }
-export function renderInicioFinesBanner() { multas.banner++; }
-export function updateFinesSummaries() { multas.totals++; }
 export function renderFinesHistory() { multas.history++; }
 
-// Lo que se repinta después de cualquier cambio en las multas.
+// Lo que se repinta después de cualquier cambio en las multas (el total de Vestuario
+// se recalcula solo).
 export function refreshAfterChange() {
   renderFinesTable();
   renderMyFinesSummary();
-  renderInicioFinesBanner();
-  updateFinesSummaries();
 }
 
 // Al cambiar de idioma se repintaba lo mismo que desde setLang() (js/core/i18n.js).
 export function onLangChange() {
-  renderInicioFinesBanner();
   renderMyFinesSummary();
   renderFinesTable();
   if (historyModal.open) renderFinesHistory();
@@ -122,13 +122,11 @@ export async function loadFines() {
     console.error('No se pudieron cargar las multas', error);
     return;
   }
-  legacy.fines = (data || []).map(fineRowToLocal);
+  finesState.list = (data || []).map(fineRowToLocal);
   renderMyFinesSummary();
-  renderInicioFinesBanner();
   renderFinesTable();
   renderFinesHistory();
   renderFineConfirmRequests();
-  updateFinesSummaries();
   loadPlantilla();
 }
 
@@ -151,12 +149,10 @@ export async function persistFineInsert(localId, fine) {
     alert('La multa se ha guardado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
     return;
   }
-  const local = legacy.fines.find((f) => f.id === localId);
+  const local = finesState.list.find((f) => f.id === localId);
   if (local) local.id = data.id;
   renderFinesTable();
   renderMyFinesSummary();
-  renderInicioFinesBanner();
-  updateFinesSummaries();
 }
 
 // Actualiza en Supabase una multa ya existente (pagar, confirmar, deshacer, o editar
@@ -185,7 +181,7 @@ export async function deleteFine(fineId) {
   }
   if (!confirm('¿Deshacer esta multa? Se eliminará por completo.')) return;
 
-  legacy.fines = legacy.fines.filter((f) => f.id !== fineId);
+  finesState.list = finesState.list.filter((f) => f.id !== fineId);
   refreshAfterChange();
 
   const { data, error } = await legacy.supabase.from('fines').delete().eq('id', fineId).select();
@@ -215,21 +211,20 @@ export function subscribeToFinesRealtime() {
 
 const sumAmounts = (list) => list.reduce((sum, f) => sum + fineReasonById[f.reasonId].amount, 0);
 
-// Total de multas pendientes de todo el equipo (tarjeta de Vestuario). Antes de
-// pintarse por primera vez queda el texto de partida del marcado ("0 € pendientes").
+// Total de multas pendientes de todo el equipo (tarjeta de Vestuario). Sin multas
+// cargadas coincide con el texto de partida del marcado ("0 € pendientes").
 export function vestuarioTotalText() {
-  if (!multas.totals) return '0 € pendientes';
-  const pending = legacy.fines.filter((f) => f.status === 'pendiente');
+  const pending = finesState.list.filter((f) => f.status === 'pendiente');
   return sumAmounts(pending) + ' € pendientes';
 }
 
 function myPendingFines() {
-  return legacy.fines.filter((f) => f.playerId === legacy.currentUserId && f.status === 'pendiente');
+  return finesState.list.filter((f) => f.playerId === legacy.currentUserId && f.status === 'pendiente');
 }
 
 // Tarjeta "Tu situación" / "Debes": null mientras no se ha pintado nunca.
 export function myFinesSummary() {
-  if (!multas.summary) return null;
+  if (!multas.shown) return null;
   const myPending = myPendingFines();
   return {
     total: sumAmounts(myPending),
@@ -243,7 +238,7 @@ export function myFinesSummary() {
 // Banner de "Multas pendientes" en Inicio: mismo tamaño que el de Tercer tiempo,
 // cambia de color/mensaje según lo que debe el usuario que ha iniciado sesión.
 export function inicioFinesBanner() {
-  if (!multas.banner) return null;
+  if (!multas.shown) return null;
   const myPending = myPendingFines();
   const total = sumAmounts(myPending);
   if (myPending.length === 0) return { kind: 'ok', total };
@@ -265,7 +260,7 @@ function avatarOf(player, fallbackName) {
 export function fineConfirmRequests() {
   if (!multas.requests) return [];
   const rosterById = legacy.rosterById;
-  return legacy.fines
+  return finesState.list
     .filter((f) => f.status === 'pendiente' && f.paidToId === legacy.currentUserId)
     .map((f) => {
       const payer = rosterById[f.playerId];
@@ -278,7 +273,7 @@ export function fineConfirmRequests() {
 // Tabla "Multas del equipo": null mientras no se ha pintado nunca.
 export function finesTable() {
   if (!multas.table) return null;
-  const fines = legacy.fines;
+  const fines = finesState.list;
   const rosterById = legacy.rosterById;
   const editMode = multas.editMode;
 
@@ -333,7 +328,7 @@ export function onFineChipClick(fineId) {
 }
 
 export function toggleFinePaid(fineId) {
-  const f = legacy.fines.find((x) => x.id === fineId);
+  const f = finesState.list.find((x) => x.id === fineId);
   if (!f) return;
   if (f.status === 'pendiente') {
     if (f.paidToId) {
@@ -369,7 +364,7 @@ export function payMyFine(fineId) {
 }
 
 export function openPayFineModal(fineId) {
-  const f = legacy.fines.find((x) => x.id === fineId);
+  const f = finesState.list.find((x) => x.id === fineId);
   if (!f) return;
   payModal.fineId = fineId;
   payModal.members = treasuryCommissionMembers().map((p) => ({ id: p.id, name: legacy.displayName(p) }));
@@ -390,7 +385,7 @@ function paidConcept(f) {
 
 // selectedValue: lo elegido en el desplegable "Se le ha pagado a".
 export function confirmPayFine(selectedValue) {
-  const f = legacy.fines.find((x) => x.id === payModal.fineId);
+  const f = finesState.list.find((x) => x.id === payModal.fineId);
   if (!f) return;
 
   const members = treasuryCommissionMembers();
@@ -407,9 +402,7 @@ export function confirmPayFine(selectedValue) {
     persistFineUpdate(f.id, { paidToId: responsibleId });
     closePayFineModal();
     renderMyFinesSummary();
-    renderInicioFinesBanner();
     renderFinesTable();
-    updateFinesSummaries();
     return;
   }
 
@@ -429,16 +422,14 @@ export function confirmPayFine(selectedValue) {
 
   closePayFineModal();
   renderMyFinesSummary();
-  renderInicioFinesBanner();
   renderFinesTable();
-  updateFinesSummaries();
 }
 
 // Responde a un aviso de "X te ha pagado su multa": si se confirma, la multa pasa
 // a pagada de verdad y el ingreso se añade a Comi Tesoreria; si no, la multa vuelve
 // a quedar pendiente de pago, sin nadie asignado.
 export function respondFineConfirmation(fineId, accepted) {
-  const f = legacy.fines.find((x) => x.id === fineId);
+  const f = finesState.list.find((x) => x.id === fineId);
   if (!f) return;
 
   if (accepted) {
@@ -459,9 +450,7 @@ export function respondFineConfirmation(fineId, accepted) {
   }
 
   renderMyFinesSummary();
-  renderInicioFinesBanner();
   renderFinesTable();
-  updateFinesSummaries();
 }
 
 // ---- Histórico de multas pagadas: se abre con el icono de reloj de "Multas del
@@ -481,7 +470,7 @@ export function closeFinesHistoryModal() {
 export function finesHistory() {
   if (!multas.history) return null;
   const rosterById = legacy.rosterById;
-  return legacy.fines
+  return finesState.list
     .filter((f) => f.status === 'pagada')
     .sort((a, b) => (b.paidAt || '').localeCompare(a.paidAt || ''))
     .map((f) => {
@@ -637,7 +626,7 @@ export function saveFine() {
   fineModal.reasonIds.forEach((reasonId) => {
     const tempId = crypto.randomUUID();
     const newFine = { id: tempId, playerId: fineModal.playerId, reasonId, status: 'pendiente', paidToId: null };
-    legacy.fines.push(newFine);
+    finesState.list.push(newFine);
     persistFineInsert(tempId, newFine);
   });
   closeFineModal();
@@ -664,7 +653,7 @@ export function openEditFineModal(fineId) {
     alert('Solo Comi Tesoreria puede editar multas.');
     return;
   }
-  const fines = legacy.fines;
+  const fines = finesState.list;
   const fine = fines.find((f) => f.id === fineId);
   if (!fine) return;
 
@@ -699,7 +688,7 @@ export async function saveEditFine() {
     return;
   }
   const newReasonId = [...editFineModal.reasonIds][0];
-  const fine = legacy.fines.find((f) => f.id === editFineModal.fineId);
+  const fine = finesState.list.find((f) => f.id === editFineModal.fineId);
   if (!fine) return;
 
   fine.playerId = editFineModal.playerId;
@@ -730,7 +719,7 @@ export async function deleteFineFromEditModal() {
     return;
   }
 
-  const toDelete = legacy.fines.filter((f) =>
+  const toDelete = finesState.list.filter((f) =>
     f.playerId === editFineModal.playerId &&
     f.status === 'pendiente' &&
     editFineModal.reasonIds.has(f.reasonId),
@@ -745,7 +734,7 @@ export async function deleteFineFromEditModal() {
   closeEditFineModal();
 
   const idsToDelete = toDelete.map((f) => f.id);
-  legacy.fines = legacy.fines.filter((f) => !idsToDelete.includes(f.id));
+  finesState.list = finesState.list.filter((f) => !idsToDelete.includes(f.id));
   refreshAfterChange();
 
   const { data, error } = await legacy.supabase.from('fines').delete().in('id', idsToDelete).select();

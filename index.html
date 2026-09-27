@@ -246,6 +246,7 @@
       <div class="grid inicio-row2">
         <!-- Contenido: lo pinta Svelte (src/features/multas/FinesBanner.svelte) -->
         <div class="card my-fines-card" id="inicio-fines-banner" onclick="setSection('multas')" style="cursor:pointer;"></div>
+        <!-- Contenido: lo pinta Svelte (src/features/tercer-tiempo/InicioTercerBanner.svelte) -->
         <div class="card my-fines-card" id="inicio-tercer-banner" onclick="setSection('tercer')" style="cursor:pointer;"></div>
         <!-- Contenido: lo pinta Svelte (src/features/tricount/TricountBanner.svelte) -->
         <div class="card my-fines-card" id="inicio-tricount-banner" onclick="setSection('tricount')" style="cursor:pointer; grid-column:1 / -1;"></div>
@@ -496,44 +497,14 @@
     <!-- Liga: la pinta Svelte (src/features/liga/Liga.svelte) -->
     <section class="section" id="sec-liga"></section>
 
-    <!-- TERCER TIEMPO — LISTA DE PARTIDOS -->
-    <section class="section" id="sec-tercer">
-      <div class="back-link" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-      <div class="section-head">
-        <h2 data-i18n="tercer.title">Tercer tiempo</h2>
-        <div style="display:flex; gap:8px;">
-          <button class="cal-open-btn" id="tt-groups-btn" onclick="openThirdTimeGroupsOverviewModal()" data-i18n-attr="aria-label:tercer.viewGroupsAria,title:tercer.viewGroups" aria-label="Ver integrantes de cada grupo" title="Ver grupos" style="display:none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M16 8a3 3 0 100-6"/><path d="M23 20c0-2.7-2-4.9-4.7-5.7"/></svg>
-          </button>
-          <button class="cal-open-btn" onclick="setSection('tercer-historial')" data-i18n-attr="aria-label:tercer.viewPastAria,title:tercer.viewPast" aria-label="Ver tercers tiempos pasados" title="Ver pasados">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 106 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
-          </button>
-        </div>
-      </div>
-      <div id="tercer-list"></div>
-    </section>
+    <!-- TERCER TIEMPO — LISTA DE PARTIDOS: la pinta Svelte (src/features/tercer-tiempo/TercerList.svelte) -->
+    <section class="section" id="sec-tercer"></section>
 
-    <!-- TERCER TIEMPO — HISTÓRICO DE PARTIDOS PASADOS -->
-    <section class="section" id="sec-tercer-historial">
-      <div class="back-link" onclick="setSection('tercer')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="tercer.title">Tercer tiempo</span></div>
-      <div class="section-head"><h2 data-i18n="tercer.past">Pasados</h2></div>
-      <div id="tercer-history-list"></div>
-    </section>
+    <!-- TERCER TIEMPO — HISTÓRICO DE PARTIDOS PASADOS: lo pinta Svelte (src/features/tercer-tiempo/TercerHistorial.svelte) -->
+    <section class="section" id="sec-tercer-historial"></section>
 
-    <!-- TERCER TIEMPO — DETALLE DE UN PARTIDO -->
-    <section class="section" id="sec-tercer-detalle">
-      <div class="back-link" onclick="backFromTercerDetalle()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="tercer.title">Tercer tiempo</span></div>
-      <div class="section-head"><h2 id="tercer-detalle-title" data-i18n="tercer.title">Tercer tiempo</h2></div>
-
-      <div class="tt-banner" id="tt-banner"></div>
-
-      <div class="card swap-card" id="swap-summary-card"></div>
-
-      <div class="tt-food-section">
-        <div class="fantasy-label" style="margin-bottom:10px;" data-i18n="tercer.whatWeBring">Qué llevamos</div>
-        <div class="tt-food-grid" id="tt-food-grid"></div>
-      </div>
-    </section>
+    <!-- TERCER TIEMPO — DETALLE DE UN PARTIDO: lo pinta Svelte (src/features/tercer-tiempo/TercerDetalle.svelte) -->
+    <section class="section" id="sec-tercer-detalle"></section>
 
     <!-- JUGADORES -->
     <section class="section" id="sec-plantilla"></section>
@@ -612,56 +583,12 @@
 <div data-mount="treasury-breakdown-modal"></div>
 
 <!-- MODAL DE COMENTARIO / JUSTIFICACIÓN -->
-<div class="modal-overlay" id="food-slot-modal" onclick="if(event.target===this) closeFoodSlotModal()">
-  <div class="modal-box" style="max-width:360px;">
-    <div class="food-modal-head">
-      <h3 style="margin:0;" id="food-slot-modal-title">Añadir</h3>
-      <button class="food-modal-teammate-btn" onclick="toggleFoodTeammatePicker()" data-i18n-attr="title:tercer.pickTeammate" title="Apuntar a una compañera">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 11a4 4 0 10-8 0 4 4 0 008 0z"/><path d="M3 21c0-4 3.4-7 7-7"/><path d="M18 8v6M21 11h-6"/></svg>
-      </button>
-    </div>
-    <div class="modal-sub" id="food-slot-modal-sub" data-i18n="tercer.foodSubSelf">Se apunta con tu nombre automáticamente.</div>
+<div data-mount="food-slot-modal"></div>
 
-    <div id="food-teammate-picker" style="display:none; margin-top:10px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="tercer.assignTo">Apuntar a</span>
-        <select id="food-teammate-select" onchange="onFoodTeammateChange(this.value)" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);"></select>
-      </label>
-    </div>
-
-    <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-top:10px;">
-      <span data-i18n="tercer.whatBring">Qué traes</span>
-      <input type="text" id="food-slot-input" data-i18n-attr="placeholder:tercer.foodPlaceholder" placeholder="Ej. Ensaladilla rusa" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-    </label>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeFoodSlotModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" id="food-slot-confirm-btn" onclick="confirmFoodSlot()">Apuntarme</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="tt-group-modal" onclick="if(event.target===this) closeThirdTimeGroupModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" id="tt-group-modal-title">Grupo</h3>
-    <div class="modal-sub" id="tt-group-modal-sub"></div>
-    <div class="tt-roster-list" id="tt-group-modal-list"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeThirdTimeGroupModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="tt-group-modal"></div>
 
 <!-- MODAL: GRUPOS DEL TERCER TIEMPO (integrantes de cada grupo, sin ligar a un partido) -->
-<div class="modal-overlay" id="tt-groups-overview-modal" onclick="if(event.target===this) closeThirdTimeGroupsOverviewModal()">
-  <div class="modal-box" style="max-width:440px;">
-    <h3 style="margin-top:0;" data-i18n="tercer.groupsOverviewTitle">Grupos del tercer tiempo</h3>
-    <div class="modal-sub" data-i18n="tercer.groupsOverviewSub">Quién integra cada grupo</div>
-    <div class="tt-groups-preview" id="tt-groups-overview-list"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeThirdTimeGroupsOverviewModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="tt-groups-overview-modal"></div>
 
 <!-- MODAL: RECUERDA (qué llevar al partido) -->
 <div data-mount="matchday-checklist-modal"></div>
@@ -670,20 +597,7 @@
 <div data-mount="rollcall-modal"></div>
 
 <!-- MODAL: NO PUEDO ASISTIR (cambio de turno del tercer tiempo) -->
-<div class="modal-overlay" id="swap-modal" onclick="if(event.target===this) closeSwapModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" data-i18n="tercer.cantAttend">No puedo asistir</h3>
-    <div class="modal-sub" id="swap-modal-sub"></div>
-    <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-      <span data-i18n="tercer.swapWithLabel">Compañera con quien lo has acordado</span>
-      <select id="swap-teammate-select" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);"></select>
-    </label>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeSwapModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="confirmSwapRequest()" data-i18n="tercer.sendNotice">Enviar aviso</button>
-    </div>
-  </div>
-</div>
+<div data-mount="swap-modal"></div>
 
 <div class="modal-overlay" id="comment-modal" onclick="if(event.target===this) closeCommentModal()">
   <div class="modal-box">
@@ -951,7 +865,6 @@
 <script src="js/core/navigation.js"></script>
 <script src="js/core/auth.js"></script>
 <script src="js/features/calendario.js"></script>
-<script src="js/features/tercer-tiempo.js"></script>
 <script src="js/features/eventos.js"></script>
 <script src="js/features/asistencia.js"></script>
 <script src="js/main.js"></script>

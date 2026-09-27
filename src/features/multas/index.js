@@ -6,10 +6,7 @@ import FineModal from './FineModal.svelte';
 import EditFineModal from './EditFineModal.svelte';
 import PayFineModal from './PayFineModal.svelte';
 import FinesHistoryModal from './FinesHistoryModal.svelte';
-import {
-  loadFines, subscribeToFinesRealtime, persistFineInsert, permissionsChanged,
-  refreshAfterChange, onLangChange,
-} from './multas.svelte.js';
+import { loadFines, subscribeToFinesRealtime, permissionsChanged, onLangChange } from './multas.svelte.js';
 
 export function install(bridge) {
   mountInto(FinesBanner, '#inicio-fines-banner');
@@ -28,12 +25,6 @@ export function install(bridge) {
     // Al iniciar sesión (auth.js), ya con el id real fijado.
     load: loadFines,
     subscribeRealtime: subscribeToFinesRealtime,
-    // Multas automáticas de "Tercer tiempo" (tercer-tiempo.js): se añaden al array
-    // `fines` y se guardan con esto.
-    persistInsert: persistFineInsert,
-    // Tras cambiar el array `fines` desde fuera: tabla, tarjeta personal (y avisos de
-    // pago), banner de Inicio y total de Vestuario.
-    refresh: refreshAfterChange,
     // Tras iniciar sesión o editar el perfil, después de appBridge.sessionChanged().
     permissionsChanged,
   };

@@ -208,7 +208,7 @@ function saveNewEvent(){
 
   closeAddEventModal();
   renderCalendarGrid();
-  renderThirdTime();
+  appBridge.tercerTiempo.render();
   appBridge.partidos.renderNextMatchBanner();
   appBridge.perfil.render();
   appBridge.fantasy.init();
@@ -244,7 +244,7 @@ function confirmDeleteEvent(){
 
   renderEventList();
   renderCalendarGrid();
-  renderThirdTime();
+  appBridge.tercerTiempo.render();
   appBridge.partidos.renderNextMatchBanner();
   appBridge.fantasy.init();
 }

@@ -3,18 +3,20 @@
 // Las tarjetas amarillas/rojas se muestran para cada jugadora usando su id real.
 //
 // Además de pintar la tabla, cargar la Plantilla es lo que rellena el roster del código
-// antiguo (roster / rosterById en js/core/state.js) y los grupos del Tercer tiempo, que
-// siguen allí porque los leen casi todas las secciones. No son reactivos: igual que
-// antes, cada tabla solo se vuelve a leer cuando se "pinta" (renderPlantillaTable /
+// antiguo (roster / rosterById en js/core/state.js), que sigue allí porque lo leen casi
+// todas las secciones, y los grupos del Tercer tiempo (src/features/tercer-tiempo/groups.js).
+// No son reactivos: igual que antes, cada tabla solo se vuelve a leer cuando se "pinta" (renderPlantillaTable /
 // renderPlantillaStatsRows), que guarda aquí lo que se ve en ese momento.
 import { legacy } from '../../lib/legacy.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { refresh as refreshGym } from '../gym/gym.svelte.js';
 import { refreshFantasyMatchesAndUI } from '../fantasy/fantasy.svelte.js';
-import { renderFinesTable } from '../multas/multas.svelte.js';
+import { finesState, renderFinesTable } from '../multas/multas.svelte.js';
 import { renderProfile } from '../perfil/perfil.svelte.js';
 import { renderRollCallList } from '../partidos/rollcall.svelte.js';
 import { findRosterMatchForReportPlayer } from '../actas/actas.svelte.js';
+import { thirdTimeGroups } from '../tercer-tiempo/groups.js';
+import { renderThirdTime } from '../tercer-tiempo/tercer-tiempo.svelte.js';
 
 // Etiqueta legible para el campo "posicion" ('delantera' | '3/4') en la tabla de
 // Jugadoras y en Mi perfil (src/features/perfil).
@@ -76,7 +78,6 @@ export async function loadPlantilla() {
 // loadPlantilla() para poder pintar primero con la copia en caché y luego repetir
 // exactamente lo mismo en cuanto llega la versión fresca de la red.
 function applyPlantillaRows(data) {
-  const thirdTimeGroups = legacy.thirdTimeGroups;
   const rosterById = legacy.rosterById;
   const myProfile = legacy.myProfile;
   // La cuenta admin es solo de gestión: no debe aparecer en ningún listado, grupo
@@ -86,7 +87,7 @@ function applyPlantillaRows(data) {
     plantilla.grid = { key: 'plantilla.noMembers', colspan: 6 };
     thirdTimeGroups.A = [];
     thirdTimeGroups.B = [];
-    legacy.renderThirdTime();
+    renderThirdTime();
     return;
   }
 
@@ -125,7 +126,7 @@ function applyPlantillaRows(data) {
   });
 
   renderPlantillaTable();
-  legacy.renderThirdTime();
+  renderThirdTime();
   // Si ya estabas en la pestaña Fantasy cuando ha terminado de cargar la Plantilla,
   // se refresca sola para que aparezcan las jugadoras recién llegadas.
   if (document.getElementById('sec-fantasy')?.classList.contains('active')) {
@@ -183,7 +184,7 @@ export function renderPlantillaTable() {
   // de jugadoras nunca les aparecían aunque tuvieran multas de "TR"/"TA". Ahora se cuenta
   // para cada jugadora usando su id real en "fines" (que es 'me' para la propia usuaria
   // y el id de Supabase para las demás).
-  const fines = legacy.fines;
+  const fines = finesState.list;
   const me = legacy.rosterById['me'];
   const rows = data.map((p) => {
     const fullName = [p.nombre, p.apellido].filter(Boolean).join(' ') || p.mote || legacy.t('plantilla.noName');

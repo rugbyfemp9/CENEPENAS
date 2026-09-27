@@ -3,7 +3,7 @@
 // es la "foto" que guarda renderRollCallList() en rollcall.view. El roster sigue en el
 // código antiguo: Jugadoras/Perfil llaman a renderRollCallList() al recargarlo.
 import { legacy } from '../../lib/legacy.js';
-import { canManageFines, persistFineInsert, refreshAfterChange, loadFines } from '../multas/multas.svelte.js';
+import { finesState, canManageFines, persistFineInsert, refreshAfterChange, loadFines } from '../multas/multas.svelte.js';
 import { findNextMatch } from './partidos.svelte.js';
 
 export const rollcall = $state({
@@ -107,11 +107,11 @@ export async function saveRollCall() {
   //    quitarla (paso 2), el id local ya es el real de Supabase y no queda a medias.
   for (const [playerId, mark] of Object.entries(state)) {
     if (mark !== 'x') continue;
-    const alreadyFined = legacy.fines.some((f) => f.playerId === playerId && f.reasonId === 'retraso' && f.autoMatchIso === matchIso);
+    const alreadyFined = finesState.list.some((f) => f.playerId === playerId && f.reasonId === 'retraso' && f.autoMatchIso === matchIso);
     if (alreadyFined) continue;
     const tempId = crypto.randomUUID();
     const newFine = { id: tempId, playerId, reasonId: 'retraso', status: 'pendiente', autoMatchIso: matchIso };
-    legacy.fines.push(newFine);
+    finesState.list.push(newFine);
     await persistFineInsert(tempId, newFine);
     changed = true;
   }
@@ -122,10 +122,10 @@ export async function saveRollCall() {
   //    puede ser todavía temporal si la inserción tardó en confirmarse; borrando por
   //    estos criterios se elimina la fila real siempre, y de paso se limpia cualquier
   //    duplicado que hubiera quedado suelto de antes de este arreglo.
-  const autoFinesForMatch = legacy.fines.filter((f) => f.reasonId === 'retraso' && f.autoMatchIso === matchIso && f.status === 'pendiente');
+  const autoFinesForMatch = finesState.list.filter((f) => f.reasonId === 'retraso' && f.autoMatchIso === matchIso && f.status === 'pendiente');
   for (const f of autoFinesForMatch) {
     if (state[f.playerId] === 'x') continue; // sigue marcada, se queda
-    legacy.fines = legacy.fines.filter((fx) => fx.id !== f.id);
+    finesState.list = finesState.list.filter((fx) => fx.id !== f.id);
     const { data, error } = await legacy.supabase
       .from('fines')
       .delete()

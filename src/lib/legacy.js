@@ -9,9 +9,9 @@
    currentLang, t, readCache, writeCache, setSection, displayName, initials, computeDisplayNames,
    monthAbbrLabel, autoMonthAbbr, monthFullLabel, withDePrefix, todayLocalIso,
    effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate, attEvents, attEventType,
-   fines:writable, formatFullDate, thirdTimeGroups, renderThirdTime, renderEventDetail,
+   formatFullDate, renderEventDetail,
    attEventIso, currentEventId:writable, openEventDetail, rolesWithEventManagement,
-   toggleAttAddButtonVisibility, renderThirdTimeFood, handleLogout, eventWhenDisplay, hasEventEnded,
+   toggleAttAddButtonVisibility, handleLogout, eventWhenDisplay, hasEventEnded,
    canUseWellness, canViewWellnessStaff */
 
 export const legacy = {
@@ -47,15 +47,6 @@ export const legacy = {
   // Entrenos/partidos de Asistencia (con sus respuestas en ev.attendance), que siguen
   // viviendo en el código antiguo (js/core/state.js) y no son reactivos.
   get attEvents() { return attEvents; },
-  // Multas (js/core/state.js): también las leen y modifican la Lista de partidos, el
-  // Tercer tiempo y Jugadoras, que siguen en el código antiguo. No son reactivas (ver
-  // src/features/multas/multas.svelte.js).
-  get fines() { return fines; },
-  set fines(value) { fines = value; },
-  // Grupos A/B del Tercer tiempo (js/features/tercer-tiempo.js): los rellena la carga de
-  // la Plantilla (src/features/jugadoras) a partir de profiles.grupo_tercer_tiempo.
-  get thirdTimeGroups() { return thirdTimeGroups; },
-  renderThirdTime: () => renderThirdTime(),
   // Repinta, con el roster recién cargado, el detalle del evento abierto en Asistencia
   // (asistencia.js). Se protege sola si esa vista no está abierta.
   renderEventDetail: () => renderEventDetail(),
@@ -71,8 +62,6 @@ export const legacy = {
   get rolesWithEventManagement() { return rolesWithEventManagement; },
   // Botón "Añadir evento" de Asistencia según el rol (js/core/permissions.js).
   toggleAttAddButtonVisibility: () => toggleAttAddButtonVisibility(),
-  // Comida del Tercer tiempo (js/features/tercer-tiempo.js), que depende del perfil propio.
-  renderThirdTimeFood: () => renderThirdTimeFood(),
   // Cerrar sesión (js/core/auth.js).
   logout: () => handleLogout(),
   attEventType: (ev) => attEventType(ev),

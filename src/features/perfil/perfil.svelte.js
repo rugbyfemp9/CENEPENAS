@@ -18,6 +18,7 @@ import { tercerTreasury } from '../comi-tercer-temps/comi-tercer-temps.svelte.js
 import { loadPlantilla, posicionLabel } from '../jugadoras/jugadoras.svelte.js';
 import { renderRollCallList } from '../partidos/rollcall.svelte.js';
 import { normalizeRosterName } from '../actas/actas.svelte.js';
+import { renderThirdTimeFood } from '../tercer-tiempo/food.svelte.js';
 
 export const perfil = $state({
   // Lo que pintó el último renderProfile(); null = todavía no se ha pintado nunca (se ve
@@ -183,5 +184,5 @@ export function refreshPermissionsEverywhere() {
   treasury.permissionsChanged();
   tercerTreasury.permissionsChanged();
   refreshGym();
-  legacy.renderThirdTimeFood();
+  renderThirdTimeFood();
 }

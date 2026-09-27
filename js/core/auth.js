@@ -119,7 +119,7 @@ async function handleLogin(){
 // Comi Tesoreria, Comi Tercer Temps, Calendario, Tricount, Liga, avisos...) se quedaba
 // mostrando los datos de quien acababa de desconectarse hasta el siguiente login.
 //
-// Además, comprobamos que ni 'fines' ni la asistencia de 'attEvents' se guardan en
+// Además, comprobamos que ni las multas (src/features/multas) ni la asistencia de 'attEvents' se guardan en
 // ningún sitio (ni Supabase ni window.storage): son solo memoria de la pestaña, así
 // que ya se pierden con cualquier recarga normal del navegador. Es decir, un refresco
 // completo de la página ya es, por definición, la limpieza perfecta de todo el estado
@@ -244,10 +244,10 @@ async function onAuthenticated(user){
   // recargan aquí con el id real fijado y quedan sincronizados en directo entre
   // todas las cuentas.
   try{
-    await loadThirdTimeCovers();
-    await loadThirdTimeDebts();
-    await loadThirdTimeFood();
-    subscribeToThirdTimeRealtime();
+    await appBridge.tercerTiempo.loadCovers();
+    await appBridge.tercerTiempo.loadDebts();
+    await appBridge.tercerTiempo.loadFood();
+    appBridge.tercerTiempo.subscribeRealtime();
   }catch(e){ console.error('No se ha podido cargar Tercer Tiempo al iniciar sesión', e); }
 
   // Galería: se recarga aquí con el id real fijado (para saber si esta cuenta es

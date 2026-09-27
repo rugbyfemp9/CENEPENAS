@@ -1,8 +1,3 @@
-// ---- Estado que usan renderizados llamados muy pronto en el arranque de la app:
-// se declara aquí arriba para que ya exista cuando esas primeras llamadas se ejecuten,
-// en vez de más abajo (donde estaban antes) provocando "Cannot access before initialization".
-let fines = [];
-
 const titles = {
   inicio: ['Inicio', 'Resumen general del club'],
   asistencia: ['Asistencia', 'Próximos entrenos y control de presencia'],
