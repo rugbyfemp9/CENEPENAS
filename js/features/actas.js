@@ -64,7 +64,7 @@ supabaseClient
     }
     // Lo mismo con "Partidos jugados" en tu Perfil, si lo tienes abierto.
     if(document.getElementById('sec-perfil')?.classList.contains('active')){
-      loadProfileMatchesPlayedStat();
+      appBridge.perfil.loadMatchesPlayed();
     }
   })
   .subscribe();

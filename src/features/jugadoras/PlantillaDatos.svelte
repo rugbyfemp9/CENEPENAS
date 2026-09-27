@@ -3,7 +3,7 @@
   // miembros (#plantilla-grid).
   import Avatar from '../../lib/Avatar.svelte';
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { openEditProfileModal } from '../perfil/edit-profile.svelte.js';
   import {
     plantilla, posicionLabel, setPlantillaPositionFilter, togglePlantillaSortMenu,
     closePlantillaSortMenu, setPlantillaSort,
@@ -76,7 +76,7 @@
               <td class={row.esJugadora && row.posicion ? '' : 'muted-cell'}>{row.esJugadora ? (posicionLabel(row.posicion) === '—' ? t('plantilla.unassigned') : posicionLabel(row.posicion)) : '—'}</td>
               <td class={row.esJugadora && row.comision ? '' : 'muted-cell'}>{row.esJugadora ? (row.comision || t('plantilla.unassigned')) : '—'}</td>
               <td class={row.licencia ? '' : 'muted-cell'}>{row.licencia || t('plantilla.unassigned')}</td>
-              {#if row.editable}<td><button class="btn-ghost" style="padding:4px 10px; font-size:12px;" onclick={() => legacy.openEditProfileModal(row.id)}>{t('att.edit')}</button></td>{/if}
+              {#if row.editable}<td><button class="btn-ghost" style="padding:4px 10px; font-size:12px;" onclick={() => openEditProfileModal(row.id)}>{t('att.edit')}</button></td>{/if}
             </tr>
           {/each}
         {:else}

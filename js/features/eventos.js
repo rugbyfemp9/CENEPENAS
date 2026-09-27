@@ -210,7 +210,7 @@ function saveNewEvent(){
   renderCalendarGrid();
   renderThirdTime();
   renderNextMatchBanner();
-  renderProfile();
+  appBridge.perfil.render();
   appBridge.fantasy.init();
 }
 

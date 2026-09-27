@@ -58,7 +58,7 @@ function setSection(id, opts){
   // Al entrar en Perfil, se recalculan las estadísticas (partidos jugados, % de
   // asistencia...) por si algo se ha escapado de refrescarse desde otra pantalla.
   if(id === 'perfil'){
-    renderProfile();
+    appBridge.perfil.render();
   }
 
   // Al entrar en cada pantalla del Gym se refresca su contenido de verdad (no solo

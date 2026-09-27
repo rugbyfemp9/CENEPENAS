@@ -10,7 +10,8 @@
    monthAbbrLabel, autoMonthAbbr, monthFullLabel, withDePrefix, todayLocalIso,
    effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate, attEvents, attEventType,
    fines:writable, formatFullDate, thirdTimeGroups, renderThirdTime, renderRollCallList, renderEventDetail,
-   findRosterMatchForReportPlayer, renderProfile, openEditProfileModal */
+   findRosterMatchForReportPlayer, attEventIso, currentEventId, normalizeRosterName,
+   toggleAttAddButtonVisibility, renderThirdTimeFood, handleLogout */
 
 export const legacy = {
   get supabase() { return supabaseClient; },
@@ -62,11 +63,18 @@ export const legacy = {
   // Cruza una fila de match_report_players con el roster (por perfil, licencia o nombre),
   // igual que en el acta de cada partido (js/features/actas.js).
   findRosterMatchForReportPlayer: (row) => findRosterMatchForReportPlayer(row),
-  // Mi perfil sigue en el código antiguo (js/features/perfil.js).
-  renderProfile: () => renderProfile(),
-  // Modal de editar perfil; con un id, la cuenta admin edita el de otra jugadora (botón
-  // "Editar" de Jugadoras).
-  openEditProfileModal: (targetId) => openEditProfileModal(targetId),
+  // Fecha yyyy-mm-dd de un evento de Asistencia (js/features/calendario.js).
+  attEventIso: (ev) => attEventIso(ev),
+  // Evento abierto en el detalle de Asistencia (js/core/permissions.js), o null.
+  get currentEventId() { return currentEventId; },
+  // Nombre sin tildes/mayúsculas/espacios de más, para cruzarlo con las actas (js/features/actas.js).
+  normalizeRosterName: (s) => normalizeRosterName(s),
+  // Botón "Añadir evento" de Asistencia según el rol (js/core/permissions.js).
+  toggleAttAddButtonVisibility: () => toggleAttAddButtonVisibility(),
+  // Comida del Tercer tiempo (js/features/tercer-tiempo.js), que depende del perfil propio.
+  renderThirdTimeFood: () => renderThirdTimeFood(),
+  // Cerrar sesión (js/core/auth.js).
+  logout: () => handleLogout(),
   attEventType: (ev) => attEventType(ev),
   get lang() { return currentLang; },
   t: (key, vars) => t(key, vars),

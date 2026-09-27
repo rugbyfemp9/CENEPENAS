@@ -12,9 +12,10 @@ import { t } from '../../lib/i18n.svelte.js';
 import { refresh as refreshGym } from '../gym/gym.svelte.js';
 import { refreshFantasyMatchesAndUI } from '../fantasy/fantasy.svelte.js';
 import { renderFinesTable } from '../multas/multas.svelte.js';
+import { renderProfile } from '../perfil/perfil.svelte.js';
 
 // Etiqueta legible para el campo "posicion" ('delantera' | '3/4') en la tabla de
-// Jugadoras. Mi perfil, que sigue en el código antiguo, usa la de js/core/dates.js.
+// Jugadoras y en Mi perfil (src/features/perfil).
 export function posicionLabel(posicion) {
   if (posicion === 'delantera') return t('plantilla.posForward');
   if (posicion === '3/4') return '3/4';
@@ -133,7 +134,7 @@ function applyPlantillaRows(data) {
   // o el de cualquier compañera en asistencia, gym o multas) se repinta aquí con el dato
   // fresco, para que un cambio de foto de perfil llegue en directo sin recargar. Cada
   // función se protege sola si la vista correspondiente no está abierta ahora mismo.
-  legacy.renderProfile();
+  renderProfile();
   refreshGym(); // asistencia de hoy y ranking del Gym
   legacy.renderRollCallList();
   legacy.renderEventDetail();

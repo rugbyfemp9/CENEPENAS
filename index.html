@@ -146,7 +146,8 @@
         <span class="lang-toggle-knob"></span>
       </span>
     </button>
-    <button class="profile-btn" id="profile-btn" onclick="setSection('perfil')" aria-label="Ver mi perfil">TÚ</button>
+    <!-- Botón "TÚ": lo pinta Svelte (src/features/perfil/ProfileBtn.svelte) -->
+    <div data-mount="profile-btn"></div>
   </div>
 </div>
 
@@ -690,181 +691,16 @@
     <!-- Galería: la pinta Svelte (src/features/galeria/Galeria.svelte) -->
     <section class="section" id="sec-galeria"></section>
 
-    <!-- PERFIL DE USUARIO -->
-    <section class="section" id="sec-perfil">
-      <div class="back-link" onclick="setSection('inicio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="common.back">Atrás</span></div>
-      <div class="section-head">
-        <h2 data-i18n="profile.title">Mi perfil</h2>
-        <div style="display:flex; gap:8px;">
-          <div class="injury-toggle-wrap">
-            <button class="injury-toggle-btn" id="injury-toggle-btn" onclick="toggleInjuryPicker()" data-i18n-attr="aria-label:profile.markInjury,title:profile.markInjury" aria-label="Marcar lesión" title="Marcar lesión">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M12 11v6M9 14h6"/></svg>
-            </button>
-            <div class="injury-picker" id="injury-picker">
-              <button class="injury-picker-btn" id="injury-picker-botiquin" onclick="chooseInjuryIcon('botiquin')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M12 11v6M9 14h6"/></svg>
-                <span data-i18n="profile.injured">Lesionada</span>
-              </button>
-              <button class="injury-picker-btn" id="injury-picker-tocada" onclick="chooseInjuryIcon('tocada')">
-                <span class="emoji">🤕</span>
-                <span data-i18n="profile.knocked">Tocada</span>
-              </button>
-            </div>
-          </div>
-          <button class="cal-open-btn" onclick="openEditProfileModal()" data-i18n-attr="aria-label:profile.editProfile,title:profile.editProfile" aria-label="Editar perfil" title="Editar perfil">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="pf-hero" id="pf-hero">
-        <div class="pf-hero-top">
-          <div class="pf-avatar-wrap">
-            <div class="avatar pf-avatar" id="pf-avatar">TÚ</div>
-            <button type="button" class="pf-avatar-edit-btn" onclick="togglePfAvatarMenu()" data-i18n-attr="aria-label:profile.editPhoto,title:profile.editPhoto" aria-label="Editar foto de perfil" title="Editar foto de perfil">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            </button>
-            <div class="pf-avatar-menu" id="pf-avatar-menu">
-              <button onclick="chooseEditAvatarPhoto()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                <span data-i18n="profile.changePhotoAction">Cambiar foto</span>
-              </button>
-              <button id="pf-avatar-adjust-btn" onclick="openAvatarAdjustModal()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                <span data-i18n="profile.editPhotoAction">Editar foto</span>
-              </button>
-              <button class="danger" onclick="removeAvatarPhoto()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
-                <span data-i18n="profile.removePhoto">Eliminar foto</span>
-              </button>
-            </div>
-            <input type="file" id="pf-avatar-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
-          </div>
-          <div class="pf-hero-info">
-            <b id="profile-name-display">Tu nombre</b>
-            <span id="profile-mote-role-display">Configura tu rol</span>
-            <span id="profile-licencia-hero-display" class="pf-hero-licencia"></span>
-          </div>
-        </div>
-        <div class="pf-stats">
-          <div class="pf-stat">
-            <b id="pf-stat-matches">0</b>
-            <span data-i18n="profile.matchesPlayed">Partidos jugados</span>
-          </div>
-          <div class="pf-stat">
-            <b id="pf-stat-attendance">—</b>
-            <span data-i18n="profile.trainingAttendance">Asistencia a entrenos</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:16px;">
-        <table class="profile-info-table">
-          <tr><td style="color:var(--text-muted); width:140px;" data-i18n="profile.email">Email</td><td id="profile-email-display">—</td></tr>
-          <tr><td style="color:var(--text-muted);" data-i18n="profile.phone">Teléfono</td><td id="profile-phone-display">—</td></tr>
-          <tr><td style="color:var(--text-muted);" data-i18n="plantilla.birthdate">Fecha de nacimiento</td><td id="profile-birthdate-display">—</td></tr>
-          <tr id="profile-comision-row"><td style="color:var(--text-muted);" data-i18n="plantilla.commission">Comisión</td><td id="profile-comision-display">—</td></tr>
-          <tr id="profile-rango-row"><td style="color:var(--text-muted);" data-i18n="plantilla.rango">Rango</td><td id="profile-rango-display">—</td></tr>
-          <tr id="profile-posicion-row"><td style="color:var(--text-muted);" data-i18n="plantilla.positionLabel">Posición</td><td id="profile-posicion-display">—</td></tr>
-          <tr><td style="color:var(--text-muted);" data-i18n="plantilla.role">Rol</td><td id="profile-rol-display">—</td></tr>
-          <tr><td style="color:var(--text-muted);" data-i18n="profile.licenseNum">Núm. de Licencia</td><td id="profile-licencia-display">—</td></tr>
-        </table>
-      </div>
-      <button class="btn" style="background:linear-gradient(90deg, var(--bad), #b8443a);" onclick="handleLogout()" data-i18n="profile.logout">Cerrar sesión</button>
-    </section>
+    <!-- PERFIL DE USUARIO: lo pinta Svelte (src/features/perfil/Perfil.svelte) -->
+    <section class="section" id="sec-perfil"></section>
   </main>
 </div>
 
-<!-- MODAL: EDITAR PERFIL -->
-<div class="modal-overlay" id="edit-profile-modal" onclick="if(event.target===this) closeEditProfileModal()">
-  <div class="modal-box" style="max-width:380px;">
-    <h3 style="margin-top:0;" id="edit-profile-modal-title">Editar perfil</h3>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="profile.nameLabel">Nombre</span>
-        <input type="text" id="profile-name-input" placeholder="Tu nombre" data-i18n-attr="placeholder:profile.namePlaceholder" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="profile.nicknameLabel">Mote</span>
-        <input type="text" id="profile-mote-input" placeholder="Apodo (opcional)" data-i18n-attr="placeholder:profile.nicknamePlaceholder" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="profile.phone">Teléfono</span>
-        <input type="tel" id="profile-phone-input" placeholder="600 000 000" data-i18n-attr="placeholder:profile.phonePlaceholder" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="plantilla.birthdate">Fecha de nacimiento</span>
-        <input type="date" id="profile-birthdate-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label id="profile-comision-field" style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="plantilla.commission">Comisión</span>
-        <select id="profile-comision-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);">
-          <option value="" data-i18n="plantilla.unassigned">Sin asignar</option>
-          <option value="Comi Activitats">Comi Activitats</option>
-          <option value="Comi Xarxes">Comi Xarxes</option>
-          <option value="Comi Tercer Temps">Comi Tercer Temps</option>
-          <option value="Comi Tesoreria">Comi Tesoreria</option>
-          <option value="Comi Gira">Comi Gira</option>
-        </select>
-      </label>
-      <label id="profile-rango-field" style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="plantilla.rango">Rango</span>
-        <select id="profile-rango-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);">
-          <option value="" data-i18n="plantilla.unassigned">Sin asignar</option>
-          <option value="veterana">Veterana</option>
-          <option value="novata">Novata</option>
-          <option value="sang_de_fang">Sang de Fang</option>
-        </select>
-      </label>
-      <label id="profile-posicion-field" style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="plantilla.positionLabel">Posición</span>
-        <select id="profile-posicion-input" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);">
-          <option value="" data-i18n="plantilla.unassigned">Sin asignar</option>
-          <option value="delantera" data-i18n="plantilla.posForward">Delantera</option>
-          <option value="3/4">3/4</option>
-        </select>
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="plantilla.role">Rol</span>
-        <select id="profile-rol-input" onchange="onEditProfileRolChange()" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); background:var(--white);">
-          <option value="" data-i18n="plantilla.unassigned">Sin asignar</option>
-          <option value="jugadora">Jugadora</option>
-          <option value="Capitana">Capitana</option>
-          <option value="entrenador/a">Entrenador/a</option>
-          <option value="delegado/a">Delegado/a</option>
-          <option value="directiva">Junta directiva</option>
-          <option value="fisio">Fisios</option>
-        </select>
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="profile.licenseNum">Núm. de Licencia</span>
-        <input type="text" id="profile-licencia-input" placeholder="Ej. 123456" data-i18n-attr="placeholder:profile.licensePlaceholder" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeEditProfileModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="saveProfileEdits()" data-i18n="att.saveGeneric">Guardar</button>
-    </div>
-  </div>
-</div>
+<!-- MODAL: EDITAR PERFIL (src/features/perfil/EditProfileModal.svelte) -->
+<div data-mount="edit-profile-modal"></div>
 
-<!-- MODAL: AJUSTAR/RECORTAR LA FOTO DE PERFIL -->
-<!-- Deja reencuadrar (arrastrar) y hacer zoom sobre la foto de perfil YA subida, para
-     que encaje bien dentro del recuadro cuadrado redondeado que usa el avatar. Al
-     guardar, se recorta a un cuadrado en un <canvas> y se sube como si fuera una
-     foto nueva, reutilizando uploadAvatarBlob(). -->
-<div class="modal-overlay" id="avatar-adjust-modal" onclick="if(event.target===this) closeAvatarAdjustModal()">
-  <div class="modal-box" style="max-width:360px;">
-    <h3 style="margin-top:0;" data-i18n="profile.adjustPhotoTitle">Ajustar foto</h3>
-    <div class="modal-sub" data-i18n="profile.adjustPhotoSub">Arrastra y usa el zoom para encajar la foto en el recuadro.</div>
-    <div id="avatar-adjust-frame" style="position:relative; width:240px; height:240px; margin:4px auto 16px; border-radius:24px; overflow:hidden; background:var(--bg); touch-action:none; cursor:grab; border:1.5px solid var(--line);">
-      <img id="avatar-adjust-img" src="" alt="" crossorigin="anonymous" draggable="false" style="position:absolute; top:0; left:0; max-width:none; user-select:none; -webkit-user-drag:none;">
-    </div>
-    <input type="range" id="avatar-adjust-zoom" min="100" max="300" value="100" step="1" style="width:100%; accent-color:var(--sky);">
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeAvatarAdjustModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="saveAvatarAdjust()" data-i18n="att.saveGeneric">Guardar</button>
-    </div>
-  </div>
-</div>
+<!-- MODAL: AJUSTAR/RECORTAR LA FOTO DE PERFIL (src/features/perfil/AvatarAdjustModal.svelte) -->
+<div data-mount="avatar-adjust-modal"></div>
 
 <!-- MODAL: AÑADIR MOVIMIENTO DE COMI TERCER TEMPS -->
 <div data-mount="add-tercer-treasury-modal"></div>
@@ -1423,7 +1259,6 @@
 <script src="js/features/tullidas.js"></script>
 <script src="js/features/wellness.js"></script>
 <script src="js/features/wellness-staff.js"></script>
-<script src="js/features/perfil.js"></script>
 <script src="js/main.js"></script>
 
 <!-- Registro del service worker: imprescindible para que Chrome (Android y

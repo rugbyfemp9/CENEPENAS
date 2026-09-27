@@ -148,8 +148,7 @@ async function onAuthenticated(user){
   document.getElementById('auth-overlay').classList.add('hidden');
   currentAuthUserId = user.id;
   if(window.flushPendingPushToken) window.flushPendingPushToken();
-  const emailDisplay = document.getElementById('profile-email-display');
-  if(emailDisplay) emailDisplay.textContent = user.email;
+  appBridge.perfil.setEmail(user.email);
 
   const { data: profile } = await supabaseClient
     .from('profiles')
@@ -179,7 +178,7 @@ async function onAuthenticated(user){
     rosterById['me'].rol = myProfile.rol;
     rosterById['me'].licencia = myProfile.licencia;
     rosterById['me'].birthdate = myProfile.birthdate;
-    renderProfile();
+    appBridge.perfil.render();
     // El botón "Añadir evento" depende del rol real, y los de "Añadir multa",
     // "Añadir álbum" y los de tesorería de las comisiones reales: todos ellos solo
     // se conocen a partir de aquí.

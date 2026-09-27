@@ -1336,7 +1336,6 @@ function setLang(lang){
   if(typeof renderNextMatchBanner === 'function') renderNextMatchBanner();
   if(typeof renderWellnessReminderBanner === 'function') renderWellnessReminderBanner();
   if(typeof renderInicioTercerBanner === 'function') renderInicioTercerBanner();
-  if(typeof renderProfile === 'function' && typeof currentUserId !== 'undefined' && currentUserId) renderProfile();
   if(typeof renderEventList === 'function') renderEventList();
   if(typeof renderEventDetail === 'function' && typeof currentEventId !== 'undefined' && currentEventId) renderEventDetail();
   if(typeof renderCalendarGrid === 'function') renderCalendarGrid();

@@ -43,8 +43,5 @@ export function install(bridge) {
       resetGymRmCalcBanner();
       resetGymQuickCalc();
     },
-    // El código antiguo ha cambiado el roster (avatares) o el perfil
-    // propio (rol → quién puede subir la rutina, añadir ejercicios generales...).
-    refresh,
   };
 }

@@ -1,8 +1,7 @@
 // Devuelve el contenido de un .avatar: la foto si existe, o si no las iniciales/texto de reserva,
 // más la insignia de lesión si aplica. Lo usan las listas que siguen en el código antiguo
 // (Asistencia, Lista de partidos, Tercer tiempo); las secciones ya migradas a Svelte
-// (Jugadoras, Multas...) usan src/lib/Avatar.svelte (mismo marcado). injuryBadgeHtml
-// también lo usa ownAvatarHtml() en js/features/perfil.js.
+// (Jugadoras, Multas, Mi perfil...) usan src/lib/Avatar.svelte (mismo marcado).
 function avatarHtml(url, fallbackText, injured, injuryIcon){
   const badge = injuryBadgeHtml(injured, injuryIcon);
   if(url) return `<img src="${url}" alt="" loading="lazy">` + badge;

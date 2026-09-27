@@ -45,7 +45,7 @@ function legacyBoot(){
   toggleAttAddButtonVisibility();
   // Los botones "Añadir multa" / "Editar multas" (Svelte) dependen solos de la sesión.
 
-  renderProfile();
+  appBridge.perfil.render();
 
   // Comi Tesoreria, Comi Tercer Temps y Tricount (Svelte) se pintan solas al montarse;
   // sus datos no se piden aquí al arrancar (se pedían de más en TODAS las sesiones,

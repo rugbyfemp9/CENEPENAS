@@ -48,13 +48,6 @@ function formatShortDate(iso){
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y.slice(2)}`;
 }
-// Etiqueta legible para el campo "posicion" ('delantera' | '3/4'), tanto en Mi
-// perfil como en la tabla y el filtro de Jugadoras.
-function posicionLabel(posicion){
-  if(posicion === 'delantera') return t('plantilla.posForward');
-  if(posicion === '3/4') return '3/4';
-  return '—';
-}
 function formatFullDate(iso){
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;

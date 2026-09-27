@@ -73,7 +73,7 @@ function setMyRsvp(eventId, status, btnEl){
   renderEventList();
   if(currentEventId === eventId) renderEventDetail();
   renderNextMatchBanner();
-  renderProfile();
+  appBridge.perfil.render();
 
   // Guarda mi respuesta de forma compartida para que la vean todas las jugadoras
   saveMyAttendanceToStorage(eventId, ev.attendance.me, ev.comments.me);

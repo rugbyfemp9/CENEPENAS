@@ -19,8 +19,9 @@ import * as gym from './features/gym/index.js';
 import * as fantasy from './features/fantasy/index.js';
 import * as multas from './features/multas/index.js';
 import * as jugadoras from './features/jugadoras/index.js';
+import * as perfil from './features/perfil/index.js';
 
-for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas, jugadoras]) feature.install(appBridge);
+for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas, jugadoras, perfil]) feature.install(appBridge);
 
 refreshSession();
 window.legacyBoot();

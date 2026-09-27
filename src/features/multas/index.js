@@ -8,7 +8,7 @@ import PayFineModal from './PayFineModal.svelte';
 import FinesHistoryModal from './FinesHistoryModal.svelte';
 import {
   loadFines, subscribeToFinesRealtime, persistFineInsert, canManageFines, permissionsChanged,
-  refreshAfterChange, renderFinesTable, renderFineConfirmRequests, renderFinePlayerGrid, onLangChange,
+  refreshAfterChange, onLangChange,
 } from './multas.svelte.js';
 
 export function install(bridge) {
@@ -39,9 +39,5 @@ export function install(bridge) {
     canManage: canManageFines,
     // Tras iniciar sesión o editar el perfil, después de appBridge.sessionChanged().
     permissionsChanged,
-    // Cuando cambian avatares/nombres del roster (perfil.js; Jugadoras lo importa directamente).
-    renderTable: renderFinesTable,
-    renderConfirmRequests: renderFineConfirmRequests,
-    renderPlayerSearch: renderFinePlayerGrid,
   };
 }
