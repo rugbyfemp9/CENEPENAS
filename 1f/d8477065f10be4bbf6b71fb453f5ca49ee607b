@@ -1,0 +1,74 @@
+src/features/perfil/PerfilDatos.svelte
+  s_1fdfe932c62174::t_491ef7733fdf71 1-26
+js/core/avatars.js
+  s_1fdfe932c62174::t_074dd3355c00bb 4
+src/features/perfil/PerfilHero.svelte
+  s_1fdfe932c62174::t_06c42f7c5366cd 1-65
+src/main.js
+  s_1fdfe932c62174::t_851e56c50c6a15 22,24
+src/features/multas/index.js
+  s_1fdfe932c62174::t_33d705d84ccc03 11
+js/features/asistencia.js
+  s_1fdfe932c62174::t_074dd3355c00bb 76
+js/features/actas.js
+  s_1fdfe932c62174::t_074dd3355c00bb 67
+src/features/jugadoras/PlantillaDatos.svelte
+  s_1fdfe932c62174::t_851e56c50c6a15 79
+tests/e2e/perfil.spec.js
+  ai_agent 1-842
+js/features/eventos.js
+  s_1fdfe932c62174::t_074dd3355c00bb 213
+src/features/jugadoras/jugadoras.svelte.js
+  s_1fdfe932c62174::t_851e56c50c6a15 15,18,137
+src/features/perfil/Perfil.svelte
+  s_1fdfe932c62174::t_70595d50b63dfd 1-11
+src/features/perfil/edit-profile.svelte.js
+  s_1fdfe932c62174::t_c92b3f03b21c2d 1-8,19-33,35-67,72-145
+  s_1fdfe932c62174::t_36dc12cd388c53 9-18,34,68-71
+src/features/perfil/AvatarAdjustModal.svelte
+  s_1fdfe932c62174::t_fecb3079f301b1 1-35
+index.html
+  s_1fdfe932c62174::t_b4bc15057de7b5 149-150,694-695,699-700,702-703
+src/features/perfil/ProfileBtn.svelte
+  s_1fdfe932c62174::t_20fa088edf4381 1-8
+src/features/perfil/index.js
+  s_1fdfe932c62174::t_a5ccfa29c1a3d4 1-27
+src/features/perfil/OwnAvatar.svelte
+  s_1fdfe932c62174::t_8fdd4739cbb6e5 1-12
+src/features/perfil/EditProfileModal.svelte
+  s_1fdfe932c62174::t_d24bd99ddcbee7 1-84
+js/main.js
+  s_1fdfe932c62174::t_074dd3355c00bb 48
+src/features/jugadoras/index.js
+  s_1fdfe932c62174::t_478c9cc5964f83 15
+  s_1fdfe932c62174::t_33d705d84ccc03 4
+src/features/perfil/perfil.svelte.js
+  s_1fdfe932c62174::t_3d154c89ebe4c0 18
+  s_1fdfe932c62174::t_a49c55beb45144 1-17,19-185
+src/lib/legacy.js
+  s_1fdfe932c62174::t_851e56c50c6a15 13-14,66-77
+src/features/perfil/avatar.svelte.js
+  s_1fdfe932c62174::t_d69944c78658ce 1-11,13-15,17-18,20-22,27-36,39,41,48,56,60,62,66,79,87,92,106,133-135,140,143,150,154,156,160,164,167,169,171,176-177,187,190-201,206-220,222,225-226,229-230,239,242-243,246,248-250,253-254,260-261,266,271-273,276-277,281-287,290-301,319,322,327
+js/core/auth.js
+  s_1fdfe932c62174::t_074dd3355c00bb 151,181
+src/features/perfil/PerfilHead.svelte
+  s_1fdfe932c62174::t_50f7f9e27dbba7 1-45
+js/core/navigation.js
+  s_1fdfe932c62174::t_074dd3355c00bb 61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "1fd8477065f10be4bbf6b71fb453f5ca49ee607b",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
