@@ -1,12 +1,15 @@
+// Nombres de las jugadoras: qué texto mostrar de cada una y sus iniciales.
+import { rosterById } from './roster.js';
+
 // ---- Jerarquía de visualización del nombre de una jugadora, para toda la app ----
 // 1) Si tiene mote, se muestra solo el mote.
 // 2) Si no tiene mote, se muestra solo su nombre de pila.
 // 3) Si dos o más jugadoras sin mote comparten nombre de pila, se añade la inicial
 //    de su primer apellido para diferenciarlas (p.ej. "Marta R." y "Marta G.").
-function firstNameOf(fullName){
+export function firstNameOf(fullName){
   return (fullName || '').trim().split(/\s+/)[0] || '';
 }
-function surnameInitialOf(fullName){
+export function surnameInitialOf(fullName){
   const parts = (fullName || '').trim().split(/\s+/);
   return parts.length > 1 && parts[1] ? parts[1].charAt(0).toUpperCase() + '.' : '';
 }
@@ -14,7 +17,7 @@ function surnameInitialOf(fullName){
 // corresponde mostrar a cada una. Devuelve un Map id -> texto a mostrar.
 // Se le pasa siempre el grupo completo dentro del que hay que desambiguar
 // (todo el roster, o la lista concreta que se esté pintando en ese momento).
-function computeDisplayNames(players){
+export function computeDisplayNames(players){
   const result = new Map();
   const noMote = [];
   players.forEach(p => {
@@ -44,9 +47,14 @@ function computeDisplayNames(players){
 // Atajo para una sola jugadora del roster global (desambigua contra todo rosterById).
 // Para listas concretas más amplias o distintas (p.ej. la tabla de Jugadoras recién
 // cargada de Supabase), usa computeDisplayNames() directamente sobre esa lista.
-function displayName(player){
+export function displayName(player){
   if(!player) return '';
   if(player.mote) return player.mote;
   const map = computeDisplayNames(Object.values(rosterById));
   return map.get(player.id) || firstNameOf(player.name) || player.name || '';
+}
+
+// Iniciales para los avatares sin foto.
+export function initials(name){
+  return name.replace(' (tú)', '').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
 }

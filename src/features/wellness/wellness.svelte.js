@@ -6,11 +6,14 @@
 //   4) Molestias físicas: Sí/No y, si Sí, en qué zona.
 // Todo se guarda junto, en una sola fila por (event_id, user_id).
 // Todo el módulo (botón + modal) es SOLO para el rol jugadora: ver canUseWellness()
-// (js/core/permissions.js) y el detalle de un evento (src/features/asistencia).
+// (src/lib/permissions.js) y el detalle de un evento (src/features/asistencia).
 //
 // Los eventos (attEvents, src/features/asistencia/events.js) no son reactivos; el perfil
 // y la sesión siguen viviendo en el código antiguo.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { canUseWellness } from '../../lib/permissions.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso, attEventType, eventWhenDisplay, hasEventEnded } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
@@ -62,7 +65,7 @@ export function setWellnessMood(val) {
 }
 
 export async function openWellnessModal(eventId) {
-  if (!legacy.canUseWellness()) return;
+  if (!canUseWellness()) return;
   const ev = attEvents.find((e) => e.id === eventId);
   if (!ev) return;
 
@@ -80,9 +83,9 @@ export async function openWellnessModal(eventId) {
 
   wellnessModal.open = true;
 
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   if (!authUserId) return; // sin sesión iniciada no hay nada que cargar
-  const { data, error } = await legacy.supabase.from('attendance_wellness')
+  const { data, error } = await supabase.from('attendance_wellness')
     .select('rpe, sleep_hours, mood, has_discomfort, discomfort_detail')
     .eq('event_id', eventId).eq('user_id', authUserId).maybeSingle();
   if (error) { console.error('No se ha podido cargar el wellness', error); return; }
@@ -103,14 +106,14 @@ export function closeWellnessModal() {
 
 export async function saveWellnessModal() {
   if (!wellnessModal.eventId) return;
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   if (!authUserId) { closeWellnessModal(); return; } // sin sesión, no hay dónde guardarlo
 
   const eventId = wellnessModal.eventId;
   const rpe = Number(wellnessModal.rpe);
   const discomfortDetail = wellnessModal.discomfortDetail.trim();
 
-  const { error } = await legacy.supabase.from('attendance_wellness').upsert({
+  const { error } = await supabase.from('attendance_wellness').upsert({
     event_id: eventId,
     user_id: authUserId,
     rpe,
@@ -152,8 +155,8 @@ function hideReminder() {
 }
 
 export async function renderWellnessReminderBanner() {
-  const authUserId = legacy.authUserId;
-  if (!legacy.canUseWellness() || !authUserId) { hideReminder(); return; }
+  const authUserId = auth.userId;
+  if (!canUseWellness() || !authUserId) { hideReminder(); return; }
 
   const now = new Date();
   // Igual que en el selector de eventos de Cos Tècnic (populateWellnessStaffEventSelect):
@@ -171,7 +174,7 @@ export async function renderWellnessReminderBanner() {
 
   if (!pastTrainings.length) { hideReminder(); return; }
 
-  const { data, error } = await legacy.supabase.from('attendance_wellness')
+  const { data, error } = await supabase.from('attendance_wellness')
     .select('event_id').eq('user_id', authUserId)
     .in('event_id', pastTrainings.map((ev) => ev.id));
   if (error) {

@@ -5,10 +5,11 @@
   // index.html: al pulsarlo entero también se va a Tricount.)
   import { t } from '../../lib/i18n.svelte.js';
   import { legacy } from '../../lib/legacy.js';
+  import { currentUserId } from '../../lib/roster.js';
   import { formatEuro } from '../../lib/format.js';
   import { tricountBalances, balanceKind } from './tricount.svelte.js';
 
-  const n = $derived(tricountBalances()[legacy.currentUserId] || 0);
+  const n = $derived(tricountBalances()[currentUserId] || 0);
   const kind = $derived(balanceKind(n));
   const msg = $derived(kind === 'pos'
     ? t('tricount.owed', { amount: formatEuro(n) })

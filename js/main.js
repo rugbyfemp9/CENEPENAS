@@ -9,10 +9,10 @@
    a las secciones ya migradas. Si añades código que deba ejecutarse al arrancar,
    ponlo aquí y no suelto en el archivo de su sección. */
 function legacyBoot(){
-  applyI18n();
+  appBridge.core.applyI18n();
 
   // Si ya había una sesión abierta (recarga de página), entramos directos sin pedir login
-  supabaseClient.auth.getSession().then(({ data }) => {
+  appBridge.core.supabase.auth.getSession().then(({ data }) => {
     if(data.session){
       onAuthenticated(data.session.user);
     }

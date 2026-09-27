@@ -1,6 +1,9 @@
 // ---- Foto de perfil: menú "Cambiar / Editar / Eliminar foto", subida y recorte ----
 import { flushSync } from 'svelte';
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { myProfile, rosterById } from '../../lib/roster.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { perfil, renderProfile, refreshAvatarEverywhere } from './perfil.svelte.js';
 
@@ -26,17 +29,16 @@ export function chooseEditAvatarPhoto() {
 // El archivo en sí se queda en el bucket de Storage (no hace falta borrarlo para esto).
 export async function removeAvatarPhoto() {
   perfil.avatarMenuOpen = false;
-  const myProfile = legacy.myProfile;
   if (!myProfile.avatarUrl) return;
   // El menú se cierra en pantalla antes de que salga el confirm() (que bloquea).
   flushSync();
   if (!confirm('¿Eliminar tu foto de perfil?')) return;
 
-  if (legacy.authUserId) {
-    const { error: updateError } = await legacy.supabase
+  if (auth.userId) {
+    const { error: updateError } = await supabase
       .from('profiles')
       .update({ avatar_url: null })
-      .eq('id', legacy.authUserId);
+      .eq('id', auth.userId);
 
     if (updateError) {
       alert('No se ha podido eliminar la foto: ' + updateError.message);
@@ -45,7 +47,7 @@ export async function removeAvatarPhoto() {
   }
 
   myProfile.avatarUrl = '';
-  legacy.rosterById['me'].avatarUrl = '';
+  rosterById['me'].avatarUrl = '';
   renderProfile();
   refreshAvatarEverywhere();
 }
@@ -131,7 +133,7 @@ async function compressImageFile(file, maxDim, quality) {
 // la fila de "profiles" de la jugadora, para que se vea en Mi perfil y en la lista
 // de Jugadoras. Devuelve true/false según si se ha podido completar.
 async function uploadAvatarBlob(blob, extHint) {
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   if (!authUserId) {
     alert('Inicia sesión para poder subir una foto de perfil.');
     return false;
@@ -147,7 +149,7 @@ async function uploadAvatarBlob(blob, extHint) {
   // vieja aunque la cachee mucho tiempo. Esto evita que cada jugadora tenga que
   // volver a descargar la misma foto de sus compañeras cada vez que abre la lista
   // de Jugadoras o Asistencia, mientras esa foto no cambie.
-  const { error: uploadError } = await legacy.supabase.storage
+  const { error: uploadError } = await supabase.storage
     .from('avatars')
     .upload(path, blob, { upsert: true, cacheControl: '31536000' });
 
@@ -157,11 +159,11 @@ async function uploadAvatarBlob(blob, extHint) {
     return false;
   }
 
-  const { data: urlData } = legacy.supabase.storage.from('avatars').getPublicUrl(path);
+  const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
   // Parámetro añadido solo para evitar que el navegador muestre una versión en caché desactualizada
   const publicUrl = urlData.publicUrl + '?t=' + Date.now();
 
-  const { error: updateError } = await legacy.supabase
+  const { error: updateError } = await supabase
     .from('profiles')
     .update({ avatar_url: publicUrl })
     .eq('id', authUserId);
@@ -173,8 +175,8 @@ async function uploadAvatarBlob(blob, extHint) {
     return false;
   }
 
-  legacy.myProfile.avatarUrl = publicUrl;
-  legacy.rosterById['me'].avatarUrl = publicUrl;
+  myProfile.avatarUrl = publicUrl;
+  rosterById['me'].avatarUrl = publicUrl;
   renderProfile();
   refreshAvatarEverywhere();
   return true;
@@ -196,7 +198,6 @@ export const avatarAdjust = $state({
 
 export function openAvatarAdjustModal() {
   perfil.avatarMenuOpen = false;
-  const myProfile = legacy.myProfile;
   if (!myProfile.avatarUrl) {
     flushSync();
     alert(t('profile.adjustPhotoNoPhoto'));

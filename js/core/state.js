@@ -86,21 +86,4 @@ const sidebarTabOf = {
   perfil: 'perfil'
 };
 
-/* ================= ASISTENCIA ================= */
-
-// ---- Mi perfil ----
-// Se declara aquí arriba porque los permisos (js/core/permissions.js y
-// src/features/asistencia/events.js) la leen de forma síncrona nada más arrancar.
-const myProfile = { name:'Tu nombre', mote:'', phone:'', comision:'', rango:'', posicion:'', rol:'', licencia:'', birthdate:'', avatarUrl:'' };
-
-// Plantilla usada para repartir a los jugadores en las 3 pestañas de cada evento
-const roster = [
-  { id:'me', name:'Tú', pos:'', comision:'', rango:'', rol:'', birthdate:'', mote:'', injured:false, injuryIcon:'', rm:{} }
-];
-const rosterById = Object.fromEntries(roster.map(p => [p.id, p]));
-
-// Usuario que ha iniciado sesión (más adelante vendrá de Supabase Auth)
-const currentUserId = 'me';
-
-// Los eventos de Asistencia (antes attEvents) viven ahora en Svelte:
-// src/features/asistencia/events.js.
+// myProfile, roster, rosterById y currentUserId viven ahora en Svelte: src/lib/roster.js.

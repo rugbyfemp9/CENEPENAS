@@ -1,6 +1,8 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
   import { legacy } from '../../lib/legacy.js';
+  import { currentUserId, rosterById } from '../../lib/roster.js';
+  import { displayName, initials } from '../../lib/names.js';
   import { formatShortDate } from '../../lib/dates.js';
   import Avatar from '../../lib/Avatar.svelte';
   import {
@@ -8,7 +10,7 @@
   } from './gym.svelte.js';
 
   const attendance = $derived(gymAttendanceToday());
-  const myEntry = $derived(attendance.find((e) => e.playerId === legacy.currentUserId));
+  const myEntry = $derived(attendance.find((e) => e.playerId === currentUserId));
 
   const rankingExercises = $derived(gymRankingExercises());
   // Sin nada elegido (o si lo elegido ya no está), el desplegable muestra el primero.
@@ -32,13 +34,13 @@
       <div class="att-roster-empty">Todavía no se ha apuntado nadie hoy.</div>
     {:else}
       {#each attendance as e, i (i)}
-        {@const p = legacy.rosterById[e.playerId]}
+        {@const p = rosterById[e.playerId]}
         {#if p}
           <div class="gym-attendee-row">
-            <span class="avatar"><Avatar url={p.avatarUrl} fallback={legacy.initials(legacy.displayName(p))} injured={p.injured} injuryIcon={p.injuryIcon} /></span>
-            <div class="meta"><b>{legacy.displayName(p)}</b></div>
+            <span class="avatar"><Avatar url={p.avatarUrl} fallback={initials(displayName(p))} injured={p.injured} injuryIcon={p.injuryIcon} /></span>
+            <div class="meta"><b>{displayName(p)}</b></div>
             <span class="time">{e.time}</span>
-            {#if e.playerId === legacy.currentUserId}
+            {#if e.playerId === currentUserId}
               <button class="cancel-btn" onclick={cancelGymCheckin} aria-label="Quitarme de hoy" title="Quitarme de hoy">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
               </button>
@@ -69,7 +71,7 @@
           {#each rows.withRecord as entry, i (i)}
             <tr class={i === 0 ? 'gym-rank-top' : ''}>
               <td class="rank-cell">{i + 1}</td>
-              <td class="player-row"><div class="meta"><b>{legacy.displayName(entry.p)}</b></div></td>
+              <td class="player-row"><div class="meta"><b>{displayName(entry.p)}</b></div></td>
               <td class="weight-cell">{entry.weight} kg</td>
               <td class="updated-cell">{entry.updatedAt ? formatShortDate(entry.updatedAt) : '—'}</td>
             </tr>
@@ -77,7 +79,7 @@
           {#each rows.without as entry, i (i)}
             <tr>
               <td class="rank-cell">—</td>
-              <td class="player-row"><div class="meta"><b>{legacy.displayName(entry.p)}</b></div></td>
+              <td class="player-row"><div class="meta"><b>{displayName(entry.p)}</b></div></td>
               <td class="weight-cell no-rm">Sin registrar</td>
               <td class="updated-cell">—</td>
             </tr>

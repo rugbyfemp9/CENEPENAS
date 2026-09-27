@@ -2,15 +2,20 @@
 // ---- Jugadoras: miembros registrados, leídos en directo de la tabla profiles.
 // Las tarjetas amarillas/rojas se muestran para cada jugadora usando su id real.
 //
-// Además de pintar la tabla, cargar la Plantilla es lo que rellena el roster del código
-// antiguo (roster / rosterById en js/core/state.js), que sigue allí porque lo leen casi
-// todas las secciones, y los grupos del Tercer tiempo (src/features/tercer-tiempo/groups.js).
+// Además de pintar la tabla, cargar la Plantilla es lo que rellena el roster compartido
+// (roster / rosterById en src/lib/roster.js), que leen casi todas las secciones, y los grupos del Tercer tiempo (src/features/tercer-tiempo/groups.js).
 // No son reactivos: igual que antes, cada tabla solo se vuelve a leer cuando se "pinta" (renderPlantillaTable /
 // renderPlantillaStatsRows), que guarda aquí lo que se ve en ese momento.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { myProfile, roster, rosterById } from '../../lib/roster.js';
+import { computeDisplayNames, displayName, initials } from '../../lib/names.js';
+import { effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { readCache, writeCache } from '../../lib/storage.js';
 import { formatFullDate } from '../../lib/dates.js';
 import { renderEventDetail } from '../asistencia/asistencia.svelte.js';
-import { t } from '../../lib/i18n.svelte.js';
+import { t, translate } from '../../lib/i18n.svelte.js';
 import { refresh as refreshGym } from '../gym/gym.svelte.js';
 import { refreshFantasyMatchesAndUI } from '../fantasy/fantasy.svelte.js';
 import { finesState, renderFinesTable } from '../multas/multas.svelte.js';
@@ -53,16 +58,16 @@ export const plantilla = $state({
 
 export async function loadPlantilla() {
   // Si hay una copia reciente guardada en este dispositivo se pinta al momento con
-  // esa (ver readCache/writeCache en js/core/storage.js), en vez de mostrar "Cargando…" cada
+  // esa (ver readCache/writeCache en src/lib/storage.js), en vez de mostrar "Cargando…" cada
   // vez que se abre la app aunque la plantilla no haya cambiado nada.
-  const cached = await legacy.readCache('profiles');
+  const cached = await readCache('profiles');
   if (cached) {
     applyPlantillaRows(cached.data);
   } else {
     plantilla.grid = { key: 'plantilla.loading', colspan: 7 };
   }
 
-  const { data, error } = await legacy.supabase.from('profiles').select('*');
+  const { data, error } = await supabase.from('profiles').select('*');
 
   if (error) {
     if (!cached) {
@@ -71,7 +76,7 @@ export async function loadPlantilla() {
     return;
   }
 
-  legacy.writeCache('profiles', data);
+  writeCache('profiles', data);
   applyPlantillaRows(data);
 }
 
@@ -80,8 +85,6 @@ export async function loadPlantilla() {
 // loadPlantilla() para poder pintar primero con la copia en caché y luego repetir
 // exactamente lo mismo en cuanto llega la versión fresca de la red.
 function applyPlantillaRows(data) {
-  const rosterById = legacy.rosterById;
-  const myProfile = legacy.myProfile;
   // La cuenta admin es solo de gestión: no debe aparecer en ningún listado, grupo
   // ni estadística de cara al resto del equipo.
   plantillaData = (data || []).filter((p) => !p.is_admin);
@@ -99,7 +102,7 @@ function applyPlantillaRows(data) {
   thirdTimeGroups.A = [];
   thirdTimeGroups.B = [];
   plantillaData.forEach((p) => {
-    const esYo = p.id === legacy.authUserId;
+    const esYo = p.id === auth.userId;
     const groupPlayerId = esYo ? 'me' : p.id;
 
     if (esYo) {
@@ -119,7 +122,7 @@ function applyPlantillaRows(data) {
           id: p.id, name: fullNameForRoster, mote: p.mote || '', pos: p.rango || '', posicion: p.posicion || '', rol: p.rol || '', comision: p.comision || '', avatarUrl: p.avatar_url || '', injured: false, injuryIcon: '', birthdate: p.fecha_nacimiento || '', licencia: p.licencia || '', rm: {},
         };
         rosterById[p.id] = newPlayer;
-        legacy.roster.push(newPlayer);
+        roster.push(newPlayer);
       }
     }
 
@@ -150,7 +153,7 @@ function applyPlantillaRows(data) {
 // foto de perfil) se recarga aquí al momento en todas las cuentas conectadas, igual
 // que ya pasa con la rutina, las marcas o la asistencia al gym.
 export function subscribeToProfilesRealtime() {
-  legacy.supabase
+  supabase
     .channel('profiles-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => loadPlantilla())
     .subscribe();
@@ -163,7 +166,7 @@ export function setPlantillaPositionFilter(value) {
 
 // Repinta la tabla de Jugadoras con el orden elegido, sin volver a pedir los datos a Supabase.
 export function renderPlantillaTable() {
-  const isAdmin = !!legacy.isAdmin;
+  const isAdmin = !!auth.isAdmin;
   plantilla.showActions = isAdmin;
   const data = plantilla.positionFilter
     ? plantillaData.filter((p) => p.posicion === plantilla.positionFilter)
@@ -176,9 +179,9 @@ export function renderPlantillaTable() {
   // Nombre a mostrar para cada jugadora, calculado sobre TODO el grupo que se ve en esta
   // tabla, para poder desambiguar nombres de pila repetidos (jerarquía: mote > nombre de
   // pila > nombre de pila + inicial del primer apellido si hay más de una con el mismo).
-  const jugadorasDisplayNames = legacy.computeDisplayNames(data.map((p) => ({
+  const jugadorasDisplayNames = computeDisplayNames(data.map((p) => ({
     id: p.id,
-    name: [p.nombre, p.apellido].filter(Boolean).join(' ') || legacy.t('plantilla.noName'),
+    name: [p.nombre, p.apellido].filter(Boolean).join(' ') || translate('plantilla.noName'),
     mote: p.mote,
   })));
 
@@ -187,12 +190,12 @@ export function renderPlantillaTable() {
   // para cada jugadora usando su id real en "fines" (que es 'me' para la propia usuaria
   // y el id de Supabase para las demás).
   const fines = finesState.list;
-  const me = legacy.rosterById['me'];
+  const me = rosterById['me'];
   const rows = data.map((p) => {
-    const fullName = [p.nombre, p.apellido].filter(Boolean).join(' ') || p.mote || legacy.t('plantilla.noName');
+    const fullName = [p.nombre, p.apellido].filter(Boolean).join(' ') || p.mote || translate('plantilla.noName');
     const shownName = jugadorasDisplayNames.get(p.id) || fullName;
-    const esJugadora = legacy.effectiveRole(p.rol) === 'jugadora';
-    const esYo = p.id === legacy.authUserId;
+    const esJugadora = effectiveRoleForPermissions(p.rol) === 'jugadora';
+    const esYo = p.id === auth.userId;
     const finesPlayerId = esYo ? 'me' : p.id;
     const yellowCount = fines.filter((f) => f.playerId === finesPlayerId && f.reasonId === 'amarilla').length;
     const redCount = fines.filter((f) => f.playerId === finesPlayerId && f.reasonId === 'roja').length;
@@ -205,7 +208,7 @@ export function renderPlantillaTable() {
       shownName,
       avatar: {
         url: p.avatar_url,
-        fallback: legacy.initials(shownName),
+        fallback: initials(shownName),
         injured: esYo ? me.injured : false,
         injuryIcon: esYo ? me.injuryIcon : '',
       },
@@ -225,14 +228,14 @@ export function renderPlantillaTable() {
 // nombre — igual que en el acta de cada partido), los minutos jugados, ensayos, puntos
 // y tarjetas de TODAS las actas de partido guardadas hasta ahora.
 export async function loadPlantillaStats() {
-  const cached = await legacy.readCache('match_report_players_own_team');
+  const cached = await readCache('match_report_players_own_team');
   if (cached) {
     renderPlantillaStatsRows(cached.data);
   } else {
     plantilla.statsGrid = { key: 'plantilla.loadingStats' };
   }
 
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('match_report_players')
     .select('profile_id, license_number, player_name, minutes_played, tries_count, points, match_report_cards(id)')
     .eq('is_own_team', true);
@@ -244,7 +247,7 @@ export async function loadPlantillaStats() {
     return;
   }
 
-  legacy.writeCache('match_report_players_own_team', data || []);
+  writeCache('match_report_players_own_team', data || []);
   renderPlantillaStatsRows(data);
 }
 
@@ -278,7 +281,7 @@ function renderPlantillaStatsRows(data) {
 
   plantilla.statsGrid = {
     rows: rows.map((s) => ({
-      avatar: { url: s.profile.avatarUrl, fallback: legacy.initials(s.profile.name), injured: false, injuryIcon: '' },
+      avatar: { url: s.profile.avatarUrl, fallback: initials(s.profile.name), injured: false, injuryIcon: '' },
       name: s.profile.name,
       minutes: s.minutes,
       tries: s.tries,
@@ -334,7 +337,7 @@ function sortPlantillaStatsRows(rows) {
   else if (plantilla.statsSortBy === 'ensayos') rows.sort((a, b) => b.tries - a.tries);
   else if (plantilla.statsSortBy === 'tarjetas') rows.sort((a, b) => b.cards - a.cards);
   else if (plantilla.statsSortBy === 'puntos') rows.sort((a, b) => b.points - a.points);
-  else rows.sort((a, b) => legacy.displayName(a.profile).localeCompare(legacy.displayName(b.profile), 'es'));
+  else rows.sort((a, b) => displayName(a.profile).localeCompare(displayName(b.profile), 'es'));
   return rows;
 }
 export function togglePlantillaStatsSortMenu() {

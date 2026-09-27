@@ -11,6 +11,11 @@
 // cada uno de esos momentos y todo lo que los lee depende de ese contador.
 import { SvelteSet } from 'svelte/reactivity';
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { myRosterEntry, roster, rosterById } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
+import { storage } from '../../lib/storage.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventType, monthAbbrLabel } from '../../lib/dates.js';
 
@@ -78,20 +83,20 @@ export const fantasy = $state({
 // guardado con nombre y lo publicado ya vive en Supabase (fantasy_lineups y
 // fantasy_published_lineups), con permisos que hacen cumplir quién puede verlo.
 function fantasyDraftKey() {
-  return 'fantasy:draft:' + (legacy.authUserId || 'anon');
+  return 'fantasy:draft:' + (auth.userId || 'anon');
 }
 
 // Autoguarda la alineación que se está montando (no las guardadas con nombre), para
 // que sobreviva a un cierre o refresco de página, tal como promete el aviso de arriba.
 async function saveFantasyDraft() {
   try {
-    await legacy.storage.set(fantasyDraftKey(), JSON.stringify({ matchId: fantasy.selectedMatchId, lineup: $state.snapshot(fantasy.lineup) }), false);
+    await storage.set(fantasyDraftKey(), JSON.stringify({ matchId: fantasy.selectedMatchId, lineup: $state.snapshot(fantasy.lineup) }), false);
   } catch (e) { /* si falla el autoguardado no interrumpimos la edición */ }
 }
 
 export async function loadFantasyDraft() {
   try {
-    const r = await legacy.storage.get(fantasyDraftKey(), false);
+    const r = await storage.get(fantasyDraftKey(), false);
     if (!r) return;
     const data = JSON.parse(r.value);
     if (data.matchId) fantasy.selectedMatchId = data.matchId;
@@ -154,7 +159,7 @@ export function fantasyAvailablePlayers() {
   const ev = attEvents.find((e) => e.id === fantasy.selectedMatchId);
   if (!ev) return [];
   const placed = new Set(Object.values(fantasy.lineup).filter(Boolean));
-  return legacy.roster.filter((p) => ev.attendance[p.id] === 'yes' && !placed.has(p.id));
+  return roster.filter((p) => ev.attendance[p.id] === 'yes' && !placed.has(p.id));
 }
 
 // Datos de cada camiseta/posición, tanto para el campo (posicionada por x/y) como para
@@ -163,12 +168,12 @@ export function fantasySlots() {
   fantasy.version; // dependencia reactiva: se relee al volver a pintar
   return fantasyAllPositions.map((pos) => {
     const playerId = fantasy.lineup[pos.num];
-    const player = playerId ? legacy.rosterById[playerId] : null;
+    const player = playerId ? rosterById[playerId] : null;
     return {
       pos,
       isSub: pos.num > fantasyPositions.length,
       filled: !!player,
-      name: player ? legacy.displayName(player) : '',
+      name: player ? displayName(player) : '',
     };
   });
 }
@@ -349,8 +354,8 @@ export async function confirmSaveLineup() {
   // Se guarda en Supabase con owner_id = tu usuario: la política de seguridad de la
   // tabla (RLS) hace que nadie más que tú pueda leer ni esta fila ni ninguna otra con
   // un owner_id distinto al tuyo, así que es privada de verdad, no solo en la interfaz.
-  const { error } = await legacy.supabase.from('fantasy_lineups').insert({
-    owner_id: legacy.authUserId,
+  const { error } = await supabase.from('fantasy_lineups').insert({
+    owner_id: auth.userId,
     match_id: fantasy.selectedMatchId,
     name,
     lineup: $state.snapshot(fantasy.lineup),
@@ -374,7 +379,7 @@ export async function loadSavedLineupsList() {
 
   // No hace falta filtrar aquí por "es mía": la política de RLS de fantasy_lineups ya
   // impide que esta consulta devuelva alineaciones de otra persona.
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('fantasy_lineups')
     .select('id, name, lineup, match_id, created_at')
     .eq('match_id', fantasy.selectedMatchId)
@@ -397,7 +402,7 @@ function applyLoadedLineup(data) {
 }
 
 export async function loadSavedLineup(id) {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('fantasy_lineups')
     .select('match_id, lineup')
     .eq('id', id)
@@ -409,7 +414,7 @@ export async function loadSavedLineup(id) {
 
 export async function deleteSavedLineup(id) {
   if (!confirm('¿Eliminar esta alineación guardada?')) return;
-  const { error } = await legacy.supabase.from('fantasy_lineups').delete().eq('id', id);
+  const { error } = await supabase.from('fantasy_lineups').delete().eq('id', id);
   if (error) { alert('No se ha podido eliminar. Inténtalo de nuevo.'); }
   loadSavedLineupsList();
 }
@@ -425,7 +430,7 @@ export const publishModal = $state({
 
 export function openPublishModal() {
   publishModal.audience = null;
-  publishModal.people = legacy.roster.map((p) => ({ id: p.id, name: legacy.displayName(p) }));
+  publishModal.people = roster.map((p) => ({ id: p.id, name: displayName(p) }));
   publishModal.personId = publishModal.people.length ? publishModal.people[0].id : '';
   publishModal.open = true;
 }
@@ -443,16 +448,16 @@ export async function confirmPublish() {
   const personaId = publishAudience === 'persona' ? publishModal.personId : null;
   const audienceLabel = {
     jugadoras: 'Jugadoras', staff: 'Staff', capitanas: 'Capitanas',
-    persona: legacy.displayName(legacy.roster.find((p) => p.id === personaId)) || 'Una persona',
+    persona: displayName(roster.find((p) => p.id === personaId)) || 'Una persona',
   }[publishAudience];
 
   // Se guarda en Supabase: la política de seguridad de fantasy_published_lineups es la
   // que hace cumplir "solo la ven los perfiles designados" (por rol, o por persona_id si
   // eliges a alguien concreto) — no depende de que el navegador de cada quien la filtre.
-  const { error } = await legacy.supabase.from('fantasy_published_lineups').insert({
-    published_by: legacy.authUserId,
+  const { error } = await supabase.from('fantasy_published_lineups').insert({
+    published_by: auth.userId,
     match_id: fantasy.selectedMatchId,
-    name: 'Alineación de ' + (legacy.me ? legacy.displayName(legacy.me) : 'un usuario'),
+    name: 'Alineación de ' + (myRosterEntry() ? displayName(myRosterEntry()) : 'un usuario'),
     lineup: $state.snapshot(fantasy.lineup),
     audience: publishAudience,
     persona_id: personaId,
@@ -489,7 +494,7 @@ export function closeSharedLineupsModal() {
 async function loadSharedLineupsList() {
   sharedModal.status = 'loading';
 
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('fantasy_published_lineups')
     .select('id, name, audience, published_by, match_id, created_at')
     .eq('match_id', fantasy.selectedMatchId)
@@ -502,11 +507,11 @@ async function loadSharedLineupsList() {
   }
 
   sharedModal.items = data.map((it) => {
-    const publisher = legacy.rosterById[it.published_by];
+    const publisher = rosterById[it.published_by];
     return {
       id: it.id,
       name: it.name,
-      publisherName: publisher ? legacy.displayName(publisher) : 'Alguien',
+      publisherName: publisher ? displayName(publisher) : 'Alguien',
       audienceLabel: AUDIENCE_LABELS[it.audience] || '',
     };
   });
@@ -514,7 +519,7 @@ async function loadSharedLineupsList() {
 }
 
 export async function loadSharedLineup(id) {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('fantasy_published_lineups')
     .select('match_id, lineup')
     .eq('id', id)
@@ -542,19 +547,19 @@ export const sharedBanner = $state({
 async function readDismissedBanners() {
   let dismissed = [];
   try {
-    const d = await legacy.storage.get('fantasy:dismissed-banners', false);
+    const d = await storage.get('fantasy:dismissed-banners', false);
     if (d && d.value) dismissed = JSON.parse(d.value);
   } catch (e) { /* todavía no se ha descartado ninguna */ }
   return dismissed;
 }
 
 export async function checkInicioSharedLineupBanner() {
-  if (!legacy.authUserId) { sharedBanner.visible = false; return; }
+  if (!auth.userId) { sharedBanner.visible = false; return; }
 
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('fantasy_published_lineups')
     .select('id, match_id, published_by, created_at')
-    .neq('published_by', legacy.authUserId)
+    .neq('published_by', auth.userId)
     .order('created_at', { ascending: false })
     .limit(1);
 
@@ -566,11 +571,11 @@ export async function checkInicioSharedLineupBanner() {
   if (dismissed.includes(latest.id)) { sharedBanner.visible = false; sharedBanner.key = null; return; }
 
   const ev = attEvents.find((e) => e.id === latest.match_id);
-  const publisher = legacy.rosterById[latest.published_by];
+  const publisher = rosterById[latest.published_by];
 
   sharedBanner.key = latest.id;
   sharedBanner.text = {
-    publisherName: publisher ? legacy.displayName(publisher) : null,
+    publisherName: publisher ? displayName(publisher) : null,
     matchLabel: ev ? ev.label : null,
   };
   sharedBanner.visible = true;
@@ -584,7 +589,7 @@ async function markSharedLineupBannerSeen(key) {
 
   if (!dismissed.includes(key)) {
     dismissed.push(key);
-    try { await legacy.storage.set('fantasy:dismissed-banners', JSON.stringify(dismissed), false); } catch (e) { /* no pasa nada si falla, se volverá a intentar */ }
+    try { await storage.set('fantasy:dismissed-banners', JSON.stringify(dismissed), false); } catch (e) { /* no pasa nada si falla, se volverá a intentar */ }
   }
 }
 

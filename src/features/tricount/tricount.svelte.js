@@ -4,6 +4,11 @@
 // la sección: hasta entonces, el banner de Inicio dice que estás al día).
 import { SvelteSet } from 'svelte/reactivity';
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth, toRemotePlayerId } from '../../lib/session.svelte.js';
+import { currentUserId, roster, rosterById } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
+import { effectiveRoleForPermissions } from '../../lib/permissions.js';
 import { todayLocalIso, monthFullLabel, withDePrefix } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
 
@@ -47,7 +52,7 @@ window.addEventListener('app:langchange', () => {
   expenseForm.saveLabel = null;
 });
 
-const toLocalId = (id) => (id && id === legacy.authUserId ? 'me' : id);
+const toLocalId = (id) => (id && id === auth.userId ? 'me' : id);
 
 function expenseRowToEntry(row) {
   return {
@@ -69,11 +74,11 @@ function settlementRowToEntry(row) {
 // deben aparecer como "pagado por" ni como participantes de un gasto, aunque estén
 // en el roster general del club. Capitana cuenta como jugadora (effectiveRoleForPermissions).
 export function tricountRosterPlayers() {
-  return legacy.roster.filter((p) => legacy.effectiveRole(p.rol) === 'jugadora');
+  return roster.filter((p) => effectiveRoleForPermissions(p.rol) === 'jugadora');
 }
 
 export async function loadExpenses() {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from(TRICOUNT_EXPENSES_TABLE)
     .select('*')
     .order('iso', { ascending: false });
@@ -82,7 +87,7 @@ export async function loadExpenses() {
 }
 
 export async function loadSettlements() {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from(TRICOUNT_SETTLEMENTS_TABLE)
     .select('*')
     .order('iso', { ascending: false });
@@ -141,8 +146,8 @@ export function tricountSettlementPlan() {
 
 // Nombre para mostrar de una persona del roster por su id local ('—' si ya no está).
 export function rosterName(id) {
-  const p = legacy.rosterById[id];
-  return p ? legacy.displayName(p) : '—';
+  const p = rosterById[id];
+  return p ? displayName(p) : '—';
 }
 
 // Trocea un texto traducido con marcadores, p.ej. "{from} debe pagar {amount} a {to}",
@@ -177,9 +182,9 @@ export function toggleSettlementPanel() {
 }
 
 export async function settleTricountPayment(fromId, toId, amount) {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from(TRICOUNT_SETTLEMENTS_TABLE)
-    .insert({ from_id: legacy.toRemotePlayerId(fromId), to_id: legacy.toRemotePlayerId(toId), amount, iso: todayLocalIso() })
+    .insert({ from_id: toRemotePlayerId(fromId), to_id: toRemotePlayerId(toId), amount, iso: todayLocalIso() })
     .select()
     .single();
   if (error) { console.error('No se pudo guardar el pago liquidado', error); return; }
@@ -188,14 +193,14 @@ export async function settleTricountPayment(fromId, toId, amount) {
 
 export async function undoTricountSettlement(id) {
   tricount.settlements = tricount.settlements.filter((s) => s.id !== id);
-  const { error } = await legacy.supabase.from(TRICOUNT_SETTLEMENTS_TABLE).delete().eq('id', id);
+  const { error } = await supabase.from(TRICOUNT_SETTLEMENTS_TABLE).delete().eq('id', id);
   if (error) console.error('No se pudo deshacer el pago liquidado', error);
 }
 
 // Opciones del modal: las jugadoras de ahora mismo. Si quien pagó no está entre
 // ellas, el desplegable se queda sin nada elegido (y al guardar pide elegir a alguien).
 function fillPlayers(paidBy) {
-  expenseForm.players = tricountRosterPlayers().map((p) => ({ id: p.id, name: legacy.displayName(p) }));
+  expenseForm.players = tricountRosterPlayers().map((p) => ({ id: p.id, name: displayName(p) }));
   expenseForm.paidBy = expenseForm.players.some((p) => p.id === paidBy) ? paidBy : '';
 }
 
@@ -208,7 +213,7 @@ export function openAddTricountModal() {
   expenseForm.label = '';
   expenseForm.amount = '';
   expenseForm.iso = todayLocalIso();
-  fillPlayers(legacy.currentUserId);
+  fillPlayers(currentUserId);
   expenseForm.participants = new SvelteSet();
   expenseForm.open = true;
 }
@@ -218,7 +223,7 @@ export function openAddTricountModal() {
 export function openEditTricountModal(id) {
   const exp = tricount.expenses.find((e) => e.id === id);
   if (!exp) return;
-  if (!exp.createdBy || exp.createdBy !== legacy.authUserId) {
+  if (!exp.createdBy || exp.createdBy !== auth.userId) {
     alert('Solo quien creó el gasto puede editarlo.');
     return;
   }
@@ -264,12 +269,12 @@ export async function saveTricountExpense() {
   }
 
   if (expenseForm.editingId) {
-    const { data, error } = await legacy.supabase
+    const { data, error } = await supabase
       .from(TRICOUNT_EXPENSES_TABLE)
       .update({
         label, amount, iso,
-        paid_by: legacy.toRemotePlayerId(paidBy),
-        participants: participants.map(legacy.toRemotePlayerId),
+        paid_by: toRemotePlayerId(paidBy),
+        participants: participants.map(toRemotePlayerId),
       })
       .eq('id', expenseForm.editingId)
       .select()
@@ -282,13 +287,13 @@ export async function saveTricountExpense() {
     const updated = expenseRowToEntry(data);
     tricount.expenses = tricount.expenses.map((e) => (e.id === updated.id ? updated : e));
   } else {
-    const { data, error } = await legacy.supabase
+    const { data, error } = await supabase
       .from(TRICOUNT_EXPENSES_TABLE)
       .insert({
         label, amount, iso,
-        paid_by: legacy.toRemotePlayerId(paidBy),
-        participants: participants.map(legacy.toRemotePlayerId),
-        created_by: legacy.authUserId,
+        paid_by: toRemotePlayerId(paidBy),
+        participants: participants.map(toRemotePlayerId),
+        created_by: auth.userId,
       })
       .select()
       .single();
@@ -307,6 +312,6 @@ export async function saveTricountExpense() {
 // solo quien lo creó).
 export async function deleteTricountExpense(id) {
   tricount.expenses = tricount.expenses.filter((e) => e.id !== id);
-  const { error } = await legacy.supabase.from(TRICOUNT_EXPENSES_TABLE).delete().eq('id', id);
+  const { error } = await supabase.from(TRICOUNT_EXPENSES_TABLE).delete().eq('id', id);
   if (error) console.error('No se pudo eliminar el gasto', error);
 }

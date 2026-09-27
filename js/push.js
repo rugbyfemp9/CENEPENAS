@@ -3,8 +3,9 @@ window.__pendingPushToken = null;
 async function savePushToken(token, platform) {
   if (!token) return;
   
-  // Comprobación segura de currentAuthUserId
-  const userId = (typeof currentAuthUserId !== 'undefined') ? currentAuthUserId : null;
+  // Comprobación segura del id de quien ha iniciado sesión (vive en Svelte,
+  // src/lib/session.svelte.js; window.appBridge existe en cuanto arranca src/main.js)
+  const userId = window.appBridge ? window.appBridge.core.authUserId : null;
 
   if (!userId) {
     window.__pendingPushToken = { token, platform };
@@ -12,7 +13,7 @@ async function savePushToken(token, platform) {
   }
 
   try {
-    await supabaseClient.from('push_subscriptions').upsert({
+    await appBridge.core.supabase.from('push_subscriptions').upsert({
       profile_id: userId,
       fcm_token: token,
       platform: platform,

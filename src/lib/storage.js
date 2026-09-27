@@ -4,7 +4,7 @@
    alojado en el club...) esa API no existe, así que aquí se crea un sustituto con el
    mismo formato pero apoyado en localStorage del navegador, para que guardar, publicar,
    etc. funcionen igual en cualquier sitio donde se abra el archivo. */
-if(!window.storage){
+if (!window.storage) {
   const LS_PREFIX = 'cnpenas:';
   window.storage = {
     async get(key, shared){
@@ -48,7 +48,7 @@ if(!window.storage){
 */
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos
 
-async function readCache(cacheKey){
+export async function readCache(cacheKey){
   try{
     const raw = await window.storage.get('cache:' + cacheKey);
     const parsed = JSON.parse(raw.value);
@@ -58,7 +58,7 @@ async function readCache(cacheKey){
     return null; // no había nada guardado, o estaba corrupto: como si no hubiera caché
   }
 }
-async function writeCache(cacheKey, data){
+export async function writeCache(cacheKey, data){
   try{
     await window.storage.set('cache:' + cacheKey, JSON.stringify({ t: Date.now(), data }));
   }catch(e){
@@ -66,3 +66,6 @@ async function writeCache(cacheKey, data){
     // volverá a pedirlo a la red, como si esta caché no existiera.
   }
 }
+
+// El mismo objeto de siempre (el de Claude.ai o el sustituto de arriba).
+export const storage = window.storage;

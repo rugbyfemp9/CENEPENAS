@@ -2,7 +2,7 @@
 // WELLNESS / RPE — COS TÈCNIC: vista de análisis agregado de todo el equipo para un
 // entrenamiento concreto (tabla "attendance_wellness" cruzada con el roster y con la
 // duración del entrenamiento en "attEvents"). Solo para roles de gestión: ver
-// STAFF_WELLNESS_ROLES y canViewWellnessStaff() (js/core/permissions.js). El módulo de
+// STAFF_WELLNESS_ROLES y canViewWellnessStaff() (src/lib/permissions.js). El módulo de
 // valoración individual de cada jugadora está en wellness.svelte.js.
 //
 // attEvents (src/features/asistencia/events.js) y el roster no son reactivos: igual
@@ -10,6 +10,10 @@
 // de jugadora en los desplegables, o al abrir un modal.
 // ==================================================================
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { rosterById } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
+import { canViewWellnessStaff } from '../../lib/permissions.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso, attEventType, eventWhenDisplay, hasEventEnded } from '../../lib/dates.js';
 import { wellnessRpeLevel } from './wellness.svelte.js';
@@ -90,7 +94,7 @@ function populateWellnessStaffEventSelect() {
 // marcado ese evento como el que hay que seleccionar y navega al panel, que lo
 // recogerá en onEnterStaffPanel() (llamada desde setSection()).
 export function goToWellnessStaffAnalysis(eventId) {
-  if (!legacy.canViewWellnessStaff()) return;
+  if (!canViewWellnessStaff()) return;
   wellnessStaffPendingEventId = eventId;
   legacy.setSection('wellness-staff');
 }
@@ -114,7 +118,7 @@ async function loadWellnessStaffData(eventId) {
   staff.rows = [];
   staff.emptyShown = false;
 
-  const { data, error } = await legacy.supabase.from('attendance_wellness')
+  const { data, error } = await supabase.from('attendance_wellness')
     .select('user_id, rpe, sleep_hours, mood, has_discomfort, discomfort_detail')
     .eq('event_id', eventId);
 
@@ -133,10 +137,10 @@ async function loadWellnessStaffData(eventId) {
   const minutes = wellnessStaffEventMinutes(ev);
 
   const rows = (data || []).map((row) => {
-    const player = legacy.rosterById[row.user_id];
+    const player = rosterById[row.user_id];
     return {
       userId: row.user_id,
-      name: player ? legacy.displayName(player) : (row.user_id || '—'),
+      name: player ? displayName(player) : (row.user_id || '—'),
       rpe: row.rpe != null ? Number(row.rpe) : null,
       sleepHours: row.sleep_hours || null,
       mood: row.mood != null ? Number(row.mood) : null,

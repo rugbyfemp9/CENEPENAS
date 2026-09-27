@@ -15,8 +15,11 @@
 // se han pintado alguna vez (`multas.shown`).
 import { SvelteSet } from 'svelte/reactivity';
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { currentUserId, rosterById } from '../../lib/roster.js';
+import { computeDisplayNames, displayName, initials } from '../../lib/names.js';
 import { todayLocalIso, formatFullDate } from '../../lib/dates.js';
-import { session } from '../../lib/session.svelte.js';
+import { session, auth, toRemotePlayerId } from '../../lib/session.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { treasury, treasuryCommissionMembers } from '../tesoreria/tesoreria.svelte.js';
 import { loadPlantilla } from '../jugadoras/jugadoras.svelte.js';
@@ -101,7 +104,7 @@ export function onLangChange() {
 function fineRowToLocal(row) {
   // La fila de Supabase usa el id real de auth.users; localmente "yo" siempre se
   // identifica como 'me', igual que en el resto de la app (roster, avatares, etc.).
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   const toLocalId = (id) => (id && id === authUserId ? 'me' : id);
   return {
     id: row.id,
@@ -115,7 +118,7 @@ function fineRowToLocal(row) {
 }
 
 export async function loadFines() {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('fines')
     .select('id, player_id, reason_id, status, paid_to_id, auto_match_iso, paid_at, created_at')
     .order('created_at', { ascending: true });
@@ -134,13 +137,13 @@ export async function loadFines() {
 // Inserta una multa nueva en Supabase y, si sale bien, sustituye su id local (temporal)
 // por el id real que ha generado la base de datos.
 export async function persistFineInsert(localId, fine) {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('fines')
     .insert({
-      player_id: legacy.toRemotePlayerId(fine.playerId),
+      player_id: toRemotePlayerId(fine.playerId),
       reason_id: fine.reasonId,
       status: fine.status,
-      paid_to_id: fine.paidToId ? legacy.toRemotePlayerId(fine.paidToId) : null,
+      paid_to_id: fine.paidToId ? toRemotePlayerId(fine.paidToId) : null,
       auto_match_iso: fine.autoMatchIso || null,
     })
     .select()
@@ -161,11 +164,11 @@ export async function persistFineInsert(localId, fine) {
 async function persistFineUpdate(fineId, patch) {
   const remotePatch = {};
   if ('status' in patch) remotePatch.status = patch.status;
-  if ('paidToId' in patch) remotePatch.paid_to_id = patch.paidToId ? legacy.toRemotePlayerId(patch.paidToId) : null;
-  if ('playerId' in patch) remotePatch.player_id = legacy.toRemotePlayerId(patch.playerId);
+  if ('paidToId' in patch) remotePatch.paid_to_id = patch.paidToId ? toRemotePlayerId(patch.paidToId) : null;
+  if ('playerId' in patch) remotePatch.player_id = toRemotePlayerId(patch.playerId);
   if ('reasonId' in patch) remotePatch.reason_id = patch.reasonId;
 
-  const { error } = await legacy.supabase.from('fines').update(remotePatch).eq('id', fineId);
+  const { error } = await supabase.from('fines').update(remotePatch).eq('id', fineId);
   if (error) {
     alert('El cambio se ha aplicado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
   }
@@ -185,7 +188,7 @@ export async function deleteFine(fineId) {
   finesState.list = finesState.list.filter((f) => f.id !== fineId);
   refreshAfterChange();
 
-  const { data, error } = await legacy.supabase.from('fines').delete().eq('id', fineId).select();
+  const { data, error } = await supabase.from('fines').delete().eq('id', fineId).select();
   if (error) {
     alert('No se ha podido deshacer la multa en Supabase: ' + error.message);
     loadFines(); // por si acaso, recargamos el estado real desde el servidor
@@ -202,7 +205,7 @@ export async function deleteFine(fineId) {
 // Cualquier cambio en la tabla "fines" (lo haga quien lo haga, desde cualquier
 // dispositivo) se recarga aquí al momento, sin tener que refrescar la página.
 export function subscribeToFinesRealtime() {
-  legacy.supabase
+  supabase
     .channel('fines-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'fines' }, () => loadFines())
     .subscribe();
@@ -220,7 +223,7 @@ export function vestuarioTotalText() {
 }
 
 function myPendingFines() {
-  return finesState.list.filter((f) => f.playerId === legacy.currentUserId && f.status === 'pendiente');
+  return finesState.list.filter((f) => f.playerId === currentUserId && f.status === 'pendiente');
 }
 
 // Tarjeta "Tu situación" / "Debes": null mientras no se ha pintado nunca.
@@ -250,7 +253,7 @@ export function inicioFinesBanner() {
 function avatarOf(player, fallbackName) {
   return {
     url: player ? player.avatarUrl : '',
-    fallback: legacy.initials(fallbackName),
+    fallback: initials(fallbackName),
     injured: player ? player.injured : false,
     injuryIcon: player ? player.injuryIcon : '',
   };
@@ -260,13 +263,12 @@ function avatarOf(player, fallbackName) {
 // marcado como pagada una multa: debe confirmar antes de que se dé por buena.
 export function fineConfirmRequests() {
   if (!multas.requests) return [];
-  const rosterById = legacy.rosterById;
   return finesState.list
-    .filter((f) => f.status === 'pendiente' && f.paidToId === legacy.currentUserId)
+    .filter((f) => f.status === 'pendiente' && f.paidToId === currentUserId)
     .map((f) => {
       const payer = rosterById[f.playerId];
       const reason = fineReasonById[f.reasonId];
-      const payerName = payer ? legacy.displayName(payer) : t('sharedLineup.someone');
+      const payerName = payer ? displayName(payer) : t('sharedLineup.someone');
       return { id: f.id, payerName, avatar: payer ? avatarOf(payer, payerName) : null, label: reason.label, amount: reason.amount };
     });
 }
@@ -275,7 +277,6 @@ export function fineConfirmRequests() {
 export function finesTable() {
   if (!multas.table) return null;
   const fines = finesState.list;
-  const rosterById = legacy.rosterById;
   const editMode = multas.editMode;
 
   // Se obtienen directamente de las multas ya guardadas (no del roster), para que
@@ -287,7 +288,7 @@ export function finesTable() {
     // ("Cannot read properties of undefined (reading 'avatarUrl')") y la tabla se
     // quedaba sin pintar; ahora se pinta la fila igual, como "Alguien".
     const player = rosterById[playerId];
-    const name = player ? legacy.displayName(player) : t('sharedLineup.someone');
+    const name = player ? displayName(player) : t('sharedLineup.someone');
     const playerFines = fines.filter((f) => f.playerId === playerId);
     const pending = playerFines.filter((f) => f.status === 'pendiente');
     const total = sumAmounts(pending);
@@ -333,8 +334,8 @@ export function toggleFinePaid(fineId) {
   if (!f) return;
   if (f.status === 'pendiente') {
     if (f.paidToId) {
-      const responsible = legacy.rosterById[f.paidToId];
-      alert(t('fines.alreadyPaidWaiting', { name: responsible ? legacy.displayName(responsible) : t('sharedLineup.someone') }));
+      const responsible = rosterById[f.paidToId];
+      alert(t('fines.alreadyPaidWaiting', { name: responsible ? displayName(responsible) : t('sharedLineup.someone') }));
       return;
     }
     openPayFineModal(fineId);
@@ -368,7 +369,7 @@ export function openPayFineModal(fineId) {
   const f = finesState.list.find((x) => x.id === fineId);
   if (!f) return;
   payModal.fineId = fineId;
-  payModal.members = treasuryCommissionMembers().map((p) => ({ id: p.id, name: legacy.displayName(p) }));
+  payModal.members = treasuryCommissionMembers().map((p) => ({ id: p.id, name: displayName(p) }));
   payModal.seq++;
   payModal.open = true;
 }
@@ -379,9 +380,9 @@ export function closePayFineModal() {
 }
 
 function paidConcept(f) {
-  const player = legacy.rosterById[f.playerId];
+  const player = rosterById[f.playerId];
   const reason = fineReasonById[f.reasonId];
-  return `Multa (${reason.label})${player ? ' — ' + legacy.displayName(player) : ''}`;
+  return `Multa (${reason.label})${player ? ' — ' + displayName(player) : ''}`;
 }
 
 // selectedValue: lo elegido en el desplegable "Se le ha pagado a".
@@ -470,7 +471,6 @@ export function closeFinesHistoryModal() {
 // null mientras no se ha pintado nunca.
 export function finesHistory() {
   if (!multas.history) return null;
-  const rosterById = legacy.rosterById;
   return finesState.list
     .filter((f) => f.status === 'pagada')
     .sort((a, b) => (b.paidAt || '').localeCompare(a.paidAt || ''))
@@ -479,11 +479,11 @@ export function finesHistory() {
       const reason = fineReasonById[f.reasonId];
       const paidTo = f.paidToId ? rosterById[f.paidToId] : null;
       return {
-        avatar: { url: player ? player.avatarUrl : '', fallback: legacy.initials(player ? legacy.displayName(player) : '?'), injured: false, injuryIcon: '' },
-        name: player ? legacy.displayName(player) : t('sharedLineup.someone'),
+        avatar: { url: player ? player.avatarUrl : '', fallback: initials(player ? displayName(player) : '?'), injured: false, injuryIcon: '' },
+        name: player ? displayName(player) : t('sharedLineup.someone'),
         reasonLabel: reason ? reason.label : '',
         amount: reason ? reason.amount : '',
-        paidToName: paidTo ? legacy.displayName(paidTo) : null,
+        paidToName: paidTo ? displayName(paidTo) : null,
         date: f.paidAt ? formatFullDate(f.paidAt) : '—',
       };
     });
@@ -503,7 +503,7 @@ function createPlayerSearch() {
 // usuaria ('me'), para poder ponerse una multa a una misma. Nunca se genera ni
 // inventa ninguna jugadora ficticia.
 function getFinePlayerPool() {
-  return Object.values(legacy.rosterById);
+  return Object.values(rosterById);
 }
 
 // Normaliza texto para comparar ignorando mayúsculas y tildes/diacríticos.
@@ -528,7 +528,7 @@ function renderPlayerSearchResults(search) {
   const pool = getFinePlayerPool();
   // Jerarquía visual estándar de la app para desambiguar (mote > nombre de pila >
   // nombre de pila + inicial del apellido si hay nombres duplicados).
-  const displayNames = legacy.computeDisplayNames(pool);
+  const displayNames = computeDisplayNames(pool);
 
   const matches = pool.filter((p) => {
     const shown = displayNames.get(p.id) || p.name || '';
@@ -543,7 +543,7 @@ function renderPlayerSearchResults(search) {
 
   search.results = matches.map((p) => {
     const shown = displayNames.get(p.id) || p.name || 'Sin nombre';
-    return { id: p.id, shown, avatar: { url: p.avatarUrl, fallback: legacy.initials(shown), injured: p.injured, injuryIcon: p.injuryIcon } };
+    return { id: p.id, shown, avatar: { url: p.avatarUrl, fallback: initials(shown), injured: p.injured, injuryIcon: p.injuryIcon } };
   });
   search.resultsOpen = true;
 }
@@ -564,10 +564,10 @@ export function onPlayerSearchFocus(modal) {
 // Fija la jugadora sancionada: guarda su id, deja su nombre en la casilla a modo
 // de confirmación visual y cierra el desplegable de resultados.
 export function selectPlayer(modal, playerId) {
-  const player = legacy.rosterById[playerId];
+  const player = rosterById[playerId];
   if (!player) return;
   modal.playerId = playerId;
-  modal.search.query = legacy.displayName(player);
+  modal.search.query = displayName(player);
   modal.search.hasSelection = true;
   closePlayerSearchResults(modal.search);
 }
@@ -666,8 +666,8 @@ export function openEditFineModal(fineId) {
     fines.filter((f) => f.playerId === fine.playerId && f.status === 'pendiente').map((f) => f.reasonId),
   );
 
-  const player = legacy.rosterById[fine.playerId];
-  editFineModal.search.query = player ? legacy.displayName(player) : '';
+  const player = rosterById[fine.playerId];
+  editFineModal.search.query = player ? displayName(player) : '';
   editFineModal.search.hasSelection = true;
   closePlayerSearchResults(editFineModal.search);
 
@@ -738,7 +738,7 @@ export async function deleteFineFromEditModal() {
   finesState.list = finesState.list.filter((f) => !idsToDelete.includes(f.id));
   refreshAfterChange();
 
-  const { data, error } = await legacy.supabase.from('fines').delete().in('id', idsToDelete).select();
+  const { data, error } = await supabase.from('fines').delete().in('id', idsToDelete).select();
   if (error) {
     alert(t('fines.deleteError', { error: error.message }));
     loadFines();

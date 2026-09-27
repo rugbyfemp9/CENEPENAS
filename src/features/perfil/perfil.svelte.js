@@ -1,12 +1,15 @@
 /* ================= MI PERFIL ================= */
 // Datos propios (banner, tabla, estadísticas), la marca de lesión y la foto de perfil.
 //
-// Los datos siguen viviendo en el código antiguo: myProfile y el roster (rosterById.me)
-// en js/core/state.js, y los rellena el inicio de sesión (js/core/auth.js) y la carga de
+// Los datos viven en src/lib/roster.js: myProfile y el roster (rosterById.me), y los
+// rellena el inicio de sesión (js/core/auth.js) y la carga de
 // la Plantilla (src/features/jugadoras). No son reactivos: igual que antes, lo que se ve
 // solo cambia cuando alguien llama a renderProfile() (appBridge.perfil.render() desde el
 // código antiguo), que guarda aquí lo que toca mostrar en ese momento.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { currentUserId, myProfile, myRosterEntry } from '../../lib/roster.js';
+import { effectiveRoleForPermissions } from '../../lib/permissions.js';
 import { attEvents, attSelection } from '../asistencia/events.js';
 import { attEventIso, attEventType, todayLocalIso, formatFullDate } from '../../lib/dates.js';
 import { renderEventDetail, toggleAttAddButtonVisibility } from '../asistencia/asistencia.svelte.js';
@@ -45,7 +48,7 @@ export const perfil = $state({
 
 // Abre/cierra el pequeño desplegable con las dos opciones (botiquín / 🤕)
 export function toggleInjuryPicker() {
-  const me = legacy.me;
+  const me = myRosterEntry();
   const isOpening = !perfil.injuryPickerOpen;
   perfil.injuryPickerOpen = isOpening;
   if (isOpening && me) {
@@ -63,7 +66,7 @@ export function closeInjuryPicker() {
 // (igual que el toggle de antes); si no, la marca con ese icono.
 // Ojo: la marca solo vive en memoria (rosterById.me), no se guarda en Supabase.
 export function chooseInjuryIcon(icon) {
-  const me = legacy.me;
+  const me = myRosterEntry();
   if (!me) return;
 
   if (me.injured && me.injuryIcon === icon) {
@@ -76,7 +79,7 @@ export function chooseInjuryIcon(icon) {
 
   perfil.injuryPickerOpen = false;
   perfil.injuryBtn = { active: me.injured, tocada: me.injured && me.injuryIcon === 'tocada' };
-  perfil.avatar = { url: legacy.myProfile.avatarUrl, injured: me.injured, injuryIcon: me.injuryIcon };
+  perfil.avatar = { url: myProfile.avatarUrl, injured: me.injured, injuryIcon: me.injuryIcon };
 
   // Refresca cualquier otra vista que ya esté pintando avatares del roster,
   // para que la insignia aparezca al momento en todas las interacciones donde salga su perfil.
@@ -87,8 +90,7 @@ export function chooseInjuryIcon(icon) {
 }
 
 export function renderProfile() {
-  const me = legacy.me;
-  const myProfile = legacy.myProfile;
+  const me = myRosterEntry();
   perfil.avatar = { url: myProfile.avatarUrl, injured: me && me.injured, injuryIcon: me && me.injuryIcon };
   perfil.injuryBtn = { active: !!(me && me.injured), tocada: !!(me && me.injured && me.injuryIcon === 'tocada') };
 
@@ -105,7 +107,7 @@ export function renderProfile() {
     // Comisión, Rango y Posición son datos propios de jugadoras (a Capitana se la
     // trata como jugadora en toda la app, ver effectiveRoleForPermissions): si el rol
     // es otro (entrenador/a, delegado/a, directiva...) esas filas no se muestran.
-    esJugadora: legacy.effectiveRole(myProfile.rol) === 'jugadora',
+    esJugadora: effectiveRoleForPermissions(myProfile.rol) === 'jugadora',
     rol: myProfile.rol || '—',
     licencia: myProfile.licencia || '—',
     licenciaHero: myProfile.licencia ? t('profile.licenseHero', { num: myProfile.licencia }) : '',
@@ -121,7 +123,7 @@ export function renderProfile() {
   const pastTrainings = attEvents.filter(ev =>
     attEventType(ev) === 'training' && attEventIso(ev) <= todayIso
   );
-  const attendedTrainings = pastTrainings.filter(ev => ev.attendance && ev.attendance[legacy.currentUserId] === 'yes').length;
+  const attendedTrainings = pastTrainings.filter(ev => ev.attendance && ev.attendance[currentUserId] === 'yes').length;
   perfil.attendance = pastTrainings.length
     ? Math.round((attendedTrainings / pastTrainings.length) * 100) + '%'
     : '—';
@@ -133,7 +135,7 @@ export function renderProfile() {
 // licencia o, si no coincide, por tu nombre (normalizado, sin tildes/mayúsculas).
 // Si apareces en 3 actas distintas, son 3 partidos jugados.
 export async function loadProfileMatchesPlayedStat() {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('match_report_players')
     .select('match_id, license_number, player_name')
     .eq('is_own_team', true);
@@ -144,7 +146,6 @@ export async function loadProfileMatchesPlayedStat() {
     return;
   }
 
-  const myProfile = legacy.myProfile;
   const myLicense = (myProfile.licencia || '').toString().trim();
   const myName = normalizeRosterName(myProfile.name);
 

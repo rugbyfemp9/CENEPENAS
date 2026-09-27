@@ -9,6 +9,9 @@
 // se queda vacía como el marcado original). El código antiguo la llama por
 // appBridge.tercerTiempo.render tras cambiar los eventos.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { rosterById } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { resolveThirdTimeDebts, loadThirdTimeCovers, loadThirdTimeDebts } from './covers.svelte.js';
 import { loadThirdTimeFood, findFoodEntryForPlayer, renderThirdTimeFood, foodModal } from './food.svelte.js';
@@ -75,13 +78,13 @@ export function openThirdTimeGroupModal(groupLetter) {
 
   const rows = [];
   memberIds.forEach((id) => {
-    const player = legacy.rosterById[id];
+    const player = rosterById[id];
     if (!player) return;
     const found = findFoodEntryForPlayer(id);
     // NOTA: el rango propio sale vacío (la entrada 'me' del roster no lo tiene).
     rows.push({
       ready: !!found,
-      name: legacy.displayName(player),
+      name: displayName(player),
       pos: String(player.pos),
       dish: found ? `${found.category.emoji} ${found.entry.detail}` : t('tercer.notSignedUp'),
     });
@@ -96,7 +99,7 @@ export function closeThirdTimeGroupModal() {
 // Cualquier cambio en cambios de turno, deudas o comida del tercer tiempo (lo haga
 // quien lo haga, desde cualquier dispositivo) se recarga aquí al momento.
 export function subscribeToThirdTimeRealtime() {
-  legacy.supabase
+  supabase
     .channel('third-time-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'third_time_covers' }, () => loadThirdTimeCovers())
     .on('postgres_changes', { event: '*', schema: 'public', table: 'third_time_debts' }, () => loadThirdTimeDebts())

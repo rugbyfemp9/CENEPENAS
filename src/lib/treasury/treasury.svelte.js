@@ -14,6 +14,9 @@
 // que se está tecleando. Las filas se reordenan en el siguiente render() (al cambiar
 // un tipo, borrar, añadir o pulsar "Hecho").
 import { legacy } from '../legacy.js';
+import { supabase } from '../supabase.js';
+import { rosterById } from '../roster.js';
+import { computeDisplayNames, displayName, initials } from '../names.js';
 import { todayLocalIso } from '../dates.js';
 import { formatEuro } from '../format.js';
 
@@ -56,10 +59,9 @@ export function createTreasury({ table, canManage, members, messages }) {
 
   function render() {
     view.balance = netOf(entries);
-    const rosterById = legacy.rosterById;
     view.rows = [...entries].sort((a, b) => b.iso.localeCompare(a.iso)).map((e) => ({
       id: e.id, iso: e.iso, concept: e.concept, type: e.type, amount: e.amount,
-      responsible: e.responsibleId && rosterById[e.responsibleId] ? legacy.displayName(rosterById[e.responsibleId]) : '',
+      responsible: e.responsibleId && rosterById[e.responsibleId] ? displayName(rosterById[e.responsibleId]) : '',
     }));
   }
 
@@ -78,7 +80,7 @@ export function createTreasury({ table, canManage, members, messages }) {
 
   // Trae los movimientos guardados en Supabase (todo el mundo ve los mismos).
   async function load() {
-    const { data, error } = await legacy.supabase
+    const { data, error } = await supabase
       .from(table)
       .select('*')
       .order('iso', { ascending: false });
@@ -90,7 +92,7 @@ export function createTreasury({ table, canManage, members, messages }) {
   // Añade un movimiento nuevo directamente en Supabase (usado tanto desde el modal
   // "Añadir movimiento" como cuando se genera solo, p.ej. al pagar una multa).
   async function addEntry({ iso, concept, type, amount, responsibleId }) {
-    const { data, error } = await legacy.supabase
+    const { data, error } = await supabase
       .from(table)
       .insert({ iso, concept, type, amount, responsible_id: responsibleId || null })
       .select()
@@ -109,7 +111,7 @@ export function createTreasury({ table, canManage, members, messages }) {
     const rows = entries.map((e) => ({
       id: e.id, iso: e.iso, concept: e.concept, type: e.type, amount: e.amount, responsible_id: e.responsibleId || null,
     }));
-    const { error } = await legacy.supabase.from(table).upsert(rows);
+    const { error } = await supabase.from(table).upsert(rows);
     if (error) console.error(messages.persistError, error);
   }
 
@@ -149,12 +151,11 @@ export function createTreasury({ table, canManage, members, messages }) {
     entries = entries.filter((e) => e.id !== id);
     closeDeleteConfirm();
     render();
-    const { error } = await legacy.supabase.from(table).delete().eq('id', id);
+    const { error } = await supabase.from(table).delete().eq('id', id);
     if (error) console.error('No se pudo eliminar el movimiento', error);
   }
 
   function openBreakdown() {
-    const rosterById = legacy.rosterById;
     // Cuánto ha movido cada persona: suma de ingresos menos gastos de los movimientos
     // que ella registró, más un recuento de cuántos movimientos son suyos.
     const rows = members().map((p) => {
@@ -169,13 +170,13 @@ export function createTreasury({ table, canManage, members, messages }) {
       rows.push({ name: 'Sin responsable asignado', net: netOf(unassigned), count: unassigned.length, unassigned: true });
     }
 
-    const rowsDisplayNames = legacy.computeDisplayNames(rows.filter((r) => !r.unassigned));
+    const rowsDisplayNames = computeDisplayNames(rows.filter((r) => !r.unassigned));
     breakdown.rows = rows.map((r) => {
       const shownName = r.unassigned ? r.name : (rowsDisplayNames.get(r.id) || r.name);
       return {
         unassigned: !!r.unassigned,
         shownName,
-        initials: legacy.initials(shownName),
+        initials: initials(shownName),
         avatarUrl: r.avatarUrl, injured: r.injured, injuryIcon: r.injuryIcon,
         count: r.count,
         netClass: r.net > 0 ? 'pos' : (r.net < 0 ? 'neg' : 'zero'),
@@ -201,7 +202,7 @@ export function createTreasury({ table, canManage, members, messages }) {
     setType('ingreso');
     // Las opciones del desplegable "Responsable" se fijan al abrir el modal; por
     // defecto queda elegida la primera.
-    addForm.members = members().map((p) => ({ id: p.id, name: legacy.displayName(p) }));
+    addForm.members = members().map((p) => ({ id: p.id, name: displayName(p) }));
     addForm.responsibleId = addForm.members.length ? addForm.members[0].id : '';
     addForm.open = true;
   }

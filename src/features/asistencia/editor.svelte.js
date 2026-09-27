@@ -3,6 +3,7 @@
 // edición (Lugar enlazado con Google Maps, botón 🏠 Casa, intensidad del entreno) y la
 // confirmación para eliminar un evento.
 import { legacy } from '../../lib/legacy.js';
+import { translate } from '../../lib/i18n.svelte.js';
 import { weekdayFullLabel, formatShortDate, attEventIso, attEventType, autoMonthAbbr } from '../../lib/dates.js';
 import {
   attEvents, attSelection, HOME_VENUE, buildMapsSearchUrl, generateCustomEventId,
@@ -15,7 +16,7 @@ import { renderNextMatchBanner } from '../partidos/partidos.svelte.js';
 import { renderProfile } from '../perfil/perfil.svelte.js';
 import { initFantasy } from '../fantasy/fantasy.svelte.js';
 
-const t = (key) => legacy.t(key);
+const t = (key) => translate(key);
 
 // Preconfiguraciones por tipo de evento, usadas al abrir el modal "Añadir evento"
 // "placeRequired" marca si el campo Lugar es obligatorio para ese tipo (los partidos sí lo son).

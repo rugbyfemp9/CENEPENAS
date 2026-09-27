@@ -3,6 +3,10 @@
 // comentario / justificación, y la asistencia compartida en Supabase (tabla
 // att_attendance) con su sincronización en tiempo real.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { currentUserId, roster, rosterById } from '../../lib/roster.js';
+import { translate } from '../../lib/i18n.svelte.js';
 import { eventWhenDisplay } from '../../lib/dates.js';
 import { attEvents, attSelection } from './events.js';
 import { renderEventList, renderEventDetail } from './asistencia.svelte.js';
@@ -39,18 +43,18 @@ export function setMyRsvp(eventId, status, btnEl) {
 // con user_id = su ID real de Supabase Auth. No hace falta guardar el nombre: al
 // pintar se usa rosterById, que ya trae los nombres reales desde la tabla "profiles".
 async function saveMyAttendanceToStorage(eventId, status, comment) {
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   if (!authUserId) return; // sin sesión iniciada no hay dónde guardarlo
 
   if (status === 'pending') {
     // Deshacer = borrar mi fila, para que vuelva a aparecer "Sin contestar"
-    const { error } = await legacy.supabase.from('att_attendance')
+    const { error } = await supabase.from('att_attendance')
       .delete().eq('event_id', eventId).eq('user_id', authUserId);
     if (error) console.error('No se ha podido deshacer la asistencia', error);
     return;
   }
 
-  const { error } = await legacy.supabase.from('att_attendance').upsert({
+  const { error } = await supabase.from('att_attendance').upsert({
     event_id: eventId,
     user_id: authUserId,
     status,
@@ -64,12 +68,12 @@ async function saveMyAttendanceToStorage(eventId, status, comment) {
 // evento, y la vuelca en ev.attendance / ev.comments (menos la mía, que ya la tengo
 // en memoria más al día). Se llama justo antes de pintar el detalle de un evento.
 export async function loadEventAttendanceFromStorage(ev) {
-  const { data, error } = await legacy.supabase.from('att_attendance')
+  const { data, error } = await supabase.from('att_attendance')
     .select('user_id, status, comment').eq('event_id', ev.id);
   if (error || !data) return;
 
   data.forEach((row) => {
-    if (row.user_id === legacy.authUserId) return;
+    if (row.user_id === auth.userId) return;
     ev.attendance[row.user_id] = row.status;
     if (row.comment) ev.comments[row.user_id] = row.comment;
 
@@ -77,14 +81,13 @@ export async function loadEventAttendanceFromStorage(ev) {
     // cargado aún en esta sesión), la añadimos con lo poco que sabemos de ella para
     // que se pueda pintar en la lista de Asistirán/No asistirán; loadPlantilla() la
     // completará con su nombre real en cuanto termine de cargar.
-    const rosterById = legacy.rosterById;
     if (!rosterById[row.user_id]) {
       const newPlayer = {
         id: row.user_id, name: 'Alguien', mote: '', pos: '', comision: '',
         avatarUrl: '', injured: false, injuryIcon: '', birthdate: '', rm: {},
       };
       rosterById[row.user_id] = newPlayer;
-      legacy.roster.push(newPlayer);
+      roster.push(newPlayer);
     }
   });
 }
@@ -97,7 +100,7 @@ let attAttendanceRealtimeSubscribed = false;
 export function subscribeToAttAttendanceRealtime() {
   if (attAttendanceRealtimeSubscribed) return;
   attAttendanceRealtimeSubscribed = true;
-  legacy.supabase
+  supabase
     .channel('att-attendance-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'att_attendance' }, (payload) => {
       const row = payload.new && Object.keys(payload.new).length ? payload.new : payload.old;
@@ -107,7 +110,7 @@ export function subscribeToAttAttendanceRealtime() {
 
       // No pisamos nuestra propia respuesta con la que acabamos de guardar: la tenemos
       // en memoria más al día que lo que tarde en llegar el propio evento realtime.
-      if (row.user_id === legacy.authUserId) return;
+      if (row.user_id === auth.userId) return;
 
       if (payload.eventType === 'DELETE') {
         delete ev.attendance[row.user_id];
@@ -133,9 +136,9 @@ export function subscribeToAttAttendanceRealtime() {
 // así que sin esto la respuesta propia solo vive en memoria y se "borra" visualmente
 // en cuanto se refresca la página, aunque siga guardada en Supabase.
 export async function loadMyAttendanceFromStorage() {
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   if (!authUserId) return;
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('att_attendance')
     .select('event_id, status, comment')
     .eq('user_id', authUserId);
@@ -185,13 +188,13 @@ let commentModalCtx = null; // { eventId, playerId } mientras el modal está abi
 // abrir el modal para comentar/editar la de otra persona (ver también el botón, que
 // ya solo se pinta para la propia fila en attRosterRowView).
 export function openCommentModal(eventId, playerId) {
-  if (playerId !== legacy.currentUserId) return;
+  if (playerId !== currentUserId) return;
   const ev = attEvents.find((e) => e.id === eventId);
-  const player = legacy.rosterById[playerId];
+  const player = rosterById[playerId];
   if (!ev || !player) return;
 
   commentModalCtx = { eventId, playerId };
-  commentModal.title = legacy.t('att.justifyAbsence');
+  commentModal.title = translate('att.justifyAbsence');
   commentModal.sub = `${ev.label} · ${eventWhenDisplay(ev)}`;
   commentModal.text = ev.comments[playerId] || '';
   commentModal.open = true;
@@ -206,7 +209,7 @@ export function closeCommentModal() {
 export function saveCommentModal() {
   if (!commentModalCtx) return;
   const { eventId, playerId } = commentModalCtx;
-  if (playerId !== legacy.currentUserId) return;
+  if (playerId !== currentUserId) return;
   const ev = attEvents.find((e) => e.id === eventId);
   if (!ev) return;
 

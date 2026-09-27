@@ -7,6 +7,8 @@
 // para que quede sincronizada al momento en todas las cuentas. DEFAULT_SEASONS es solo el
 // contenido de partida, por si todavía no hay ninguna fila guardada.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { readCache, writeCache } from '../../lib/storage.js';
 import { session } from '../../lib/session.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
 
@@ -193,10 +195,10 @@ export function addAlbum({ seasonId, newSeasonLabel, title, cover, url }) {
 
 // ---- Sincronización con Supabase (tabla "gallery_data", fila única id='current') ----
 export async function loadGalleryData() {
-  const cached = await legacy.readCache('gallery_data');
+  const cached = await readCache('gallery_data');
   if (cached && Array.isArray(cached.data)) galeria.seasons = cached.data;
 
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('gallery_data')
     .select('*')
     .eq('id', 'current')
@@ -207,12 +209,12 @@ export async function loadGalleryData() {
   }
   if (data && Array.isArray(data.seasons)) {
     galeria.seasons = data.seasons;
-    legacy.writeCache('gallery_data', data.seasons);
+    writeCache('gallery_data', data.seasons);
   }
 }
 
 async function saveGalleryData() {
-  const { error } = await legacy.supabase.from('gallery_data').upsert({
+  const { error } = await supabase.from('gallery_data').upsert({
     id: 'current',
     seasons: $state.snapshot(galeria.seasons),
     updated_at: new Date().toISOString(),
@@ -226,7 +228,7 @@ async function saveGalleryData() {
 // Cualquier cambio en la galería (lo haga Comi Xarxes desde cualquier dispositivo)
 // se recarga aquí al momento, sin tener que refrescar la página.
 export function subscribeToGalleryRealtime() {
-  legacy.supabase
+  supabase
     .channel('gallery-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'gallery_data' }, () => loadGalleryData())
     .subscribe();

@@ -6,6 +6,10 @@
 // este bloque comparte permiso con la Pestaña 1: ver canViewWellnessStaff().
 // ==================================================================
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { roster, rosterById } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
+import { canViewWellnessStaff, effectiveRoleForPermissions } from '../../lib/permissions.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso, attEventType, hasEventEnded, todayLocalIso } from '../../lib/dates.js';
 import { wellnessStaffEventMinutes } from './minutes.js';
@@ -70,15 +74,15 @@ export const history = $state({
 // tabla de carga semanal como el gráfico de evolución, para no repetir la consulta.
 let wellnessHistoryRawRows = [];
 
-const sortedPlayers = () => legacy.roster
-  .filter((p) => legacy.effectiveRole(p.rol) === 'jugadora')
-  .sort((a, b) => legacy.displayName(a).localeCompare(legacy.displayName(b), 'es'));
+const sortedPlayers = () => roster
+  .filter((p) => effectiveRoleForPermissions(p.rol) === 'jugadora')
+  .sort((a, b) => displayName(a).localeCompare(displayName(b), 'es'));
 
 // Trae de Supabase todas las valoraciones de los últimos WSTAFF_WEEKS_BACK semanas
 // (cruzadas con la fecha y duración de cada entreno/partido, ya en memoria en
 // attEvents) y repinta la tabla de carga semanal + el gráfico de evolución.
 export async function loadWellnessHistoryData() {
-  if (!legacy.canViewWellnessStaff()) return;
+  if (!canViewWellnessStaff()) return;
 
   const buckets = wellnessBuildWeekBuckets();
   const rangeStartIso = buckets[0].startIso;
@@ -100,7 +104,7 @@ export async function loadWellnessHistoryData() {
   }
 
   const eventIds = relevantEvents.map((ev) => ev.id);
-  const { data, error } = await legacy.supabase.from('attendance_wellness')
+  const { data, error } = await supabase.from('attendance_wellness')
     .select('user_id, event_id, rpe, sleep_hours, has_discomfort')
     .in('event_id', eventIds);
 
@@ -164,7 +168,7 @@ function renderWellnessWeeklyTable(buckets, rows) {
       return { val, cls };
     });
 
-    return { id: p.id, name: legacy.displayName(p), grandTotal, cells };
+    return { id: p.id, name: displayName(p), grandTotal, cells };
   }).filter(Boolean);
 
   history.weekRows = bodyRows;
@@ -176,10 +180,10 @@ function renderWellnessWeeklyTable(buckets, rows) {
 // Supabase sin restricción de fecha, las cruza con attEvents (que guarda toda la
 // temporada en memoria, no solo esa ventana) y las agrupa por semana.
 export async function openWellnessPlayerHistoryModal(playerId) {
-  const player = legacy.rosterById[playerId];
-  history.playerModal = { open: true, name: player ? legacy.displayName(player) : '—', rows: null };
+  const player = rosterById[playerId];
+  history.playerModal = { open: true, name: player ? displayName(player) : '—', rows: null };
 
-  const { data, error } = await legacy.supabase.from('attendance_wellness')
+  const { data, error } = await supabase.from('attendance_wellness')
     .select('event_id, rpe').eq('user_id', playerId);
 
   if (error) {
@@ -216,7 +220,7 @@ export function closeWellnessPlayerHistoryModal() {
 // todas las jugadoras del roster, conservando la selección anterior si sigue existiendo.
 function populateWellnessEvoPlayerSelect() {
   const players = sortedPlayers();
-  history.evoPlayers = players.map((p) => ({ id: p.id, name: legacy.displayName(p) }));
+  history.evoPlayers = players.map((p) => ({ id: p.id, name: displayName(p) }));
 
   const previous = history.evoSelected;
   history.evoSelected = (previous === 'team' || players.some((p) => p.id === previous)) ? previous : 'team';

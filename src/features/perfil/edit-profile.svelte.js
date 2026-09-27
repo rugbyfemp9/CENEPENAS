@@ -2,6 +2,10 @@
 // Cada persona edita el suyo propio; la cuenta admin también puede editar el de
 // cualquier jugadora desde el botón "Editar" de Jugadoras.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { myProfile, rosterById } from '../../lib/roster.js';
+import { effectiveRoleForPermissions } from '../../lib/permissions.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { loadPlantilla, getPlantillaData } from '../jugadoras/jugadoras.svelte.js';
 import { renderProfile, refreshPermissionsEverywhere } from './perfil.svelte.js';
@@ -31,13 +35,12 @@ export const editProfile = $state({
 // por completo si el rol actual del formulario no lo es (igual que ya pasa
 // en la vista de "Mi perfil"), y se actualizan al vuelo si cambias el rol.
 export function editProfileEsJugadora() {
-  return legacy.effectiveRole(selectValue(editProfile.rol, ROL_VALUES)) === 'jugadora';
+  return effectiveRoleForPermissions(selectValue(editProfile.rol, ROL_VALUES)) === 'jugadora';
 }
 
 export function openEditProfileModal(targetId) {
   editProfile.targetId = targetId || null;
   const source = editProfile.targetId ? getPlantillaData().find(p => p.id === editProfile.targetId) : null;
-  const myProfile = legacy.myProfile;
 
   editProfile.name = source
     ? [source.nombre, source.apellido].filter(Boolean).join(' ')
@@ -73,17 +76,16 @@ export async function saveProfileEdits() {
 
   // Si el rol final no es jugadora, estos campos van ocultos en el formulario:
   // se guardan vacíos aunque el <select> conserve un valor antiguo por debajo.
-  const esJugadoraFinal = legacy.effectiveRole(rol) === 'jugadora';
+  const esJugadoraFinal = effectiveRoleForPermissions(rol) === 'jugadora';
   const comisionFinal = esJugadoraFinal ? comision : '';
   const rangoFinal = esJugadoraFinal ? rango : '';
   const posicionFinal = esJugadoraFinal ? posicion : '';
 
   const editingSelf = !editProfile.targetId;
-  const targetId = editProfile.targetId || legacy.authUserId;
+  const targetId = editProfile.targetId || auth.userId;
 
   if (editingSelf) {
-    const myProfile = legacy.myProfile;
-    const meRow = legacy.rosterById['me'];
+    const meRow = rosterById['me'];
     myProfile.name = name || 'Tu nombre';
     myProfile.mote = mote;
     myProfile.phone = phone;
@@ -119,7 +121,7 @@ export async function saveProfileEdits() {
     const nombre = nameParts[0] || '';
     const apellido = nameParts.slice(1).join(' ');
 
-    const { error: updateError } = await legacy.supabase
+    const { error: updateError } = await supabase
       .from('profiles')
       .update({
         nombre,

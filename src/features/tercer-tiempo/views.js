@@ -2,6 +2,8 @@
 // que se pinta (renderThirdTime() en tercer-tiempo.svelte.js), igual que antes se
 // generaba el HTML.
 import { legacy } from '../../lib/legacy.js';
+import { currentUserId, rosterById } from '../../lib/roster.js';
+import { displayName, initials } from '../../lib/names.js';
 import { attEventIso, eventWhenDisplay, todayLocalIso, monthAbbrLabel } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { thirdTimeCovers } from './covers.svelte.js';
@@ -9,12 +11,12 @@ import {
   thirdTimeGroups, thirdTimeGroupOf, thirdTimeMatches, thirdTimeCurrentMatch, thirdTimeEffectiveRoles,
 } from './groups.js';
 
-const name = (id) => legacy.displayName(legacy.rosterById[id]);
+const name = (id) => displayName(rosterById[id]);
 
 // Tarjeta de "Tercer tiempo" en Inicio: mismo componente visual (.tt-personal) que el
 // banner de Vestuario, con tu rol para el próximo partido en casa y un botón para apuntarte.
 export function buildInicioBanner() {
-  const me = legacy.currentUserId;
+  const me = currentUserId;
   const title = t('tercer.title');
   const current = thirdTimeCurrentMatch();
   if (!current) return { cls: 'none', icon: null, title, text: t('tercer.none'), signupMatchId: null };
@@ -50,7 +52,7 @@ function tercerMyRoleLabel(playerId, matchId, index) {
 
 // Fila de la lista / del histórico (MatchRow.svelte).
 function matchRow(ev, index, status) {
-  const role = tercerMyRoleLabel(legacy.currentUserId, ev.id, index);
+  const role = tercerMyRoleLabel(currentUserId, ev.id, index);
   return {
     id: ev.id,
     date: ev.date,
@@ -70,10 +72,10 @@ export function groupPreviewCol(letter) {
   const memberIds = thirdTimeGroups[letter] || [];
   const rows = [];
   memberIds.forEach((id) => {
-    const player = legacy.rosterById[id];
+    const player = rosterById[id];
     if (!player) return;
-    const shown = legacy.displayName(player);
-    rows.push({ name: shown, avatar: { url: player.avatarUrl, fallback: legacy.initials(shown), injured: player.injured, injuryIcon: player.injuryIcon } });
+    const shown = displayName(player);
+    rows.push({ name: shown, avatar: { url: player.avatarUrl, fallback: initials(shown), injured: player.injured, injuryIcon: player.injuryIcon } });
   });
   return { title: t('tercer.groupLabel', { letter }), rows, empty: t('tercer.noPlayersInGroup') };
 }

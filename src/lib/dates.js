@@ -7,6 +7,7 @@
 // (ver calMonthShort más abajo); estas funciones solo traducen lo que se VE.
 // Leen el idioma activo en el momento de llamarlas (no son reactivas por sí solas).
 import { legacy } from './legacy.js';
+import { getLang } from './i18n.svelte.js';
 
 export const autoMonthAbbr = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const autoMonthFull = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -16,19 +17,19 @@ const monthAbbrNames = { es: autoMonthAbbr, ca: ['Gen','Feb','Mar','Abr','Mai','
 // A partir de la abreviatura en castellano que guardan los eventos (ev.month, p.ej. 'Sep').
 export function monthAbbrLabel(esAbbr) {
   const i = autoMonthAbbr.indexOf(esAbbr);
-  return i === -1 ? esAbbr : (monthAbbrNames[legacy.lang] || monthAbbrNames.es)[i];
+  return i === -1 ? esAbbr : (monthAbbrNames[getLang()] || monthAbbrNames.es)[i];
 }
 const weekdayFullNames = { es: autoWeekdayFull, ca: ['Diumenge','Dilluns','Dimarts','Dimecres','Dijous','Divendres','Dissabte'] };
 export function weekdayFullLabel(dayIndex) {
-  return (weekdayFullNames[legacy.lang] || weekdayFullNames.es)[dayIndex];
+  return (weekdayFullNames[getLang()] || weekdayFullNames.es)[dayIndex];
 }
 const monthFullNames = { es: autoMonthFull, ca: ['gener','febrer','març','abril','maig','juny','juliol','agost','setembre','octubre','novembre','desembre'] };
 export function monthFullLabel(monthIndex) {
-  return (monthFullNames[legacy.lang] || monthFullNames.es)[monthIndex];
+  return (monthFullNames[getLang()] || monthFullNames.es)[monthIndex];
 }
 // En catalán "de" se elide en "d'" delante de vocal: "23 d'agost" (no "23 de agost").
 export function withDePrefix(word) {
-  return (legacy.lang === 'ca' && /^[aeiouàèéíòóú]/i.test(word)) ? "d'" + word : 'de ' + word;
+  return (getLang() === 'ca' && /^[aeiouàèéíòóú]/i.test(word)) ? "d'" + word : 'de ' + word;
 }
 
 // Formatea una fecha ISO (yyyy-mm-dd) como dd/mm/aa

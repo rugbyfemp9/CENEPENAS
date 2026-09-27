@@ -13,6 +13,10 @@
 // El evento del modal es el evento abierto en el detalle de Asistencia
 // (attSelection.currentEventId, src/features/asistencia/events.js), igual que antes.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { myProfile, rosterById } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
 import { attEvents, attSelection } from '../asistencia/events.js';
 import { eventWhenDisplay } from '../../lib/dates.js';
 
@@ -36,11 +40,11 @@ export function setNextMatchTullidesEventId(id) {
 }
 
 export function isMine(row) {
-  return row.user_id === legacy.authUserId;
+  return row.user_id === auth.userId;
 }
 
 async function loadTullidesForEvent(eventId) {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('match_injuries')
     .select('*')
     .eq('event_id', eventId)
@@ -83,17 +87,17 @@ export async function addTullidesItem() {
   const input = tullidas.input;
   const note = input.value.trim();
   const currentEventId = attSelection.currentEventId;
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   if (!note || !currentEventId || !authUserId) return;
 
   const row = {
     event_id: currentEventId,
     user_id: authUserId,
-    player_name: legacy.displayName(legacy.rosterById.me) || legacy.myProfile.name || 'Alguien',
+    player_name: displayName(rosterById.me) || myProfile.name || 'Alguien',
     note,
   };
 
-  const { data, error } = await legacy.supabase.from('match_injuries').insert(row).select().single();
+  const { data, error } = await supabase.from('match_injuries').insert(row).select().single();
   if (error) {
     console.error('No se ha podido guardar en la lista de tullidas', error);
     return;
@@ -107,11 +111,11 @@ export async function addTullidesItem() {
 }
 
 export async function removeTullidesItem(id) {
-  const { error } = await legacy.supabase
+  const { error } = await supabase
     .from('match_injuries')
     .delete()
     .eq('id', id)
-    .eq('user_id', legacy.authUserId); // solo se puede borrar la propia fila
+    .eq('user_id', auth.userId); // solo se puede borrar la propia fila
   if (error) {
     console.error('No se ha podido borrar de la lista de tullidas', error);
     return;
@@ -133,7 +137,7 @@ export function forgetTullidesForEvent(eventId) {
 export function subscribeToTullidesRealtime() {
   if (tullidesRealtimeSubscribed) return;
   tullidesRealtimeSubscribed = true;
-  legacy.supabase
+  supabase
     .channel('tullides-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'match_injuries' }, (payload) => {
       const row = payload.new && Object.keys(payload.new).length ? payload.new : payload.old;

@@ -9,6 +9,9 @@
 // actualiza el dato, y las filas se vuelven a pintar enteras (actaBuilder.version)
 // solo al añadir/quitar una jugadora o una tarjeta.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { toRemotePlayerId } from '../../lib/session.svelte.js';
+import { rosterById } from '../../lib/roster.js';
 import { partidoDetalle } from '../partidos/partidos.svelte.js';
 import { actas, loadMatchReport } from './actas.svelte.js';
 
@@ -119,7 +122,6 @@ export async function saveActaBuilder() {
   actaBuilder.busy = true;
   setStatus('var(--text-muted)', 'Guardando acta…');
 
-  const supabase = legacy.supabase;
   try {
     const { error: headerError } = await supabase.from('match_reports').upsert({
       id: partidoDetalle.currentId,
@@ -143,14 +145,13 @@ export async function saveActaBuilder() {
     const { error: delPlayersError } = await supabase.from('match_report_players').delete().eq('match_id', partidoDetalle.currentId);
     if (delPlayersError) throw new Error(delPlayersError.message);
 
-    const rosterById = legacy.rosterById;
     const rowsToInsert = validRows.map((r) => {
       const player = rosterById[r.playerId];
       const entry = Math.max(0, Math.min(80, Number(r.entryMinute) || 0));
       const exit = Math.max(0, Math.min(80, Number(r.exitMinute) || 0));
       return {
         match_id: partidoDetalle.currentId,
-        profile_id: legacy.toRemotePlayerId(r.playerId),
+        profile_id: toRemotePlayerId(r.playerId),
         is_own_team: true,
         jersey_number: r.jerseyNumber === '' ? null : r.jerseyNumber,
         player_name: player ? player.name : null,

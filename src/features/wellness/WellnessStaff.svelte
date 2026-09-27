@@ -1,6 +1,6 @@
 <script>
   // WELLNESS / RPE — COS TÈCNIC: vista d'anàlisi agregada de tot l'equip. Només
-  // visible per a rols de gestió (ver canViewWellnessStaff(), js/core/permissions.js):
+  // visible per a rols de gestió (ver canViewWellnessStaff(), src/lib/permissions.js):
   // setSection() redirige a Vestuario si alguien intenta entrar a mano.
   import { t } from '../../lib/i18n.svelte.js';
   import { legacy } from '../../lib/legacy.js';

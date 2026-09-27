@@ -4,6 +4,9 @@
 // I18N: son contenido, no interfaz). Cada vez que se pulsa "Iniciar test" se trae el
 // banco completo y se eligen 10 al azar entre todas las disponibles.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth, rosterEntry } from '../../lib/session.svelte.js';
+import { displayName, initials } from '../../lib/names.js';
 import { t } from '../../lib/i18n.svelte.js';
 
 export const quiz = $state({
@@ -28,7 +31,7 @@ function shuffleArray(arr) {
 
 export async function startQuiz() {
   quiz.loading = true;
-  const { data, error } = await legacy.supabase.from('test_questions').select('*');
+  const { data, error } = await supabase.from('test_questions').select('*');
   quiz.loading = false;
 
   if (error) {
@@ -81,10 +84,10 @@ function showResults() {
 // Supabase para este caso sencillo, y aquí no hay riesgo real de dos intentos
 // simultáneos de la misma persona).
 async function savePoints(earned) {
-  const userId = legacy.authUserId;
+  const userId = auth.userId;
   if (!userId || !earned) return;
   try {
-    const { data: existing, error: readError } = await legacy.supabase
+    const { data: existing, error: readError } = await supabase
       .from('test_scores')
       .select('points')
       .eq('profile_id', userId)
@@ -94,7 +97,7 @@ async function savePoints(earned) {
       return;
     }
     const newTotal = (existing && existing.points ? existing.points : 0) + earned;
-    const { error: writeError } = await legacy.supabase
+    const { error: writeError } = await supabase
       .from('test_scores')
       .upsert({ profile_id: userId, points: newTotal, updated_at: new Date().toISOString() });
     if (writeError) console.error('No se ha podido guardar el ranking del test', writeError);
@@ -106,7 +109,7 @@ async function savePoints(earned) {
 export async function openRanking() {
   ranking.open = true;
   ranking.status = 'loading';
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('test_scores')
     .select('profile_id, points')
     .order('points', { ascending: false });
@@ -117,9 +120,9 @@ export async function openRanking() {
     return;
   }
   ranking.rows = (data || []).map((row) => {
-    const p = legacy.rosterEntry(row.profile_id);
-    const name = p ? legacy.displayName(p) : row.profile_id;
-    return { points: row.points, name, avatarUrl: p ? p.avatarUrl : '', initials: legacy.initials(name) };
+    const p = rosterEntry(row.profile_id);
+    const name = p ? displayName(p) : row.profile_id;
+    return { points: row.points, name, avatarUrl: p ? p.avatarUrl : '', initials: initials(name) };
   });
   ranking.status = ranking.rows.length ? 'ok' : 'empty';
 }

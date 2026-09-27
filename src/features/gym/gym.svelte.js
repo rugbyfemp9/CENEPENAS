@@ -11,6 +11,12 @@
 // editado...) y todo lo que las lee depende de ese contador (ver rosterTick()).
 import { SvelteSet } from 'svelte/reactivity';
 import { legacy } from '../../lib/legacy.js';
+import { SUPABASE_URL, supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { currentUserId, myProfile, myRosterEntry, roster, rosterById } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
+import { effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { readCache, writeCache } from '../../lib/storage.js';
 import { todayLocalIso } from '../../lib/dates.js';
 
 // Ejercicios principales sobre los que se lleva marca (1RM) y ranking de equipo.
@@ -63,21 +69,21 @@ function escapeHtml(str) {
 export async function loadGymRemovedDefaultExercises() {
   // Copia en caché primero (si hay una reciente), para pintar al momento; la
   // petición real de abajo sigue haciéndose igual y corrige lo que haga falta.
-  const cached = await legacy.readCache('gym_removed_default_exercises');
+  const cached = await readCache('gym_removed_default_exercises');
   if (cached) {
     gym.removedDefaultExercises = new SvelteSet(cached.data);
     calculateGymQuickRm();
   }
 
-  const { data, error } = await legacy.supabase.from('gym_removed_default_exercises').select('name');
+  const { data, error } = await supabase.from('gym_removed_default_exercises').select('name');
   if (error) { console.error('No se han podido cargar los ejercicios fijos eliminados', error); return; }
   const names = (data || []).map((row) => row.name.toLowerCase());
-  legacy.writeCache('gym_removed_default_exercises', names);
+  writeCache('gym_removed_default_exercises', names);
   gym.removedDefaultExercises = new SvelteSet(names);
   calculateGymQuickRm();
 }
 export function subscribeToGymRemovedDefaultExercisesRealtime() {
-  legacy.supabase
+  supabase
     .channel('gym-removed-default-exercises-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'gym_removed_default_exercises' }, () => loadGymRemovedDefaultExercises())
     .subscribe();
@@ -90,20 +96,20 @@ export function subscribeToGymRemovedDefaultExercisesRealtime() {
 const GYM_GENERAL_EXERCISE_ROLES = ['entrenador/a'];
 export function canManageGeneralExercises() {
   rosterTick();
-  return legacy.isAdmin || GYM_GENERAL_EXERCISE_ROLES.includes(legacy.myProfile.rol);
+  return auth.isAdmin || GYM_GENERAL_EXERCISE_ROLES.includes(myProfile.rol);
 }
 
 export async function loadGymExercises() {
-  const cached = await legacy.readCache('gym_exercises');
+  const cached = await readCache('gym_exercises');
   if (cached) gym.exercises = cached.data;
 
-  const { data, error } = await legacy.supabase.from('gym_exercises').select('*').order('created_at', { ascending: true });
+  const { data, error } = await supabase.from('gym_exercises').select('*').order('created_at', { ascending: true });
   if (error) { console.error('No se han podido cargar los ejercicios generales de gym', error); return; }
   gym.exercises = data || [];
-  legacy.writeCache('gym_exercises', $state.snapshot(gym.exercises));
+  writeCache('gym_exercises', $state.snapshot(gym.exercises));
 }
 export function subscribeToGymExercisesRealtime() {
-  legacy.supabase
+  supabase
     .channel('gym-exercises-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'gym_exercises' }, () => loadGymExercises())
     .subscribe();
@@ -113,7 +119,7 @@ export function subscribeToGymExercisesRealtime() {
 const GYM_ROUTINE_EDITOR_ROLES = ['entrenador/a', 'delegado/a', 'directiva', 'jugadora'];
 export function canEditGymRoutine() {
   rosterTick();
-  return legacy.isAdmin || GYM_ROUTINE_EDITOR_ROLES.includes(legacy.effectiveRole(legacy.myProfile.rol));
+  return auth.isAdmin || GYM_ROUTINE_EDITOR_ROLES.includes(effectiveRoleForPermissions(myProfile.rol));
 }
 
 export function hasWeeklyRoutine() {
@@ -206,7 +212,7 @@ function renderGymRoutineDayExercises() {
 // Trae la rutina guardada en Supabase (si ya se ha subido algún PDF esta semana).
 // Si no hay ninguna todavía, la rutina se queda en null (sin rutina).
 export async function loadGymWeeklyRoutine() {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('gym_weekly_routine')
     .select('*')
     .eq('id', 'current')
@@ -227,7 +233,7 @@ export async function loadGymWeeklyRoutine() {
 // archivado automático del domingo) se recarga aquí al momento en todas las cuentas
 // que tengan la app abierta, sin tener que refrescar la página.
 export function subscribeToGymRoutineRealtime() {
-  legacy.supabase
+  supabase
     .channel('gym-routine-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'gym_weekly_routine' }, () => loadGymWeeklyRoutine())
     .subscribe();
@@ -259,7 +265,7 @@ async function checkAndArchiveGymRoutineIfExpired() {
 
   gymRoutineArchiveCheckInFlight = true;
   try {
-    const { error: insertError } = await legacy.supabase.from('gym_weekly_routine_archive').insert({
+    const { error: insertError } = await supabase.from('gym_weekly_routine_archive').insert({
       week_label: routine.weekLabel,
       days: $state.snapshot(routine.days),
       archived_at: new Date().toISOString(),
@@ -268,7 +274,7 @@ async function checkAndArchiveGymRoutineIfExpired() {
       console.error('No se ha podido archivar la rutina de la semana pasada', insertError);
       return;
     }
-    const { error: clearError } = await legacy.supabase.from('gym_weekly_routine')
+    const { error: clearError } = await supabase.from('gym_weekly_routine')
       .update({ week_label: null, days: [] })
       .eq('id', 'current');
     if (clearError) console.error('No se ha podido vaciar la rutina actual tras archivarla', clearError);
@@ -296,7 +302,7 @@ export async function loadLastGymRoutine() {
   closeGymRoutineMoreMenu();
   routineMenu.busy = true;
   try {
-    const { data, error } = await legacy.supabase
+    const { data, error } = await supabase
       .from('gym_weekly_routine_archive')
       .select('*')
       .order('archived_at', { ascending: false })
@@ -311,7 +317,7 @@ export async function loadLastGymRoutine() {
       alert('Todavía no hay ninguna rutina archivada.');
       return;
     }
-    const { error: updateError } = await legacy.supabase.from('gym_weekly_routine')
+    const { error: updateError } = await supabase.from('gym_weekly_routine')
       .update({ week_label: data.week_label, days: data.days || [] })
       .eq('id', 'current');
     if (updateError) {
@@ -329,7 +335,7 @@ export async function loadLastGymRoutine() {
 // archivadas, ordenadas de la más nueva a la más antigua.
 export async function openGymRoutineArchiveTab() {
   closeGymRoutineMoreMenu();
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('gym_weekly_routine_archive')
     .select('*')
     .order('archived_at', { ascending: false });
@@ -456,7 +462,7 @@ export async function uploadGymRoutinePdf() {
   setUploadStatus('var(--text-muted)', 'Subiendo y leyendo el PDF con Gemini… puede tardar unos segundos.');
 
   try {
-    const { data: sessionData } = await legacy.supabase.auth.getSession();
+    const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData && sessionData.session ? sessionData.session.access_token : null;
     if (!accessToken) {
       setUploadStatus('var(--bad)', 'Tu sesión ha caducado, vuelve a iniciar sesión e inténtalo de nuevo.');
@@ -466,7 +472,7 @@ export async function uploadGymRoutinePdf() {
     const form = new FormData();
     form.append('pdf', file);
 
-    const res = await fetch(`${legacy.supabaseUrl}/functions/v1/process-gym-routine-pdf`, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/process-gym-routine-pdf`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${accessToken}` },
       body: form,
@@ -513,15 +519,15 @@ function roundGymWeight(kg) {
 // rápida: la seleccionada manualmente, o si no hay ninguna, la jugadora logeada.
 export function gymQuickCalcSelectedPlayer() {
   rosterTick();
-  return (quickCalc.playerId && legacy.rosterById[quickCalc.playerId]) || legacy.rosterById[legacy.currentUserId];
+  return (quickCalc.playerId && rosterById[quickCalc.playerId]) || rosterById[currentUserId];
 }
 
 export function toggleGymQuickCalcPlayerMenu(e) {
   if (e) e.stopPropagation();
   const willOpen = !quickCalc.menuOpen;
   if (willOpen) {
-    const selectedId = quickCalc.playerId || legacy.currentUserId;
-    quickCalc.menuPlayers = legacy.roster.map((p) => ({ id: p.id, name: legacy.displayName(p), selected: p.id === selectedId }));
+    const selectedId = quickCalc.playerId || currentUserId;
+    quickCalc.menuPlayers = roster.map((p) => ({ id: p.id, name: displayName(p), selected: p.id === selectedId }));
   }
   quickCalc.menuOpen = willOpen;
 }
@@ -530,7 +536,7 @@ export function closeGymQuickCalcPlayerMenu() {
 }
 
 export function selectGymQuickCalcPlayer(playerId) {
-  quickCalc.playerId = (playerId === legacy.currentUserId) ? null : playerId;
+  quickCalc.playerId = (playerId === currentUserId) ? null : playerId;
   closeGymQuickCalcPlayerMenu();
   calculateGymQuickRm();
 }
@@ -561,9 +567,9 @@ export function gymQuickCalcResult(exercise) {
   if (!exercise || pctRaw === '') return { kind: 'prompt' };
   const pct = parseFloat(pctRaw);
   const player = gymQuickCalcSelectedPlayer();
-  const isMe = !player || player.id === legacy.currentUserId;
+  const isMe = !player || player.id === currentUserId;
   const record = player && player.rm ? player.rm[exercise] : null;
-  const name = isMe ? '' : legacy.displayName(player);
+  const name = isMe ? '' : displayName(player);
 
   if (!record) return { kind: isMe ? 'noMarkMine' : 'noMarkTheirs', exercise, name };
 
@@ -657,7 +663,7 @@ export function gymAllExercises() {
   const seen = new Set();
   const list = [];
   generalExercises(seen, list);
-  const me = legacy.me;
+  const me = myRosterEntry();
   if (me && me.rm) {
     Object.keys(me.rm).forEach((name) => {
       const key = name.toLowerCase();
@@ -694,7 +700,7 @@ export function gymExerciseDeletable(name) {
 // Filas de "Mis Marcas": cada ejercicio con mi marca actual.
 export function gymMarksRows() {
   rosterTick();
-  const me = legacy.me;
+  const me = myRosterEntry();
   return gymAllExercises().map((exercise) => ({
     exercise,
     record: me && me.rm ? me.rm[exercise] : null,
@@ -711,7 +717,7 @@ export const rmModal = $state({ open: false, exercise: null, title: null, weight
 export function openGymRmModal(exercise) {
   rmModal.exercise = exercise;
   rmModal.title = exercise;
-  const me = legacy.me;
+  const me = myRosterEntry();
   const record = me && me.rm ? me.rm[exercise] : null;
   rmModal.weight = record ? record.weight : null;
   rmModal.open = true;
@@ -725,18 +731,18 @@ export function closeGymRmModal() {
 // que el ranking del equipo vea siempre el dato real, no solo lo que quede en
 // memoria de esta pestaña).
 async function persistGymRm(exercise, weight) {
-  if (!legacy.authUserId) return;
+  if (!auth.userId) return;
   const nowIso = new Date().toISOString();
-  const { error } = await legacy.supabase.from('gym_rm').upsert({
-    profile_id: legacy.authUserId,
+  const { error } = await supabase.from('gym_rm').upsert({
+    profile_id: auth.userId,
     exercise,
     weight,
     updated_at: nowIso,
   }, { onConflict: 'profile_id,exercise' });
   if (error) console.error('No se ha podido guardar la marca en Supabase', error);
 
-  const { error: historyError } = await legacy.supabase.from('gym_rm_history').insert({
-    profile_id: legacy.authUserId,
+  const { error: historyError } = await supabase.from('gym_rm_history').insert({
+    profile_id: auth.userId,
     exercise,
     weight,
     recorded_at: nowIso,
@@ -752,7 +758,7 @@ function pushGymRmHistoryLocal(me, exercise, weight, updatedAt) {
 }
 function setMyRm(exercise, weight) {
   const updatedAt = todayLocalIso();
-  const me = legacy.me;
+  const me = myRosterEntry();
   if (!me.rm) me.rm = {};
   me.rm[exercise] = { weight, updatedAt };
   pushGymRmHistoryLocal(me, exercise, weight, updatedAt);
@@ -809,9 +815,9 @@ export async function addGymCustomExercise() {
   const exercise = existing || name;
 
   if (!existing && isManager) {
-    const { data, error } = await legacy.supabase
+    const { data, error } = await supabase
       .from('gym_exercises')
-      .insert({ name: exercise, created_by: legacy.authUserId })
+      .insert({ name: exercise, created_by: auth.userId })
       .select()
       .single();
     if (error) {
@@ -855,9 +861,9 @@ export async function deleteGymExercise(name) {
   )) return;
 
   if (isFixed) {
-    const { error } = await legacy.supabase.from('gym_removed_default_exercises').insert({
+    const { error } = await supabase.from('gym_removed_default_exercises').insert({
       name,
-      removed_by: legacy.authUserId,
+      removed_by: auth.userId,
     });
     if (error) {
       console.error('No se pudo eliminar el ejercicio fijo', error);
@@ -867,7 +873,7 @@ export async function deleteGymExercise(name) {
     gym.removedDefaultExercises.add(key);
   } else if (generalRow) {
     const generalId = generalRow.id;
-    const { error } = await legacy.supabase.from('gym_exercises').delete().eq('id', generalId);
+    const { error } = await supabase.from('gym_exercises').delete().eq('id', generalId);
     if (error) {
       console.error('No se pudo eliminar el ejercicio', error);
       alert('No se ha podido eliminar. Inténtalo de nuevo.');
@@ -876,15 +882,15 @@ export async function deleteGymExercise(name) {
     gym.exercises = gym.exercises.filter((ex) => ex.id !== generalId);
   }
 
-  const me = legacy.me;
+  const me = myRosterEntry();
   if (me && me.rm) delete me.rm[name];
   if (me && me.rmHistory) delete me.rmHistory[name];
   refresh();
   calculateGymQuickRm();
 
-  if (legacy.authUserId) {
-    await legacy.supabase.from('gym_rm').delete().eq('profile_id', legacy.authUserId).eq('exercise', name);
-    await legacy.supabase.from('gym_rm_history').delete().eq('profile_id', legacy.authUserId).eq('exercise', name);
+  if (auth.userId) {
+    await supabase.from('gym_rm').delete().eq('profile_id', auth.userId).eq('exercise', name);
+    await supabase.from('gym_rm_history').delete().eq('profile_id', auth.userId).eq('exercise', name);
   }
 }
 
@@ -911,14 +917,14 @@ export function closeGymRmHistoryModal() {
   rmHistory.exercise = null;
 }
 async function loadGymRmHistory(exercise) {
-  const me = legacy.me;
+  const me = myRosterEntry();
   let entries = [];
   let historyLoadFailed = false;
 
-  if (legacy.authUserId) {
-    const { data, error } = await legacy.supabase.from('gym_rm_history')
+  if (auth.userId) {
+    const { data, error } = await supabase.from('gym_rm_history')
       .select('weight, recorded_at')
-      .eq('profile_id', legacy.authUserId)
+      .eq('profile_id', auth.userId)
       .eq('exercise', exercise)
       .order('recorded_at', { ascending: false });
     if (error) {
@@ -975,15 +981,15 @@ export async function saveGymCheckin() {
     return;
   }
   const todayIso = todayLocalIso();
-  const me = legacy.currentUserId;
+  const me = currentUserId;
   if (!gym.attendanceByDate[todayIso]) gym.attendanceByDate[todayIso] = [];
   gym.attendanceByDate[todayIso] = gym.attendanceByDate[todayIso].filter((e) => e.playerId !== me);
   gym.attendanceByDate[todayIso].push({ playerId: me, time });
   closeGymCheckinModal();
 
-  if (legacy.authUserId) {
-    const { error } = await legacy.supabase.from('gym_attendance').upsert({
-      profile_id: legacy.authUserId,
+  if (auth.userId) {
+    const { error } = await supabase.from('gym_attendance').upsert({
+      profile_id: auth.userId,
       attendance_date: todayIso,
       time,
     }, { onConflict: 'profile_id,attendance_date' });
@@ -996,13 +1002,13 @@ export async function saveGymCheckin() {
 export async function cancelGymCheckin() {
   const todayIso = todayLocalIso();
   if (gym.attendanceByDate[todayIso]) {
-    gym.attendanceByDate[todayIso] = gym.attendanceByDate[todayIso].filter((e) => e.playerId !== legacy.currentUserId);
+    gym.attendanceByDate[todayIso] = gym.attendanceByDate[todayIso].filter((e) => e.playerId !== currentUserId);
   }
 
-  if (legacy.authUserId) {
-    const { error } = await legacy.supabase.from('gym_attendance')
+  if (auth.userId) {
+    const { error } = await supabase.from('gym_attendance')
       .delete()
-      .eq('profile_id', legacy.authUserId)
+      .eq('profile_id', auth.userId)
       .eq('attendance_date', todayIso);
     if (error) {
       console.error('No se ha podido quitar tu asistencia al gimnasio en Supabase', error);
@@ -1016,7 +1022,7 @@ export async function cancelGymCheckin() {
 // hubiera en memoria de esta pestaña.
 export async function loadGymAttendanceToday() {
   const todayIso = todayLocalIso();
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('gym_attendance')
     .select('*')
     .eq('attendance_date', todayIso);
@@ -1025,7 +1031,7 @@ export async function loadGymAttendanceToday() {
     return;
   }
   gym.attendanceByDate[todayIso] = (data || []).map((row) => ({
-    playerId: row.profile_id === legacy.authUserId ? 'me' : row.profile_id,
+    playerId: row.profile_id === auth.userId ? 'me' : row.profile_id,
     time: row.time,
   }));
 }
@@ -1033,7 +1039,7 @@ export async function loadGymAttendanceToday() {
 // Cualquier cambio en la asistencia de hoy (alguien se apunta o se quita, desde
 // cualquier cuenta) se recarga aquí al momento, sin tener que refrescar la página.
 export function subscribeToGymAttendanceRealtime() {
-  legacy.supabase
+  supabase
     .channel('gym-attendance-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'gym_attendance' }, () => loadGymAttendanceToday())
     .subscribe();
@@ -1047,7 +1053,7 @@ export function gymRankingRows(exercise) {
   rosterTick();
   const withRecord = [];
   const without = [];
-  legacy.roster.forEach((p) => {
+  roster.forEach((p) => {
     const record = p.rm ? p.rm[exercise] : null;
     if (record) withRecord.push({ p, weight: record.weight, updatedAt: record.updatedAt });
     else without.push({ p });
@@ -1062,14 +1068,14 @@ export function gymRankingRows(exercise) {
 // el roster ya cargado por loadPlantilla(), para que el ranking siempre muestre el
 // dato real guardado en Supabase y no solo lo que haya en memoria de esta pestaña.
 export async function loadGymRm() {
-  const { data, error } = await legacy.supabase.from('gym_rm').select('profile_id, exercise, weight, updated_at');
+  const { data, error } = await supabase.from('gym_rm').select('profile_id, exercise, weight, updated_at');
   if (error) {
     console.error('No se han podido cargar las marcas del equipo desde Supabase', error);
     return;
   }
   (data || []).forEach((row) => {
-    const targetId = row.profile_id === legacy.authUserId ? 'me' : row.profile_id;
-    const player = legacy.rosterById[targetId];
+    const targetId = row.profile_id === auth.userId ? 'me' : row.profile_id;
+    const player = rosterById[targetId];
     if (!player) return;
     if (!player.rm) player.rm = {};
     player.rm[row.exercise] = {
@@ -1085,7 +1091,7 @@ export async function loadGymRm() {
 // jugadora) se recarga aquí al momento: así "Mis Marcas" y el ranking del equipo
 // quedan siempre al día en todas las cuentas, sin tener que refrescar la página.
 export function subscribeToGymRmRealtime() {
-  legacy.supabase
+  supabase
     .channel('gym-rm-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'gym_rm' }, () => loadGymRm())
     .subscribe();

@@ -8,6 +8,10 @@
 // traducidos, como el innerHTML de antes). Lo que en el marcado antiguo llevaba
 // data-i18n (títulos fijos, pestañas, botones) se traduce en la plantilla con t().
 import { legacy } from '../../lib/legacy.js';
+import { currentUserId, roster } from '../../lib/roster.js';
+import { displayName, initials } from '../../lib/names.js';
+import { canUseWellness, canViewWellnessStaff, effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { translate } from '../../lib/i18n.svelte.js';
 import {
   monthAbbrLabel, monthFullLabel, todayLocalIso, attEventIso, attEventType,
   trainingIntensityEmoji, eventWeekdayDateLabel, eventWhenDisplay, hasEventEnded,
@@ -18,7 +22,7 @@ import { renderCalendarGrid } from './calendar.svelte.js';
 import { renderPartidosList, renderNextMatchBanner } from '../partidos/partidos.svelte.js';
 import { renderWellnessReminderBanner } from '../wellness/wellness.svelte.js';
 
-const t = (key) => legacy.t(key);
+const t = (key) => translate(key);
 
 // ---- Lista ----
 export const attList = $state({
@@ -53,7 +57,7 @@ function attEventCardView(ev) {
     // Botón 📊 de acceso directo al Panel de Análisis Wellness/RPE de este evento
     // concreto: solo Cos Tècnic, y solo si el evento ya existe en ese panel (mismo
     // criterio que el desplegable del panel, src/features/wellness/: ya ha terminado).
-    staffLabel: (legacy.canViewWellnessStaff() && hasEventEnded(ev)) ? t('wstaff.quickAccessButton') : null,
+    staffLabel: (canViewWellnessStaff() && hasEventEnded(ev)) ? t('wstaff.quickAccessButton') : null,
     declineLabel: t('att.decline'),
     confirmLabel: t('att.confirm'),
   };
@@ -175,10 +179,10 @@ export function renderEventDetail() {
     // jugadora (no hace falta permiso de gestión: cada una se apunta a sí misma).
     tullides: type === 'match',
     // Wellness / RPE: solo visible para el rol jugadora (ver canUseWellness).
-    wellness: legacy.canUseWellness(),
+    wellness: canUseWellness(),
     // Botón 📊 de Cos Tècnic (entrenador/a, delegado/a, directiva, fisio, admin) para ir
     // directos al análisis Wellness/RPE de este evento concreto, si ya ha terminado.
-    staff: legacy.canViewWellnessStaff() && hasEventEnded(ev),
+    staff: canViewWellnessStaff() && hasEventEnded(ev),
   };
   // Antes se recolocaban dos veces: tras mostrar/ocultar el de Wellness (con el de Cos
   // Tècnic todavía como estaba) y otra vez tras el de Cos Tècnic.
@@ -199,7 +203,7 @@ export function renderEventDetail() {
   // cualquiera que no haya contestado "confirmar" ni "declinar" cae automáticamente
   // en "Sin contestar", aunque se haya dado de alta después de crearse el evento.
   const buckets = { yes: [], no: [], pending: [] };
-  legacy.roster.forEach((player) => {
+  roster.forEach((player) => {
     const status = ev.attendance[player.id];
     if (status === 'yes' || status === 'no') buckets[status].push(player);
     else buckets.pending.push(player);
@@ -235,17 +239,17 @@ export function renderEventDetail() {
 // delegado/a (esto es distinto del botón "Editar evento", que sí es de gestión).
 function attRosterRowView(ev, p) {
   const comment = ev.comments[p.id];
-  const name = legacy.displayName(p);
+  const name = displayName(p);
   return {
     eventId: ev.id,
     id: p.id,
     name,
     avatarUrl: p.avatarUrl,
-    initials: legacy.initials(name),
+    initials: initials(name),
     injured: p.injured,
     injuryIcon: p.injuryIcon,
     comment,
-    commentBtn: p.id === legacy.currentUserId ? (comment ? t('att.edit') : t('att.addComment')) : null,
+    commentBtn: p.id === currentUserId ? (comment ? t('att.edit') : t('att.addComment')) : null,
   };
 }
 
@@ -260,7 +264,7 @@ function attRosterYesGrouped(ev, players) {
   if (!players.length) return null;
   const group = (label, list) => ({ label, rows: list.map((p) => attRosterRowView(ev, p)) });
 
-  const jugadoras = players.filter((p) => legacy.effectiveRole(p.rol) === 'jugadora');
+  const jugadoras = players.filter((p) => effectiveRoleForPermissions(p.rol) === 'jugadora');
   const delanteras = jugadoras.filter((p) => p.posicion === 'delantera');
   const tresCuartos = jugadoras.filter((p) => p.posicion === '3/4');
   const sinPosicion = jugadoras.filter((p) => p.posicion !== 'delantera' && p.posicion !== '3/4');
@@ -272,7 +276,7 @@ function attRosterYesGrouped(ev, players) {
 
   // El resto: un grupo por cada rol distinto que haya votado que sí, en el orden en
   // que va apareciendo (Entrenador/a, Delegado/a, Directiva, o cualquier otro).
-  const otros = players.filter((p) => legacy.effectiveRole(p.rol) !== 'jugadora');
+  const otros = players.filter((p) => effectiveRoleForPermissions(p.rol) !== 'jugadora');
   const rolesVistos = [];
   otros.forEach((p) => {
     const rolLabel = p.rol || t('att.noRoleAssigned');

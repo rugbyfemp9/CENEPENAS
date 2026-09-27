@@ -7,6 +7,9 @@
 // No es reactivo a propósito: igual que antes, cada vista solo cambia cuando alguien
 // la vuelve a pintar (renderEventList(), renderEventDetail(), renderNextMatchBanner()...).
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { myProfile, roster } from '../../lib/roster.js';
 import { weekdayFullLabel, formatShortDate, autoMonthAbbr } from '../../lib/dates.js';
 import { forgetTullidesForEvent } from '../tullidas/tullidas.svelte.js';
 
@@ -20,12 +23,12 @@ export const attSelection = { currentEventId: null };
 // ---- Permisos: "Añadir evento" en Asistencia ----
 // Entrenador/a, delegado/a, junta directiva y Capitana pueden crear/editar/borrar
 // eventos (a Capitana se le da aparte, porque jugadora normal no tiene este permiso:
-// ver el comentario sobre effectiveRoleForPermissions en js/core/permissions.js).
+// ver el comentario sobre effectiveRoleForPermissions en src/lib/permissions.js).
 export const rolesWithEventManagement = ['entrenador/a', 'delegado/a', 'directiva', 'Capitana'];
 export function canManageEvents() {
   // Ojo: aquí NO se pasa por effectiveRoleForPermissions, porque este es justo un
   // permiso donde Capitana y jugadora se diferencian (jugadora normal no lo tiene).
-  return legacy.isAdmin || rolesWithEventManagement.includes(legacy.myProfile.rol);
+  return auth.isAdmin || rolesWithEventManagement.includes(myProfile.rol);
 }
 
 // Sede fija para la opción rápida "🏠 Casa": siempre enlaza con el CEM Mar Bella,
@@ -48,7 +51,7 @@ export function generateCustomEventId() {
   return 'ce' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-const pendingForEveryone = () => Object.fromEntries(legacy.roster.map((p) => [p.id, 'pending']));
+const pendingForEveryone = () => Object.fromEntries(roster.map((p) => [p.id, 'pending']));
 
 // ---- Generación automática de entrenos — temporada 2026-2027 ----
 // Lunes, miércoles y viernes de 20:30 a 22:00, del 1 de septiembre de 2026 al 31 de mayo
@@ -153,12 +156,11 @@ export function withEmptyAttendance(ev) {
 }
 
 export async function saveEventToStorage(ev) {
-  const { error } = await legacy.supabase.from('att_events').upsert(eventMetaForStorage(ev));
+  const { error } = await supabase.from('att_events').upsert(eventMetaForStorage(ev));
   if (error) console.error('No se ha podido guardar el evento', error);
 }
 
 export async function deleteEventFromStorage(eventId) {
-  const supabase = legacy.supabase;
   const { error: e1 } = await supabase.from('att_events').delete().eq('id', eventId);
   if (e1) console.error('No se ha podido borrar el evento', e1);
   // Limpiamos también las respuestas de asistencia guardadas para ese evento, para no
@@ -210,7 +212,7 @@ export async function deleteEventFromStorage(eventId) {
 // (o actualiza, si ya existían) en attEvents. Se llama al iniciar sesión y cada vez
 // que se entra en Asistencia, para no depender de que el creador siga conectado.
 export async function loadSharedEventsFromStorage() {
-  const { data, error } = await legacy.supabase.from('att_events').select('*');
+  const { data, error } = await supabase.from('att_events').select('*');
   if (error || !data) return;
 
   data.forEach((row) => {

@@ -3,6 +3,7 @@
 // (tabla "treasury_entries") para que estén sincronizados entre todo el mundo; la
 // lógica es la misma que la de Comi Tercer Temps (ver src/lib/treasury/).
 import { legacy } from '../../lib/legacy.js';
+import { rosterById } from '../../lib/roster.js';
 import { session } from '../../lib/session.svelte.js';
 import { createTreasury } from '../../lib/treasury/treasury.svelte.js';
 
@@ -16,7 +17,7 @@ export function canManageClubTreasury() {
 
 // Personas de la plantilla que tienen marcado "Comi Tesoreria" en su perfil
 export function treasuryCommissionMembers() {
-  return Object.values(legacy.rosterById).filter((p) => p.comision === 'Comi Tesoreria');
+  return Object.values(rosterById).filter((p) => p.comision === 'Comi Tesoreria');
 }
 
 export const treasury = createTreasury({

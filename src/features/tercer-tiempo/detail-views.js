@@ -1,13 +1,15 @@
 // "Fotos" del detalle de un partido (título, banner personal + recuadro del grupo y
 // "Tus cambios de turno"), calculadas al pintar, como en views.js.
 import { legacy } from '../../lib/legacy.js';
+import { currentUserId, rosterById } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { thirdTimeCovers, thirdTimeDebts } from './covers.svelte.js';
 import {
   thirdTimeGroupOf, thirdTimeActiveMatch, thirdTimeRolesForIndex, thirdTimeEffectiveRoles, thirdTimeEventLabel,
 } from './groups.js';
 
-const name = (id) => legacy.displayName(legacy.rosterById[id]);
+const name = (id) => displayName(rosterById[id]);
 
 // Título del detalle: "Tercer tiempo · <partido>".
 export function buildDetailTitle() {
@@ -22,7 +24,7 @@ export function buildDetailTitle() {
 //   'none'     — sin icono ni botón
 //   'noGroup'  — ver PersonalBanner.svelte (marcado original mal cerrado)
 export function buildPersonalBanner() {
-  const me = legacy.currentUserId;
+  const me = currentUserId;
   const current = thirdTimeActiveMatch();
   if (!current) return { kind: 'noMatch', text: t('tercer.noMatchForGroups') };
 
@@ -63,7 +65,7 @@ export function buildPersonalBanner() {
 
 // "Tus cambios de turno": solicitudes recibidas / enviadas y favores pendientes.
 export function buildSwapSummary() {
-  const me = legacy.currentUserId;
+  const me = currentUserId;
   const incoming = thirdTimeCovers.filter((c) => c.status === 'pendiente' && c.toPlayerId === me);
   const outgoing = thirdTimeCovers.filter((c) => c.status === 'pendiente' && c.fromPlayerId === me);
   const owedToMe = thirdTimeDebts.filter((d) => !d.settled && d.owedTo === me);

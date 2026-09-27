@@ -6,22 +6,25 @@
 // renderCalendarGrid() (al abrir el modal, cambiar de mes o de filtro, tras crear /
 // editar / borrar un evento, al refrescar los eventos compartidos y al cambiar de idioma).
 import { legacy } from '../../lib/legacy.js';
+import { roster } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
+import { translate } from '../../lib/i18n.svelte.js';
 import { monthFullLabel, attEventIso, attEventType, formatIsoDate } from '../../lib/dates.js';
 import { attEvents } from './events.js';
 import { openEditEventModal, openDeleteEventConfirmFor } from './editor.svelte.js';
 
-const t = (key) => legacy.t(key);
+const t = (key) => translate(key);
 
 // Los cumpleaños NO se guardan como lista aparte: se sincronizan automáticamente
 // con la fecha de nacimiento ("birthdate", formato AAAA-MM-DD) que cada jugadora
 // rellena en su perfil. Se ignora el año: solo se usa el día y el mes, así que el
 // cumpleaños aparece cada año en el calendario sin tener que volver a crearlo.
 function getBirthdayEvents(year) {
-  return legacy.roster
+  return roster
     .filter((p) => p.birthdate)
     .map((p) => {
       const monthDay = p.birthdate.slice(5); // "AAAA-MM-DD" -> "MM-DD"
-      return { iso: `${year}-${monthDay}`, label: legacy.displayName(p), type: 'birthday' };
+      return { iso: `${year}-${monthDay}`, label: displayName(p), type: 'birthday' };
     });
 }
 

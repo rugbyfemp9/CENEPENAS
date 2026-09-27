@@ -3,6 +3,7 @@
   // de acciones, banquillo de disponibles, campo con 15 + 8 camisetas y "Mis alineaciones".
   import { t } from '../../lib/i18n.svelte.js';
   import { legacy } from '../../lib/legacy.js';
+  import { displayName } from '../../lib/names.js';
   import {
     fantasy, pitchTicks, fantasyAvailablePlayers, fantasySlots, fantasyAllPositions, placedCount,
     onFantasyMatchChange, onBenchCardClick, onSlotClick, onBenchDragStart, onSlotDragStart,
@@ -65,9 +66,9 @@
             {#each available as p (p.id)}
               <button class="jersey-card" draggable="true" ondragstart={(e) => onBenchDragStart(e, p.id)}
                       ontouchstart={(e) => onBenchTouchStart(e, p.id)}
-                      onclick={() => onBenchCardClick(p.id)} title={legacy.displayName(p)}>
+                      onclick={() => onBenchCardClick(p.id)} title={displayName(p)}>
                 <div class="jersey-shape"><span class="jstripes"></span><span class="jsleeve l"></span><span class="jsleeve r"></span></div>
-                <div class="jname">{legacy.displayName(p)}</div>
+                <div class="jname">{displayName(p)}</div>
               </button>
             {/each}
           {/if}

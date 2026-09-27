@@ -6,6 +6,8 @@
 // Como antes, la lista se vuelve a pintar entera (checklist.version) después de cada
 // cambio, incluida la fila de "Añadir algo más…".
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
 
 const MATCHDAY_CHECKLIST_DEFAULTS = [
   'Botes tacos', 'Mijetes', 'Hombreres', 'Pantalons equipció', 'Leggins o samarreta interior',
@@ -36,13 +38,12 @@ export function checklistItems() {
 // Carga tus elementos guardados (o te crea la lista básica de partida la primera vez),
 // y si ha llegado un partido nuevo desde la última vez, desmarca todas las casillas.
 async function loadMatchdayChecklist() {
-  if (!legacy.authUserId) return;
-  const supabase = legacy.supabase;
+  if (!auth.userId) return;
 
   const { data: items, error: itemsError } = await supabase
     .from('matchday_checklist_items')
     .select('id, label, checked, created_at')
-    .eq('owner_id', legacy.authUserId)
+    .eq('owner_id', auth.userId)
     .order('created_at', { ascending: true });
 
   if (itemsError) {
@@ -53,7 +54,7 @@ async function loadMatchdayChecklist() {
   if (!items || items.length === 0) {
     // Primera vez que abres la lista: la sembramos con los básicos, para no empezar
     // de una lista vacía. A partir de aquí son elementos normales, se pueden borrar.
-    const defaultRows = MATCHDAY_CHECKLIST_DEFAULTS.map((label) => ({ owner_id: legacy.authUserId, label, checked: false }));
+    const defaultRows = MATCHDAY_CHECKLIST_DEFAULTS.map((label) => ({ owner_id: auth.userId, label, checked: false }));
     const { data: inserted, error: seedError } = await supabase
       .from('matchday_checklist_items')
       .insert(defaultRows)
@@ -74,7 +75,7 @@ async function loadMatchdayChecklist() {
     const { data: state } = await supabase
       .from('matchday_checklist_state')
       .select('last_match_id')
-      .eq('owner_id', legacy.authUserId)
+      .eq('owner_id', auth.userId)
       .maybeSingle();
 
     if (!state || state.last_match_id !== matchdayChecklistCurrentMatchId) {
@@ -82,12 +83,12 @@ async function loadMatchdayChecklist() {
         await supabase
           .from('matchday_checklist_items')
           .update({ checked: false })
-          .eq('owner_id', legacy.authUserId);
+          .eq('owner_id', auth.userId);
         matchdayChecklistItems.forEach((i) => { i.checked = false; });
       }
       await supabase
         .from('matchday_checklist_state')
-        .upsert({ owner_id: legacy.authUserId, last_match_id: matchdayChecklistCurrentMatchId });
+        .upsert({ owner_id: auth.userId, last_match_id: matchdayChecklistCurrentMatchId });
     }
   }
 }
@@ -103,9 +104,9 @@ export async function addMatchdayChecklistItem() {
   if (!label) return;
   input.value = '';
 
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('matchday_checklist_items')
-    .insert({ owner_id: legacy.authUserId, label, checked: false })
+    .insert({ owner_id: auth.userId, label, checked: false })
     .select('id, label, checked, created_at')
     .single();
 
@@ -124,7 +125,7 @@ export async function toggleMatchdayChecklistItem(id) {
   item.checked = !item.checked;
   renderMatchdayChecklist();
 
-  const { error } = await legacy.supabase
+  const { error } = await supabase
     .from('matchday_checklist_items')
     .update({ checked: item.checked })
     .eq('id', id);
@@ -139,7 +140,7 @@ export async function deleteMatchdayChecklistItem(id) {
   matchdayChecklistItems = matchdayChecklistItems.filter((i) => i.id !== id);
   renderMatchdayChecklist();
 
-  const { error } = await legacy.supabase.from('matchday_checklist_items').delete().eq('id', id);
+  const { error } = await supabase.from('matchday_checklist_items').delete().eq('id', id);
   if (error) console.error('No se ha podido borrar el elemento', error);
 }
 

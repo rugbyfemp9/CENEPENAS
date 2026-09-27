@@ -2,6 +2,7 @@
 // Grupos A/B, qué grupo cocina / limpia en cada partido en casa y los roles reales de
 // cada jugadora (ajustados por los cambios de turno aceptados).
 import { legacy } from '../../lib/legacy.js';
+import { roster } from '../../lib/roster.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso, attEventType, todayLocalIso } from '../../lib/dates.js';
 import { thirdTimeCovers } from './covers.svelte.js';
@@ -87,7 +88,7 @@ export function thirdTimeEffectiveRoles(playerId, matchId, index) {
 // Todas las jugadoras que de verdad tienen un rol concreto en un partido (grupo base
 // ya ajustado por los cambios de turno aceptados) — se usa para las multas automáticas
 export function thirdTimeEffectiveMembers(role, matchId, index) {
-  return legacy.roster.map((p) => p.id).filter((id) => thirdTimeEffectiveRoles(id, matchId, index).has(role));
+  return roster.map((p) => p.id).filter((id) => thirdTimeEffectiveRoles(id, matchId, index).has(role));
 }
 
 export function thirdTimeEventLabel(matchId) {

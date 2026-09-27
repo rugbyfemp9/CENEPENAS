@@ -3,6 +3,10 @@
 // es la "foto" que guarda renderRollCallList() en rollcall.view. El roster sigue en el
 // código antiguo: Jugadoras/Perfil llaman a renderRollCallList() al recargarlo.
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { toRemotePlayerId } from '../../lib/session.svelte.js';
+import { rosterById } from '../../lib/roster.js';
+import { displayName, initials } from '../../lib/names.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso } from '../../lib/dates.js';
 import { finesState, canManageFines, persistFineInsert, refreshAfterChange, loadFines } from '../multas/multas.svelte.js';
@@ -27,7 +31,7 @@ export async function openRollCallModal() {
   if (!nextMatch) return;
   rollCallMatchId = nextMatch.id;
 
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('matchday_rollcall')
     .select('marks, saved_at')
     .eq('match_id', rollCallMatchId)
@@ -65,14 +69,14 @@ export function renderRollCallList() {
 
   const rows = [];
   confirmedIds.forEach((id) => {
-    const player = legacy.rosterById[id];
+    const player = rosterById[id];
     if (!player) return;
-    const name = legacy.displayName(player);
+    const name = displayName(player);
     rows.push({
       id,
       name,
       avatarUrl: player.avatarUrl,
-      initials: legacy.initials(name),
+      initials: initials(name),
       injured: player.injured,
       injuryIcon: player.injuryIcon,
       mark: state[id],
@@ -128,13 +132,13 @@ export async function saveRollCall() {
   for (const f of autoFinesForMatch) {
     if (state[f.playerId] === 'x') continue; // sigue marcada, se queda
     finesState.list = finesState.list.filter((fx) => fx.id !== f.id);
-    const { data, error } = await legacy.supabase
+    const { data, error } = await supabase
       .from('fines')
       .delete()
       .eq('reason_id', 'retraso')
       .eq('auto_match_iso', matchIso)
       .eq('status', 'pendiente')
-      .eq('player_id', legacy.toRemotePlayerId(f.playerId))
+      .eq('player_id', toRemotePlayerId(f.playerId))
       .select();
     if (error) {
       console.error('No se ha podido quitar la multa automática', error);
@@ -155,7 +159,7 @@ export async function saveRollCall() {
   const savedAt = matchdayRollCallSavedAt[rollCallMatchId] || new Date().toISOString();
   matchdayRollCallSavedAt[rollCallMatchId] = savedAt;
 
-  const { error } = await legacy.supabase.from('matchday_rollcall').upsert({
+  const { error } = await supabase.from('matchday_rollcall').upsert({
     match_id: rollCallMatchId,
     marks: state,
     saved_at: savedAt,

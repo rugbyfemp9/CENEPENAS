@@ -5,6 +5,10 @@
 // Los arrays no son reactivos: igual que antes, las vistas solo se vuelven a leer de
 // aquí cuando se llama a renderThirdTime() (tercer-tiempo.svelte.js).
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth, toRemotePlayerId } from '../../lib/session.svelte.js';
+import { currentUserId, roster } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { renderThirdTime } from './tercer-tiempo.svelte.js';
 import {
@@ -23,7 +27,7 @@ export let thirdTimeDebts = [];
 // aceptarlo/rechazarlo o que se devuelva un favor se vea al momento desde cualquier
 // cuenta o dispositivo (y no se pierda al recargar la página).
 function coverRowToLocal(row) {
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   const toLocalId = (id) => (id && id === authUserId ? 'me' : id);
   return {
     id: row.id,
@@ -35,7 +39,7 @@ function coverRowToLocal(row) {
   };
 }
 function debtRowToLocal(row) {
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   const toLocalId = (id) => (id && id === authUserId ? 'me' : id);
   return {
     id: row.id,
@@ -49,13 +53,13 @@ function debtRowToLocal(row) {
 }
 
 export async function loadThirdTimeCovers() {
-  const { data, error } = await legacy.supabase.from('third_time_covers').select('*').order('created_at', { ascending: true });
+  const { data, error } = await supabase.from('third_time_covers').select('*').order('created_at', { ascending: true });
   if (error) { console.error('No se pudieron cargar los cambios de turno', error); return; }
   thirdTimeCovers = (data || []).map(coverRowToLocal);
   renderThirdTime();
 }
 export async function loadThirdTimeDebts() {
-  const { data, error } = await legacy.supabase.from('third_time_debts').select('*').order('created_at', { ascending: true });
+  const { data, error } = await supabase.from('third_time_debts').select('*').order('created_at', { ascending: true });
   if (error) { console.error('No se pudieron cargar las deudas de tercer tiempo', error); return; }
   thirdTimeDebts = (data || []).map(debtRowToLocal);
   renderThirdTime();
@@ -64,12 +68,12 @@ export async function loadThirdTimeDebts() {
 // Inserta un cambio de turno nuevo en Supabase y sustituye su id local (temporal)
 // por el id real que ha generado la base de datos.
 async function persistCoverInsert(localId, cover) {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('third_time_covers')
     .insert({
       match_id: cover.matchId,
-      from_player_id: legacy.toRemotePlayerId(cover.fromPlayerId),
-      to_player_id: legacy.toRemotePlayerId(cover.toPlayerId),
+      from_player_id: toRemotePlayerId(cover.fromPlayerId),
+      to_player_id: toRemotePlayerId(cover.toPlayerId),
       status: cover.status,
       auto: !!cover.auto,
     })
@@ -84,18 +88,18 @@ async function persistCoverInsert(localId, cover) {
   renderThirdTime();
 }
 async function persistCoverUpdate(coverId, patch) {
-  const { error } = await legacy.supabase.from('third_time_covers').update(patch).eq('id', coverId);
+  const { error } = await supabase.from('third_time_covers').update(patch).eq('id', coverId);
   if (error) {
     alert('El cambio se ha aplicado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
   }
 }
 // Inserta una deuda nueva (favor pendiente de devolver) y devuelve su id real de Supabase.
 async function persistDebtInsert(debt) {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('third_time_debts')
     .insert({
-      owed_by: legacy.toRemotePlayerId(debt.owedBy),
-      owed_to: legacy.toRemotePlayerId(debt.owedTo),
+      owed_by: toRemotePlayerId(debt.owedBy),
+      owed_to: toRemotePlayerId(debt.owedTo),
       settled: !!debt.settled,
       origin_match_id: debt.originMatchId,
       origin_label: debt.originLabel || null,
@@ -112,7 +116,7 @@ async function persistDebtUpdate(debtId, patch) {
   const remotePatch = {};
   if ('settled' in patch) remotePatch.settled = patch.settled;
   if ('settledMatchLabel' in patch) remotePatch.settled_match_label = patch.settledMatchLabel;
-  const { error } = await legacy.supabase.from('third_time_debts').update(remotePatch).eq('id', debtId);
+  const { error } = await supabase.from('third_time_debts').update(remotePatch).eq('id', debtId);
   if (error) {
     alert('El cambio se ha aplicado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
   }
@@ -171,8 +175,8 @@ export function openSwapModal() {
   swapModalCtx = { matchId: current.match.id, matchLabel: current.match.label };
 
   swapModal.sub = t('tercer.swapSub', { match: current.match.label });
-  swapModal.options = legacy.roster.filter((p) => p.id !== legacy.currentUserId)
-    .map((p) => ({ id: p.id, name: legacy.displayName(p) }));
+  swapModal.options = roster.filter((p) => p.id !== currentUserId)
+    .map((p) => ({ id: p.id, name: displayName(p) }));
   swapModal.seq++;
   swapModal.open = true;
 }
@@ -186,7 +190,7 @@ export async function confirmSwapRequest(toPlayerId) {
   if (!toPlayerId) return;
 
   const tempId = 'ttc-temp-' + Math.random().toString(36).slice(2);
-  const newCover = { id: tempId, matchId: swapModalCtx.matchId, fromPlayerId: legacy.currentUserId, toPlayerId, status: 'pendiente', auto: false };
+  const newCover = { id: tempId, matchId: swapModalCtx.matchId, fromPlayerId: currentUserId, toPlayerId, status: 'pendiente', auto: false };
   thirdTimeCovers.push(newCover);
   closeSwapModal();
   renderThirdTime();

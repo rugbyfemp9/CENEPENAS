@@ -1,6 +1,8 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
   import { legacy } from '../../lib/legacy.js';
+  import { currentUserId } from '../../lib/roster.js';
+  import { displayName } from '../../lib/names.js';
   import {
     dayDetail, setGymRoutineDayGroup, asText, quickCalc, gymQuickCalcPercents, gymAllExercises,
     gymQuickCalcSelectedPlayer, gymQuickCalcResult, toggleGymQuickCalcPlayerMenu, closeGymQuickCalcPlayerMenu,
@@ -16,7 +18,7 @@
   const result = $derived(gymQuickCalcResult(exercises.includes(quickCalc.exercise) ? quickCalc.exercise : ''));
   const badgePlayer = $derived.by(() => {
     const player = gymQuickCalcSelectedPlayer();
-    return !player || player.id === legacy.currentUserId ? null : player;
+    return !player || player.id === currentUserId ? null : player;
   });
 
   let playerWrap;
@@ -131,8 +133,8 @@
     <p class="modal-sub" style="margin-bottom:10px;">{t('gym.quickCalcSub')}</p>
     <div id="gym-quick-calc-player-badge" class="gym-quick-calc-player-badge" style:display={badgePlayer ? 'inline-flex' : 'none'}>
       {#if badgePlayer}
-        <span>Calculando la marca de <b>{legacy.displayName(badgePlayer)}</b></span>
-        <button type="button" onclick={() => selectGymQuickCalcPlayer(legacy.currentUserId)} aria-label="Volver a tu calculadora" title="Volver a tu calculadora">
+        <span>Calculando la marca de <b>{displayName(badgePlayer)}</b></span>
+        <button type="button" onclick={() => selectGymQuickCalcPlayer(currentUserId)} aria-label="Volver a tu calculadora" title="Volver a tu calculadora">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       {/if}

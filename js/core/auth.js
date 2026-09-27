@@ -11,7 +11,7 @@ function showAuthView(view){
 // jugadora con galones extra) se piden Rango y Comisión
 function onRegisterRolChange(){
   const rol = document.getElementById('register-rol-input').value;
-  document.getElementById('register-jugadora-fields').style.display = effectiveRoleForPermissions(rol) === 'jugadora' ? 'flex' : 'none';
+  document.getElementById('register-jugadora-fields').style.display = appBridge.core.effectiveRoleForPermissions(rol) === 'jugadora' ? 'flex' : 'none';
 }
 
 // Calcula a qué grupo (A o B) le toca la próxima jugadora que se registre: al que
@@ -19,8 +19,8 @@ function onRegisterRolChange(){
 // quede repartida lo más igualada posible según se va registrando gente.
 async function nextThirdTimeGroup(){
   const [countA, countB] = await Promise.all([
-    supabaseClient.from('profiles').select('id', { count:'exact', head:true }).eq('grupo_tercer_tiempo', 'A').eq('is_admin', false),
-    supabaseClient.from('profiles').select('id', { count:'exact', head:true }).eq('grupo_tercer_tiempo', 'B').eq('is_admin', false)
+    appBridge.core.supabase.from('profiles').select('id', { count:'exact', head:true }).eq('grupo_tercer_tiempo', 'A').eq('is_admin', false),
+    appBridge.core.supabase.from('profiles').select('id', { count:'exact', head:true }).eq('grupo_tercer_tiempo', 'B').eq('is_admin', false)
   ]);
   return (countB.count || 0) < (countA.count || 0) ? 'B' : 'A';
 }
@@ -34,7 +34,7 @@ async function handleRegister(){
   const mote = document.getElementById('register-mote-input').value.trim();
   const fecha_nacimiento = document.getElementById('register-fecha-nacimiento-input').value || null;
   const rol = document.getElementById('register-rol-input').value;
-  const esJugadora = effectiveRoleForPermissions(rol) === 'jugadora';
+  const esJugadora = appBridge.core.effectiveRoleForPermissions(rol) === 'jugadora';
   const rango = esJugadora ? (document.getElementById('register-rango-input').value || null) : null;
   const posicion = esJugadora ? (document.getElementById('register-posicion-input').value || null) : null;
   const comision = esJugadora ? (document.getElementById('register-comision-input').value || null) : null;
@@ -57,7 +57,7 @@ async function handleRegister(){
   // 1) Credenciales en auth.users. Los datos del perfil viajan en options.data
   // (raw_user_meta_data) para que, si existe un trigger que crea automáticamente
   // la fila en "profiles" al darse de alta el usuario, no la cree vacía.
-  const { data, error } = await supabaseClient.auth.signUp({
+  const { data, error } = await appBridge.core.supabase.auth.signUp({
     email,
     password,
     options: {
@@ -74,7 +74,7 @@ async function handleRegister(){
   // a partir de options.data, un insert() normal fallaría por choque de clave primaria.
   const userId = data.user ? data.user.id : (data.session ? data.session.user.id : null);
   if(userId){
-    const { error: profileError } = await supabaseClient.from('profiles').upsert({
+    const { error: profileError } = await appBridge.core.supabase.from('profiles').upsert({
       id: userId, nombre, apellido, mote, telefono, fecha_nacimiento, rol, rango, posicion, comision, licencia, grupo_tercer_tiempo
     });
     if(profileError){
@@ -103,7 +103,7 @@ async function handleLogin(){
     return;
   }
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  const { data, error } = await appBridge.core.supabase.auth.signInWithPassword({ email, password });
   if(error){
     errorBox.textContent = error.message;
     return;
@@ -127,30 +127,23 @@ async function handleLogin(){
 // nosotros mismos justo después de cerrar sesión en Supabase.
 async function handleLogout(){
   try{
-    await supabaseClient.auth.signOut();
+    await appBridge.core.supabase.auth.signOut();
   }catch(e){ console.error('Error al cerrar sesión en Supabase', e); }
   location.reload();
 }
 
 // Se ejecuta justo después de iniciar sesión (o registrarse) con éxito: vuelca los
-// datos guardados en "profiles" sobre "Mi perfil" y carga la Plantilla
-// Id real de Supabase de la persona que ha iniciado sesión (para saber qué fila de
-// la lista de Jugadoras es "yo" y mostrarle ahí sus propias tarjetas/lesión).
-let currentAuthUserId = null;
-function toRemotePlayerId(localId){
-  // Para escribir en Supabase hace falta el id real de auth.users; 'me' se traduce
-  // al id de quien ha iniciado sesión.
-  return localId === 'me' ? currentAuthUserId : localId;
-}
-let isAdmin = false;
-
+// datos guardados en "profiles" sobre "Mi perfil" y carga la Plantilla.
+// El id real de Supabase de quien ha iniciado sesión, isAdmin, myProfile y el roster
+// viven ahora en Svelte (src/lib/session.svelte.js y src/lib/roster.js).
 async function onAuthenticated(user){
+  const { myProfile, rosterById } = appBridge.core;
   document.getElementById('auth-overlay').classList.add('hidden');
-  currentAuthUserId = user.id;
+  appBridge.core.setAuthUserId(user.id);
   if(window.flushPendingPushToken) window.flushPendingPushToken();
   appBridge.perfil.setEmail(user.email);
 
-  const { data: profile } = await supabaseClient
+  const { data: profile } = await appBridge.core.supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
@@ -169,7 +162,7 @@ async function onAuthenticated(user){
     myProfile.avatarUrl = profile.avatar_url || '';
     // La cuenta de administración (marcada con is_admin en Supabase) puede editar
     // todo, incluida la información de cualquier jugadora registrada.
-    isAdmin = !!profile.is_admin;
+    appBridge.core.setIsAdmin(!!profile.is_admin);
     rosterById['me'].name = myProfile.name;
     rosterById['me'].mote = myProfile.mote;
     rosterById['me'].comision = myProfile.comision;

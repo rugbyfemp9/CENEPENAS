@@ -8,6 +8,11 @@
 //    con una "x" para cerrarla (cada persona la cierra solo para sí misma, como pasa
 //    con el aviso de Fantasy).
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { myProfile, myRosterEntry } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
+import { storage } from '../../lib/storage.js';
 import { monthAbbrLabel, autoMonthAbbr } from '../../lib/dates.js';
 
 export const notices = $state({
@@ -31,7 +36,7 @@ let inFlight = null;
 function fetchAllNotices() {
   if (inFlight) return inFlight;
   inFlight = (async () => {
-    const { data, error } = await legacy.supabase
+    const { data, error } = await supabase
       .from('notices')
       .select('*')
       .order('created_at', { ascending: false });
@@ -53,7 +58,7 @@ function fetchAllNotices() {
 export async function refreshPinned() {
   notices.status = 'loading';
   const all = await fetchAllNotices();
-  const me = legacy.authUserId;
+  const me = auth.userId;
   // Los avisos antiguos (antes de existir los dos tipos) no tienen "type": se tratan
   // como fijados, para no perderlos.
   notices.pinned = all
@@ -65,7 +70,7 @@ export async function refreshPinned() {
 
 async function readDismissed() {
   try {
-    const d = await legacy.storage.get('notices:dismissed-banners', false);
+    const d = await storage.get('notices:dismissed-banners', false);
     if (d && d.value) return JSON.parse(d.value);
   } catch (e) { /* todavía no se ha cerrado ninguna */ }
   return [];
@@ -74,7 +79,7 @@ async function readDismissed() {
 // Notificaciones arriba del todo de Inicio: se muestran todas las que no se hayan
 // cerrado ya en este dispositivo (varias pueden convivir a la vez).
 export async function refreshBanners() {
-  const me = legacy.authUserId;
+  const me = auth.userId;
   if (!me) { notices.banners = []; return; }
   const banners = (await fetchAllNotices()).filter((n) => n.type === 'banner');
   if (!banners.length) { notices.banners = []; return; }
@@ -95,14 +100,14 @@ export async function dismissBanner(id) {
   const dismissed = await readDismissed();
   if (!dismissed.includes(id)) {
     dismissed.push(id);
-    try { await legacy.storage.set('notices:dismissed-banners', JSON.stringify(dismissed), false); } catch (e) { /* si falla, se reintentará luego */ }
+    try { await storage.set('notices:dismissed-banners', JSON.stringify(dismissed), false); } catch (e) { /* si falla, se reintentará luego */ }
   }
   refreshBanners();
 }
 
 export async function deleteNotice(id) {
   try {
-    const { error } = await legacy.supabase.from('notices').delete().eq('id', id);
+    const { error } = await supabase.from('notices').delete().eq('id', id);
     if (error) throw error;
   } catch (e) {
     alert('No se ha podido eliminar el aviso.');
@@ -130,26 +135,26 @@ export async function saveNotice() {
     alert('Escribe el texto del aviso.');
     return;
   }
-  const userId = legacy.authUserId;
+  const userId = auth.userId;
   if (!userId) {
     alert('Inicia sesión para publicar un aviso.');
     return;
   }
 
   const now = new Date();
-  const me = legacy.me;
+  const me = myRosterEntry();
   const row = {
     id: 'n' + now.getTime() + Math.random().toString(36).slice(2, 8),
     text,
     type: noticeForm.type,
     created_by: userId,
-    created_by_name: me ? legacy.displayName(me) : (legacy.myProfile.name || 'Alguien'),
+    created_by_name: me ? displayName(me) : (myProfile.name || 'Alguien'),
     date_label: now.getDate() + ' ' + monthAbbrLabel(autoMonthAbbr[now.getMonth()]) + ' · ' +
       String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
   };
 
   try {
-    const { error } = await legacy.supabase.from('notices').insert(row);
+    const { error } = await supabase.from('notices').insert(row);
     if (error) throw error;
   } catch (e) {
     alert('No se ha podido publicar el aviso. Inténtalo de nuevo.');

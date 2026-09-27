@@ -3,6 +3,8 @@
 // "Saldo" (su propia tesorería, con exactamente el mismo patrón que Comi Tesoreria:
 // ver src/lib/treasury/).
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { roster } from '../../lib/roster.js';
 import { session } from '../../lib/session.svelte.js';
 import { createTreasury } from '../../lib/treasury/treasury.svelte.js';
 
@@ -29,7 +31,7 @@ const TERCER_SHOPPING_TABLE = 'tercer_shopping_items';
 export const shopping = $state({ items: [], input: '' });
 
 export async function loadShoppingItems() {
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from(TERCER_SHOPPING_TABLE)
     .select('*')
     .order('created_at', { ascending: true });
@@ -42,7 +44,7 @@ export async function addShoppingItem() {
   const label = shopping.input.trim();
   if (!label) return;
   shopping.input = '';
-  const { data, error } = await legacy.supabase.from(TERCER_SHOPPING_TABLE).insert({ label, checked: false }).select().single();
+  const { data, error } = await supabase.from(TERCER_SHOPPING_TABLE).insert({ label, checked: false }).select().single();
   if (error) { console.error('No se pudo añadir el artículo', error); return; }
   shopping.items.push({ id: data.id, label: data.label, checked: data.checked });
 }
@@ -52,21 +54,21 @@ export async function toggleShoppingItem(id) {
   const item = shopping.items.find((i) => i.id === id);
   if (!item) return;
   item.checked = !item.checked;
-  const { error } = await legacy.supabase.from(TERCER_SHOPPING_TABLE).update({ checked: item.checked }).eq('id', id);
+  const { error } = await supabase.from(TERCER_SHOPPING_TABLE).update({ checked: item.checked }).eq('id', id);
   if (error) console.error('No se pudo actualizar el artículo', error);
 }
 
 export async function deleteShoppingItem(id) {
   if (!canManageTercerTemps()) return;
   shopping.items = shopping.items.filter((i) => i.id !== id);
-  const { error } = await legacy.supabase.from(TERCER_SHOPPING_TABLE).delete().eq('id', id);
+  const { error } = await supabase.from(TERCER_SHOPPING_TABLE).delete().eq('id', id);
   if (error) console.error('No se pudo eliminar el artículo', error);
 }
 
 // ---- Saldo ----
 // Personas de la plantilla que tienen marcado "Comi Tercer Temps" en su perfil
 export function tercerTreasuryCommissionMembers() {
-  return legacy.roster.filter((p) => p.comision === 'Comi Tercer Temps');
+  return roster.filter((p) => p.comision === 'Comi Tercer Temps');
 }
 
 export const tercerTreasury = createTreasury({

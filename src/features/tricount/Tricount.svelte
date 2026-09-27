@@ -1,6 +1,9 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
   import { legacy } from '../../lib/legacy.js';
+  import { auth } from '../../lib/session.svelte.js';
+  import { currentUserId, rosterById } from '../../lib/roster.js';
+  import { displayName } from '../../lib/names.js';
   import { formatEuro } from '../../lib/format.js';
   import {
     tricount, tricountRosterPlayers, tricountBalances, tricountSettlementPlan, tricountDateHeading,
@@ -12,7 +15,7 @@
   // Cada bloque se recalcula cuando cambian los gastos/liquidaciones o el idioma
   // (como hacía renderTricount(), que también se llamaba desde setLang()).
   const myBalance = $derived.by(() => {
-    const n = tricountBalances()[legacy.currentUserId] || 0;
+    const n = tricountBalances()[currentUserId] || 0;
     const kind = balanceKind(n);
     return {
       kind,
@@ -28,7 +31,7 @@
       const n = balances[p.id] || 0;
       const kind = balanceKind(n);
       return {
-        id: p.id, name: legacy.displayName(p), kind, amount: Math.abs(n),
+        id: p.id, name: displayName(p), kind, amount: Math.abs(n),
         hint: kind === 'pos' ? t('tricount.balanceOwed') : kind === 'neg' ? t('tricount.balanceOwes') : t('tricount.balanceEven'),
       };
     });
@@ -43,7 +46,7 @@
   );
   const paidToParts = $derived(templateParts(t('tricount.paidTo')));
 
-  const summaryMine = $derived(tricount.expenses.filter((e) => e.paidBy === legacy.currentUserId).reduce((sum, e) => sum + e.amount, 0));
+  const summaryMine = $derived(tricount.expenses.filter((e) => e.paidBy === currentUserId).reduce((sum, e) => sum + e.amount, 0));
   const summaryTotal = $derived(tricount.expenses.reduce((sum, e) => sum + e.amount, 0));
 
   // Del más reciente al más antiguo, agrupados por fecha
@@ -56,12 +59,12 @@
         heading = tricountDateHeading(exp.iso);
         lastIso = exp.iso;
       }
-      const payer = legacy.rosterById[exp.paidBy];
+      const payer = rosterById[exp.paidBy];
       const peopleWord = exp.participants.length === 1 ? t('tricount.person') : t('tricount.people');
       return {
         id: exp.id, heading, label: exp.label, amount: exp.amount,
-        paidByText: t('tricount.paidBy', { name: payer ? legacy.displayName(payer) : '—', count: exp.participants.length, peopleWord }),
-        canEdit: !!exp.createdBy && exp.createdBy === legacy.authUserId,
+        paidByText: t('tricount.paidBy', { name: payer ? displayName(payer) : '—', count: exp.participants.length, peopleWord }),
+        canEdit: !!exp.createdBy && exp.createdBy === auth.userId,
       };
     });
   });

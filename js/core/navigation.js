@@ -85,7 +85,7 @@ function setSection(id, opts){
   // sin permiso llega aquí a mano (URL, atrás del navegador...), se le redirige a
   // Vestuario en vez de dejar la pantalla vacía o a medio cargar.
   if(id === 'wellness-staff'){
-    if(!canViewWellnessStaff()){
+    if(!appBridge.core.canViewWellnessStaff()){
       setSection('vestuario');
       return;
     }
@@ -97,7 +97,7 @@ function setSection(id, opts){
   // "Tercer tiempo", "Comisiones" y "Tricount": son cosas de las jugadoras, el Cos
   // Tècnic no las ve (ver toggleStaffOnlyPagesVisibility()). Si alguien de Cos Tècnic
   // llega aquí a mano (URL, atrás del navegador...), se le redirige a Vestuario.
-  if(STAFF_HIDDEN_SECTIONS.includes(id) && canViewWellnessStaff()){
+  if(appBridge.core.STAFF_HIDDEN_SECTIONS.includes(id) && appBridge.core.canViewWellnessStaff()){
     setSection('vestuario');
     return;
   }

@@ -9,6 +9,9 @@
 // actas.view (0 = todavía no se ha pintado nunca, y la caja se queda vacía como el
 // marcado original).
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth } from '../../lib/session.svelte.js';
+import { myProfile, roster, rosterById } from '../../lib/roster.js';
 import { rolesWithEventManagement } from '../asistencia/events.js';
 import { partidoDetalle } from '../partidos/partidos.svelte.js';
 import { plantilla, loadPlantillaStats } from '../jugadoras/jugadoras.svelte.js';
@@ -28,7 +31,7 @@ let matchReportRealtimeSubscribed = false;
 // El acta la puede subir el mismo cuerpo técnico/directiva que gestiona los eventos
 // (incluida Capitana: mismo permiso, no pasa por effectiveRoleForPermissions).
 function canEditMatchReport() {
-  return legacy.isAdmin || rolesWithEventManagement.includes(legacy.myProfile.rol);
+  return auth.isAdmin || rolesWithEventManagement.includes(myProfile.rol);
 }
 
 export function renderMatchReport(eventId) {
@@ -38,7 +41,6 @@ export function renderMatchReport(eventId) {
 }
 
 export async function loadMatchReport(eventId) {
-  const supabase = legacy.supabase;
   const { data: header, error: headerError } = await supabase
     .from('match_reports')
     .select('*')
@@ -79,7 +81,7 @@ export async function loadMatchReport(eventId) {
 export function subscribeToMatchReportRealtime() {
   if (matchReportRealtimeSubscribed) return;
   matchReportRealtimeSubscribed = true;
-  legacy.supabase
+  supabase
     .channel('match-report-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'match_report_players' }, (payload) => {
       const eventId = (payload.new && payload.new.match_id) || (payload.old && payload.old.match_id);
@@ -126,8 +128,6 @@ export function normalizeRosterName(s) {
 //   3) coincidencia por nombre completo
 // Si no se encuentra ninguna, la jugadora no tiene (todavía) cuenta en la app.
 export function findRosterMatchForReportPlayer(p) {
-  const rosterById = legacy.rosterById;
-  const roster = legacy.roster;
   if (p.profile_id && rosterById[p.profile_id]) return rosterById[p.profile_id];
 
   if (p.license_number) {

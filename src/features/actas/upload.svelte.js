@@ -1,6 +1,7 @@
 // ---- Subir el PDF del acta (lo procesa la función Edge "process-match-report-pdf") ----
 // y eliminar el acta entera (jugadoras + tarjetas + cabecera).
 import { legacy } from '../../lib/legacy.js';
+import { SUPABASE_URL, supabase } from '../../lib/supabase.js';
 import { partidoDetalle } from '../partidos/partidos.svelte.js';
 import { loadMatchReport } from './actas.svelte.js';
 
@@ -44,7 +45,7 @@ export async function uploadMatchReportPdf() {
   setStatus('var(--text-muted)', 'Subiendo y leyendo el acta con Gemini… puede tardar unos segundos.');
 
   try {
-    const { data: sessionData } = await legacy.supabase.auth.getSession();
+    const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData && sessionData.session ? sessionData.session.access_token : null;
     if (!accessToken) {
       setStatus('var(--bad)', 'Tu sesión ha caducado, vuelve a iniciar sesión e inténtalo de nuevo.');
@@ -55,7 +56,7 @@ export async function uploadMatchReportPdf() {
     form.append('pdf', file);
     form.append('match_id', partidoDetalle.currentId);
 
-    const res = await fetch(`${legacy.supabaseUrl}/functions/v1/process-match-report-pdf`, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/process-match-report-pdf`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${accessToken}` },
       body: form,
@@ -85,7 +86,6 @@ export async function deleteMatchReport() {
   if (!partidoDetalle.currentId) return;
   if (!confirm('¿Seguro que quieres borrar el acta de este partido? Se perderán todos los datos: jugadoras, minutos, puntos y tarjetas.')) return;
 
-  const supabase = legacy.supabase;
   try {
     const { data: oldPlayers, error: oldPlayersError } = await supabase
       .from('match_report_players').select('id').eq('match_id', partidoDetalle.currentId);

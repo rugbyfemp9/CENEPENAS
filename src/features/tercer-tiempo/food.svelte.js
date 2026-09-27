@@ -6,6 +6,10 @@
 // tiene que mostrar cada vez que se pinta (renderThirdTimeFood()).
 // NOTA: la lista de comida no va ligada a ningún partido (se ve igual en todos).
 import { legacy } from '../../lib/legacy.js';
+import { supabase } from '../../lib/supabase.js';
+import { auth, toRemotePlayerId } from '../../lib/session.svelte.js';
+import { currentUserId, myRosterEntry, roster, rosterById } from '../../lib/roster.js';
+import { displayName } from '../../lib/names.js';
 import { attEventIso, todayLocalIso } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { thirdTimeCurrentMatch } from './groups.js';
@@ -29,7 +33,7 @@ foodCategories.forEach((c) => { thirdTimeFood[c.key] = []; });
 // que multas y cambios de turno), para que apuntarse, marcar traído/no traído o
 // quitarse se vea al momento desde cualquier cuenta.
 function foodRowToLocal(row) {
-  const authUserId = legacy.authUserId;
+  const authUserId = auth.userId;
   const toLocalId = (id) => (id && id === authUserId ? 'me' : id);
   return { id: row.id, category: row.category, detail: row.detail, playerId: toLocalId(row.player_id), status: row.status || null };
 }
@@ -52,7 +56,7 @@ export function isThirdTimeDay() {
 }
 
 export async function loadThirdTimeFood() {
-  const { data, error } = await legacy.supabase.from('third_time_food').select('*').order('created_at', { ascending: true });
+  const { data, error } = await supabase.from('third_time_food').select('*').order('created_at', { ascending: true });
   if (error) { console.error('No se pudo cargar la lista de comida', error); return; }
   foodCategories.forEach((c) => { thirdTimeFood[c.key] = []; });
   (data || []).forEach((row) => {
@@ -66,8 +70,8 @@ export async function loadThirdTimeFood() {
 // Solo la persona de "Comi Tercer Temps" puede marcar traído/no traído (✓/✕), igual
 // que solo Comi Tesoreria puede dar de alta multas nuevas.
 function canManageThirdTimeFood() {
-  const me = legacy.me;
-  return legacy.isAdmin || !!(me && me.comision === 'Comi Tercer Temps');
+  const me = myRosterEntry();
+  return auth.isAdmin || !!(me && me.comision === 'Comi Tercer Temps');
 }
 
 // ---- Rejilla "Qué llevamos": null mientras no se ha pintado nunca.
@@ -75,7 +79,6 @@ export const foodView = $state({ grid: null });
 
 export function renderThirdTimeFood() {
   const supervising = isThirdTimeDay() && canManageThirdTimeFood();
-  const rosterById = legacy.rosterById;
 
   foodView.grid = foodCategories.map((cat) => {
     const entries = thirdTimeFood[cat.key] || [];
@@ -89,12 +92,12 @@ export function renderThirdTimeFood() {
           filled: true,
           index: i,
           status,
-          text: `${String(entry.detail)} — ${player ? legacy.displayName(player) : t('sharedLineup.someone')}`,
+          text: `${String(entry.detail)} — ${player ? displayName(player) : t('sharedLineup.someone')}`,
           // Solo Comi Tercer Temps, el día del partido, tiene los botones ✓/✕. El resto
           // no tiene botones, pero sí ve el resultado: un recuadro verde con ✓ o rojo
           // con ✕ en cuanto Comi Tercer Temps lo marca.
           supervising,
-          mine: entry.playerId === legacy.currentUserId,
+          mine: entry.playerId === currentUserId,
         });
       } else {
         slots.push({ filled: false });
@@ -122,7 +125,7 @@ export async function setFoodSlotStatus(catKey, index, status) {
   // Tocar el mismo botón otra vez quita la marca (vuelve a quedar por confirmar)
   entry.status = entry.status === status ? null : status;
   renderThirdTimeFood();
-  const { error } = await legacy.supabase.from('third_time_food').update({ status: entry.status }).eq('id', entry.id);
+  const { error } = await supabase.from('third_time_food').update({ status: entry.status }).eq('id', entry.id);
   if (error) alert(t('tercer.syncErrorApplied', { error: error.message }));
   checkThirdTimeAutoFines();
 }
@@ -146,7 +149,7 @@ let foodModalTargetPlayerId = null;
 
 export function openFoodSlotModal(catKey) {
   foodModalCategory = catKey;
-  foodModalTargetPlayerId = legacy.currentUserId;
+  foodModalTargetPlayerId = currentUserId;
 
   const cat = foodCategories.find((c) => c.key === catKey);
   foodModal.title = t('tercer.addToCategory', { category: cat ? t('tercer.food.' + cat.key) : '' });
@@ -156,8 +159,8 @@ export function openFoodSlotModal(catKey) {
 
   // Selector de compañera, cerrado por defecto (se apunta una misma)
   foodModal.pickerOpen = false;
-  foodModal.options = legacy.roster.map((p) => ({ id: p.id, name: legacy.displayName(p) }));
-  foodModal.selected = legacy.currentUserId;
+  foodModal.options = roster.map((p) => ({ id: p.id, name: displayName(p) }));
+  foodModal.selected = currentUserId;
 
   foodModal.open = true;
 }
@@ -167,8 +170,8 @@ export function toggleFoodTeammatePicker() {
 
   if (!opening) {
     // Al cerrar el selector, volvemos a apuntarnos a una misma
-    foodModalTargetPlayerId = legacy.currentUserId;
-    foodModal.selected = legacy.currentUserId;
+    foodModalTargetPlayerId = currentUserId;
+    foodModal.selected = currentUserId;
     updateFoodModalTargetTexts();
   }
 }
@@ -177,11 +180,11 @@ export function onFoodTeammateChange(playerId) {
   updateFoodModalTargetTexts();
 }
 function updateFoodModalTargetTexts() {
-  const isMe = foodModalTargetPlayerId === legacy.currentUserId;
-  const player = legacy.rosterById[foodModalTargetPlayerId];
+  const isMe = foodModalTargetPlayerId === currentUserId;
+  const player = rosterById[foodModalTargetPlayerId];
   foodModal.sub = isMe
     ? t('tercer.foodSubSelf')
-    : t('tercer.foodSubOther', { name: player ? legacy.displayName(player) : t('sharedLineup.someone') });
+    : t('tercer.foodSubOther', { name: player ? displayName(player) : t('sharedLineup.someone') });
   foodModal.confirmText = isMe ? t('tercer.signMeUp') : t('tercer.signHerUp');
 }
 export function closeFoodSlotModal() {
@@ -203,12 +206,12 @@ export async function confirmFoodSlot() {
 
   // Por defecto se apunta la propia jugadora logueada, pero si se eligió una
   // compañera desde el selector, el plato se le asigna a ella
-  const playerId = foodModalTargetPlayerId || legacy.currentUserId;
+  const playerId = foodModalTargetPlayerId || currentUserId;
   closeFoodSlotModal();
 
-  const { data, error } = await legacy.supabase
+  const { data, error } = await supabase
     .from('third_time_food')
-    .insert({ category: cat.key, detail, player_id: legacy.toRemotePlayerId(playerId) })
+    .insert({ category: cat.key, detail, player_id: toRemotePlayerId(playerId) })
     .select()
     .single();
   if (error) {
@@ -225,6 +228,6 @@ export async function removeFoodSlot(catKey, index) {
   const entry = entries[index];
   entries.splice(index, 1);
   renderThirdTimeFood();
-  const { error } = await legacy.supabase.from('third_time_food').delete().eq('id', entry.id);
+  const { error } = await supabase.from('third_time_food').delete().eq('id', entry.id);
   if (error) alert(t('tercer.removeSyncError', { error: error.message }));
 }
