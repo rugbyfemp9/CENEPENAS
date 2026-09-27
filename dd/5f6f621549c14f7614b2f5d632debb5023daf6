@@ -1,0 +1,93 @@
+js/main.js
+  s_1fdfe932c62174::t_dba94df288147e 43
+src/main.js
+  s_1fdfe932c62174::t_f79cc9f8e73fcb 24-26,28
+js/core/auth.js
+  s_1fdfe932c62174::t_dba94df288147e 215,217
+src/features/tullidas/TullidasModal.svelte
+  s_1fdfe932c62174::t_c286cac1517713 26
+  s_1fdfe932c62174::t_6a7c716dd9d56a 1-25,27-37
+src/features/multas/index.js
+  s_1fdfe932c62174::t_4260b9225e95d5 10,28,31-32
+src/features/partidos/partidos.svelte.js
+  s_1fdfe932c62174::t_9dbbf86759b0b1 1-13,15-38,40-145
+  s_1fdfe932c62174::t_8dd5b9d330de48 14,39
+src/features/partidos/RollCallModal.svelte
+  s_1fdfe932c62174::t_bcf2b15f253e73 1-12,16-32
+  s_1fdfe932c62174::t_abcda898f787d6 13-15
+src/features/jugadoras/jugadoras.svelte.js
+  s_1fdfe932c62174::t_1de48649d7806a 16-17
+  s_1fdfe932c62174::t_a380d261a7f9ce 141,255
+src/features/perfil/index.js
+  s_1fdfe932c62174::t_d20138f5ee300c 6
+src/features/actas/index.js
+  s_1fdfe932c62174::t_8b855b5444005d 4-5,12-17
+  s_1fdfe932c62174::t_0e74f2c585861d 1-3,6-11,18-23
+src/features/partidos/Partidos.svelte
+  s_1fdfe932c62174::t_94bf10a4ffaf44 1-30
+src/features/actas/ActaBuilderRow.svelte
+  s_1fdfe932c62174::t_8fd3155315629d 1-37
+src/features/actas/MatchReportUploadModal.svelte
+  s_1fdfe932c62174::t_fb2a1d97f2d299 1-22
+src/features/actas/actas.svelte.js
+  s_1fdfe932c62174::t_c9cba6a03b4d77 1-162
+src/features/partidos/NextMatchBanner.svelte
+  s_1fdfe932c62174::t_15d5622fb5285b 1-30
+src/features/partidos/rollcall.svelte.js
+  s_1fdfe932c62174::t_5384fc47ad275b 2-11,13-15,23-25,28,33,38,45,47-49,51-56,59,64-78,83-84,86,90-91,97-100,108-111,113-115,125-129,135,137,139,142,147-148,156,160,162
+  s_1fdfe932c62174::t_abcda898f787d6 12,60,81
+src/features/tullidas/tullidas.svelte.js
+  s_1fdfe932c62174::t_f600fa2db0163e 13-27,30,32-33,36-37,40-41,45-46,50,53-60,62,68-70,74-75,80-81,83-85,89-91,94-95,100-102,107-108,112-113,117-120,122-126,131-132,134,136,138-140,142-144,146-147
+src/lib/legacy.js
+  s_1fdfe932c62174::t_a380d261a7f9ce 12-13,59-60,62-63,66-67,69-71
+js/core/navigation.js
+  s_1fdfe932c62174::t_dba94df288147e 81
+src/features/actas/ActaBuilderModal.svelte
+  s_1fdfe932c62174::t_e1619fc461e55f 1-42
+src/features/actas/upload.svelte.js
+  s_1fdfe932c62174::t_a506bb380da83d 1-37,39-55,57-84,86-90,92-97,99,101-102,104-107
+  s_1fdfe932c62174::t_5313e0c07da507 38,56,85,91,98,100,103
+src/features/actas/ActaCard.svelte
+  s_1fdfe932c62174::t_b6879174dc1106 68
+  s_1fdfe932c62174::t_ee5d060e4b4c20 1-67,69-77
+js/features/asistencia.js
+  s_1fdfe932c62174::t_dba94df288147e 45,59,75,169
+index.html
+  s_1fdfe932c62174::t_6947826189f620 232,284,408,411,597,600,608,667,670
+src/features/partidos/checklist.svelte.js
+  s_1fdfe932c62174::t_8be556d9c39fa9 39,45,56
+  s_1fdfe932c62174::t_44a9d12fd6b258 1-38,40-44,46-55,57-155
+src/features/jugadoras/index.js
+  s_1fdfe932c62174::t_d20138f5ee300c 4
+src/features/partidos/ChecklistModal.svelte
+  s_1fdfe932c62174::t_27571fbe0f1a6e 1-39
+src/features/tullidas/index.js
+  s_1fdfe932c62174::t_ad73c85ee6cd50 1-16
+src/features/partidos/index.js
+  s_1fdfe932c62174::t_ef94fcd0497870 1-27
+src/features/perfil/perfil.svelte.js
+  s_1fdfe932c62174::t_a380d261a7f9ce 145,152,171
+  s_1fdfe932c62174::t_1de48649d7806a 19-20
+js/features/eventos.js
+  s_1fdfe932c62174::t_d20138f5ee300c 212,248,448,482
+src/features/partidos/PartidoDetalle.svelte
+  s_1fdfe932c62174::t_b27526f4c250bc 1-13
+src/features/actas/builder.svelte.js
+  s_1fdfe932c62174::t_e7dcac7c53abad 7-22,24-30,32-33,36-38,43,54,60,62,64-65,68,72,76,78-79,81,87,89-90,93,95,98,103-106,108-111,114-115,119-120,122-125,128,130,135-141,143-144,146-147,152-153,164,168,172,175,178-179,181-183,186-187,189-192
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "dd5f6f621549c14f7614b2f5d632debb5023daf6",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
