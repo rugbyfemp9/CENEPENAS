@@ -3,7 +3,7 @@
   // multas del equipo.
   import Avatar from '../../lib/Avatar.svelte';
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { setSection } from '../../shell/navigation.svelte.js';
   import { session } from '../../lib/session.svelte.js';
   import {
     multas, fineConfirmRequests, myFinesSummary, finesTable, respondFineConfirmation, payMyFine,
@@ -21,7 +21,7 @@
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-<div class="back-link" onclick={() => legacy.setSection('vestuario')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('fines.backLabel')}</span></div>
+<div class="back-link" onclick={() => setSection('vestuario')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('fines.backLabel')}</span></div>
 
 <div class="fine-confirm-requests" id="fine-confirm-requests" style:display={requests.length ? 'flex' : 'none'}>
   {#each requests as r}

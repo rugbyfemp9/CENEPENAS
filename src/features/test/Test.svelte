@@ -1,6 +1,6 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { setSection } from '../../shell/navigation.svelte.js';
   import { quiz, startQuiz, exitQuiz, answer, next, openRanking } from './test.svelte.js';
 
   const OPTION_FIELDS = ['option_a', 'option_b', 'option_c', 'option_d'];
@@ -11,7 +11,7 @@
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-<div class="back-link" id="test-back-vestuario" onclick={() => legacy.setSection('vestuario')} style:display={quiz.view === 'play' ? 'none' : null}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('fines.backLabel')}</span></div>
+<div class="back-link" id="test-back-vestuario" onclick={() => setSection('vestuario')} style:display={quiz.view === 'play' ? 'none' : null}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('fines.backLabel')}</span></div>
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 <div class="back-link" id="test-back-intro" onclick={exitQuiz} style:display={quiz.view === 'play' ? null : 'none'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('nav.test')}</span></div>
 <div class="section-head">

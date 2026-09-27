@@ -3,14 +3,14 @@
   // visible per a rols de gestió (ver canViewWellnessStaff(), src/lib/permissions.js):
   // setSection() redirige a Vestuario si alguien intenta entrar a mano.
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { setSection } from '../../shell/navigation.svelte.js';
   import { staff, setWellnessStaffSubtab } from './wellness-staff.svelte.js';
   import StaffSession from './StaffSession.svelte';
   import StaffHistory from './StaffHistory.svelte';
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-<div class="back-link" onclick={() => legacy.setSection('vestuario')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('fines.backLabel')}</span></div>
+<div class="back-link" onclick={() => setSection('vestuario')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('fines.backLabel')}</span></div>
 <div class="section-head"><h2>{t('nav.wellnessStaff')}</h2></div>
 
 <!-- Subpestañas: análisis de una sesión concreta vs. histórico/tendencias de todo

@@ -1,6 +1,5 @@
 // ---- Subir el PDF del acta (lo procesa la función Edge "process-match-report-pdf") ----
 // y eliminar el acta entera (jugadoras + tarjetas + cabecera).
-import { legacy } from '../../lib/legacy.js';
 import { SUPABASE_URL, supabase } from '../../lib/supabase.js';
 import { partidoDetalle } from '../partidos/partidos.svelte.js';
 import { loadMatchReport } from './actas.svelte.js';

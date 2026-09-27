@@ -1,7 +1,6 @@
 // "Fotos" de lo que muestra cada parte del Tercer tiempo, calculadas en el momento en
 // que se pinta (renderThirdTime() en tercer-tiempo.svelte.js), igual que antes se
 // generaba el HTML.
-import { legacy } from '../../lib/legacy.js';
 import { currentUserId, rosterById } from '../../lib/roster.js';
 import { displayName, initials } from '../../lib/names.js';
 import { attEventIso, eventWhenDisplay, todayLocalIso, monthAbbrLabel } from '../../lib/dates.js';

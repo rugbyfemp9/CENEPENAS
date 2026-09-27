@@ -6,7 +6,6 @@
 // Lo leen también Partidos, Tercer tiempo, Wellness, Fantasy, Mi perfil, Tullidas...
 // No es reactivo a propósito: igual que antes, cada vista solo cambia cuando alguien
 // la vuelve a pintar (renderEventList(), renderEventDetail(), renderNextMatchBanner()...).
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myProfile, roster } from '../../lib/roster.js';
@@ -103,7 +102,7 @@ function generateAutoTrainings() {
   return events;
 }
 
-// Al arrancar (legacyBoot, js/main.js): los entrenos de la temporada y el partido fijo.
+// Al arrancar (src/main.js): los entrenos de la temporada y el partido fijo.
 export function initEvents() {
   attEvents.push(...generateAutoTrainings());
 

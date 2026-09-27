@@ -6,7 +6,6 @@
 // español por dentro, para no romper el resto de la lógica que lo compara/parsea
 // (ver calMonthShort más abajo); estas funciones solo traducen lo que se VE.
 // Leen el idioma activo en el momento de llamarlas (no son reactivas por sí solas).
-import { legacy } from './legacy.js';
 import { getLang } from './i18n.svelte.js';
 
 export const autoMonthAbbr = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];

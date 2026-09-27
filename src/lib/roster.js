@@ -6,7 +6,7 @@
 // reasignan.
 
 // ---- Mi perfil ----
-// Lo rellena el inicio de sesión (js/core/auth.js, vía appBridge.core.myProfile) y
+// Lo rellena el inicio de sesión (src/shell/auth.svelte.js) y
 // la edición del perfil (src/features/perfil).
 export const myProfile = { name:'Tu nombre', mote:'', phone:'', comision:'', rango:'', posicion:'', rol:'', licencia:'', birthdate:'', avatarUrl:'' };
 

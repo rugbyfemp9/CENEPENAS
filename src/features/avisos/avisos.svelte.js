@@ -7,7 +7,6 @@
 //  - "banner": aparece como notificación arriba del todo de Inicio para todo el mundo,
 //    con una "x" para cerrarla (cada persona la cierra solo para sí misma, como pasa
 //    con el aviso de Fantasy).
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myProfile, myRosterEntry } from '../../lib/roster.js';

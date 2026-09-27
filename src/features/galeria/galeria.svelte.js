@@ -6,7 +6,7 @@
 // La lista completa se guarda en Supabase (tabla "gallery_data", fila única id='current')
 // para que quede sincronizada al momento en todas las cuentas. DEFAULT_SEASONS es solo el
 // contenido de partida, por si todavía no hay ninguna fila guardada.
-import { legacy } from '../../lib/legacy.js';
+import { setSection } from '../../shell/navigation.svelte.js';
 import { supabase } from '../../lib/supabase.js';
 import { readCache, writeCache } from '../../lib/storage.js';
 import { session } from '../../lib/session.svelte.js';
@@ -144,7 +144,7 @@ export function openSeason(seasonId) {
 // Temporadas ya sale de la Galería hacia Vestuario
 export function goBack() {
   if (galeria.view === 'albums') showSeasons();
-  else legacy.setSection('vestuario');
+  else setSection('vestuario');
 }
 
 export function slugify(text) {

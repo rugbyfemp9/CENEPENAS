@@ -2,19 +2,19 @@ import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { cpSync } from 'node:fs';
 
-// El código antiguo (js/), los estilos (css/), las imágenes (assets/) y los service
-// workers se sirven tal cual, sin pasar por Vite: en desarrollo ya están en la raíz del
-// proyecto y al compilar se copian a dist/ en la misma ruta. Así las rutas de siempre
-// (js/..., css/..., assets/img/...) siguen funcionando igual en los dos casos.
-const STATIC = ['js', 'css', 'assets', 'sw.js', 'manifest.json', 'firebase-messaging-sw.js'];
-const STATIC_URL = /^(\.\/)?(js|css|assets)\/|^(\.\/)?manifest\.json$/;
+// Los estilos (css/), las imágenes (assets/) y los service workers se sirven tal cual,
+// sin pasar por Vite: en desarrollo ya están en la raíz del proyecto y al compilar se
+// copian a dist/ en la misma ruta. Así las rutas de siempre (css/..., assets/img/...)
+// siguen funcionando igual en los dos casos.
+const STATIC = ['css', 'assets', 'sw.js', 'manifest.json', 'firebase-messaging-sw.js'];
+const STATIC_URL = /^(\.\/)?(css|assets)\/|^(\.\/)?manifest\.json$/;
 
 function legacyStatic() {
   let outDir;
   return {
     name: 'legacy-static',
     configResolved(config) { outDir = config.build.outDir; },
-    // Que Vite no intente empaquetar ni renombrar los <script>/<link>/<img> que apuntan
+    // Que Vite no intente empaquetar ni renombrar los <link>/<img> que apuntan
     // a esos archivos (marcándolos con vite-ignore antes de que procese el HTML).
     transformIndexHtml: {
       order: 'pre',
@@ -35,5 +35,7 @@ export default defineConfig({
   base: './',
   publicDir: false,
   // Los archivos que genera Vite van a build/, para no mezclarse con assets/img.
-  build: { assetsDir: 'build' },
+  // Toda la app es un único bundle (~500 kB sin comprimir, ~140 kB con gzip) desde que
+  // el armazón también es Svelte: se sube el límite del aviso de tamaño.
+  build: { assetsDir: 'build', chunkSizeWarningLimit: 600 },
 });

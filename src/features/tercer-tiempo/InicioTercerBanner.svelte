@@ -1,7 +1,7 @@
 <script>
   // Tarjeta "Tercer tiempo" de Inicio. (El <div id="inicio-tercer-banner"> que la
-  // contiene sigue en index.html: al pulsarlo entero se va a la lista de Tercer tiempo,
-  // y js/core/permissions.js lo oculta al Cos Tècnic.)
+  // contiene lo pinta src/shell/Inicio.svelte: al pulsarlo entero se va a la lista de
+  // Tercer tiempo, y se oculta al Cos Tècnic.)
   import { t } from '../../lib/i18n.svelte.js';
   import CookIcon from './CookIcon.svelte';
   import CleanIcon from './CleanIcon.svelte';

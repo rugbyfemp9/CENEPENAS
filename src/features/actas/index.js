@@ -1,12 +1,12 @@
 import { mountAt } from '../../lib/mount.js';
 import MatchReportUploadModal from './MatchReportUploadModal.svelte';
 import ActaBuilderModal from './ActaBuilderModal.svelte';
-import { subscribeToMatchReportRealtime, renderMatchReport } from './actas.svelte.js';
+import { renderMatchReport } from './actas.svelte.js';
 import { partidoDetalle } from '../partidos/partidos.svelte.js';
 
 // La tarjeta del acta (ActaCard.svelte) la monta el detalle del partido
 // (src/features/partidos/PartidoDetalle.svelte).
-export function install(bridge) {
+export function install() {
   mountAt(MatchReportUploadModal, 'match-report-upload-modal');
   mountAt(ActaBuilderModal, 'match-report-builder-modal');
 
@@ -15,9 +15,4 @@ export function install(bridge) {
   window.addEventListener('app:langchange', () => {
     if (partidoDetalle.currentId) renderMatchReport(partidoDetalle.currentId);
   });
-
-  bridge.actas = {
-    // Al iniciar sesión (auth.js).
-    subscribeRealtime: subscribeToMatchReportRealtime,
-  };
 }

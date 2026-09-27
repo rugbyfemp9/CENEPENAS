@@ -1,6 +1,6 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { setSection } from '../../shell/navigation.svelte.js';
   import { balanceLabel } from '../../lib/treasury/treasury.svelte.js';
   import TreasuryTable from '../../lib/treasury/TreasuryTable.svelte';
   import TreasuryEditButton from '../../lib/treasury/TreasuryEditButton.svelte';
@@ -13,7 +13,7 @@
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-<div class="back-link" onclick={() => legacy.setSection('comisiones')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('nav.comisiones')}</span></div>
+<div class="back-link" onclick={() => setSection('comisiones')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('nav.comisiones')}</span></div>
 <div class="section-head"><h2>Comi Tercer Temps</h2></div>
 
 <div class="simple-tabs comi-tercer-tabs">

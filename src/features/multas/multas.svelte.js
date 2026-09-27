@@ -14,7 +14,6 @@
 // situación" y el banner de Inicio solo dependen de las multas: basta con saber si ya
 // se han pintado alguna vez (`multas.shown`).
 import { SvelteSet } from 'svelte/reactivity';
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { currentUserId, rosterById } from '../../lib/roster.js';
 import { computeDisplayNames, displayName, initials } from '../../lib/names.js';
@@ -54,7 +53,7 @@ export function canManageFines() {
   return session.isAdmin || session.comision === 'Comi Tesoreria';
 }
 
-// Tras iniciar sesión o editar el perfil (appBridge.sessionChanged() ya ha refrescado
+// Tras iniciar sesión o editar el perfil (refreshSession() ya ha refrescado
 // la sesión): los botones "Añadir multa" / "Editar multas" dependen solos de la sesión.
 // Si deja de tener permiso mientras el modo edición estaba activo, se desactiva.
 export function permissionsChanged() {

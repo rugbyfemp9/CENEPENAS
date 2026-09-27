@@ -2,7 +2,6 @@
 // Confirmar / declinar / deshacer (RSVP) con su lluvia de corazones, el modal de
 // comentario / justificación, y la asistencia compartida en Supabase (tabla
 // att_attendance) con su sincronización en tiempo real.
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { currentUserId, roster, rosterById } from '../../lib/roster.js';

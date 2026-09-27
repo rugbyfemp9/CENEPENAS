@@ -4,9 +4,9 @@ import TreasuryBreakdownModal from '../../lib/treasury/TreasuryBreakdownModal.sv
 import TreasuryDeleteModal from '../../lib/treasury/TreasuryDeleteModal.svelte';
 import { t } from '../../lib/i18n.svelte.js';
 import ComiTercerTemps from './ComiTercerTemps.svelte';
-import { loadShoppingItems, tercerTreasury } from './comi-tercer-temps.svelte.js';
+import { tercerTreasury } from './comi-tercer-temps.svelte.js';
 
-export function install(bridge) {
+export function install() {
   mountInto(ComiTercerTemps, '#sec-comi-tercer-temps');
   mountAt(TreasuryAddModal, 'add-tercer-treasury-modal', {
     treasury: tercerTreasury,
@@ -31,12 +31,4 @@ export function install(bridge) {
     no: 'No',
     yes: 'Sí, eliminar',
   });
-
-  bridge.comiTercerTemps = {
-    // Al entrar en "comi-tercer-temps" (setSection), por si han cambiado desde otro dispositivo.
-    loadShoppingItems,
-    loadTreasury: tercerTreasury.load,
-    // Tras iniciar sesión o editar el perfil (puede cambiar quién gestiona la comisión).
-    permissionsChanged: tercerTreasury.permissionsChanged,
-  };
 }

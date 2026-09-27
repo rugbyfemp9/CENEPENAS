@@ -1,10 +1,10 @@
 <script>
   // Banner de "Multas" en Inicio: mismo tamaño que el de Tercer tiempo, cambia de
   // color/mensaje según lo que debe el usuario que ha iniciado sesión. (El <div
-  // id="inicio-fines-banner"> que lo contiene sigue en index.html: al pulsarlo entero
+  // id="inicio-fines-banner"> que lo contiene es de src/shell/Inicio.svelte: al pulsarlo entero
   // también se va a Multas.)
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { setSection } from '../../shell/navigation.svelte.js';
   import { inicioFinesBanner } from './multas.svelte.js';
 
   const banner = $derived(inicioFinesBanner());
@@ -20,7 +20,7 @@
     </div>
     {#if banner.kind !== 'ok'}
       <div class="tt-personal-actions">
-        <button class="tt-swap-btn" onclick={(e) => { e.stopPropagation(); legacy.setSection('multas'); }}>{t('fines.cta')}</button>
+        <button class="tt-swap-btn" onclick={(e) => { e.stopPropagation(); setSection('multas'); }}>{t('fines.cta')}</button>
       </div>
     {/if}
   </div>

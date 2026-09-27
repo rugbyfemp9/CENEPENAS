@@ -2,7 +2,7 @@
   // Tabla de datos de Mi perfil y botón de cerrar sesión. Comisión, Rango y Posición
   // solo se muestran si tu rol es de jugadora (ver renderProfile).
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { handleLogout } from '../../shell/auth.svelte.js';
   import { perfil } from './perfil.svelte.js';
 
   const v = $derived(perfil.view);
@@ -23,4 +23,4 @@
     </tbody>
   </table>
 </div>
-<button class="btn" style="background:linear-gradient(90deg, var(--bad), #b8443a);" onclick={() => legacy.logout()}>{t('profile.logout')}</button>
+<button class="btn" style="background:linear-gradient(90deg, var(--bad), #b8443a);" onclick={() => handleLogout()}>{t('profile.logout')}</button>

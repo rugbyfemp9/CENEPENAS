@@ -10,7 +10,7 @@
 // incrementa cada vez que cambian (aquí o desde fuera: roster recargado, perfil
 // editado...) y todo lo que las lee depende de ese contador (ver rosterTick()).
 import { SvelteSet } from 'svelte/reactivity';
-import { legacy } from '../../lib/legacy.js';
+import { setSection } from '../../shell/navigation.svelte.js';
 import { SUPABASE_URL, supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { currentUserId, myProfile, myRosterEntry, roster, rosterById } from '../../lib/roster.js';
@@ -156,7 +156,7 @@ export function openGymRoutineDay(index) {
   quickCalc.playerId = null; // siempre se abre calculando la propia marca por defecto
   closeGymRmCalcBanner();
   renderGymRoutineDayDetalle();
-  legacy.setSection('gym-entrenamiento-dia');
+  setSection('gym-entrenamiento-dia');
 }
 
 // Cambia entre la tabla de ejercicios de Forwards y la de Backs dentro del mismo día.
@@ -634,7 +634,7 @@ export function calculateGymRmTable() {
 // "Mis Marcas" vive ahora dentro de "Mi Entrenamiento" (debajo de la rutina), así que
 // el enlace desde la calculadora rápida vuelve a esa pantalla y baja hasta la tabla.
 export function goToGymMarks() {
-  legacy.setSection('gym-entrenamiento');
+  setSection('gym-entrenamiento');
   const el = document.getElementById('gym-marks-section');
   if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }

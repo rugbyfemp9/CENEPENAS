@@ -5,7 +5,6 @@
 // Como la lista de Asistencia, la cuadrícula es una "foto" que solo cambia al llamar a
 // renderCalendarGrid() (al abrir el modal, cambiar de mes o de filtro, tras crear /
 // editar / borrar un evento, al refrescar los eventos compartidos y al cambiar de idioma).
-import { legacy } from '../../lib/legacy.js';
 import { roster } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
 import { translate } from '../../lib/i18n.svelte.js';

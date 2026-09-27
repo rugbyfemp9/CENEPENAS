@@ -4,9 +4,9 @@ import TreasuryBreakdownModal from '../../lib/treasury/TreasuryBreakdownModal.sv
 import TreasuryDeleteModal from '../../lib/treasury/TreasuryDeleteModal.svelte';
 import { t } from '../../lib/i18n.svelte.js';
 import Tesoreria from './Tesoreria.svelte';
-import { treasury, treasuryCommissionMembers } from './tesoreria.svelte.js';
+import { treasury } from './tesoreria.svelte.js';
 
-export function install(bridge) {
+export function install() {
   mountInto(Tesoreria, '#sec-comi-tesoreria');
   mountAt(TreasuryAddModal, 'add-treasury-modal', {
     treasury,
@@ -30,15 +30,4 @@ export function install(bridge) {
     get no() { return t('att.no'); },
     get yes() { return t('att.yesDelete'); },
   });
-
-  bridge.tesoreria = {
-    // Al entrar en "comi-tesoreria" (setSection), por si ha cambiado desde otro dispositivo.
-    load: treasury.load,
-    // Multas: al pagar una multa se añade el ingreso aquí, y el modal de pagar una
-    // multa ofrece a las personas de Comi Tesoreria.
-    addEntry: treasury.addEntry,
-    commissionMembers: treasuryCommissionMembers,
-    // Tras iniciar sesión o editar el perfil (puede cambiar quién gestiona la tesorería).
-    permissionsChanged: treasury.permissionsChanged,
-  };
 }

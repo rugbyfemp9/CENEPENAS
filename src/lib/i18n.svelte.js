@@ -4,13 +4,8 @@
    idioma de un $state, así que todo lo que lo use se vuelve a pintar solo al
    cambiar de idioma.
 
-   Los textos fijos que quedan en index.html se marcan con data-i18n="clave" (o
-   data-i18n-attr="atributo:clave,..." para atributos como aria-label/title) y
-   applyI18n() los sustituye al cambiar de idioma. Los componentes de Svelte NO usan
-   data-i18n (applyI18n pisaría nodos que gestiona Svelte).
-
-   setLang() y toggleLang() se dejan también en window: los llaman los onclick del
-   selector de idioma de index.html. */
+   setLang() y toggleLang() se dejan también en window (los usan los tests y
+   cualquier onclick="..." que quede fuera de Svelte). */
 import { es } from './i18n/es.js';
 import { ca } from './i18n/ca.js';
 
@@ -42,18 +37,9 @@ export function t(key, vars) {
   return translate(key, vars);
 }
 
-// Traduce todo lo marcado con data-i18n / data-i18n-attr, y refresca el estado
-// visual del selector de idioma (sidebar de escritorio + botón de la barra móvil)
+// Refresca el estado visual del selector de idioma (sidebar de escritorio + botón de
+// la barra móvil) y el lang de <html>. Los textos los repinta Svelte con t().
 export function applyI18n() {
-  document.querySelectorAll('[data-i18n]').forEach((el) => {
-    el.textContent = translate(el.getAttribute('data-i18n'));
-  });
-  document.querySelectorAll('[data-i18n-attr]').forEach((el) => {
-    el.getAttribute('data-i18n-attr').split(',').forEach((pair) => {
-      const [attr, key] = pair.split(':');
-      el.setAttribute(attr, translate(key));
-    });
-  });
   document.querySelectorAll('.lang-switch button').forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.lang === currentLang);
   });
@@ -62,8 +48,8 @@ export function applyI18n() {
   document.documentElement.lang = currentLang;
 }
 
-// Cambia el idioma activo, lo guarda para la próxima visita y refresca los textos
-// fijos de index.html; las partes en Svelte se repintan solas con el evento.
+// Cambia el idioma activo, lo guarda para la próxima visita y refresca el selector;
+// las partes en Svelte se repintan solas con el evento.
 export function setLang(lang) {
   if (lang !== 'es' && lang !== 'ca') return;
   currentLang = lang;

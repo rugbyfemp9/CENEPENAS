@@ -5,7 +5,6 @@
 //
 // Como antes, la lista se vuelve a pintar entera (checklist.version) después de cada
 // cambio, incluida la fila de "Añadir algo más…".
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 

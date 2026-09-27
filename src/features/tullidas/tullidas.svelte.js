@@ -12,7 +12,6 @@
 //
 // El evento del modal es el evento abierto en el detalle de Asistencia
 // (attSelection.currentEventId, src/features/asistencia/events.js), igual que antes.
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myProfile, rosterById } from '../../lib/roster.js';

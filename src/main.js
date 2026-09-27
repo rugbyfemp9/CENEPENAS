@@ -1,13 +1,18 @@
-// Punto de entrada de la parte en Svelte.
+// Punto de entrada de la app (el único <script> de index.html).
 //
-// La app se está migrando a Svelte sección a sección. Mientras tanto conviven dos
-// mundos: el código antiguo (js/, <script> clásicos que index.html carga antes)
-// y los componentes de src/. Este archivo, que se ejecuta después de todos ellos:
-//   1. monta las secciones ya migradas y registra lo que el código antiguo puede
-//      llamar de ellas en window.appBridge;
-//   2. arranca el código antiguo con legacyBoot() (js/main.js).
-import { appBridge } from './lib/bridge.js';
+//   1. notificaciones push, el <select> que oculta la nav inferior y el service worker;
+//   2. monta el armazón (src/shell/App.svelte) en el <div data-mount="app">;
+//   3. monta cada sección dentro del armazón (src/features/*/index.js);
+//   4. arranca la app, en el mismo orden de siempre (antes legacyBoot(), js/main.js).
+import { mountAt } from './lib/mount.js';
+import { installPush } from './lib/push.js';
+import { registerServiceWorker } from './lib/sw-register.js';
 import { refreshSession } from './lib/session.svelte.js';
+import { supabase } from './lib/supabase.js';
+import { applyI18n } from './lib/i18n.svelte.js';
+import App from './shell/App.svelte';
+import { setSection, installHistory, watchSelectFocus } from './shell/navigation.svelte.js';
+import { onAuthenticated } from './shell/auth.svelte.js';
 import * as galeria from './features/galeria/index.js';
 import * as test from './features/test/index.js';
 import * as liga from './features/liga/index.js';
@@ -26,8 +31,65 @@ import * as actas from './features/actas/index.js';
 import * as tullidas from './features/tullidas/index.js';
 import * as tercerTiempo from './features/tercer-tiempo/index.js';
 import * as asistencia from './features/asistencia/index.js';
+import { initEvents } from './features/asistencia/events.js';
+import { renderEventList, toggleAttAddButtonVisibility } from './features/asistencia/asistencia.svelte.js';
+import { renderNextMatchBanner } from './features/partidos/partidos.svelte.js';
+import { renderWellnessReminderBanner } from './features/wellness/wellness.svelte.js';
+import { renderProfile } from './features/perfil/perfil.svelte.js';
+import { refreshPinned } from './features/avisos/avisos.svelte.js';
+import { initFantasy } from './features/fantasy/fantasy.svelte.js';
+import { renderThirdTime } from './features/tercer-tiempo/tercer-tiempo.svelte.js';
+import { startThirdTimeAutoFinesTimer } from './features/tercer-tiempo/auto-fines.js';
 
-for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas, jugadoras, perfil, wellness, partidos, actas, tullidas, tercerTiempo, asistencia]) feature.install(appBridge);
+installPush();
+watchSelectFocus();
+registerServiceWorker();
+
+// Los tests (y cualquier onclick="..." fuera de Svelte) cambian de sección con
+// window.setSection(); setLang()/toggleLang() se dejan en window en src/lib/i18n.svelte.js.
+window.setSection = setSection;
+
+mountAt(App, 'app');
+
+for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas, jugadoras, perfil, wellness, partidos, actas, tullidas, tercerTiempo, asistencia]) feature.install();
 
 refreshSession();
-window.legacyBoot();
+
+// ================= ARRANQUE =================
+applyI18n();
+
+// Si ya había una sesión abierta (recarga de página), entramos directos sin pedir login
+supabase.auth.getSession().then(({ data }) => {
+  if (data.session) {
+    onAuthenticated(data.session.user);
+  }
+});
+
+// Asistencia: los entrenos de la temporada y el partido fijo contra Santboi se
+// generan aquí, en el mismo momento que antes, y luego se pinta la lista.
+initEvents();
+
+renderEventList();
+renderNextMatchBanner();
+renderWellnessReminderBanner();
+toggleAttAddButtonVisibility();
+// Los botones "Añadir multa" / "Editar multas" dependen solos de la sesión.
+
+renderProfile();
+
+// Comi Tesoreria, Comi Tercer Temps y Tricount se pintan solas al montarse; sus datos
+// no se piden aquí al arrancar (se pedían de más en TODAS las sesiones, aunque nadie
+// entrara nunca en esas pestañas): setSection() los carga cada vez que se entra de
+// verdad en cada una.
+
+refreshPinned();
+
+// Gym se pinta solo al montarse.
+
+initFantasy();
+// Tercer tiempo: primer pintado y comprobación cada minuto de las multas 3T.
+renderThirdTime();
+startThirdTimeAutoFinesTimer();
+
+// Historial inicial ("Inicio") y botón "atrás" del navegador/móvil.
+installHistory();

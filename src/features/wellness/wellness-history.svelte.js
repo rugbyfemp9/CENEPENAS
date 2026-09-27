@@ -5,7 +5,6 @@
 // cruzadas con "att_events" (fecha y duración) y "profiles"/roster (nombres). Todo
 // este bloque comparte permiso con la Pestaña 1: ver canViewWellnessStaff().
 // ==================================================================
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { roster, rosterById } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';

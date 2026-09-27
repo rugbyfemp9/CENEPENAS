@@ -1,6 +1,6 @@
 <script>
   // Ventana modal con el mismo marcado que las del código antiguo (.modal-overlay /
-  // .modal-box). El botón "atrás" del móvil (js/main.js) cierra cualquier modal
+  // .modal-box). El botón "atrás" del móvil (src/shell/navigation.svelte.js) cierra cualquier modal
   // abierto quitándole la clase "active" y lanzando "modal:close"; aquí se escucha
   // ese evento para que `open` no se quede desincronizado.
   let { open = $bindable(false), id, boxStyle = '', boxClass = '', children } = $props();

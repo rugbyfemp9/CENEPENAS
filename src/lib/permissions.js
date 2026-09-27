@@ -23,7 +23,7 @@ export function effectiveRoleForPermissions(rol){
 // ---- Wellness / RPE: quién ve qué ----
 // El módulo de Wellness (modal de valoración, banner de Inicio y panel de Cos Tècnic)
 // vive ahora en Svelte (src/features/wellness/), pero estos permisos también los usan
-// la navegación (setSection, js/core/navigation.js), el inicio de sesión (js/core/auth.js)
+// la navegación (setSection, src/shell/navigation.svelte.js), el inicio de sesión (src/shell/)
 // y Asistencia/Eventos.
 // Solo el rol jugadora (Capitana incluida, ver effectiveRoleForPermissions) puede ver
 // y usar este módulo — el resto de roles (entrenador/a, delegado/a, directiva...) no

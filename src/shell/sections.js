@@ -1,4 +1,8 @@
-const titles = {
+// Mapas de las secciones de la app (antes en js/core/state.js).
+
+// NOTE: estos títulos/subtítulos no se pintan en ningún sitio (el título del documento
+// nunca cambia y la barra superior de móvil solo dice "CNPENAS"). Se dejan tal cual.
+export const titles = {
   inicio: ['Inicio', 'Resumen general del club'],
   asistencia: ['Asistencia', 'Próximos entrenos y control de presencia'],
   'asistencia-detalle': ['Asistencia', 'Quién va a cada convocatoria'],
@@ -24,8 +28,10 @@ const titles = {
   'comi-gira': ['Comi Gira', 'Comisión de giras y viajes'],
   perfil: ['Mi perfil', 'Datos de tu cuenta']
 };
+
 // A qué pestaña de la nav inferior pertenece cada sección
-const bottomTabOf = {
+// NOTE: "test" no está en la lista, así que en Test no queda ninguna pestaña activa.
+export const bottomTabOf = {
   inicio: 'inicio',
   asistencia: 'asistencia',
   'asistencia-detalle': 'asistencia',
@@ -57,7 +63,7 @@ const bottomTabOf = {
 
 // Sidebar de escritorio: mismo destino final que el hub "Vestuario" de móvil, pero cada
 // uno con su propio enlace directo. Las subpáginas resaltan el botón de su sección padre.
-const sidebarTabOf = {
+export const sidebarTabOf = {
   inicio: 'inicio',
   asistencia: 'asistencia',
   'asistencia-detalle': 'asistencia',
@@ -85,5 +91,3 @@ const sidebarTabOf = {
   plantilla: 'plantilla',
   perfil: 'perfil'
 };
-
-// myProfile, roster, rosterById y currentUserId viven ahora en Svelte: src/lib/roster.js.

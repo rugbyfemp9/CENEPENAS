@@ -2,7 +2,7 @@
 // Modal "Añadir evento" (elegir tipo, con sus preconfiguraciones), el modal de alta /
 // edición (Lugar enlazado con Google Maps, botón 🏠 Casa, intensidad del entreno) y la
 // confirmación para eliminar un evento.
-import { legacy } from '../../lib/legacy.js';
+import { setSection } from '../../shell/navigation.svelte.js';
 import { translate } from '../../lib/i18n.svelte.js';
 import { weekdayFullLabel, formatShortDate, attEventIso, attEventType, autoMonthAbbr } from '../../lib/dates.js';
 import {
@@ -266,7 +266,7 @@ export function confirmDeleteEvent() {
   // Si estábamos viendo el detalle del evento borrado, volvemos a la lista de Asistencia.
   if (attSelection.currentEventId === pendingDeleteEventId) {
     attSelection.currentEventId = null;
-    legacy.setSection('asistencia');
+    setSection('asistencia');
   }
 
   pendingDeleteEventId = null;

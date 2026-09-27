@@ -8,7 +8,6 @@
 // antes, la tabla solo se vuelve a "pintar" con renderMatchReport(), que incrementa
 // actas.view (0 = todavía no se ha pintado nunca, y la caja se queda vacía como el
 // marcado original).
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myProfile, roster, rosterById } from '../../lib/roster.js';

@@ -2,7 +2,6 @@
 // Las marcas son objetos normales (no reactivos), como antes; lo que se ve en el modal
 // es la "foto" que guarda renderRollCallList() en rollcall.view. El roster sigue en el
 // código antiguo: Jugadoras/Perfil llaman a renderRollCallList() al recargarlo.
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { toRemotePlayerId } from '../../lib/session.svelte.js';
 import { rosterById } from '../../lib/roster.js';

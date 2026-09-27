@@ -3,7 +3,6 @@
 // vacío hasta que loadExpenses()/loadSettlements() traigan lo guardado (al entrar en
 // la sección: hasta entonces, el banner de Inicio dice que estás al día).
 import { SvelteSet } from 'svelte/reactivity';
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth, toRemotePlayerId } from '../../lib/session.svelte.js';
 import { currentUserId, roster, rosterById } from '../../lib/roster.js';

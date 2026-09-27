@@ -10,7 +10,6 @@
 //
 // Los eventos (attEvents, src/features/asistencia/events.js) no son reactivos; el perfil
 // y la sesión siguen viviendo en el código antiguo.
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { canUseWellness } from '../../lib/permissions.js';

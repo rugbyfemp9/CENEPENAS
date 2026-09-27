@@ -4,7 +4,6 @@
 //
 // Los arrays no son reactivos: igual que antes, las vistas solo se vuelven a leer de
 // aquí cuando se llama a renderThirdTime() (tercer-tiempo.svelte.js).
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth, toRemotePlayerId } from '../../lib/session.svelte.js';
 import { currentUserId, roster } from '../../lib/roster.js';

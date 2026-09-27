@@ -9,7 +9,7 @@
 // que antes, lo que se ve solo cambia al entrar en la sección, al cambiar de entreno o
 // de jugadora en los desplegables, o al abrir un modal.
 // ==================================================================
-import { legacy } from '../../lib/legacy.js';
+import { setSection } from '../../shell/navigation.svelte.js';
 import { supabase } from '../../lib/supabase.js';
 import { rosterById } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
@@ -45,7 +45,7 @@ export function setWellnessStaffSubtab(tab) {
   staff.subtab = tab;
 }
 
-// Al entrar en la página (setSection('wellness-staff'), js/core/navigation.js, que ya
+// Al entrar en la página (setSection('wellness-staff'), src/shell/navigation.svelte.js, que ya
 // ha comprobado el permiso): se muestra siempre por defecto la sesión más reciente
 // (salvo que se venga de un acceso directo a un entreno concreto, ver
 // goToWellnessStaffAnalysis(), que deja marcado wellnessStaffPendingEventId).
@@ -96,7 +96,7 @@ function populateWellnessStaffEventSelect() {
 export function goToWellnessStaffAnalysis(eventId) {
   if (!canViewWellnessStaff()) return;
   wellnessStaffPendingEventId = eventId;
-  legacy.setSection('wellness-staff');
+  setSection('wellness-staff');
 }
 
 export function onWellnessStaffEventChange(eventId) {

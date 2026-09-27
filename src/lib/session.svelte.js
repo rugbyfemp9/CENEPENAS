@@ -2,11 +2,11 @@
 //
 // `auth` es la fuente única (no reactiva, como las antiguas variables globales
 // currentAuthUserId / isAdmin de js/core/auth.js). La rellena el inicio de sesión
-// (js/core/auth.js) con appBridge.core.setAuthUserId() / setIsAdmin().
+// (src/shell/auth.svelte.js) con setAuthUserId() / setIsAdmin().
 //
 // `session` es la copia reactiva que usan las plantillas de Svelte (permisos, sobre
 // todo). Se refresca al iniciar sesión y al editar el perfil, llamando a
-// appBridge.sessionChanged().
+// refreshSession().
 import { rosterById, myRosterEntry } from './roster.js';
 
 export const auth = {

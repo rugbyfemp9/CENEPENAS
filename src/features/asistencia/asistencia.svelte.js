@@ -7,7 +7,7 @@
 // guardan aquí una "foto" de lo que toca mostrar en ese momento (con los textos ya
 // traducidos, como el innerHTML de antes). Lo que en el marcado antiguo llevaba
 // data-i18n (títulos fijos, pestañas, botones) se traduce en la plantilla con t().
-import { legacy } from '../../lib/legacy.js';
+import { setSection } from '../../shell/navigation.svelte.js';
 import { currentUserId, roster } from '../../lib/roster.js';
 import { displayName, initials } from '../../lib/names.js';
 import { canUseWellness, canViewWellnessStaff, effectiveRoleForPermissions } from '../../lib/permissions.js';
@@ -301,7 +301,7 @@ export async function openEventDetail(eventId) {
   pendingIntensityReveal = !!openedEmoji;
 
   renderEventDetail();
-  legacy.setSection('asistencia-detalle');
+  setSection('asistencia-detalle');
 
   if (openedEmoji) spawnIntensityBurst(openedEmoji);
 

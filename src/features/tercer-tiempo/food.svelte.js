@@ -5,7 +5,6 @@
 // Los platos no son reactivos: igual que antes, la rejilla guarda una "foto" de lo que
 // tiene que mostrar cada vez que se pinta (renderThirdTimeFood()).
 // NOTA: la lista de comida no va ligada a ningún partido (se ve igual en todos).
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth, toRemotePlayerId } from '../../lib/session.svelte.js';
 import { currentUserId, myRosterEntry, roster, rosterById } from '../../lib/roster.js';

@@ -1,7 +1,6 @@
 // ---- Modal "Editar perfil" ----
 // Cada persona edita el suyo propio; la cuenta admin también puede editar el de
 // cualquier jugadora desde el botón "Editar" de Jugadoras.
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myProfile, rosterById } from '../../lib/roster.js';

@@ -3,7 +3,6 @@
 // Las preguntas viven en la tabla "test_questions" de Supabase (no en el diccionario
 // I18N: son contenido, no interfaz). Cada vez que se pulsa "Iniciar test" se trae el
 // banco completo y se eligen 10 al azar entre todas las disponibles.
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth, rosterEntry } from '../../lib/session.svelte.js';
 import { displayName, initials } from '../../lib/names.js';

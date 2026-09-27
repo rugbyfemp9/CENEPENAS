@@ -5,7 +5,7 @@
 // no son reactivos: el banner guarda una "foto" de lo que tiene que mostrar cada vez
 // que se pinta (renderNextMatchBanner()) y la lista se vuelve a leer cuando sube
 // partidosList.version.
-import { legacy } from '../../lib/legacy.js';
+import { setSection } from '../../shell/navigation.svelte.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso, attEventType, eventWhenDisplay, todayLocalIso, monthAbbrLabel } from '../../lib/dates.js';
 import { openEventDetail } from '../asistencia/asistencia.svelte.js';
@@ -131,7 +131,7 @@ export function openPartidoDetail(eventId) {
   partidoDetalle.currentId = eventId;
   const ev = attEvents.find((e) => e.id === eventId);
   partidoDetalle.title = ev ? ev.label : 'Partido';
-  legacy.setSection('partido-detalle');
+  setSection('partido-detalle');
   if (actas.reports[eventId] !== undefined) {
     renderMatchReport(eventId); // ya la teníamos en caché de esta sesión: se pinta al momento
   }

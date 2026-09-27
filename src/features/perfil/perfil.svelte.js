@@ -2,11 +2,10 @@
 // Datos propios (banner, tabla, estadísticas), la marca de lesión y la foto de perfil.
 //
 // Los datos viven en src/lib/roster.js: myProfile y el roster (rosterById.me), y los
-// rellena el inicio de sesión (js/core/auth.js) y la carga de
+// rellena el inicio de sesión (src/shell/auth.svelte.js) y la carga de
 // la Plantilla (src/features/jugadoras). No son reactivos: igual que antes, lo que se ve
-// solo cambia cuando alguien llama a renderProfile() (appBridge.perfil.render() desde el
-// código antiguo), que guarda aquí lo que toca mostrar en ese momento.
-import { legacy } from '../../lib/legacy.js';
+// solo cambia cuando alguien llama a renderProfile() (al arrancar, al iniciar sesión, al
+// entrar en Perfil...), que guarda aquí lo que toca mostrar en ese momento.
 import { supabase } from '../../lib/supabase.js';
 import { currentUserId, myProfile, myRosterEntry } from '../../lib/roster.js';
 import { effectiveRoleForPermissions } from '../../lib/permissions.js';

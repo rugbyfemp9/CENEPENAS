@@ -1,7 +1,6 @@
 /* ================= TERCER TIEMPO — GRUPOS FIJOS ================= */
 // Grupos A/B, qué grupo cocina / limpia en cada partido en casa y los roles reales de
 // cada jugadora (ajustados por los cambios de turno aceptados).
-import { legacy } from '../../lib/legacy.js';
 import { roster } from '../../lib/roster.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso, attEventType, todayLocalIso } from '../../lib/dates.js';

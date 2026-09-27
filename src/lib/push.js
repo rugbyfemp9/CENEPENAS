@@ -1,11 +1,16 @@
-window.__pendingPushToken = null;
+// ================= NOTIFICACIONES PUSH (CAPACITOR / FIREBASE + WEB PUSH PARA LA PWA) =================
+// (antes js/push.js) El token que llega antes de iniciar sesión se guarda en
+// window.__pendingPushToken y se envía a Supabase con flushPendingPushToken() en
+// cuanto se conoce el id de la cuenta (onAuthenticated, src/shell/auth.svelte.js).
+// Los dos se dejan en window, como antes, por si la app nativa los usa desde fuera.
+import { supabase } from './supabase.js';
+import { auth } from './session.svelte.js';
 
 async function savePushToken(token, platform) {
   if (!token) return;
-  
-  // Comprobación segura del id de quien ha iniciado sesión (vive en Svelte,
-  // src/lib/session.svelte.js; window.appBridge existe en cuanto arranca src/main.js)
-  const userId = window.appBridge ? window.appBridge.core.authUserId : null;
+
+  // Id de quien ha iniciado sesión (src/lib/session.svelte.js)
+  const userId = auth.userId;
 
   if (!userId) {
     window.__pendingPushToken = { token, platform };
@@ -13,7 +18,7 @@ async function savePushToken(token, platform) {
   }
 
   try {
-    await appBridge.core.supabase.from('push_subscriptions').upsert({
+    await supabase.from('push_subscriptions').upsert({
       profile_id: userId,
       fcm_token: token,
       platform: platform,
@@ -25,13 +30,13 @@ async function savePushToken(token, platform) {
   }
 }
 
-window.flushPendingPushToken = function() {
+export function flushPendingPushToken() {
   if (window.__pendingPushToken) {
     const { token, platform } = window.__pendingPushToken;
     window.__pendingPushToken = null;
     savePushToken(token, platform);
   }
-};
+}
 
 async function initNativePush() {
   const PushNotifications = window.Capacitor?.Plugins?.PushNotifications;
@@ -78,8 +83,9 @@ async function initWebPush() {
   if (isIOS && !isStandalone) return;
 
   try {
-    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js');
-    const { getMessaging, getToken } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging.js');
+    // Firebase se sigue cargando del CDN de gstatic solo cuando hace falta (no pasa por Vite).
+    const { initializeApp } = await import(/* @vite-ignore */ 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js');
+    const { getMessaging, getToken } = await import(/* @vite-ignore */ 'https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging.js');
 
     const firebaseConfig = {
       apiKey: 'AIzaSyDl09-KbLYjSGRwXtrAgIyUL3_sx0VJD4I',
@@ -108,7 +114,13 @@ async function initWebPush() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initNativePush();
-  initWebPush();
-});
+// Se llama al arrancar (src/main.js), lo primero, igual que cuando js/push.js era el
+// primer <script> de index.html.
+export function installPush() {
+  window.__pendingPushToken = null;
+  window.flushPendingPushToken = flushPendingPushToken;
+  document.addEventListener('DOMContentLoaded', () => {
+    initNativePush();
+    initWebPush();
+  });
+}

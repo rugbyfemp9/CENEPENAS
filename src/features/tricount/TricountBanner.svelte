@@ -1,10 +1,10 @@
 <script>
   // Tarjeta de "Tricount" en Inicio: mismo componente visual (.tt-personal) que Multas
   // y Tercer tiempo. Se mantiene al día cada vez que se carga o cambia algún
-  // gasto/liquidación. (El <div id="inicio-tricount-banner"> que la contiene sigue en
-  // index.html: al pulsarlo entero también se va a Tricount.)
+  // gasto/liquidación. (El <div id="inicio-tricount-banner"> que la contiene es de
+  // src/shell/Inicio.svelte: al pulsarlo entero también se va a Tricount.)
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { setSection } from '../../shell/navigation.svelte.js';
   import { currentUserId } from '../../lib/roster.js';
   import { formatEuro } from '../../lib/format.js';
   import { tricountBalances, balanceKind } from './tricount.svelte.js';
@@ -25,6 +25,6 @@
     <span>{msg}</span>
   </div>
   <div class="tt-personal-actions">
-    <button class="tt-swap-btn" onclick={(e) => { e.stopPropagation(); legacy.setSection('tricount'); }}>{t('tricount.cta')}</button>
+    <button class="tt-swap-btn" onclick={(e) => { e.stopPropagation(); setSection('tricount'); }}>{t('tricount.cta')}</button>
   </div>
 </div>

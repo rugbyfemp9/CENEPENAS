@@ -10,7 +10,7 @@
 // de ahí cuando se "pintan" (renderFantasyLineupUI): `fantasy.version` se incrementa en
 // cada uno de esos momentos y todo lo que los lee depende de ese contador.
 import { SvelteSet } from 'svelte/reactivity';
-import { legacy } from '../../lib/legacy.js';
+import { setSection } from '../../shell/navigation.svelte.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myRosterEntry, roster, rosterById } from '../../lib/roster.js';
@@ -601,7 +601,7 @@ export function openInicioSharedLineup() {
   sharedBanner.key = null;
   markSharedLineupBannerSeen(key);
 
-  legacy.setSection('fantasy');
+  setSection('fantasy');
   loadSharedLineup(key);
 }
 

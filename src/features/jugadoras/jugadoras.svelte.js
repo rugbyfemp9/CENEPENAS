@@ -6,7 +6,6 @@
 // (roster / rosterById en src/lib/roster.js), que leen casi todas las secciones, y los grupos del Tercer tiempo (src/features/tercer-tiempo/groups.js).
 // No son reactivos: igual que antes, cada tabla solo se vuelve a leer cuando se "pinta" (renderPlantillaTable /
 // renderPlantillaStatsRows), que guarda aquí lo que se ve en ese momento.
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myProfile, roster, rosterById } from '../../lib/roster.js';

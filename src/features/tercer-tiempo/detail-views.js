@@ -1,6 +1,5 @@
 // "Fotos" del detalle de un partido (título, banner personal + recuadro del grupo y
 // "Tus cambios de turno"), calculadas al pintar, como en views.js.
-import { legacy } from '../../lib/legacy.js';
 import { currentUserId, rosterById } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
 import { t } from '../../lib/i18n.svelte.js';

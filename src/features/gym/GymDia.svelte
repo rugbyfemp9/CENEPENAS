@@ -1,6 +1,6 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { setSection } from '../../shell/navigation.svelte.js';
   import { currentUserId } from '../../lib/roster.js';
   import { displayName } from '../../lib/names.js';
   import {
@@ -32,7 +32,7 @@
 <svelte:document onclick={onDocumentClick} />
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-<div class="back-link" onclick={() => legacy.setSection('gym-entrenamiento')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('gym.myTraining')}</span></div>
+<div class="back-link" onclick={() => setSection('gym-entrenamiento')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('gym.myTraining')}</span></div>
 <div class="section-head"><h2 id="gym-routine-day-detalle-title">{dayDetail.n === null ? 'Día 1' : t('gym.dayLabel', { n: dayDetail.n })}</h2></div>
 
 <div class="card">

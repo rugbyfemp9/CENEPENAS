@@ -13,7 +13,6 @@
 // dato (y el saldo, si es el importe), sin reordenar las filas ni reescribir el campo
 // que se está tecleando. Las filas se reordenan en el siguiente render() (al cambiar
 // un tipo, borrar, añadir o pulsar "Hecho").
-import { legacy } from '../legacy.js';
 import { supabase } from '../supabase.js';
 import { rosterById } from '../roster.js';
 import { computeDisplayNames, displayName, initials } from '../names.js';

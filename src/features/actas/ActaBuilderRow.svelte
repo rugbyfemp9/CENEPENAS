@@ -1,7 +1,6 @@
 <script>
   // Una fila (jugadora) del constructor de actas a mano. Los campos solo escriben en el
   // dato de la fila (no reactivo): la fila entera se vuelve a crear al añadir/quitar.
-  import { legacy } from '../../lib/legacy.js';
   import { roster } from '../../lib/roster.js';
   import {
     updateActaBuilderRow, removeActaBuilderRow, addActaBuilderCard, updateActaBuilderCard, removeActaBuilderCard,

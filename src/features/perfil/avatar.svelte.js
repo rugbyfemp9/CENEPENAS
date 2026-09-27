@@ -1,6 +1,5 @@
 // ---- Foto de perfil: menú "Cambiar / Editar / Eliminar foto", subida y recorte ----
 import { flushSync } from 'svelte';
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myProfile, rosterById } from '../../lib/roster.js';

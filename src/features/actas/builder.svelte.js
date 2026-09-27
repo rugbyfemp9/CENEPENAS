@@ -8,7 +8,6 @@
 // Las filas son un array normal (no reactivo), como antes: escribir en un campo solo
 // actualiza el dato, y las filas se vuelven a pintar enteras (actaBuilder.version)
 // solo al añadir/quitar una jugadora o una tarjeta.
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { toRemotePlayerId } from '../../lib/session.svelte.js';
 import { rosterById } from '../../lib/roster.js';

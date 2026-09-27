@@ -2,7 +2,6 @@
 // Dos pestañas: "Lista" (lista de la compra, una checklist compartida del equipo) y
 // "Saldo" (su propia tesorería, con exactamente el mismo patrón que Comi Tesoreria:
 // ver src/lib/treasury/).
-import { legacy } from '../../lib/legacy.js';
 import { supabase } from '../../lib/supabase.js';
 import { roster } from '../../lib/roster.js';
 import { session } from '../../lib/session.svelte.js';
