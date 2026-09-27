@@ -11,6 +11,7 @@
 // editado...) y todo lo que las lee depende de ese contador (ver rosterTick()).
 import { SvelteSet } from 'svelte/reactivity';
 import { legacy } from '../../lib/legacy.js';
+import { todayLocalIso } from '../../lib/dates.js';
 
 // Ejercicios principales sobre los que se lleva marca (1RM) y ranking de equipo.
 // Antes eran intocables; ahora entrenador/a y admin también pueden eliminarlos (ver
@@ -750,7 +751,7 @@ function pushGymRmHistoryLocal(me, exercise, weight, updatedAt) {
   me.rmHistory[exercise].unshift({ weight, updatedAt });
 }
 function setMyRm(exercise, weight) {
-  const updatedAt = legacy.todayIso();
+  const updatedAt = todayLocalIso();
   const me = legacy.me;
   if (!me.rm) me.rm = {};
   me.rm[exercise] = { weight, updatedAt };
@@ -954,7 +955,7 @@ async function loadGymRmHistory(exercise) {
 // cuentas, igual que las marcas y la rutina semanal.
 export function gymAttendanceToday() {
   rosterTick();
-  const todayIso = legacy.todayIso();
+  const todayIso = todayLocalIso();
   return (gym.attendanceByDate[todayIso] || []).slice().sort((a, b) => a.time.localeCompare(b.time));
 }
 
@@ -973,7 +974,7 @@ export async function saveGymCheckin() {
     alert('Elige una hora.');
     return;
   }
-  const todayIso = legacy.todayIso();
+  const todayIso = todayLocalIso();
   const me = legacy.currentUserId;
   if (!gym.attendanceByDate[todayIso]) gym.attendanceByDate[todayIso] = [];
   gym.attendanceByDate[todayIso] = gym.attendanceByDate[todayIso].filter((e) => e.playerId !== me);
@@ -993,7 +994,7 @@ export async function saveGymCheckin() {
   }
 }
 export async function cancelGymCheckin() {
-  const todayIso = legacy.todayIso();
+  const todayIso = todayLocalIso();
   if (gym.attendanceByDate[todayIso]) {
     gym.attendanceByDate[todayIso] = gym.attendanceByDate[todayIso].filter((e) => e.playerId !== legacy.currentUserId);
   }
@@ -1014,7 +1015,7 @@ export async function cancelGymCheckin() {
 // sesión y cada vez que se entra en "Equipo", para no depender solo de lo que ya
 // hubiera en memoria de esta pestaña.
 export async function loadGymAttendanceToday() {
-  const todayIso = legacy.todayIso();
+  const todayIso = todayLocalIso();
   const { data, error } = await legacy.supabase
     .from('gym_attendance')
     .select('*')

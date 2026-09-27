@@ -255,75 +255,10 @@
     </section>
 
     <!-- ASISTENCIA -->
-    <section class="section" id="sec-asistencia">
-      <div class="section-head">
-        <h2 data-i18n="nav.asistencia">Asistencia</h2>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button class="cal-open-btn" onclick="openAttFilterModal()" data-i18n-attr="aria-label:att.filterEvents,title:att.filterEvents" aria-label="Filtrar eventos" title="Filtrar eventos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16l-6 8v6l-4-2v-4z"/></svg>
-          </button>
-          <button class="cal-open-btn" onclick="openCalendarModal()" data-i18n-attr="aria-label:att.viewCalendar" aria-label="Ver calendario">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
-          </button>
-          <!-- Sólo visible para roles con permiso de gestión (ver toggleAttAddButtonVisibility) -->
-          <button class="cal-open-btn" id="att-add-event-btn" onclick="openAttAddTypeModal()" data-i18n-attr="aria-label:att.addEvent,title:att.addEvent" aria-label="Añadir evento" title="Añadir evento" style="display:none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          </button>
-        </div>
-      </div>
-      <div id="att-event-list"></div>
-    </section>
+    <section class="section" id="sec-asistencia"></section>
 
     <!-- ASISTENCIA — DETALLE DE UN EVENTO -->
-    <section class="section" id="sec-asistencia-detalle">
-      <div class="back-link" onclick="setSection('asistencia')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="nav.asistencia">Asistencia</span></div>
-
-      <div class="att-detail-header">
-        <button class="att-event-edit-btn" id="att-detail-edit-btn" onclick="openEditEventModal(currentEventId)" data-i18n-attr="aria-label:att.editEvent,title:att.editEvent" aria-label="Editar evento" title="Editar evento" style="display:none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        </button>
-        <button class="att-event-edit-btn att-detail-tullides-btn" id="att-detail-tullides-btn" onclick="appBridge.tullidas.open()" data-i18n-attr="aria-label:att.tullidesButton,title:att.tullidesButton" aria-label="Tullidas" title="Tullidas" style="display:none; right:44px;">
-          🩹
-        </button>
-        <!-- Wellness / RPE: solo visible para el rol jugadora (ver toggleAttWellnessButtonVisibility) -->
-        <button class="att-event-edit-btn att-detail-wellness-btn" id="att-detail-wellness-btn" onclick="appBridge.wellness.openModal(currentEventId)" data-i18n-attr="aria-label:att.wellnessButton,title:att.wellnessButton" aria-label="Wellness" title="Wellness" style="display:none; right:44px;">
-          📊
-        </button>
-        <!-- Acceso directo al Panel de Análisis Wellness/RPE de Cos Tècnic para ESTE evento
-             concreto: solo entrenador/a, delegado/a, directiva, fisio o admin, y solo si el
-             evento ya ha terminado (ver canViewWellnessStaff()/hasEventEnded() y
-             toggleAttWellnessStaffButtonVisibility()). -->
-        <button class="att-event-edit-btn att-detail-wellness-staff-btn" id="att-detail-wellness-staff-btn" onclick="appBridge.wellness.goToStaffAnalysis(currentEventId)" data-i18n-attr="aria-label:wstaff.quickAccessButton,title:wstaff.quickAccessButton" aria-label="Wellness / RPE equipo" title="Wellness / RPE equipo" style="display:none; right:44px;">
-          📊
-        </button>
-        <div class="att-detail-top">
-          <div class="att-detail-date-badge"><div class="d" id="att-detail-daynum"></div><div class="m" id="att-detail-monthabbr"></div></div>
-          <div class="att-detail-titleblock">
-            <h2 id="att-detail-title" data-i18n="att.event">Evento</h2>
-            <div class="att-detail-when" id="att-detail-when"></div>
-          </div>
-          <span class="att-detail-intensity-badge" id="att-detail-intensity-badge"></span>
-        </div>
-        <div class="att-detail-meta">
-          <span class="meta-item"><span id="att-detail-location"></span></span>
-          <span class="meta-item" id="att-detail-meet-item">⏰ <span data-i18n="att.meet">Convo</span> <span id="att-detail-meet"></span></span>
-          <span class="meta-item" id="att-detail-start-item"><span id="att-detail-start-label">🏁 <span data-i18n="att.ko">KO</span> </span><span id="att-detail-start"></span></span>
-        </div>
-        <div class="att-detail-actions">
-          <button class="decline" id="att-detail-decline-btn" onclick="setMyRsvp(currentEventId,'no',this)" data-i18n="att.decline">Declinar</button>
-          <button class="confirm" id="att-detail-confirm-btn" onclick="setMyRsvp(currentEventId,'yes',this)" data-i18n="att.confirm">Confirmar</button>
-        </div>
-      </div>
-
-      <div class="att-tabs">
-        <button data-att-tab="yes" onclick="setAttTab('yes')"><span data-i18n="att.willAttend">Asistirán</span> <span class="count" id="att-count-yes">0</span></button>
-        <button data-att-tab="no" onclick="setAttTab('no')"><span data-i18n="att.willNotAttend">No asistirán</span> <span class="count" id="att-count-no">0</span></button>
-        <button data-att-tab="pending" onclick="setAttTab('pending')"><span data-i18n="att.noAnswer">Sin contestar</span> <span class="count" id="att-count-pending">0</span></button>
-      </div>
-      <div class="att-roster" data-att-roster="yes"><div class="att-roster-list" id="att-roster-yes"></div></div>
-      <div class="att-roster" data-att-roster="no"><div class="att-roster-list" id="att-roster-no"></div></div>
-      <div class="att-roster" data-att-roster="pending"><div class="att-roster-list" id="att-roster-pending"></div></div>
-    </section>
+    <section class="section" id="sec-asistencia-detalle"></section>
 
     <!-- VESTUARIO (hub — punto de entrada en móvil a multas / tercer tiempo / jugadores / calendario) -->
     <section class="section" id="sec-vestuario">
@@ -571,7 +506,7 @@
 <div data-mount="tullides-modal"></div>
 
 <!-- WELLNESS / RPE: valoración de dos fases (esfuerzo percibido + molestias físicas),
-     visible y accesible SOLO para el rol jugadora (ver toggleAttWellnessButtonVisibility) -->
+     visible y accesible SOLO para el rol jugadora (ver canUseWellness en js/core/permissions.js) -->
 <div data-mount="wellness-modal"></div>
 
 
@@ -599,17 +534,7 @@
 <!-- MODAL: NO PUEDO ASISTIR (cambio de turno del tercer tiempo) -->
 <div data-mount="swap-modal"></div>
 
-<div class="modal-overlay" id="comment-modal" onclick="if(event.target===this) closeCommentModal()">
-  <div class="modal-box">
-    <h3 id="comment-modal-title" data-i18n="att.comment">Comentario</h3>
-    <div class="modal-sub" id="comment-modal-sub"></div>
-    <textarea id="comment-modal-textarea" data-i18n-attr="placeholder:att.commentPlaceholder" placeholder="Escribe aquí el motivo o un comentario..."></textarea>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeCommentModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="saveCommentModal()" data-i18n="att.saveGeneric">Guardar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="comment-modal"></div>
 
 <!-- MODAL DE ALTA DE MULTA -->
 <div data-mount="fine-modal"></div>
@@ -624,191 +549,21 @@
 <div data-mount="fines-history-modal"></div>
 
 <!-- MODAL DE CALENDARIO -->
-<div class="modal-overlay" id="calendar-modal" onclick="if(event.target===this) closeCalendarModal()">
-  <div class="modal-box cal-modal-box">
-    <div class="cal-modal-head">
-      <div class="head-left">
-        <button class="cal-hamburger-btn" id="cal-hamburger" onclick="toggleCalSidebar()" data-i18n-attr="aria-label:att.showFilters" aria-label="Mostrar filtros">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-        <h3 data-i18n="att.calendarTitle">Calendario</h3>
-      </div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button class="cal-hamburger-btn" onclick="openAddEventModal()" data-i18n-attr="aria-label:att.addEvent,title:att.addEvent" aria-label="Añadir evento" title="Añadir evento">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-        <button class="modal-close" onclick="closeCalendarModal()">✕</button>
-      </div>
-    </div>
-    <div class="cal-modal-body">
-      <div class="cal-modal-sidebar" id="cal-sidebar">
-        <div class="cal-filter-label" data-i18n="att.viewLabel">Ver</div>
-        <label class="cal-filter-item" id="cal-filter-training">
-          <input type="checkbox" checked onchange="toggleCalFilter('training', this.checked)">
-          <span class="dot t-training"></span> <span data-i18n="att.trainings">Entrenos</span>
-        </label>
-        <label class="cal-filter-item" id="cal-filter-match">
-          <input type="checkbox" checked onchange="toggleCalFilter('match', this.checked)">
-          <span class="dot t-match"></span> <span data-i18n="att.matches">Partidos</span>
-        </label>
-        <label class="cal-filter-item" id="cal-filter-birthday">
-          <input type="checkbox" checked onchange="toggleCalFilter('birthday', this.checked)">
-          <span class="dot t-birthday"></span> <span data-i18n="att.birthdays">Cumpleaños</span>
-        </label>
-        <label class="cal-filter-item" id="cal-filter-plan">
-          <input type="checkbox" checked onchange="toggleCalFilter('plan', this.checked)">
-          <span class="dot t-plan"></span> <span data-i18n="att.plans">Planes</span>
-        </label>
-      </div>
-      <div class="cal-modal-main">
-        <div class="cal-nav">
-          <button class="cal-nav-btn" onclick="calShiftMonth(-1)">‹</button>
-          <div class="cal-month-label" id="cal-month-label">Agosto 2026</div>
-          <button class="cal-nav-btn" onclick="calShiftMonth(1)">›</button>
-        </div>
-        <div class="cal-weekdays">
-          <span data-i18n="att.weekdayMon">L</span><span data-i18n="att.weekdayTue">M</span><span data-i18n="att.weekdayWed">X</span><span data-i18n="att.weekdayThu">J</span><span data-i18n="att.weekdayFri">V</span><span data-i18n="att.weekdaySat">S</span><span data-i18n="att.weekdaySun">D</span>
-        </div>
-        <div class="cal-grid" id="cal-grid"></div>
-      </div>
-    </div>
-  </div>
-</div>
+<div data-mount="calendar-modal"></div>
 
 <!-- POPOVER DE DETALLE DE UN EVENTO DEL CALENDARIO -->
-<div class="modal-overlay" id="event-info-modal" onclick="if(event.target===this) closeEventPopover()">
-  <div class="modal-box" style="max-width:340px;">
-    <button type="button" class="eventpop-close" onclick="closeEventPopover()" data-i18n-attr="aria-label:att.close,title:att.close" aria-label="Cerrar" title="Cerrar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <div class="eventpop-date" id="eventpop-date"></div>
-    <div class="eventpop-head-row">
-      <h3 id="eventpop-title" data-i18n="att.eventInfoTitle">Título</h3>
-      <span class="eventpop-type" id="eventpop-type" data-i18n="att.training">Entreno</span>
-    </div>
-    <div class="eventpop-meta" id="eventpop-meta"></div>
-    <div class="eventpop-actions" id="eventpop-actions">
-      <button class="btn-ghost" onclick="editEventFromPopover()" data-i18n="att.edit">Editar</button>
-      <button class="btn-danger" onclick="deleteEventFromPopover()" data-i18n="att.delete">Eliminar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="event-info-modal"></div>
 
 <!-- MODAL: FILTRAR LA LISTA DE ASISTENCIA POR TIPO DE EVENTO -->
-<div class="modal-overlay" id="att-filter-modal" onclick="if(event.target===this) closeAttFilterModal()">
-  <div class="modal-box" style="max-width:320px;">
-    <h3 style="margin-top:0;" data-i18n="att.filterEventsTitle">Filtrar eventos</h3>
-    <div class="modal-sub" data-i18n="att.filterEventsSub">Elige qué tipos de evento quieres ver.</div>
-    <div style="display:flex; flex-direction:column; gap:4px; margin:14px 0 4px;">
-      <label class="cal-filter-item">
-        <input type="checkbox" checked onchange="toggleAttListFilter('training', this.checked)">
-        <span class="dot t-training"></span> <span data-i18n="att.trainings">Entrenos</span>
-      </label>
-      <label class="cal-filter-item">
-        <input type="checkbox" checked onchange="toggleAttListFilter('match', this.checked)">
-        <span class="dot t-match"></span> <span data-i18n="att.matches">Partidos</span>
-      </label>
-      <label class="cal-filter-item">
-        <input type="checkbox" checked onchange="toggleAttListFilter('meeting', this.checked)">
-        <span class="dot t-plan"></span> <span data-i18n="att.meetings">Reuniones</span>
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeAttFilterModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="att-filter-modal"></div>
 
 <!-- MODAL: ELEGIR TIPO DE EVENTO A AÑADIR (preconfiguraciones) -->
-<div class="modal-overlay" id="att-add-type-modal" onclick="if(event.target===this) closeAttAddTypeModal()">
-  <div class="modal-box" style="max-width:360px;">
-    <h3 style="margin-top:0;" data-i18n="att.addEventTitle">Añadir evento</h3>
-    <div class="modal-sub" data-i18n="att.addEventSub">Elige qué tipo de evento quieres crear.</div>
-    <div style="display:flex; flex-direction:column; gap:10px; margin:14px 0 4px;">
-      <button class="att-type-option" onclick="openAddEventModal('training')">
-        <span class="ic t-training"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5l11 11M4 20l3.5-1 9-9 .5-3.5L20.5 3 21 6.5l-3.5 3.5-9 9L4 20z"/></svg></span>
-        <span class="txt"><b data-i18n="att.training">Entreno</b><span data-i18n="att.trainingDesc">CEM Mar Bella · hora de inicio</span></span>
-      </button>
-      <button class="att-type-option" onclick="openAddEventModal('match')">
-        <span class="ic t-match"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="9" ry="6"/><path d="M6 12h12M12 6v12"/></svg></span>
-        <span class="txt"><b data-i18n="att.match">Partido</b><span data-i18n="att.matchDesc">Rival, campo y horario de convocatoria</span></span>
-      </button>
-      <button class="att-type-option" onclick="openAddEventModal('meeting')">
-        <span class="ic t-plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6M17 8a3 3 0 100-6M22 20c0-2.6-2.1-4.8-5-5.6"/></svg></span>
-        <span class="txt"><b data-i18n="att.meeting">Reunión</b><span data-i18n="att.meetingDesc">Directiva, delegados u otro plan del club</span></span>
-      </button>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeAttAddTypeModal()" data-i18n="att.cancel">Cancelar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="att-add-type-modal"></div>
 
 <!-- MODAL PARA AÑADIR UN EVENTO (entreno, partido o reunión, según preconfiguración elegida) -->
-<div class="modal-overlay" id="add-event-modal" onclick="if(event.target===this) closeAddEventModal()">
-  <div class="modal-box" style="max-width:380px; position:relative;">
-    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
-      <h3 style="margin-top:0;" id="add-event-modal-title" data-i18n="att.newEventTitle">Nuevo evento</h3>
-      <button type="button" class="event-delete-btn" id="event-delete-btn" style="display:none;" onclick="openDeleteEventConfirm()" data-i18n-attr="aria-label:att.deleteEventTitle,title:att.deleteEventTitle" aria-label="Eliminar evento" title="Eliminar evento">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-      </button>
-    </div>
-    <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="att.eventTitleLabel">Título</span>
-        <input type="text" id="new-event-title" placeholder="Reunión de directiva" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="att.eventDateLabel">Fecha</span>
-        <input type="date" id="new-event-date" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label id="field-meet-time" style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="att.meetTimeLabel">Convocatoria (opcional)</span>
-        <input type="time" id="new-event-meet-time" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span id="field-start-time-label" data-i18n="att.timeOptional">Hora (opcional)</span>
-        <input type="time" id="new-event-time" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label id="field-end-time" style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="att.eventEndTimeLabel">Hora de fin (opcional)</span>
-        <input type="time" id="new-event-end-time" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);">
-      </label>
-      <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span id="field-place-label-text">Lugar (opcional)</span>
-        <div class="place-row">
-          <input type="text" id="new-event-place" placeholder="Sala del club" oninput="onPlaceInput()" style="font-family:'Roboto',sans-serif; font-size:14px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy); flex:1; min-width:0;">
-          <button type="button" class="place-home-btn" id="place-home-btn" onclick="selectHomePlace()" data-i18n-attr="title:att.homeTitle" title="Casa (CEM Mar Bella)">🏠</button>
-        </div>
-        <div class="place-maps-preview" id="place-maps-preview" style="display:none;"></div>
-        <div class="place-hint" id="field-place-hint" style="display:none;" data-i18n="att.homeHint">🏠 Si el partido es en casa, se creará automáticamente su pestaña de Tercer tiempo.</div>
-      </label>
-      <label id="field-intensity" style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
-        <span data-i18n="att.intensityLabel">Intensidad (opcional)</span>
-        <div class="intensity-picker">
-          <button type="button" id="intensity-btn-low" onclick="selectEventIntensity('low')" data-i18n-attr="title:att.intensityLow" title="Baja intensidad">✨</button>
-          <button type="button" id="intensity-btn-medium" onclick="selectEventIntensity('medium')" data-i18n-attr="title:att.intensityMedium" title="Intensidad media">💪</button>
-          <button type="button" id="intensity-btn-high" onclick="selectEventIntensity('high')" data-i18n-attr="title:att.intensityHigh" title="Alta intensidad">🔥</button>
-        </div>
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeAddEventModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="saveNewEvent()" data-i18n="att.save">Guardar evento</button>
-    </div>
-  </div>
-</div>
+<div data-mount="add-event-modal"></div>
 <!-- MODAL: CONFIRMAR ELIMINAR EVENTO -->
-<div class="modal-overlay" id="delete-event-confirm-modal" onclick="if(event.target===this) closeDeleteEventConfirm()">
-  <div class="modal-box" style="max-width:340px; text-align:center;">
-    <h3 style="margin-top:0;" data-i18n="att.deleteEventTitle">Eliminar evento</h3>
-    <p class="modal-sub" style="margin-bottom:20px;" data-i18n="att.deleteEventConfirm">¿Seguro que quieres eliminar este evento? Esta acción no se puede deshacer.</p>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeDeleteEventConfirm()" data-i18n="att.no">No</button>
-      <button class="btn" style="background:var(--bad);" onclick="confirmDeleteEvent()" data-i18n="att.yesDelete">Sí, eliminar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="delete-event-confirm-modal"></div>
 
 <!-- MODAL: CONFIRMAR ELIMINAR MOVIMIENTO DE TESORERÍA -->
 <div data-mount="delete-treasury-confirm-modal"></div>
@@ -850,23 +605,18 @@
 
 <!-- 2. LA APP. Son <script> clásicos (no módulos): comparten el ámbito global, así
      que las funciones siguen estando disponibles para los onclick="..." del HTML.
-     El orden importa: primero js/core/, luego js/features/ y js/main.js el último.
+     El orden importa: primero js/core/ y js/main.js el último.
      Nada de esto arranca solo: src/main.js (Svelte, <script type="module"> al final,
      que siempre se ejecuta después) monta las secciones migradas y llama a legacyBoot(). -->
 <script src="js/core/storage.js"></script>
 <script src="js/core/i18n.js"></script>
 <script src="js/core/supabase.js"></script>
 <script src="js/core/utils.js"></script>
-<script src="js/core/avatars.js"></script>
 <script src="js/core/names.js"></script>
 <script src="js/core/state.js"></script>
-<script src="js/core/dates.js"></script>
 <script src="js/core/permissions.js"></script>
 <script src="js/core/navigation.js"></script>
 <script src="js/core/auth.js"></script>
-<script src="js/features/calendario.js"></script>
-<script src="js/features/eventos.js"></script>
-<script src="js/features/asistencia.js"></script>
 <script src="js/main.js"></script>
 
 <!-- Registro del service worker: imprescindible para que Chrome (Android y

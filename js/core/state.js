@@ -89,9 +89,8 @@ const sidebarTabOf = {
 /* ================= ASISTENCIA ================= */
 
 // ---- Mi perfil ----
-// Se declara aquí arriba (antes de canManageEvents/toggleAttAddButtonVisibility, que
-// la usan) porque esas funciones se llaman de forma síncrona nada más cargar la
-// página, y necesitan que myProfile ya exista en ese momento.
+// Se declara aquí arriba porque los permisos (js/core/permissions.js y
+// src/features/asistencia/events.js) la leen de forma síncrona nada más arrancar.
 const myProfile = { name:'Tu nombre', mote:'', phone:'', comision:'', rango:'', posicion:'', rol:'', licencia:'', birthdate:'', avatarUrl:'' };
 
 // Plantilla usada para repartir a los jugadores en las 3 pestañas de cada evento
@@ -103,6 +102,5 @@ const rosterById = Object.fromEntries(roster.map(p => [p.id, p]));
 // Usuario que ha iniciado sesión (más adelante vendrá de Supabase Auth)
 const currentUserId = 'me';
 
-// Eventos de asistencia (entrenos y partidos). "attendance" guarda el estado
-// de cada jugador para ese evento: 'yes' | 'no' | 'pending'.
-const attEvents = [];
+// Los eventos de Asistencia (antes attEvents) viven ahora en Svelte:
+// src/features/asistencia/events.js.

@@ -25,8 +25,9 @@ import * as partidos from './features/partidos/index.js';
 import * as actas from './features/actas/index.js';
 import * as tullidas from './features/tullidas/index.js';
 import * as tercerTiempo from './features/tercer-tiempo/index.js';
+import * as asistencia from './features/asistencia/index.js';
 
-for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas, jugadoras, perfil, wellness, partidos, actas, tullidas, tercerTiempo]) feature.install(appBridge);
+for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas, jugadoras, perfil, wellness, partidos, actas, tullidas, tercerTiempo, asistencia]) feature.install(appBridge);
 
 refreshSession();
 window.legacyBoot();

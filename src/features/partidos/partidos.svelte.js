@@ -1,20 +1,23 @@
 // Banner "Próximo partido" de Inicio, Vestuario → Partidos (lista) y la pantalla
 // propia de un partido (su acta: src/features/actas).
 //
-// Los eventos (attEvents, con sus respuestas en ev.attendance) siguen en el código
-// antiguo y no son reactivos: el banner guarda una "foto" de lo que tiene que mostrar
-// cada vez que se pinta (renderNextMatchBanner(), que el código antiguo llama por
-// appBridge.partidos) y la lista se vuelve a leer cuando sube partidosList.version.
+// Los eventos (attEvents, con sus respuestas en ev.attendance, src/features/asistencia)
+// no son reactivos: el banner guarda una "foto" de lo que tiene que mostrar cada vez
+// que se pinta (renderNextMatchBanner()) y la lista se vuelve a leer cuando sube
+// partidosList.version.
 import { legacy } from '../../lib/legacy.js';
+import { attEvents } from '../asistencia/events.js';
+import { attEventIso, attEventType, eventWhenDisplay, todayLocalIso, monthAbbrLabel } from '../../lib/dates.js';
+import { openEventDetail } from '../asistencia/asistencia.svelte.js';
 import { actas, renderMatchReport, loadMatchReport } from '../actas/actas.svelte.js';
 import { setNextMatchTullidesEventId } from '../tullidas/tullidas.svelte.js';
 import { setChecklistMatchId } from './checklist.svelte.js';
 
 // Próximo partido (hoy incluido), o undefined.
-export function findNextMatch(todayIso = legacy.todayIso()) {
-  return legacy.attEvents
-    .filter((ev) => legacy.attEventType(ev) === 'match' && legacy.attEventIso(ev) >= todayIso)
-    .sort((a, b) => legacy.attEventIso(a).localeCompare(legacy.attEventIso(b)))[0];
+export function findNextMatch(todayIso = todayLocalIso()) {
+  return attEvents
+    .filter((ev) => attEventType(ev) === 'match' && attEventIso(ev) >= todayIso)
+    .sort((a, b) => attEventIso(a).localeCompare(attEventIso(b)))[0];
 }
 
 // ---- Banner "Próximo partido" (cabecera de Inicio) ----
@@ -35,7 +38,7 @@ export const nextMatchBanner = $state({
 
 export function renderNextMatchBanner() {
   const b = nextMatchBanner;
-  const todayIso = legacy.todayIso();
+  const todayIso = todayLocalIso();
   const nextMatch = findNextMatch(todayIso);
 
   if (!nextMatch) {
@@ -45,7 +48,7 @@ export function renderNextMatchBanner() {
 
   setNextMatchTullidesEventId(nextMatch.id);
 
-  const isGameDay = legacy.attEventIso(nextMatch) === todayIso;
+  const isGameDay = attEventIso(nextMatch) === todayIso;
   b.label = nextMatch.label;
   b.when = nextMatch.when;
   b.confirmed = Object.values(nextMatch.attendance).filter((s) => s === 'yes').length;
@@ -77,7 +80,7 @@ export function renderNextMatchBanner() {
 
 export function goToNextMatch() {
   const nextMatch = findNextMatch();
-  if (nextMatch) legacy.openEventDetail(nextMatch.id);
+  if (nextMatch) openEventDetail(nextMatch.id);
 }
 
 // NOTE: antes el botón "Confirmar" recibía su onclick por código, que sustituía al del
@@ -85,7 +88,7 @@ export function goToNextMatch() {
 // abre el detalle dos veces (aquí y en goToNextMatch()). Se mantiene igual.
 export function onNextMatchCtaClick() {
   const id = nextMatchBanner.ctaMatchId;
-  legacy.openEventDetail(id);
+  openEventDetail(id);
 }
 
 // ---- Vestuario → Partidos ----
@@ -102,15 +105,15 @@ export function renderPartidosList() {
 // null = todavía no se ha pintado nunca (la lista se queda vacía).
 export function partidosListView() {
   if (!partidosList.version) return null;
-  return legacy.attEvents
-    .filter((ev) => legacy.attEventType(ev) === 'match')
-    .sort((a, b) => legacy.attEventIso(a).localeCompare(legacy.attEventIso(b)))
+  return attEvents
+    .filter((ev) => attEventType(ev) === 'match')
+    .sort((a, b) => attEventIso(a).localeCompare(attEventIso(b)))
     .map((ev) => ({
       id: ev.id,
       date: ev.date,
-      month: legacy.monthAbbrFromEs(ev.month),
+      month: monthAbbrLabel(ev.month),
       label: ev.label,
-      when: legacy.eventWhenDisplay(ev),
+      when: eventWhenDisplay(ev),
     }));
 }
 
@@ -126,7 +129,7 @@ export const partidoDetalle = $state({
 
 export function openPartidoDetail(eventId) {
   partidoDetalle.currentId = eventId;
-  const ev = legacy.attEvents.find((e) => e.id === eventId);
+  const ev = attEvents.find((e) => e.id === eventId);
   partidoDetalle.title = ev ? ev.label : 'Partido';
   legacy.setSection('partido-detalle');
   if (actas.reports[eventId] !== undefined) {

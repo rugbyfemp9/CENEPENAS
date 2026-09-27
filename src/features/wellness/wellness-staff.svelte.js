@@ -5,11 +5,13 @@
 // STAFF_WELLNESS_ROLES y canViewWellnessStaff() (js/core/permissions.js). El módulo de
 // valoración individual de cada jugadora está en wellness.svelte.js.
 //
-// attEvents y el roster siguen viviendo en el código antiguo y no son reactivos: igual
+// attEvents (src/features/asistencia/events.js) y el roster no son reactivos: igual
 // que antes, lo que se ve solo cambia al entrar en la sección, al cambiar de entreno o
 // de jugadora en los desplegables, o al abrir un modal.
 // ==================================================================
 import { legacy } from '../../lib/legacy.js';
+import { attEvents } from '../asistencia/events.js';
+import { attEventIso, attEventType, eventWhenDisplay, hasEventEnded } from '../../lib/dates.js';
 import { wellnessRpeLevel } from './wellness.svelte.js';
 import { wellnessStaffEventMinutes } from './minutes.js';
 import { loadWellnessHistoryData } from './wellness-history.svelte.js';
@@ -62,9 +64,9 @@ export function onEnterStaffPanel() {
 // tarjeta, ver goToWellnessStaffAnalysis()) o, si no había ninguno, el más reciente.
 function populateWellnessStaffEventSelect() {
   const now = new Date();
-  const pastEvents = legacy.attEvents
-    .filter((ev) => legacy.attEventType(ev) !== 'meeting' && legacy.hasEventEnded(ev, now))
-    .sort((a, b) => legacy.attEventIso(b).localeCompare(legacy.attEventIso(a)) || (b.startTime || '').localeCompare(a.startTime || ''));
+  const pastEvents = attEvents
+    .filter((ev) => attEventType(ev) !== 'meeting' && hasEventEnded(ev, now))
+    .sort((a, b) => attEventIso(b).localeCompare(attEventIso(a)) || (b.startTime || '').localeCompare(a.startTime || ''));
 
   if (!pastEvents.length) {
     staff.eventOptions = [];
@@ -76,7 +78,7 @@ function populateWellnessStaffEventSelect() {
   }
 
   const previousSelection = staff.selectedEventId;
-  staff.eventOptions = pastEvents.map((ev) => ({ id: ev.id, label: `${ev.label} · ${legacy.eventWhenDisplay(ev)}` }));
+  staff.eventOptions = pastEvents.map((ev) => ({ id: ev.id, label: `${ev.label} · ${eventWhenDisplay(ev)}` }));
 
   const stillExists = previousSelection && pastEvents.some((ev) => ev.id === previousSelection);
   const eventId = stillExists ? previousSelection : pastEvents[0].id;
@@ -127,7 +129,7 @@ async function loadWellnessStaffData(eventId) {
     return;
   }
 
-  const ev = legacy.attEvents.find((e) => e.id === eventId);
+  const ev = attEvents.find((e) => e.id === eventId);
   const minutes = wellnessStaffEventMinutes(ev);
 
   const rows = (data || []).map((row) => {

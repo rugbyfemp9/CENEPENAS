@@ -3,6 +3,8 @@
 // es la "foto" que guarda renderRollCallList() en rollcall.view. El roster sigue en el
 // código antiguo: Jugadoras/Perfil llaman a renderRollCallList() al recargarlo.
 import { legacy } from '../../lib/legacy.js';
+import { attEvents } from '../asistencia/events.js';
+import { attEventIso } from '../../lib/dates.js';
 import { finesState, canManageFines, persistFineInsert, refreshAfterChange, loadFines } from '../multas/multas.svelte.js';
 import { findNextMatch } from './partidos.svelte.js';
 
@@ -51,7 +53,7 @@ export function closeRollCallModal() {
 
 export function renderRollCallList() {
   if (!rollCallMatchId) return;
-  const match = legacy.attEvents.find((e) => e.id === rollCallMatchId);
+  const match = attEvents.find((e) => e.id === rollCallMatchId);
   if (!match) return;
   const confirmedIds = Object.entries(match.attendance).filter(([, s]) => s === 'yes').map(([id]) => id);
   const state = matchdayRollCall[rollCallMatchId] || {};
@@ -95,9 +97,9 @@ export function setRollCallMark(playerId, mark) {
 // la primera vez fija saved_at, que a partir de ahí bloquea la lista para quien no sea
 // Comi Tesoreria (ver openRollCallModal).
 export async function saveRollCall() {
-  const match = legacy.attEvents.find((e) => e.id === rollCallMatchId);
+  const match = attEvents.find((e) => e.id === rollCallMatchId);
   if (!match) { closeRollCallModal(); return; }
-  const matchIso = legacy.attEventIso(match);
+  const matchIso = attEventIso(match);
   const state = matchdayRollCall[rollCallMatchId] || {};
 
   let changed = false;

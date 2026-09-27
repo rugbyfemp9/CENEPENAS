@@ -7,11 +7,7 @@
 
 /* global supabaseClient, isAdmin, roster, rosterById, currentUserId, currentAuthUserId, myProfile,
    currentLang, t, readCache, writeCache, setSection, displayName, initials, computeDisplayNames,
-   monthAbbrLabel, autoMonthAbbr, monthFullLabel, withDePrefix, todayLocalIso,
-   effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate, attEvents, attEventType,
-   formatFullDate, renderEventDetail,
-   attEventIso, currentEventId:writable, openEventDetail, rolesWithEventManagement,
-   toggleAttAddButtonVisibility, handleLogout, eventWhenDisplay, hasEventEnded,
+   effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, handleLogout,
    canUseWellness, canViewWellnessStaff */
 
 export const legacy = {
@@ -33,44 +29,11 @@ export const legacy = {
   effectiveRole: (rol) => effectiveRoleForPermissions(rol),
   // 'me' → id real de auth.users, para escribir en Supabase (vive en js/core/auth.js).
   toRemotePlayerId: (localId) => toRemotePlayerId(localId),
-  monthAbbrLabel: (monthIndex) => monthAbbrLabel(autoMonthAbbr[monthIndex]),
-  // Igual, pero a partir de la abreviatura en castellano que guardan los eventos (ev.month, p.ej. 'Sep').
-  monthAbbrFromEs: (esAbbr) => monthAbbrLabel(esAbbr),
-  monthFullLabel: (monthIndex) => monthFullLabel(monthIndex),
-  withDePrefix: (word) => withDePrefix(word),
-  todayIso: () => todayLocalIso(),
-  // yyyy-mm-dd → dd/mm/aa
-  formatShortDate: (iso) => formatShortDate(iso),
-  // yyyy-mm-dd → dd/mm/aaaa
-  formatFullDate: (iso) => formatFullDate(iso),
   get storage() { return window.storage; },
-  // Entrenos/partidos de Asistencia (con sus respuestas en ev.attendance), que siguen
-  // viviendo en el código antiguo (js/core/state.js) y no son reactivos.
-  get attEvents() { return attEvents; },
-  // Repinta, con el roster recién cargado, el detalle del evento abierto en Asistencia
-  // (asistencia.js). Se protege sola si esa vista no está abierta.
-  renderEventDetail: () => renderEventDetail(),
-  // Abre el detalle de un evento en Asistencia (asistencia.js).
-  openEventDetail: (eventId) => openEventDetail(eventId),
-  // Fecha yyyy-mm-dd de un evento de Asistencia (js/features/calendario.js).
-  attEventIso: (ev) => attEventIso(ev),
-  // Evento abierto en el detalle de Asistencia (js/core/permissions.js), o null. Lo
-  // cambia también "Tullidas" desde el banner de Inicio (src/features/tullidas).
-  get currentEventId() { return currentEventId; },
-  set currentEventId(value) { currentEventId = value; },
-  // Roles que gestionan eventos (js/core/permissions.js): también pueden subir el acta.
-  get rolesWithEventManagement() { return rolesWithEventManagement; },
-  // Botón "Añadir evento" de Asistencia según el rol (js/core/permissions.js).
-  toggleAttAddButtonVisibility: () => toggleAttAddButtonVisibility(),
   // Cerrar sesión (js/core/auth.js).
   logout: () => handleLogout(),
-  attEventType: (ev) => attEventType(ev),
-  // "Entreno · Miércoles 23/09/26 · CEM Mar Bella · 20:30 - 22:00h" (js/core/dates.js).
-  eventWhenDisplay: (ev) => eventWhenDisplay(ev),
-  // Si un entreno/partido ya ha terminado (js/core/dates.js).
-  hasEventEnded: (ev, now) => hasEventEnded(ev, now),
-  // Permisos de Wellness/RPE (js/core/permissions.js): los usan también la navegación,
-  // el inicio de sesión y Asistencia/Eventos.
+  // Permisos de Wellness/RPE (js/core/permissions.js): los usan también la navegación
+  // y el inicio de sesión.
   canUseWellness: () => canUseWellness(),
   canViewWellnessStaff: () => canViewWellnessStaff(),
   get lang() { return currentLang; },

@@ -1,6 +1,7 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
   import { legacy } from '../../lib/legacy.js';
+  import { formatShortDate } from '../../lib/dates.js';
   import {
     gym, routineMenu, canEditGymRoutine, hasWeeklyRoutine, openGymRoutineUploadModal, toggleGymRoutineMoreMenu,
     closeGymRoutineMoreMenu, loadLastGymRoutine, openGymRoutineArchiveTab, openGymRoutineDay, gymMarksRows,
@@ -88,7 +89,7 @@
           <tr>
             <td>{m.exercise}</td>
             <td>{#if m.record}<b>{m.record.weight} kg</b>{:else}<span class="no-rm">Sin registrar</span>{/if}</td>
-            <td>{m.record ? legacy.formatShortDate(m.record.updatedAt) : '—'}</td>
+            <td>{m.record ? formatShortDate(m.record.updatedAt) : '—'}</td>
             <td>
               <div class="actions-cell">
                 <button class="history-btn" onclick={() => openGymRmHistoryModal(m.exercise)} aria-label="Ver histórico" title="Ver histórico">

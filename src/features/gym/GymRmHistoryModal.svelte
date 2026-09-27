@@ -1,7 +1,7 @@
 <script>
   import Modal from '../../lib/Modal.svelte';
   import { t } from '../../lib/i18n.svelte.js';
-  import { legacy } from '../../lib/legacy.js';
+  import { formatShortDate } from '../../lib/dates.js';
   import { rmHistory, closeGymRmHistoryModal } from './gym.svelte.js';
 
   // Al cerrarlo por fuera (clic en el fondo o "atrás") también se olvida el ejercicio,
@@ -24,7 +24,7 @@
         {#each rmHistory.entries as e, i (i)}
           <div class="gym-rm-history-row{i === 0 ? ' latest' : ''}">
             <span class="w">{e.weight} kg</span>
-            <span class="d">{e.updatedAt ? legacy.formatShortDate(e.updatedAt) : '—'}</span>
+            <span class="d">{e.updatedAt ? formatShortDate(e.updatedAt) : '—'}</span>
           </div>
         {/each}
       </div>

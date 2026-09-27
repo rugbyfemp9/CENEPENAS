@@ -4,6 +4,7 @@
 // la sección: hasta entonces, el banner de Inicio dice que estás al día).
 import { SvelteSet } from 'svelte/reactivity';
 import { legacy } from '../../lib/legacy.js';
+import { todayLocalIso, monthFullLabel, withDePrefix } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
 
 const TRICOUNT_EXPENSES_TABLE = 'tricount_expenses';
@@ -157,7 +158,7 @@ export function templateParts(template) {
 export function tricountDateHeading(iso) {
   if (!iso) return t('tricount.noDate');
   const [y, m, d] = iso.split('-').map(Number);
-  return `${d} ${legacy.withDePrefix(legacy.monthFullLabel(m - 1))} de ${y}`;
+  return `${d} ${withDePrefix(monthFullLabel(m - 1))} de ${y}`;
 }
 
 // Clase y textos según el saldo (con medio céntimo de margen para el redondeo)
@@ -178,7 +179,7 @@ export function toggleSettlementPanel() {
 export async function settleTricountPayment(fromId, toId, amount) {
   const { data, error } = await legacy.supabase
     .from(TRICOUNT_SETTLEMENTS_TABLE)
-    .insert({ from_id: legacy.toRemotePlayerId(fromId), to_id: legacy.toRemotePlayerId(toId), amount, iso: legacy.todayIso() })
+    .insert({ from_id: legacy.toRemotePlayerId(fromId), to_id: legacy.toRemotePlayerId(toId), amount, iso: todayLocalIso() })
     .select()
     .single();
   if (error) { console.error('No se pudo guardar el pago liquidado', error); return; }
@@ -206,7 +207,7 @@ export function openAddTricountModal() {
   expenseForm.saveLabel = t('tricount.saveExpense');
   expenseForm.label = '';
   expenseForm.amount = '';
-  expenseForm.iso = legacy.todayIso();
+  expenseForm.iso = todayLocalIso();
   fillPlayers(legacy.currentUserId);
   expenseForm.participants = new SvelteSet();
   expenseForm.open = true;

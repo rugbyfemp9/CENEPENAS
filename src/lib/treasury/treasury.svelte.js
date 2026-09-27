@@ -14,6 +14,7 @@
 // que se está tecleando. Las filas se reordenan en el siguiente render() (al cambiar
 // un tipo, borrar, añadir o pulsar "Hecho").
 import { legacy } from '../legacy.js';
+import { todayLocalIso } from '../dates.js';
 import { formatEuro } from '../format.js';
 
 const netOf = (entries) => entries.reduce((sum, e) => sum + (e.type === 'ingreso' ? e.amount : -e.amount), 0);
@@ -194,7 +195,7 @@ export function createTreasury({ table, canManage, members, messages }) {
 
   function openAdd() {
     if (!canManage()) return;
-    addForm.iso = legacy.todayIso();
+    addForm.iso = todayLocalIso();
     addForm.concept = '';
     addForm.amount = '';
     setType('ingreso');

@@ -10,31 +10,12 @@ function effectiveRoleForPermissions(rol){
   return rol === 'Capitana' ? 'jugadora' : rol;
 }
 
-// ---- Permisos del botón "Añadir evento" en Asistencia ----
-// Entrenador/a, delegado/a, junta directiva y Capitana pueden crear/editar/borrar
-// eventos (a Capitana se le da aparte, porque jugadora normal no tiene este permiso:
-// ver el comentario sobre effectiveRoleForPermissions más arriba).
-const rolesWithEventManagement = ['entrenador/a', 'delegado/a', 'directiva', 'Capitana'];
-function canManageEvents(){
-  // Ojo: aquí NO se pasa por effectiveRoleForPermissions, porque este es justo un
-  // permiso donde Capitana y jugadora se diferencian (jugadora normal no lo tiene).
-  return isAdmin || rolesWithEventManagement.includes(myProfile.rol);
-}
-function toggleAttAddButtonVisibility(){
-  const btn = document.getElementById('att-add-event-btn');
-  if(btn) btn.style.display = canManageEvents() ? '' : 'none';
-}
-
+// Los permisos de gestión de eventos (canManageEvents, el botón "Añadir evento" de
+// Asistencia) viven ahora en Svelte: src/features/asistencia/events.js.
 // Los permisos de Multas (canManageFines y el modo edición de la tabla), Comi
 // Tesoreria y Comi Tercer Temps (canManageClubTreasury, canManageTercerTemps) viven
 // ahora en Svelte: src/features/multas/, src/features/tesoreria/ y
 // src/features/comi-tercer-temps/.
-
-let currentEventId = null;
-let currentAttTab = 'yes';
-let commentModalCtx = null; // { eventId, playerId } mientras el modal está abierto
-let pendingNewEventType = null; // 'training' | 'match' | 'meeting' — preconfiguración activa del modal "Añadir evento"
-let editingEventId = null; // id del evento que se está editando (null = el modal está en modo "crear")
 
 // ---- Wellness / RPE: quién ve qué ----
 // El módulo de Wellness (modal de valoración, banner de Inicio y panel de Cos Tècnic)

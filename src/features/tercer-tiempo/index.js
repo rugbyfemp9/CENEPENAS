@@ -27,7 +27,7 @@ export function install(bridge) {
   window.addEventListener('app:langchange', onLangChange);
 
   bridge.tercerTiempo = {
-    // Al arrancar (legacyBoot) y tras crear / editar / borrar un evento (eventos.js).
+    // Al arrancar (legacyBoot).
     render: renderThirdTime,
     // Al arrancar (legacyBoot): comprobación cada minuto de las multas automáticas 3T.
     startAutoFinesTimer: startThirdTimeAutoFinesTimer,

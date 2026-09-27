@@ -18,10 +18,9 @@ export function install(bridge) {
   window.addEventListener('app:langchange', onLangChange);
 
   bridge.partidos = {
-    // Tras cualquier cambio en los eventos o en las respuestas (asistencia.js,
-    // eventos.js) y al arrancar (legacyBoot).
+    // Al arrancar (legacyBoot).
     renderNextMatchBanner,
-    // Al repintar Asistencia (asistencia.js) y al entrar en la sección (navigation.js).
+    // Al entrar en la sección (navigation.js).
     renderList: renderPartidosList,
   };
 }

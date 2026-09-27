@@ -6,6 +6,8 @@
 // este bloque comparte permiso con la Pestaña 1: ver canViewWellnessStaff().
 // ==================================================================
 import { legacy } from '../../lib/legacy.js';
+import { attEvents } from '../asistencia/events.js';
+import { attEventIso, attEventType, hasEventEnded, todayLocalIso } from '../../lib/dates.js';
 import { wellnessStaffEventMinutes } from './minutes.js';
 
 // ---- Utilidades de fechas en local (evitan los desfases de zona horaria de
@@ -39,7 +41,7 @@ const WSTAFF_EVO_DAYS = 30; // ventana del gráfico de evolución
 // Últimas WSTAFF_WEEKS_BACK semanas (lunes a domingo), de la más antigua a "esta
 // semana", para que la tabla se lea de izquierda (pasado) a derecha (ahora).
 function wellnessBuildWeekBuckets() {
-  const currentMonday = wellnessMondayIso(legacy.todayIso());
+  const currentMonday = wellnessMondayIso(todayLocalIso());
   const buckets = [];
   for (let i = WSTAFF_WEEKS_BACK - 1; i >= 0; i--) {
     const startIso = wellnessAddDaysIso(currentMonday, -7 * i);
@@ -81,8 +83,8 @@ export async function loadWellnessHistoryData() {
   const buckets = wellnessBuildWeekBuckets();
   const rangeStartIso = buckets[0].startIso;
   const now = new Date();
-  const relevantEvents = legacy.attEvents.filter((ev) =>
-    legacy.attEventType(ev) !== 'meeting' && legacy.hasEventEnded(ev, now) && legacy.attEventIso(ev) >= rangeStartIso
+  const relevantEvents = attEvents.filter((ev) =>
+    attEventType(ev) !== 'meeting' && hasEventEnded(ev, now) && attEventIso(ev) >= rangeStartIso
   );
 
   const renderAll = () => {
@@ -115,7 +117,7 @@ export async function loadWellnessHistoryData() {
     const minutes = wellnessStaffEventMinutes(ev);
     return {
       userId: row.user_id,
-      iso: legacy.attEventIso(ev),
+      iso: attEventIso(ev),
       rpe: row.rpe != null ? Number(row.rpe) : null,
       sleepHours: row.sleep_hours || null,
       hasDiscomfort: !!row.has_discomfort,
@@ -189,9 +191,9 @@ export async function openWellnessPlayerHistoryModal(playerId) {
   const byWeekStart = {};
   (data || []).forEach((row) => {
     if (row.rpe == null) return;
-    const ev = legacy.attEvents.find((e) => e.id === row.event_id);
+    const ev = attEvents.find((e) => e.id === row.event_id);
     if (!ev) return;
-    const iso = legacy.attEventIso(ev);
+    const iso = attEventIso(ev);
     const load = Number(row.rpe) * wellnessStaffEventMinutes(ev);
     const weekStart = wellnessMondayIso(iso);
     byWeekStart[weekStart] = (byWeekStart[weekStart] || 0) + load;
@@ -229,7 +231,7 @@ export function onWellnessEvoPlayerChange(playerId) {
 // partir de wellnessHistoryRawRows: o bien la propia jugadora elegida, o la media del
 // equipo entre quienes hayan valorado cada día.
 function renderWellnessEvolutionForSelection() {
-  const cutoffIso = wellnessAddDaysIso(legacy.todayIso(), -(WSTAFF_EVO_DAYS - 1));
+  const cutoffIso = wellnessAddDaysIso(todayLocalIso(), -(WSTAFF_EVO_DAYS - 1));
   const recentRows = wellnessHistoryRawRows.filter((r) => r.iso >= cutoffIso && r.rpe != null);
 
   let points;

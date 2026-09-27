@@ -3,7 +3,7 @@
   // .modal-box). El botón "atrás" del móvil (js/main.js) cierra cualquier modal
   // abierto quitándole la clase "active" y lanzando "modal:close"; aquí se escucha
   // ese evento para que `open` no se quede desincronizado.
-  let { open = $bindable(false), id, boxStyle = '', children } = $props();
+  let { open = $bindable(false), id, boxStyle = '', boxClass = '', children } = $props();
   let overlay;
 
   $effect(() => {
@@ -21,7 +21,7 @@
   bind:this={overlay}
   onclick={(e) => { if (e.target === e.currentTarget) open = false; }}
 >
-  <div class="modal-box" style={boxStyle}>
+  <div class={boxClass ? `modal-box ${boxClass}` : 'modal-box'} style={boxStyle}>
     {@render children()}
   </div>
 </div>

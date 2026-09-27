@@ -2,6 +2,7 @@
 // que se pinta (renderThirdTime() en tercer-tiempo.svelte.js), igual que antes se
 // generaba el HTML.
 import { legacy } from '../../lib/legacy.js';
+import { attEventIso, eventWhenDisplay, todayLocalIso, monthAbbrLabel } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { thirdTimeCovers } from './covers.svelte.js';
 import {
@@ -34,7 +35,7 @@ export function buildInicioBanner() {
 // 🟢 Abierto = el partido "actual" (el próximo que queda, o el último si no queda ninguno);
 // 🟡 Próximamente = partidos futuros más lejanos; 🔒 Cerrado = partidos ya pasados.
 function tercerMatchStatus(ev, openMatchId, todayIso) {
-  if (legacy.attEventIso(ev) < todayIso) return { code: 'closed', emoji: '🔒', label: t('tercer.statusClosed') };
+  if (attEventIso(ev) < todayIso) return { code: 'closed', emoji: '🔒', label: t('tercer.statusClosed') };
   if (ev.id === openMatchId) return { code: 'open', emoji: '🟢', label: t('tercer.statusOpen') };
   return { code: 'soon', emoji: '🟡', label: t('tercer.statusSoon') };
 }
@@ -53,9 +54,9 @@ function matchRow(ev, index, status) {
   return {
     id: ev.id,
     date: ev.date,
-    month: legacy.monthAbbrFromEs(ev.month),
+    month: monthAbbrLabel(ev.month),
     rival: ev.label.replace(/^(Partido|Partit)\s+/i, ''),
-    when: legacy.eventWhenDisplay(ev),
+    when: eventWhenDisplay(ev),
     roleText: role.text,
     roleCls: role.cls,
     statusCode: status.code,
@@ -79,12 +80,12 @@ export function groupPreviewCol(letter) {
 
 export function buildList() {
   const matches = thirdTimeMatches();
-  const todayIso = legacy.todayIso();
+  const todayIso = todayLocalIso();
   // Los partidos ya jugados se archivan automáticamente a las 23:59 del mismo día
   // (en cuanto cambia la fecha local) y dejan de aparecer aquí; se consultan en "Pasados".
   const upcoming = matches
     .map((ev, index) => ({ ev, index }))
-    .filter(({ ev }) => legacy.attEventIso(ev) >= todayIso);
+    .filter(({ ev }) => attEventIso(ev) >= todayIso);
 
   // Sin próximos partidos se muestran directamente los grupos en la página (y el
   // botón "grupo" se oculta, ver TercerList.svelte).
@@ -100,10 +101,10 @@ export function buildList() {
 // Partidos en casa ya jugados: se listan aparte, del más reciente al más antiguo.
 export function buildHistory() {
   const matches = thirdTimeMatches();
-  const todayIso = legacy.todayIso();
+  const todayIso = todayLocalIso();
   const past = matches
     .map((ev, index) => ({ ev, index }))
-    .filter(({ ev }) => legacy.attEventIso(ev) < todayIso)
+    .filter(({ ev }) => attEventIso(ev) < todayIso)
     .reverse();
 
   if (past.length === 0) return { rows: [], emptyText: t('tercer.noHistoryYet') };

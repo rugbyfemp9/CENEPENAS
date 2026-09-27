@@ -9,6 +9,7 @@
 // actas.view (0 = todavía no se ha pintado nunca, y la caja se queda vacía como el
 // marcado original).
 import { legacy } from '../../lib/legacy.js';
+import { rolesWithEventManagement } from '../asistencia/events.js';
 import { partidoDetalle } from '../partidos/partidos.svelte.js';
 import { plantilla, loadPlantillaStats } from '../jugadoras/jugadoras.svelte.js';
 import { loadProfileMatchesPlayedStat } from '../perfil/perfil.svelte.js';
@@ -27,7 +28,7 @@ let matchReportRealtimeSubscribed = false;
 // El acta la puede subir el mismo cuerpo técnico/directiva que gestiona los eventos
 // (incluida Capitana: mismo permiso, no pasa por effectiveRoleForPermissions).
 function canEditMatchReport() {
-  return legacy.isAdmin || legacy.rolesWithEventManagement.includes(legacy.myProfile.rol);
+  return legacy.isAdmin || rolesWithEventManagement.includes(legacy.myProfile.rol);
 }
 
 export function renderMatchReport(eventId) {

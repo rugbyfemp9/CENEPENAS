@@ -15,6 +15,7 @@
 // se han pintado alguna vez (`multas.shown`).
 import { SvelteSet } from 'svelte/reactivity';
 import { legacy } from '../../lib/legacy.js';
+import { todayLocalIso, formatFullDate } from '../../lib/dates.js';
 import { session } from '../../lib/session.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { treasury, treasuryCommissionMembers } from '../tesoreria/tesoreria.svelte.js';
@@ -410,10 +411,10 @@ export function confirmPayFine(selectedValue) {
   // por bueno directamente, como antes.
   // NOTA: paid_at solo se guarda en local (persistFineUpdate no lo envía a Supabase).
   f.status = 'pagada';
-  f.paidAt = legacy.todayIso();
+  f.paidAt = todayLocalIso();
   persistFineUpdate(f.id, { status: 'pagada', paidToId: null, paid_at: f.paidAt });
   treasury.addEntry({
-    iso: legacy.todayIso(),
+    iso: todayLocalIso(),
     concept: paidConcept(f),
     type: 'ingreso',
     amount: fineReasonById[f.reasonId].amount,
@@ -434,10 +435,10 @@ export function respondFineConfirmation(fineId, accepted) {
 
   if (accepted) {
     f.status = 'pagada';
-    f.paidAt = legacy.todayIso();
+    f.paidAt = todayLocalIso();
     persistFineUpdate(f.id, { status: 'pagada', paid_at: f.paidAt });
     treasury.addEntry({
-      iso: legacy.todayIso(),
+      iso: todayLocalIso(),
       concept: paidConcept(f),
       type: 'ingreso',
       amount: fineReasonById[f.reasonId].amount,
@@ -483,7 +484,7 @@ export function finesHistory() {
         reasonLabel: reason ? reason.label : '',
         amount: reason ? reason.amount : '',
         paidToName: paidTo ? legacy.displayName(paidTo) : null,
-        date: f.paidAt ? legacy.formatFullDate(f.paidAt) : '—',
+        date: f.paidAt ? formatFullDate(f.paidAt) : '—',
       };
     });
 }

@@ -7,6 +7,9 @@
 // solo cambia cuando alguien llama a renderProfile() (appBridge.perfil.render() desde el
 // código antiguo), que guarda aquí lo que toca mostrar en ese momento.
 import { legacy } from '../../lib/legacy.js';
+import { attEvents, attSelection } from '../asistencia/events.js';
+import { attEventIso, attEventType, todayLocalIso, formatFullDate } from '../../lib/dates.js';
+import { renderEventDetail, toggleAttAddButtonVisibility } from '../asistencia/asistencia.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { refreshSession } from '../../lib/session.svelte.js';
 import { refresh as refreshGym } from '../gym/gym.svelte.js';
@@ -80,7 +83,7 @@ export function chooseInjuryIcon(icon) {
   renderFinesTable();
   renderFinePlayerGrid();
   loadPlantilla();
-  if (legacy.currentEventId) legacy.renderEventDetail();
+  if (attSelection.currentEventId) renderEventDetail();
 }
 
 export function renderProfile() {
@@ -95,7 +98,7 @@ export function renderProfile() {
     name: (myProfile.name && myProfile.name !== 'Tu nombre') ? myProfile.name : t('profile.defaultName'),
     moteRole: moteRoleParts.length ? moteRoleParts.join(' · ') : t('profile.setUpRole'),
     phone: myProfile.phone || '—',
-    birthdate: myProfile.birthdate ? legacy.formatFullDate(myProfile.birthdate) : '—',
+    birthdate: myProfile.birthdate ? formatFullDate(myProfile.birthdate) : '—',
     comision: myProfile.comision || '—',
     rango: myProfile.rango || '—',
     posicion: posicionLabel(myProfile.posicion),
@@ -114,9 +117,9 @@ export function renderProfile() {
 
   // % de asistencia a entrenos: entrenos ya realizados hasta hoy (pasados), sobre
   // cuántos de ellos marcaste "Asistiré"
-  const todayIso = legacy.todayIso();
-  const pastTrainings = legacy.attEvents.filter(ev =>
-    legacy.attEventType(ev) === 'training' && legacy.attEventIso(ev) <= todayIso
+  const todayIso = todayLocalIso();
+  const pastTrainings = attEvents.filter(ev =>
+    attEventType(ev) === 'training' && attEventIso(ev) <= todayIso
   );
   const attendedTrainings = pastTrainings.filter(ev => ev.attendance && ev.attendance[legacy.currentUserId] === 'yes').length;
   perfil.attendance = pastTrainings.length
@@ -172,13 +175,13 @@ export function refreshAvatarEverywhere() {
   renderRollCallList();
   refreshGym();
   loadPlantilla();
-  if (legacy.currentEventId) legacy.renderEventDetail();
+  if (attSelection.currentEventId) renderEventDetail();
 }
 
 // Tras editar el perfil propio: el rol y la comisión pueden cambiar qué botones ves en
 // el resto de la app (añadir evento, multa, álbum, subir rutina...).
 export function refreshPermissionsEverywhere() {
-  legacy.toggleAttAddButtonVisibility();
+  toggleAttAddButtonVisibility();
   refreshSession();
   finesPermissionsChanged();
   treasury.permissionsChanged();

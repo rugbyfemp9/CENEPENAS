@@ -6,6 +6,7 @@
 // tiene que mostrar cada vez que se pinta (renderThirdTimeFood()).
 // NOTA: la lista de comida no va ligada a ningún partido (se ve igual en todos).
 import { legacy } from '../../lib/legacy.js';
+import { attEventIso, todayLocalIso } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { thirdTimeCurrentMatch } from './groups.js';
 import { checkThirdTimeAutoFines } from './auto-fines.js';
@@ -47,7 +48,7 @@ export function findFoodEntryForPlayer(playerId) {
 export function isThirdTimeDay() {
   const current = thirdTimeCurrentMatch();
   if (!current) return false;
-  return legacy.attEventIso(current.match) === legacy.todayIso();
+  return attEventIso(current.match) === todayLocalIso();
 }
 
 export async function loadThirdTimeFood() {

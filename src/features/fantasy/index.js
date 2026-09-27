@@ -14,7 +14,7 @@ export function install(bridge) {
   mountAt(SharedLineupsModal, 'shared-lineups-modal');
 
   bridge.fantasy = {
-    // Al arrancar (legacyBoot) y tras crear/editar/eliminar un evento (eventos.js):
+    // Al arrancar (legacyBoot):
     // recupera el borrador local y vuelve a pintar partidos, campo y banquillo.
     init: initFantasy,
     // Al iniciar sesión (auth.js): borrador de esta persona, partidos/banquillo y el

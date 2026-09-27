@@ -2,7 +2,7 @@
 // Lista de próximos partidos en casa, histórico, detalle de un partido (banner
 // personal, cambios de turno, comida), tarjeta de Inicio y modales de grupos.
 //
-// Los datos de los que depende (attEvents, roster en el código antiguo; cambios de
+// Los datos de los que depende (attEvents, en src/features/asistencia/events.js; roster en el código antiguo; cambios de
 // turno, deudas y comida en covers.svelte.js / food.svelte.js) no son reactivos: igual
 // que antes, cada parte de la pantalla guarda una "foto" de lo que tiene que mostrar
 // cada vez que se pinta con renderThirdTime() (null = todavía no se ha pintado nunca, y

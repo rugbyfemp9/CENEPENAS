@@ -1,6 +1,6 @@
 <script>
   // Insignia de "lesionada" (botiquín) o "tocada" (🤕) de un avatar. Mismo marcado que
-  // injuryBadgeHtml() en js/core/avatars.js.
+  // antiguo injuryBadgeHtml() (js/core/avatars.js).
   let { injured = false, injuryIcon = '' } = $props();
 </script>
 

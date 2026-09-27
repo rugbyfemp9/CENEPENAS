@@ -1,6 +1,7 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
   import { legacy } from '../../lib/legacy.js';
+  import { formatShortDate } from '../../lib/dates.js';
   import Avatar from '../../lib/Avatar.svelte';
   import {
     gymAttendanceToday, openGymCheckinModal, cancelGymCheckin, ranking, gymRankingExercises, gymRankingRows,
@@ -70,7 +71,7 @@
               <td class="rank-cell">{i + 1}</td>
               <td class="player-row"><div class="meta"><b>{legacy.displayName(entry.p)}</b></div></td>
               <td class="weight-cell">{entry.weight} kg</td>
-              <td class="updated-cell">{entry.updatedAt ? legacy.formatShortDate(entry.updatedAt) : '—'}</td>
+              <td class="updated-cell">{entry.updatedAt ? formatShortDate(entry.updatedAt) : '—'}</td>
             </tr>
           {/each}
           {#each rows.without as entry, i (i)}

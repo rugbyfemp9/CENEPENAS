@@ -2,6 +2,8 @@
 // Grupos A/B, qué grupo cocina / limpia en cada partido en casa y los roles reales de
 // cada jugadora (ajustados por los cambios de turno aceptados).
 import { legacy } from '../../lib/legacy.js';
+import { attEvents } from '../asistencia/events.js';
+import { attEventIso, attEventType, todayLocalIso } from '../../lib/dates.js';
 import { thirdTimeCovers } from './covers.svelte.js';
 
 // División fija de la plantilla en dos grupos. La rellena la carga de la Plantilla
@@ -22,18 +24,18 @@ export function thirdTimeGroupOf(playerId) {
 // el campo isHome definido (creados antes de esta función) se siguen tratando como
 // partidos en casa para no perder sus pestañas de tercer tiempo ya creadas.
 export function thirdTimeMatches() {
-  return legacy.attEvents
-    .filter((ev) => legacy.attEventType(ev) === 'match' && ev.isHome !== false)
+  return attEvents
+    .filter((ev) => attEventType(ev) === 'match' && ev.isHome !== false)
     .slice()
-    .sort((a, b) => legacy.attEventIso(a).localeCompare(legacy.attEventIso(b)));
+    .sort((a, b) => attEventIso(a).localeCompare(attEventIso(b)));
 }
 // El "partido de esta semana" para el banner: el próximo que quede, o si no queda
 // ninguno por delante, el último que hubo.
 export function thirdTimeCurrentMatch() {
   const matches = thirdTimeMatches();
   if (matches.length === 0) return null;
-  const todayIso = legacy.todayIso();
-  const upcoming = matches.find((ev) => legacy.attEventIso(ev) >= todayIso);
+  const todayIso = todayLocalIso();
+  const upcoming = matches.find((ev) => attEventIso(ev) >= todayIso);
   return { match: upcoming || matches[matches.length - 1], index: matches.indexOf(upcoming || matches[matches.length - 1]) };
 }
 // Grupo A cocina en los partidos de índice par, grupo B en los impares (y al revés
@@ -89,6 +91,6 @@ export function thirdTimeEffectiveMembers(role, matchId, index) {
 }
 
 export function thirdTimeEventLabel(matchId) {
-  const ev = legacy.attEvents.find((e) => e.id === matchId);
+  const ev = attEvents.find((e) => e.id === matchId);
   return ev ? ev.label : '';
 }

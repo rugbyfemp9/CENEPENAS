@@ -18,31 +18,14 @@ function legacyBoot(){
     }
   });
 
-  attEvents.push(...generateAutoTrainings());
+  // Asistencia (Svelte): los entrenos de la temporada y el partido fijo contra Santboi
+  // se generan aquí, en el mismo momento que antes, y luego se pinta la lista.
+  appBridge.asistencia.initEvents();
 
-  // Partido añadido manualmente: CNPN (casa) vs Santboi, sábado 26/09/2026.
-  attEvents.push({
-    id: 'ce1',
-    type: 'match',
-    label: 'Partido vs Santboi',
-    date: 26,
-    month: 'Sep',
-    iso: '2026-09-26',
-    when: `${weekdayFullLabel(6)} ${formatShortDate('2026-09-26')} · ${HOME_VENUE.display} · 17:30h`,
-    place: HOME_VENUE.display,
-    placeMapsUrl: buildMapsSearchUrl(HOME_VENUE.mapsQuery),
-    isHome: true,
-    meetTime: '',
-    startTime: '17:30h',
-    endTime: '',
-    attendance: Object.fromEntries(roster.map(p => [p.id, 'pending'])),
-    comments: {}
-  });
-
-  renderEventList();
+  appBridge.asistencia.renderList();
   appBridge.partidos.renderNextMatchBanner();
   appBridge.wellness.renderReminderBanner();
-  toggleAttAddButtonVisibility();
+  appBridge.asistencia.toggleAddButtonVisibility();
   // Los botones "Añadir multa" / "Editar multas" (Svelte) dependen solos de la sesión.
 
   appBridge.perfil.render();

@@ -182,7 +182,7 @@ async function onAuthenticated(user){
     // El botón "Añadir evento" depende del rol real, y los de "Añadir multa",
     // "Añadir álbum" y los de tesorería de las comisiones reales: todos ellos solo
     // se conocen a partir de aquí.
-    toggleAttAddButtonVisibility();
+    appBridge.asistencia.toggleAddButtonVisibility();
     appBridge.sessionChanged();
     appBridge.multas.permissionsChanged();
     appBridge.tesoreria.permissionsChanged();
@@ -205,7 +205,7 @@ async function onAuthenticated(user){
   // entrenadors aparecieran. Además, cada bloque de abajo va envuelto en su propio
   // try/catch: así, aunque uno falle, no arrastra a los demás.
   try{
-    await refreshSharedEventsAndUI();
+    await appBridge.asistencia.refreshSharedEventsAndUI();
   }catch(e){ console.error('No se han podido refrescar Asistencia/Wellness al iniciar sesión', e); }
 
   try{
@@ -213,7 +213,7 @@ async function onAuthenticated(user){
   }catch(e){ console.error('No se ha podido cargar el módulo de Gimnasio al iniciar sesión', e); }
 
   appBridge.actas.subscribeRealtime();
-  subscribeToAttAttendanceRealtime();
+  appBridge.asistencia.subscribeRealtime();
   appBridge.tullidas.subscribeRealtime();
 
   // Fantasy guarda su borrador y las alineaciones guardadas en almacenamiento de

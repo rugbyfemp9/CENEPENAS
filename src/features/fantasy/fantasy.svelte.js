@@ -5,12 +5,14 @@
 // publicar para un público, "Compartidas contigo" y el aviso de Inicio "X ha compartido
 // contigo su alineación".
 //
-// Los partidos, sus respuestas de asistencia y el roster siguen en el código antiguo
-// (no son reactivos). Igual que antes, el campo y el banquillo solo se vuelven a leer
+// Los partidos y sus respuestas de asistencia (src/features/asistencia/events.js) y el
+// roster (código antiguo) no son reactivos. Igual que antes, el campo y el banquillo solo se vuelven a leer
 // de ahí cuando se "pintan" (renderFantasyLineupUI): `fantasy.version` se incrementa en
 // cada uno de esos momentos y todo lo que los lee depende de ese contador.
 import { SvelteSet } from 'svelte/reactivity';
 import { legacy } from '../../lib/legacy.js';
+import { attEvents } from '../asistencia/events.js';
+import { attEventType, monthAbbrLabel } from '../../lib/dates.js';
 
 // 15 posiciones de rugby con su forma habitual sobre el campo (x/y en %)
 export const fantasyPositions = [
@@ -114,7 +116,7 @@ export async function loadAfterLogin() {
 // para que el desplegable de partidos y el banquillo de disponibles reflejen siempre
 // el roster y los partidos más recientes (que llegan de forma asíncrona desde Supabase).
 export function refreshFantasyMatchesAndUI() {
-  const matches = legacy.attEvents.filter((ev) => legacy.attEventType(ev) === 'match');
+  const matches = attEvents.filter((ev) => attEventType(ev) === 'match');
 
   if (!matches.length) {
     fantasy.matchOptions = [{ value: '', text: 'Todavía no hay partidos creados' }];
@@ -124,7 +126,7 @@ export function refreshFantasyMatchesAndUI() {
     fantasy.matchSelectDisabled = false;
     fantasy.matchOptions = matches.map((ev, i) => ({
       value: ev.id,
-      text: `${i === 0 ? 'Próximo partido — ' : ''}${ev.label} (${ev.date} ${legacy.monthAbbrFromEs(ev.month)})`,
+      text: `${i === 0 ? 'Próximo partido — ' : ''}${ev.label} (${ev.date} ${monthAbbrLabel(ev.month)})`,
     }));
     // Si el partido que ya tenías elegido sigue existiendo, se mantiene (para no perder
     // la alineación que estabas montando); si no, se coge el primero de la lista.
@@ -149,7 +151,7 @@ export function onFantasyMatchChange(matchId) {
 
 export function fantasyAvailablePlayers() {
   fantasy.version; // dependencia reactiva: se relee al volver a pintar
-  const ev = legacy.attEvents.find((e) => e.id === fantasy.selectedMatchId);
+  const ev = attEvents.find((e) => e.id === fantasy.selectedMatchId);
   if (!ev) return [];
   const placed = new Set(Object.values(fantasy.lineup).filter(Boolean));
   return legacy.roster.filter((p) => ev.attendance[p.id] === 'yes' && !placed.has(p.id));
@@ -563,7 +565,7 @@ export async function checkInicioSharedLineupBanner() {
 
   if (dismissed.includes(latest.id)) { sharedBanner.visible = false; sharedBanner.key = null; return; }
 
-  const ev = legacy.attEvents.find((e) => e.id === latest.match_id);
+  const ev = attEvents.find((e) => e.id === latest.match_id);
   const publisher = legacy.rosterById[latest.published_by];
 
   sharedBanner.key = latest.id;

@@ -39,8 +39,8 @@ function setSection(id, opts){
 
   // Al entrar en Asistencia, se traen los entrenos/partidos que haya creado o editado
   // cualquier otra persona desde otro dispositivo, y se refresca la lista.
-  if(id === 'asistencia' && typeof refreshSharedEventsAndUI === 'function'){
-    refreshSharedEventsAndUI();
+  if(id === 'asistencia'){
+    appBridge.asistencia.refreshSharedEventsAndUI();
   }
 
   // Al entrar en Inicio, se comprueba si hay alguna alineación de Fantasy que alguien

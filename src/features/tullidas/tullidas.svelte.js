@@ -10,9 +10,11 @@
 //     created_at timestamptz not null default now()
 //   );
 //
-// El evento del modal es el `currentEventId` del código antiguo (detalle de Asistencia,
-// js/core/permissions.js), igual que antes.
+// El evento del modal es el evento abierto en el detalle de Asistencia
+// (attSelection.currentEventId, src/features/asistencia/events.js), igual que antes.
 import { legacy } from '../../lib/legacy.js';
+import { attEvents, attSelection } from '../asistencia/events.js';
+import { eventWhenDisplay } from '../../lib/dates.js';
 
 export const tullidas = $state({
   open: false,
@@ -51,10 +53,10 @@ async function loadTullidesForEvent(eventId) {
 }
 
 export function openTullidesModal() {
-  const currentEventId = legacy.currentEventId;
-  const ev = legacy.attEvents.find((e) => e.id === currentEventId);
+  const currentEventId = attSelection.currentEventId;
+  const ev = attEvents.find((e) => e.id === currentEventId);
   if (!ev) return;
-  tullidas.sub = `${ev.label} · ${legacy.eventWhenDisplay(ev)}`;
+  tullidas.sub = `${ev.label} · ${eventWhenDisplay(ev)}`;
   tullidas.eventId = currentEventId;
   if (tullidas.input) tullidas.input.value = '';
   tullidas.open = true;
@@ -67,7 +69,7 @@ export function openTullidesModal() {
 // estabas viendo el detalle de otro evento, no lo pisa innecesariamente).
 export function openTullidesModalForNextMatch() {
   if (!nextMatchTullidesEventId) return;
-  legacy.currentEventId = nextMatchTullidesEventId;
+  attSelection.currentEventId = nextMatchTullidesEventId;
   openTullidesModal();
 }
 
@@ -80,7 +82,7 @@ export function closeTullidesModal() {
 export async function addTullidesItem() {
   const input = tullidas.input;
   const note = input.value.trim();
-  const currentEventId = legacy.currentEventId;
+  const currentEventId = attSelection.currentEventId;
   const authUserId = legacy.authUserId;
   if (!note || !currentEventId || !authUserId) return;
 
@@ -97,7 +99,7 @@ export async function addTullidesItem() {
     return;
   }
 
-  const eventId = legacy.currentEventId;
+  const eventId = attSelection.currentEventId;
   if (!tullidas.byEventId[eventId]) tullidas.byEventId[eventId] = [];
   tullidas.byEventId[eventId].push(data);
   input.value = '';
@@ -114,14 +116,14 @@ export async function removeTullidesItem(id) {
     console.error('No se ha podido borrar de la lista de tullidas', error);
     return;
   }
-  const rows = tullidas.byEventId[legacy.currentEventId];
+  const rows = tullidas.byEventId[attSelection.currentEventId];
   if (rows) {
     const i = rows.findIndex((r) => r.id === id);
     if (i !== -1) rows.splice(i, 1);
   }
 }
 
-// Al borrar un evento (eventos.js) se olvida también su lista.
+// Al borrar un evento (src/features/asistencia/events.js) se olvida también su lista.
 export function forgetTullidesForEvent(eventId) {
   delete tullidas.byEventId[eventId];
 }

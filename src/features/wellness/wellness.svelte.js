@@ -6,10 +6,13 @@
 //   4) Molestias físicas: Sí/No y, si Sí, en qué zona.
 // Todo se guarda junto, en una sola fila por (event_id, user_id).
 // Todo el módulo (botón + modal) es SOLO para el rol jugadora: ver canUseWellness()
-// (js/core/permissions.js) y toggleAttWellnessButtonVisibility() (asistencia.js).
+// (js/core/permissions.js) y el detalle de un evento (src/features/asistencia).
 //
-// Los eventos (attEvents), el perfil y la sesión siguen viviendo en el código antiguo.
+// Los eventos (attEvents, src/features/asistencia/events.js) no son reactivos; el perfil
+// y la sesión siguen viviendo en el código antiguo.
 import { legacy } from '../../lib/legacy.js';
+import { attEvents } from '../asistencia/events.js';
+import { attEventIso, attEventType, eventWhenDisplay, hasEventEnded } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
 
 // Cada valor del 1 al 10 tiene su propio emoji, color y texto descriptivo, tal como
@@ -60,11 +63,11 @@ export function setWellnessMood(val) {
 
 export async function openWellnessModal(eventId) {
   if (!legacy.canUseWellness()) return;
-  const ev = legacy.attEvents.find((e) => e.id === eventId);
+  const ev = attEvents.find((e) => e.id === eventId);
   if (!ev) return;
 
   wellnessModal.eventId = eventId;
-  wellnessModal.sub = `${ev.label} · ${legacy.eventWhenDisplay(ev)}`;
+  wellnessModal.sub = `${ev.label} · ${eventWhenDisplay(ev)}`;
 
   // Valores por defecto mientras se cargan (si ya había una respuesta previa, se
   // sobrescriben en cuanto llega la respuesta de Supabase, más abajo).
@@ -158,10 +161,10 @@ export async function renderWellnessReminderBanner() {
   // partidos), no solo entrenos. Antes solo miraba 'training', así que si el último
   // evento finalizado de una jugadora era un partido, el banner nunca lo encontraba
   // aunque tuviera una valoración pendiente de verdad.
-  const pastTrainings = legacy.attEvents
-    .filter((ev) => legacy.attEventType(ev) !== 'meeting' && legacy.hasEventEnded(ev, now))
+  const pastTrainings = attEvents
+    .filter((ev) => attEventType(ev) !== 'meeting' && hasEventEnded(ev, now))
     .sort((a, b) => {
-      const isoCmp = legacy.attEventIso(b).localeCompare(legacy.attEventIso(a));
+      const isoCmp = attEventIso(b).localeCompare(attEventIso(a));
       if (isoCmp !== 0) return isoCmp;
       return (b.startTime || '').localeCompare(a.startTime || '');
     });

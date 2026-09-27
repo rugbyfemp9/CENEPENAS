@@ -1,6 +1,6 @@
 // Multas automáticas de "Tercer tiempo" (3T).
 import { finesState, persistFineInsert, refreshAfterChange } from '../multas/multas.svelte.js';
-import { legacy } from '../../lib/legacy.js';
+import { attEventIso } from '../../lib/dates.js';
 import { thirdTimeCurrentMatch, thirdTimeEffectiveMembers } from './groups.js';
 import { isThirdTimeDay, findFoodEntryForPlayer } from './food.svelte.js';
 
@@ -17,7 +17,7 @@ export function checkThirdTimeAutoFines() {
   const current = thirdTimeCurrentMatch();
   if (!current) return;
   const { match, index } = current;
-  const matchIso = legacy.attEventIso(match);
+  const matchIso = attEventIso(match);
   // Se usan los miembros reales (ya ajustados por cambios de turno aceptados), no el
   // grupo fijo en bruto: quien haya sido cubierta no debe multarse, y quien haya
   // cubierto a otra sí responde por esa tarea

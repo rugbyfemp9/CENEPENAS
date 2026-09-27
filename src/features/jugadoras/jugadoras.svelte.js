@@ -8,6 +8,8 @@
 // No son reactivos: igual que antes, cada tabla solo se vuelve a leer cuando se "pinta" (renderPlantillaTable /
 // renderPlantillaStatsRows), que guarda aquí lo que se ve en ese momento.
 import { legacy } from '../../lib/legacy.js';
+import { formatFullDate } from '../../lib/dates.js';
+import { renderEventDetail } from '../asistencia/asistencia.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { refresh as refreshGym } from '../gym/gym.svelte.js';
 import { refreshFantasyMatchesAndUI } from '../fantasy/fantasy.svelte.js';
@@ -140,7 +142,7 @@ function applyPlantillaRows(data) {
   renderProfile();
   refreshGym(); // asistencia de hoy y ranking del Gym
   renderRollCallList();
-  legacy.renderEventDetail();
+  renderEventDetail();
   renderFinesTable();
 }
 
@@ -207,7 +209,7 @@ export function renderPlantillaTable() {
         injured: esYo ? me.injured : false,
         injuryIcon: esYo ? me.injuryIcon : '',
       },
-      birthdate: p.fecha_nacimiento ? legacy.formatFullDate(p.fecha_nacimiento) : '',
+      birthdate: p.fecha_nacimiento ? formatFullDate(p.fecha_nacimiento) : '',
       rol: p.rol,
       esJugadora,
       rango: p.rango,

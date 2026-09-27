@@ -17,7 +17,7 @@ export function install(bridge) {
 
   bridge.perfil = {
     // Tras iniciar sesión (auth.js), al arrancar (legacyBoot), al entrar en Perfil
-    // (navigation.js) y al cambiar asistencias o eventos (asistencia.js, eventos.js).
+    // (navigation.js).
     render: renderProfile,
     // Email de la cuenta, al iniciar sesión (auth.js).
     setEmail,

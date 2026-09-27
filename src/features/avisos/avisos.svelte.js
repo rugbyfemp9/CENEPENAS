@@ -8,6 +8,7 @@
 //    con una "x" para cerrarla (cada persona la cierra solo para sí misma, como pasa
 //    con el aviso de Fantasy).
 import { legacy } from '../../lib/legacy.js';
+import { monthAbbrLabel, autoMonthAbbr } from '../../lib/dates.js';
 
 export const notices = $state({
   status: 'idle',   // 'loading' mientras se pide la lista de avisos fijados
@@ -143,7 +144,7 @@ export async function saveNotice() {
     type: noticeForm.type,
     created_by: userId,
     created_by_name: me ? legacy.displayName(me) : (legacy.myProfile.name || 'Alguien'),
-    date_label: now.getDate() + ' ' + legacy.monthAbbrLabel(now.getMonth()) + ' · ' +
+    date_label: now.getDate() + ' ' + monthAbbrLabel(autoMonthAbbr[now.getMonth()]) + ' · ' +
       String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
   };
 
