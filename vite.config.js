@@ -2,12 +2,12 @@ import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { cpSync } from 'node:fs';
 
-// Los estilos (css/), las imágenes (assets/) y los service workers se sirven tal cual,
-// sin pasar por Vite: en desarrollo ya están en la raíz del proyecto y al compilar se
-// copian a dist/ en la misma ruta. Así las rutas de siempre (css/..., assets/img/...)
-// siguen funcionando igual en los dos casos.
-const STATIC = ['css', 'assets', 'sw.js', 'manifest.json', 'firebase-messaging-sw.js'];
-const STATIC_URL = /^(\.\/)?(css|assets)\/|^(\.\/)?manifest\.json$/;
+// Las imágenes (assets/), el manifest y los service workers se sirven tal cual, sin
+// pasar por Vite: en desarrollo ya están en la raíz del proyecto y al compilar se copian
+// a dist/ en la misma ruta, así que las rutas de siempre (assets/img/...) funcionan
+// igual en los dos casos. Los estilos sí los empaqueta Vite (se importan en src/main.js).
+const STATIC = ['assets', 'sw.js', 'manifest.json', 'firebase-messaging-sw.js'];
+const STATIC_URL = /^(\.\/)?assets\/|^(\.\/)?manifest\.json$/;
 
 function legacyStatic() {
   let outDir;
@@ -35,7 +35,17 @@ export default defineConfig({
   base: './',
   publicDir: false,
   // Los archivos que genera Vite van a build/, para no mezclarse con assets/img.
-  // Toda la app es un único bundle (~500 kB sin comprimir, ~140 kB con gzip) desde que
-  // el armazón también es Svelte: se sube el límite del aviso de tamaño.
-  build: { assetsDir: 'build', chunkSizeWarningLimit: 600 },
+  // supabase-js va en su propio archivo: cambia mucho menos que la app, así que el
+  // navegador lo sigue teniendo en caché después de cada publicación.
+  // La app en sí es un único bundle (~500 kB sin comprimir, ~140 kB con gzip): se sube
+  // el límite del aviso de tamaño.
+  build: {
+    assetsDir: 'build',
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => (id.includes('node_modules/@supabase/') ? 'supabase' : undefined),
+      },
+    },
+  },
 });

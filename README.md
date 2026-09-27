@@ -1,9 +1,9 @@
 # CENEPENAS
 
 Panel del club CN Peñas. Web estática publicada en GitHub Pages (la app de Capacitor
-carga esa misma URL). Los datos viven en Supabase y las notificaciones push van por
-Firebase. Se compila con [Vite](https://vite.dev) y se está migrando a
-[Svelte](https://svelte.dev) sección a sección.
+carga esa misma URL). Está hecha con [Svelte 5](https://svelte.dev) y se compila con
+[Vite](https://vite.dev). Los datos viven en Supabase y las notificaciones push van por
+Firebase.
 
 ## Desarrollo
 
@@ -17,53 +17,65 @@ npm run preview    # sirve dist/ tal cual se publicará
 npm run test:e2e   # tests en un navegador de verdad, con un Supabase simulado
 ```
 
-Los tests nunca tocan la base de datos real: `tests/e2e/support/fake-supabase.js`
-responde a todas las llamadas con los datos de `tests/e2e/fixtures/seed.js`. Ojo: con
-`npm run dev` la web sí usa el Supabase real, así que lo que guardes ahí es de verdad.
+Ojo: con `npm run dev` y `npm run preview` la web usa el **Supabase real**, así que lo
+que guardes ahí es de verdad. Los tests, en cambio, nunca tocan la base de datos real.
 
 Al fusionar en `main`, GitHub Actions compila y publica la web
 (`.github/workflows/deploy.yml`). Requisito, una sola vez: en el repositorio,
-Settings → Pages → Source: **GitHub Actions**.
+Settings → Pages → Source: **GitHub Actions**. En cada pull request se compila y se
+pasan los tests (`.github/workflows/ci.yml`).
 
 ## Estructura
 
 ```
-index.html            Marcado de las pantallas aún no migradas + orden de carga
-src/                  La parte en Svelte
-  main.js             Arranque: monta las secciones migradas y luego llama a legacyBoot()
-  lib/                Piezas compartidas (idioma, sesión, puente con el código antiguo...)
-  features/<sección>/ Una carpeta por sección migrada: estado (*.svelte.js) + componentes
-js/                   Código antiguo, <script> clásicos (se va vaciando con la migración)
-  core/               Almacenamiento, idioma, Supabase, sesión, estado, navegación...
-  features/           Una sección por archivo
-  main.js             legacyBoot(): lo que el código antiguo ejecuta al arrancar
-css/                  Estilos, uno por sección (el orden de los <link> es la cascada)
-assets/img/           Logos, escudos y portadas de la galería
-sw.js                 Service worker (instalación como PWA + caché)
-tests/e2e/            Tests de Playwright
-config.toml           Configuración local de Supabase
+index.html                  <head> (manifest, fuentes...) y el punto de montaje
+src/
+  main.js                   Arranque: estilos, armazón, secciones y el orden de inicio
+  shell/                    Armazón: login/registro, navegación, barra lateral y
+                            superior, nav inferior, Inicio, Vestuario, Comisiones
+  features/<sección>/       Una carpeta por sección: estado y lógica en *.svelte.js,
+                            y sus componentes .svelte
+  lib/                      Piezas compartidas: idioma (i18n/ + i18n.svelte.js),
+                            sesión y roster, permisos, Supabase, almacenamiento,
+                            fechas, modal, avatar, push, service worker...
+css/                        Estilos, uno por zona (se importan en src/main.js; el orden
+                            es la cascada)
+assets/img/                 Logos, escudos y portadas de la galería
+sw.js                       Service worker (instalación como PWA + caché)
+firebase-messaging-sw.js    Service worker de las notificaciones en segundo plano
+tests/e2e/                  Tests de Playwright
+scripts/                    Utilidades (comparar capturas de pantalla)
+config.toml                 Configuración local de Supabase
 ```
 
-Vite no toca `js/`, `css/`, `assets/` ni los service workers: en desarrollo se sirven
-desde la raíz y al compilar se copian tal cual a `dist/` (ver `vite.config.js`).
+`assets/`, el manifest y los service workers no pasan por Vite: en desarrollo se sirven
+desde la raíz y al compilar se copian tal cual a `dist/` (ver `vite.config.js`), así que
+sus rutas (`assets/img/...`) son las mismas en los dos casos.
 
-## Cómo conviven el código antiguo y Svelte
+## Cómo está organizado el código
 
-- El código de `js/` son `<script>` clásicos: comparten el ámbito global, así
-  que sus funciones se pueden llamar desde cualquier archivo y desde los
-  `onclick="..."` del HTML. No arrancan solos: solo declaran funciones y estado.
-- `src/main.js` se ejecuta después. Monta los componentes de las secciones migradas,
-  deja en `window.appBridge` lo que el código antiguo puede llamar de ellas y, al final,
-  llama a `legacyBoot()` para arrancar el resto.
-- Desde Svelte, todo lo que se lee del código antiguo pasa por `src/lib/legacy.js`.
-- El idioma: `setLang()` lanza el evento `app:langchange` y `src/lib/i18n.svelte.js`
-  lo convierte en estado reactivo, así que los componentes se traducen solos.
+- Cada sección guarda su estado en un `*.svelte.js` (con `$state`) y lo exporta junto
+  con las funciones que lo cambian; los componentes solo lo pintan. Si una sección
+  necesita algo de otra, lo importa directamente.
+- Los textos pasan siempre por `t('clave')` (`src/lib/i18n.svelte.js`); el diccionario
+  está en `src/lib/i18n/es.js` y `ca.js`. Al cambiar de idioma todo se vuelve a pintar
+  solo.
+- Todo lo que viene de Supabase se escapa automáticamente (Svelte). Las URLs que vienen
+  de los datos pasan además por `safeUrl()` (`src/lib/url.js`), que no deja pasar
+  `javascript:`.
+- `window.setSection`, `window.setLang` y `window.toggleLang` siguen siendo globales:
+  los usan los tests.
 
-Para migrar una sección: mover su estado y su lógica a
-`src/features/<sección>/<sección>.svelte.js`, su marcado a componentes, sustituir en el
-código antiguo las llamadas a esa sección por `appBridge.<sección>.…`, borrar su
-archivo de `js/features/` y comprobar que los tests siguen pasando. Para
-comparar pantallas antes y después:
+## Tests
+
+`npm run test:e2e` compila la web y la abre en Chromium (Playwright) contra un Supabase
+en memoria (`tests/e2e/support/fake-supabase.js`, con los datos de
+`tests/e2e/fixtures/seed.js`), con el reloj fijado y sin red externa. Hay una spec por
+sección, que describe lo que se ve y lo que se guarda en Supabase; los `// NOTE:` marcan
+comportamientos raros que se han dejado tal cual a propósito.
+
+Para comprobar que un cambio no altera nada visualmente, se pueden comparar capturas de
+todas las pantallas antes y después:
 
 ```
 SNAPSHOT_DIR=.snapshots/antes npx playwright test snapshot

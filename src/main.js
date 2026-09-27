@@ -4,6 +4,22 @@
 //   2. monta el armazón (src/shell/App.svelte) en el <div data-mount="app">;
 //   3. monta cada sección dentro del armazón (src/features/*/index.js);
 //   4. arranca la app, en el mismo orden de siempre (antes legacyBoot(), js/main.js).
+// Estilos de toda la app, en el orden de siempre (el orden es la cascada). Vite los
+// junta en un único archivo al compilar.
+import '../css/base.css';
+import '../css/layout.css';
+import '../css/components.css';
+import '../css/asistencia.css';
+import '../css/multas.css';
+import '../css/calendario.css';
+import '../css/vestuario.css';
+import '../css/gym.css';
+import '../css/galeria.css';
+import '../css/comisiones.css';
+import '../css/nav.css';
+import '../css/fantasy.css';
+import '../css/auth.css';
+
 import { mountAt } from './lib/mount.js';
 import { installPush } from './lib/push.js';
 import { registerServiceWorker } from './lib/sw-register.js';

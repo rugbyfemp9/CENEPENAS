@@ -11,7 +11,7 @@
 // Google Fonts o el CDN de supabase-js sigue yendo siempre directo a la red,
 // sin pasar por caché, para no servir nunca datos del club desactualizados.
 
-const CACHE_NAME = 'cnpenas-v2';
+const CACHE_NAME = 'cnpenas-v3';
 
 // Rutas relativas a la carpeta donde vive este sw.js (CENEPENAS/), para que
 // funcione igual si algún día cambia el nombre del repo.
@@ -48,7 +48,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Estrategia "stale-while-revalidate": responde al momento con lo que haya en
+  // La página en sí (index.html) va primero a la red y solo tira de caché si no hay
+  // conexión. Con "stale-while-revalidate" también para ella, tras publicar una
+  // versión nueva se servía el index.html antiguo de caché, que apunta a archivos
+  // (build/index-<hash>.js...) que ya no existen, y esa primera carga salía rota.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match('index.html')))
+    );
+    return;
+  }
+
+  // Para el resto (JS, CSS, imágenes): "stale-while-revalidate". Responde al momento con lo que haya en
   // caché (si hay algo) para que se sienta rápida, y en paralelo pide la versión
   // fresca a la red y actualiza la caché para la próxima vez.
   event.respondWith(
