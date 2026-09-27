@@ -1334,7 +1334,6 @@ function setLang(lang){
   // Las secciones ya migradas a Svelte se repintan solas al recibir este evento.
   window.dispatchEvent(new CustomEvent('app:langchange', { detail: lang }));
   if(typeof renderNextMatchBanner === 'function') renderNextMatchBanner();
-  if(typeof renderWellnessReminderBanner === 'function') renderWellnessReminderBanner();
   if(typeof renderInicioTercerBanner === 'function') renderInicioTercerBanner();
   if(typeof renderEventList === 'function') renderEventList();
   if(typeof renderEventDetail === 'function' && typeof currentEventId !== 'undefined' && currentEventId) renderEventDetail();

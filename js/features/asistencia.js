@@ -323,6 +323,34 @@ function spawnIntensityBurst(emoji){
   }, maxDelay + 100);
 }
 
+// Muestra/oculta el botón 📊 de la tarjeta de asistencia según el rol, y recoloca
+// los botones superiores (editar / tullidas / wellness) uno junto a otro, en función
+// de cuáles estén realmente visibles para evitar huecos o solapes.
+function toggleAttWellnessButtonVisibility(){
+  const btn = document.getElementById('att-detail-wellness-btn');
+  if(btn) btn.style.display = canUseWellness() ? '' : 'none';
+  layoutAttDetailHeaderButtons();
+}
+// Muestra/oculta el botón 📊 de acceso directo al Panel de Análisis Wellness/RPE de
+// Cos Tècnic, en la cabecera del DETALLE de un evento concreto (mismo criterio que
+// el botón equivalente de la tarjeta en el listado de Asistencia: solo Cos Tècnic y
+// solo si el evento ya ha terminado, ver canViewWellnessStaff()/hasEventEnded()).
+function toggleAttWellnessStaffButtonVisibility(ev){
+  const btn = document.getElementById('att-detail-wellness-staff-btn');
+  if(btn) btn.style.display = (canViewWellnessStaff() && hasEventEnded(ev)) ? '' : 'none';
+  layoutAttDetailHeaderButtons();
+}
+function layoutAttDetailHeaderButtons(){
+  const order = ['att-detail-edit-btn', 'att-detail-tullides-btn', 'att-detail-wellness-btn', 'att-detail-wellness-staff-btn'];
+  let offset = 10;
+  order.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el || el.style.display === 'none') return;
+    el.style.right = offset + 'px';
+    offset += 34;
+  });
+}
+
 function renderEventDetail(){
   const ev = attEvents.find(e => e.id === currentEventId);
   if(!ev) return;

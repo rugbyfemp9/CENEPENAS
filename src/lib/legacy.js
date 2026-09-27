@@ -11,7 +11,8 @@
    effectiveRoleForPermissions, toRemotePlayerId, SUPABASE_URL, formatShortDate, attEvents, attEventType,
    fines:writable, formatFullDate, thirdTimeGroups, renderThirdTime, renderRollCallList, renderEventDetail,
    findRosterMatchForReportPlayer, attEventIso, currentEventId, normalizeRosterName,
-   toggleAttAddButtonVisibility, renderThirdTimeFood, handleLogout */
+   toggleAttAddButtonVisibility, renderThirdTimeFood, handleLogout, eventWhenDisplay, hasEventEnded,
+   canUseWellness, canViewWellnessStaff */
 
 export const legacy = {
   get supabase() { return supabaseClient; },
@@ -76,6 +77,14 @@ export const legacy = {
   // Cerrar sesión (js/core/auth.js).
   logout: () => handleLogout(),
   attEventType: (ev) => attEventType(ev),
+  // "Entreno · Miércoles 23/09/26 · CEM Mar Bella · 20:30 - 22:00h" (js/core/dates.js).
+  eventWhenDisplay: (ev) => eventWhenDisplay(ev),
+  // Si un entreno/partido ya ha terminado (js/core/dates.js).
+  hasEventEnded: (ev, now) => hasEventEnded(ev, now),
+  // Permisos de Wellness/RPE (js/core/permissions.js): los usan también la navegación,
+  // el inicio de sesión y Asistencia/Eventos.
+  canUseWellness: () => canUseWellness(),
+  canViewWellnessStaff: () => canViewWellnessStaff(),
   get lang() { return currentLang; },
   t: (key, vars) => t(key, vars),
   readCache: (key) => readCache(key),

@@ -107,3 +107,19 @@ function generateAutoTrainings(){
   }
   return events;
 }
+
+// Wellness/RPE, banner de Inicio y botones 📊 de Asistencia/Eventos.
+// Un entreno se considera "finalizado" si su fecha ya pasó, o si es hoy pero su hora
+// de fin (o de inicio, si no hay hora de fin) ya ha pasado.
+function hasEventEnded(ev, now){
+  const nowRef = now || new Date();
+  const todayIso = todayLocalIso();
+  const iso = attEventIso(ev);
+  if(iso < todayIso) return true;
+  if(iso > todayIso) return false;
+  const timeStr = (ev.endTime || ev.startTime || '').replace(/h$/, '');
+  if(!timeStr) return false;
+  const [hh, mm] = timeStr.split(':').map(Number);
+  const eventMoment = new Date(nowRef.getFullYear(), nowRef.getMonth(), nowRef.getDate(), hh || 0, mm || 0);
+  return nowRef >= eventMoment;
+}

@@ -332,9 +332,9 @@ function attEventCardHtml(ev){
   const intensityEmoji = type === 'training' ? trainingIntensityEmoji(ev.intensity) : '';
   // Botón 📊 de acceso directo al Panel de Análisis Wellness/RPE de este evento
   // concreto: solo Cos Tècnic, y solo si el evento ya existe en ese panel (mismo
-  // criterio que populateWellnessStaffEventSelect(): ya ha terminado).
+  // criterio que el desplegable del panel, src/features/wellness/: ya ha terminado).
   const wellnessStaffBtn = (canViewWellnessStaff() && hasEventEnded(ev))
-    ? `<button class="wstaff-quicklink" onclick="event.stopPropagation(); goToWellnessStaffAnalysis('${ev.id}')" aria-label="${t('wstaff.quickAccessButton')}" title="${t('wstaff.quickAccessButton')}">📊</button>`
+    ? `<button class="wstaff-quicklink" onclick="event.stopPropagation(); appBridge.wellness.goToStaffAnalysis('${ev.id}')" aria-label="${t('wstaff.quickAccessButton')}" title="${t('wstaff.quickAccessButton')}">📊</button>`
     : '';
   return `
       <div class="att-event ${type === 'match' ? 'att-event--match' : ''}" onclick="openEventDetail('${ev.id}')">
@@ -480,5 +480,5 @@ async function refreshSharedEventsAndUI(){
   renderEventList();
   renderCalendarGrid();
   renderNextMatchBanner();
-  if(typeof renderWellnessReminderBanner === 'function') renderWellnessReminderBanner();
+  appBridge.wellness.renderReminderBanner();
 }

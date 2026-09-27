@@ -248,14 +248,8 @@
         </div>
       </div>
       <!-- Recordatorio de valoración Wellness/RPE del entreno más reciente ya finalizado
-           y todavía sin valorar. Solo jugadoras: ver renderWellnessReminderBanner(). -->
-      <div class="wellness-reminder-banner" id="inicio-wellness-reminder-banner" onclick="openWellnessReminderBanner()">
-        <div class="icon">⚠️</div>
-        <div class="txt">
-          <b data-i18n="wellnessReminder.title">Tens alguna cosa pendent de valorar!</b>
-          <span data-i18n="wellnessReminder.subtitle">Valora la càrrega de l'últim entrenament o partit</span>
-        </div>
-      </div>
+           y todavía sin valorar. Solo jugadoras: lo pinta Svelte (src/features/wellness/WellnessReminderBanner.svelte). -->
+      <div data-mount="wellness-reminder-banner"></div>
       <div class="league-banner" id="league-banner" onclick="setSection('liga')" style="cursor:pointer;">
         <div class="lg-info">
           <div class="lg-title">DHC</div>
@@ -308,14 +302,14 @@
           🩹
         </button>
         <!-- Wellness / RPE: solo visible para el rol jugadora (ver toggleAttWellnessButtonVisibility) -->
-        <button class="att-event-edit-btn att-detail-wellness-btn" id="att-detail-wellness-btn" onclick="openWellnessModal(currentEventId)" data-i18n-attr="aria-label:att.wellnessButton,title:att.wellnessButton" aria-label="Wellness" title="Wellness" style="display:none; right:44px;">
+        <button class="att-event-edit-btn att-detail-wellness-btn" id="att-detail-wellness-btn" onclick="appBridge.wellness.openModal(currentEventId)" data-i18n-attr="aria-label:att.wellnessButton,title:att.wellnessButton" aria-label="Wellness" title="Wellness" style="display:none; right:44px;">
           📊
         </button>
         <!-- Acceso directo al Panel de Análisis Wellness/RPE de Cos Tècnic para ESTE evento
              concreto: solo entrenador/a, delegado/a, directiva, fisio o admin, y solo si el
              evento ya ha terminado (ver canViewWellnessStaff()/hasEventEnded() y
              toggleAttWellnessStaffButtonVisibility()). -->
-        <button class="att-event-edit-btn att-detail-wellness-staff-btn" id="att-detail-wellness-staff-btn" onclick="goToWellnessStaffAnalysis(currentEventId)" data-i18n-attr="aria-label:wstaff.quickAccessButton,title:wstaff.quickAccessButton" aria-label="Wellness / RPE equipo" title="Wellness / RPE equipo" style="display:none; right:44px;">
+        <button class="att-event-edit-btn att-detail-wellness-staff-btn" id="att-detail-wellness-staff-btn" onclick="appBridge.wellness.goToStaffAnalysis(currentEventId)" data-i18n-attr="aria-label:wstaff.quickAccessButton,title:wstaff.quickAccessButton" aria-label="Wellness / RPE equipo" title="Wellness / RPE equipo" style="display:none; right:44px;">
           📊
         </button>
         <div class="att-detail-top">
@@ -420,105 +414,8 @@
          toggleWellnessStaffCardVisibility(). Ni la pestanya de "Vestuario" ni el botón del
          sidebar aparecen para el resto de roles (p.ej. jugadora), y setSection() redirige
          igualmente si alguien intenta entrar a mano. -->
-    <section class="section" id="sec-wellness-staff">
-      <div class="back-link" onclick="setSection('vestuario')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span data-i18n="fines.backLabel">Vestuario</span></div>
-      <div class="section-head"><h2 data-i18n="nav.wellnessStaff">Percepción del esfuerzo</h2></div>
-
-      <!-- Subpestañas: análisis de una sesión concreta vs. histórico/tendencias de todo
-           el equipo (ver setWellnessStaffSubtab()). -->
-      <div class="wstaff-subtabs">
-        <button class="wstaff-subtab active" id="wstaff-subtab-btn-session" onclick="setWellnessStaffSubtab('session')" data-i18n="wstaff.subtabSession">📋 Sesión</button>
-        <button class="wstaff-subtab" id="wstaff-subtab-btn-history" onclick="setWellnessStaffSubtab('history')" data-i18n="wstaff.subtabHistory">📈 Histórico y tendencias</button>
-      </div>
-
-      <!-- PESTAÑA 1: ANÁLISIS DE LA SESIÓN (vista diaria de un entreno/partido concreto) -->
-      <div class="wstaff-tab-panel active" id="wstaff-tab-session">
-        <div class="wstaff-event-select-row">
-          <label>
-            <span data-i18n="wstaff.eventLabel">Entrenamiento</span>
-            <select id="wstaff-event-select" onchange="onWellnessStaffEventChange(this.value)"></select>
-          </label>
-        </div>
-
-        <!-- BLOQUE DE ALERTAS RÁPIDAS -->
-        <div class="wstaff-alerts-grid" id="wstaff-alerts-grid">
-          <div class="wstaff-alert-card discomfort" onclick="openWellnessAlertModal('discomfort')" style="cursor:pointer;">
-            <div class="wstaff-alert-head">
-              <span class="wstaff-alert-icon">🔴</span>
-              <span class="wstaff-alert-title" data-i18n="wstaff.alertDiscomfortTitle">Molestias</span>
-              <span class="wstaff-alert-count" id="wstaff-alert-discomfort-count">0</span>
-            </div>
-          </div>
-          <div class="wstaff-alert-card sleep" onclick="openWellnessAlertModal('sleep')" style="cursor:pointer;">
-            <div class="wstaff-alert-head">
-              <span class="wstaff-alert-icon">🟡</span>
-              <span class="wstaff-alert-title" data-i18n="wstaff.alertSleepTitle">Mal descanso</span>
-              <span class="wstaff-alert-count" id="wstaff-alert-sleep-count">0</span>
-            </div>
-          </div>
-          <div class="wstaff-alert-card load" onclick="openWellnessAlertModal('load')" style="cursor:pointer;">
-            <div class="wstaff-alert-head">
-              <span class="wstaff-alert-icon">🔥</span>
-              <span class="wstaff-alert-title" data-i18n="wstaff.alertLoadTitle">Carga alta</span>
-              <span class="wstaff-alert-count" id="wstaff-alert-load-count">0</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- TABLA GLOBAL DEL ENTRENAMIENTO -->
-        <div class="card wstaff-table-card">
-          <table class="wstaff-table">
-            <thead>
-              <tr>
-                <th data-i18n="wstaff.colPlayer">Jugadora</th>
-                <th class="num" data-i18n="wstaff.colSleep">Horas de sueño</th>
-                <th class="num" data-i18n="wstaff.colMood">Estado de ánimo</th>
-                <th class="num" data-i18n="wstaff.colRpe">RPE</th>
-                <th class="num" data-i18n="wstaff.colLoad">Carga (sRPE)</th>
-                <th data-i18n="wstaff.colDiscomfort">Molestias</th>
-              </tr>
-            </thead>
-            <tbody id="wstaff-table-body"></tbody>
-          </table>
-          <div class="wstaff-empty-state" id="wstaff-empty-state" style="display:none;" data-i18n="wstaff.noData">Todavía no hay ninguna jugadora que haya valorado este entrenamiento.</div>
-        </div>
-      </div>
-
-      <!-- PESTAÑA 2: HISTÓRICO Y TENDENCIAS (Fase 2 — evolución de todo el equipo) -->
-      <div class="wstaff-tab-panel" id="wstaff-tab-history">
-        <!-- EVOLUCIÓN INDIVIDUAL / EQUIPO: línea temporal de los últimos 30 días
-             (ver renderWellnessEvoChart()). -->
-        <div class="card wstaff-evo-card">
-          <div class="wstaff-evo-head">
-            <h3 data-i18n="wstaff.evoTitle">Evolución (últimos 30 días)</h3>
-            <label class="wstaff-evo-select-wrap">
-              <span data-i18n="wstaff.evoPlayerLabel">Ver</span>
-              <select id="wstaff-evo-player-select" onchange="onWellnessEvoPlayerChange(this.value)"></select>
-            </label>
-          </div>
-          <div class="wstaff-evo-summary-grid">
-            <div class="wstaff-evo-summary-item"><span id="wstaff-evo-sum-sessions">0</span><small data-i18n="wstaff.evoSumSessions">Sesiones valoradas</small></div>
-            <div class="wstaff-evo-summary-item"><span id="wstaff-evo-sum-avgrpe">—</span><small data-i18n="wstaff.evoSumAvgRpe">RPE medio</small></div>
-            <div class="wstaff-evo-summary-item"><span id="wstaff-evo-sum-load">0</span><small data-i18n="wstaff.evoSumLoad">Carga total (sRPE)</small></div>
-            <div class="wstaff-evo-summary-item warn"><span id="wstaff-evo-sum-sleep">0</span><small data-i18n="wstaff.evoSumSleep">Días de mal descanso</small></div>
-            <div class="wstaff-evo-summary-item bad"><span id="wstaff-evo-sum-discomfort">0</span><small data-i18n="wstaff.evoSumDiscomfort">Días con molestias</small></div>
-          </div>
-          <div class="wstaff-evo-chart-wrap" id="wstaff-evo-chart"></div>
-          <div class="wstaff-empty-state" id="wstaff-evo-chart-empty" style="display:none;" data-i18n="wstaff.evoNoData">Todavía no hay valoraciones en este periodo.</div>
-        </div>
-
-        <!-- CARGA ACUMULADA SEMANAL: sumatorio de sRPE por jugadora y semana, para
-             detectar picos de sobrecarga (ver renderWellnessWeeklyTable()). -->
-        <div class="card wstaff-table-card wstaff-week-card">
-          <div class="wstaff-week-head"><h3 data-i18n="wstaff.weekTitle">Carga acumulada semanal (sRPE)</h3></div>
-          <table class="wstaff-table wstaff-week-table">
-            <thead><tr id="wstaff-week-thead"></tr></thead>
-            <tbody id="wstaff-week-tbody"></tbody>
-          </table>
-          <div class="wstaff-empty-state" id="wstaff-week-empty" style="display:none;" data-i18n="wstaff.weekNoData">Todavía no hay cargas registradas en las últimas semanas.</div>
-        </div>
-      </div>
-    </section>
+    <!-- Percepción del esfuerzo: lo pinta Svelte (src/features/wellness/WellnessStaff.svelte) -->
+    <section class="section" id="sec-wellness-staff"></section>
 
     <!-- TEST (sección de pruebas) -->
     <!-- Test: lo pinta Svelte (src/features/test/Test.svelte) -->
@@ -709,28 +606,10 @@
 <div data-mount="tercer-treasury-breakdown-modal"></div>
 
 <!-- MODAL: LISTA COMPLETA DE JUGADORAS DE UNA ALERTA DE WELLNESS (molestias / mal descanso / carga alta) -->
-<div class="modal-overlay" id="wstaff-alert-modal" onclick="if(event.target===this) closeWellnessAlertModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;"><span id="wstaff-alert-modal-icon">🔴</span> <span id="wstaff-alert-modal-title" data-i18n="wstaff.alertDiscomfortTitle">Molestias</span></h3>
-    <div class="modal-sub" id="wstaff-alert-modal-count">0 jugadoras</div>
-    <div class="wstaff-alert-list" id="wstaff-alert-modal-list"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeWellnessAlertModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="wstaff-alert-modal"></div>
 
 <!-- MODAL: HISTORIAL COMPLETO DE CARGA (sRPE) DE UNA JUGADORA -->
-<div class="modal-overlay" id="wstaff-player-history-modal" onclick="if(event.target===this) closeWellnessPlayerHistoryModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" id="wstaff-player-history-name">—</h3>
-    <div class="modal-sub" data-i18n="wstaff.historyModalSub">Carga (sRPE) por semana, desde el primer registro</div>
-    <div class="wstaff-alert-list" id="wstaff-player-history-list"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeWellnessPlayerHistoryModal()" data-i18n="att.close">Cerrar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="wstaff-player-history-modal"></div>
 
 <!-- MODAL: CONFIRMAR ELIMINAR MOVIMIENTO DE COMI TERCER TEMPS -->
 <div data-mount="delete-tercer-treasury-confirm-modal"></div>
@@ -793,64 +672,7 @@
 
 <!-- WELLNESS / RPE: valoración de dos fases (esfuerzo percibido + molestias físicas),
      visible y accesible SOLO para el rol jugadora (ver toggleAttWellnessButtonVisibility) -->
-<div class="modal-overlay" id="wellness-modal" onclick="if(event.target===this) closeWellnessModal()">
-  <div class="modal-box" style="max-width:400px;">
-    <h3 style="margin-top:0;" data-i18n="att.wellnessTitle">Wellness / RPE</h3>
-    <div class="modal-sub" id="wellness-modal-sub"></div>
-
-    <!-- FASE 1: RPE con slider -->
-    <div class="wellness-phase">
-      <div class="wellness-rpe-display">
-        <div class="wellness-rpe-emoji" id="wellness-rpe-emoji">🙂</div>
-        <div class="wellness-rpe-value"><span id="wellness-rpe-value">5</span>/10</div>
-        <div class="wellness-rpe-desc" id="wellness-rpe-desc"></div>
-      </div>
-      <input type="range" min="1" max="10" step="1" value="5" id="wellness-rpe-slider" class="wellness-rpe-slider" oninput="updateWellnessRpeDisplay(this.value)">
-      <div class="wellness-rpe-scale"><span>1</span><span>10</span></div>
-    </div>
-
-    <!-- FASE: horas de sueño (selector de un solo clic, en horizontal) -->
-    <div class="wellness-phase wellness-phase-sleep">
-      <div class="wellness-field-label" data-i18n="att.wellnessSleepLabel">Hores de son</div>
-      <div class="wellness-sleep-options" id="wellness-sleep-options">
-        <button type="button" class="wellness-pill-opt" data-val="lt6" onclick="setWellnessSleep('lt6')" data-i18n="att.wellnessSleepLt6">&lt;6h</button>
-        <button type="button" class="wellness-pill-opt" data-val="7-8" onclick="setWellnessSleep('7-8')" data-i18n="att.wellnessSleep78">7-8h</button>
-        <button type="button" class="wellness-pill-opt" data-val="gt8" onclick="setWellnessSleep('gt8')" data-i18n="att.wellnessSleepGt8">&gt;8h</button>
-      </div>
-    </div>
-
-    <!-- FASE: estado de ánimo (5 emojis) -->
-    <div class="wellness-phase wellness-phase-mood">
-      <div class="wellness-field-label" data-i18n="att.wellnessMoodLabel">Estat d'ànim</div>
-      <div class="wellness-mood-options" id="wellness-mood-options">
-        <button type="button" class="wellness-mood-opt" data-val="1" onclick="setWellnessMood(1)" data-i18n-attr="aria-label:att.wellnessMood1,title:att.wellnessMood1" aria-label="Molt malament" title="Molt malament">😞</button>
-        <button type="button" class="wellness-mood-opt" data-val="2" onclick="setWellnessMood(2)" data-i18n-attr="aria-label:att.wellnessMood2,title:att.wellnessMood2" aria-label="Malament" title="Malament">🙁</button>
-        <button type="button" class="wellness-mood-opt" data-val="3" onclick="setWellnessMood(3)" data-i18n-attr="aria-label:att.wellnessMood3,title:att.wellnessMood3" aria-label="Normal" title="Normal">😐</button>
-        <button type="button" class="wellness-mood-opt" data-val="4" onclick="setWellnessMood(4)" data-i18n-attr="aria-label:att.wellnessMood4,title:att.wellnessMood4" aria-label="Bé" title="Bé">🙂</button>
-        <button type="button" class="wellness-mood-opt" data-val="5" onclick="setWellnessMood(5)" data-i18n-attr="aria-label:att.wellnessMood5,title:att.wellnessMood5" aria-label="Molt bé" title="Molt bé">😄</button>
-      </div>
-    </div>
-
-    <!-- FASE 2: molestias físicas -->
-    <div class="wellness-phase wellness-phase-molesties">
-      <div class="wellness-toggle-row">
-        <span class="wellness-toggle-label" data-i18n="att.wellnessDiscomfortLabel">Tens alguna molèstia física?</span>
-        <div class="wellness-toggle-pill">
-          <button type="button" class="wellness-toggle-opt" data-val="no" onclick="setWellnessDiscomfort(false)" data-i18n="att.no">No</button>
-          <button type="button" class="wellness-toggle-opt" data-val="yes" onclick="setWellnessDiscomfort(true)" data-i18n="att.wellnessYes">Sí</button>
-        </div>
-      </div>
-      <div class="wellness-discomfort-detail" id="wellness-discomfort-detail" style="display:none;">
-        <textarea id="wellness-discomfort-textarea" maxlength="200" data-i18n-attr="placeholder:att.wellnessDiscomfortPlaceholder" placeholder="Descriu la zona (ex. genoll dret)..."></textarea>
-      </div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeWellnessModal()" data-i18n="att.cancel">Cancelar</button>
-      <button class="btn" onclick="saveWellnessModal()" data-i18n="att.saveGeneric">Guardar</button>
-    </div>
-  </div>
-</div>
+<div data-mount="wellness-modal"></div>
 
 
 <!-- MODAL: CREAR/EDITAR ACTA A MANO -->
@@ -1257,8 +1079,6 @@
 <script src="js/features/partidos.js"></script>
 <script src="js/features/actas.js"></script>
 <script src="js/features/tullidas.js"></script>
-<script src="js/features/wellness.js"></script>
-<script src="js/features/wellness-staff.js"></script>
 <script src="js/main.js"></script>
 
 <!-- Registro del service worker: imprescindible para que Chrome (Android y

@@ -89,18 +89,9 @@ function setSection(id, opts){
       setSection('vestuario');
       return;
     }
-    setWellnessStaffSubtab('session');
-    // Al entrar en esta página, se muestra siempre por defecto la sesión más reciente
-    // (salvo que se venga de un acceso directo a un entreno concreto, ver
-    // goToWellnessStaffAnalysis(), que deja marcado wellnessStaffPendingEventId).
-    if(wellnessStaffPendingEventId){
-      wellnessStaffSelectedEventId = wellnessStaffPendingEventId;
-      wellnessStaffPendingEventId = null;
-    } else {
-      wellnessStaffSelectedEventId = null;
-    }
-    populateWellnessStaffEventSelect();
-    loadWellnessHistoryData();
+    // Pestaña "Sesión", sesión más reciente (o la del acceso directo 📊) e histórico:
+    // lo hace el panel (Svelte, src/features/wellness/).
+    appBridge.wellness.onEnterStaffPanel();
   }
 
   // "Tercer tiempo", "Comisiones" y "Tricount": son cosas de las jugadoras, el Cos
