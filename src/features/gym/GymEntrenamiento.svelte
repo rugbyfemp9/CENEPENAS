@@ -55,8 +55,8 @@
       <!-- Todavía no se ha subido ningún PDF esta semana: no se muestra rutina ninguna,
            solo el aviso y (si puede editarla) el botón para subirla. -->
       <div class="gym-routine-empty">
-        <p>Todavía no se ha subido la rutina de esta semana.</p>
-        {#if canEdit}<button class="btn" onclick={openGymRoutineUploadModal}>Subir la rutina</button>{/if}
+        <p>{t('gym.noRoutineThisWeek')}</p>
+        {#if canEdit}<button class="btn" onclick={openGymRoutineUploadModal}>{t('gym.uploadRoutine')}</button>{/if}
       </div>
     {:else}
       <!-- Un tarjetón por cada día de entreno que tenga la rutina; al pulsar se abre el
@@ -65,7 +65,7 @@
         {#each gym.weeklyRoutine.days as d, i (i)}
           <button class="gym-tab-card" onclick={() => openGymRoutineDay(i)}>
             <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></div>
-            <b>Día {i + 1}</b>
+            <b>{t('gym.dayLabel', { n: i + 1 })}</b>
             <span>{d.focus || d.day || ''}</span>
           </button>
         {/each}
@@ -88,18 +88,18 @@
         {#each marks as m (m.exercise)}
           <tr>
             <td>{m.exercise}</td>
-            <td>{#if m.record}<b>{m.record.weight} kg</b>{:else}<span class="no-rm">Sin registrar</span>{/if}</td>
+            <td>{#if m.record}<b>{m.record.weight} kg</b>{:else}<span class="no-rm">{t('gym.notRegistered')}</span>{/if}</td>
             <td>{m.record ? formatShortDate(m.record.updatedAt) : '—'}</td>
             <td>
               <div class="actions-cell">
-                <button class="history-btn" onclick={() => openGymRmHistoryModal(m.exercise)} aria-label="Ver histórico" title="Ver histórico">
+                <button class="history-btn" onclick={() => openGymRmHistoryModal(m.exercise)} aria-label={t('gym.viewHistory')} title={t('gym.viewHistory')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3h7l4 4v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v4a1 1 0 001 1h4"/><path d="M9 13h6M9 17h6M9 9h2"/></svg>
                 </button>
-                <button class="edit-btn" onclick={() => openGymRmModal(m.exercise)} aria-label="Registrar marca" title="Registrar marca">
+                <button class="edit-btn" onclick={() => openGymRmModal(m.exercise)} aria-label={t('gym.registerMark')} title={t('gym.registerMark')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
                 </button>
                 {#if m.deletable}
-                  <button class="del-btn" onclick={() => deleteGymExercise(m.exercise)} aria-label="Eliminar ejercicio" title="Eliminar ejercicio">
+                  <button class="del-btn" onclick={() => deleteGymExercise(m.exercise)} aria-label={t('gym.deleteExercise')} title={t('gym.deleteExercise')}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
                   </button>
                 {/if}
@@ -108,11 +108,11 @@
           </tr>
         {/each}
         <tr class="gym-add-exercise-row">
-          <td><input type="text" id="gym-new-exercise-name" placeholder="Nuevo ejercicio…" bind:this={newExerciseInputs.name} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); newExerciseInputs.weight.focus(); } }}></td>
-          <td><input type="number" class="weight-input" id="gym-new-exercise-weight" placeholder={canManageGeneralExercises() ? 'Kg (opcional)' : 'Kg'} min="0" step="0.5" bind:this={newExerciseInputs.weight} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addGymCustomExercise(); } }}></td>
+          <td><input type="text" id="gym-new-exercise-name" placeholder={t('gym.newExercisePlaceholder')} bind:this={newExerciseInputs.name} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); newExerciseInputs.weight.focus(); } }}></td>
+          <td><input type="number" class="weight-input" id="gym-new-exercise-weight" placeholder={canManageGeneralExercises() ? t('gym.kgOptional') : 'Kg'} min="0" step="0.5" bind:this={newExerciseInputs.weight} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addGymCustomExercise(); } }}></td>
           <td></td>
           <td>
-            <button class="treasury-add-btn" onclick={addGymCustomExercise} aria-label="Añadir ejercicio" title="Añadir ejercicio">
+            <button class="treasury-add-btn" onclick={addGymCustomExercise} aria-label={t('gym.addExercise')} title={t('gym.addExercise')}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
             </button>
           </td>

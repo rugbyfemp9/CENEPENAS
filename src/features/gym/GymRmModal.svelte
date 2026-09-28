@@ -5,7 +5,7 @@
 </script>
 
 <Modal id="gym-rm-modal" bind:open={rmModal.open} boxStyle="max-width:360px;">
-  <h3 style="margin-top:0;" id="gym-rm-modal-title">{rmModal.title ?? 'Registrar marca'}</h3>
+  <h3 style="margin-top:0;" id="gym-rm-modal-title">{rmModal.title ?? t('gym.registerMark')}</h3>
   <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
     <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
       <span>{t('gym.myRm')}</span>

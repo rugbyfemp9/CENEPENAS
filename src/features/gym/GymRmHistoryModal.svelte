@@ -9,16 +9,16 @@
 </script>
 
 <Modal id="gym-rm-history-modal" bind:open={() => rmHistory.open, (v) => { if (v) rmHistory.open = true; else closeGymRmHistoryModal(); }} boxStyle="max-width:360px;">
-  <h3 style="margin-top:0;" id="gym-rm-history-modal-title">{rmHistory.title === null ? 'Histórico' : 'Histórico — ' + rmHistory.title}</h3>
+  <h3 style="margin-top:0;" id="gym-rm-history-modal-title">{rmHistory.title === null ? t('gym.historyTitle') : t('gym.historyTitleOf', { exercise: rmHistory.title })}</h3>
   <p class="modal-sub">{t('gym.historySub')}</p>
   <div id="gym-rm-history-list">
     {#if rmHistory.status === 'loading'}
-      <div class="gym-rm-history-loading">Cargando histórico…</div>
+      <div class="gym-rm-history-loading">{t('gym.historyLoading')}</div>
     {:else if rmHistory.status === 'empty'}
-      <div class="gym-rm-history-empty">Todavía no hay marcas registradas para este ejercicio.</div>
+      <div class="gym-rm-history-empty">{t('gym.historyEmpty')}</div>
     {:else if rmHistory.status === 'list'}
       {#if rmHistory.loadFailed}
-        <div class="gym-rm-history-empty" style="color:var(--bad); padding:0 2px 12px; text-align:left;">No se ha podido traer el histórico completo desde Supabase — se muestra solo lo guardado en esta sesión.</div>
+        <div class="gym-rm-history-empty" style="color:var(--bad); padding:0 2px 12px; text-align:left;">{t('gym.historyLoadFailed')}</div>
       {/if}
       <div class="gym-rm-history-list-inner">
         {#each rmHistory.entries as e, i (i)}

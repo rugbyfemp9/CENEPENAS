@@ -1,7 +1,7 @@
 <script>
   import Modal from '../../lib/Modal.svelte';
   import { t } from '../../lib/i18n.svelte.js';
-  import { routineUpload, closeGymRoutineUploadModal, uploadGymRoutinePdf } from './gym.svelte.js';
+  import { routineUpload, closeGymRoutineUploadModal, uploadGymRoutinePdf, uploadStatusText } from './gym.svelte.js';
 </script>
 
 <Modal id="gym-routine-upload-modal" bind:open={routineUpload.open} boxStyle="max-width:380px;">
@@ -12,7 +12,7 @@
       <span>{t('partido.pdfFileLabel')}</span>
       <input type="file" id="gym-routine-pdf-input" accept="application/pdf" bind:this={routineUpload.fileInput} style="font-family:'Roboto',sans-serif; font-size:13px;">
     </label>
-    <div id="gym-routine-upload-status" style="font-size:12.5px; color:{routineUpload.statusColor};">{routineUpload.status}</div>
+    <div id="gym-routine-upload-status" style="font-size:12.5px; color:{routineUpload.statusColor};">{uploadStatusText()}</div>
   </div>
   <div class="modal-actions">
     <button class="btn-ghost" id="gym-routine-upload-cancel-btn" onclick={closeGymRoutineUploadModal} disabled={routineUpload.busy}>{t('att.cancel')}</button>

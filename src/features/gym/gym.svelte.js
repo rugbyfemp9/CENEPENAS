@@ -17,7 +17,8 @@ import { currentUserId, myProfile, myRosterEntry, roster, rosterById } from '../
 import { displayName } from '../../lib/names.js';
 import { effectiveRoleForPermissions } from '../../lib/permissions.js';
 import { readCache, writeCache } from '../../lib/storage.js';
-import { todayLocalIso } from '../../lib/dates.js';
+import { todayLocalIso, withDePrefix } from '../../lib/dates.js';
+import { t, translate, getLang } from '../../lib/i18n.svelte.js';
 
 // Ejercicios principales sobre los que se lleva marca (1RM) y ranking de equipo.
 // Antes eran intocables; ahora entrenador/a y admin también pueden eliminarlos (ver
@@ -62,7 +63,7 @@ export function asText(value) {
   return String(value);
 }
 
-function escapeHtml(str) {
+export function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
@@ -310,11 +311,11 @@ export async function loadLastGymRoutine() {
       .maybeSingle();
     if (error) {
       console.error('No se ha podido leer el archivo de rutinas', error);
-      alert('No se ha podido cargar la última rutina archivada.');
+      alert(t('gym.alertLoadLastArchivedError'));
       return;
     }
     if (!data) {
-      alert('Todavía no hay ninguna rutina archivada.');
+      alert(t('gym.alertNoArchived'));
       return;
     }
     const { error: updateError } = await supabase.from('gym_weekly_routine')
@@ -322,7 +323,7 @@ export async function loadLastGymRoutine() {
       .eq('id', 'current');
     if (updateError) {
       console.error('No se ha podido restaurar la rutina archivada', updateError);
-      alert('No se ha podido cargar la última rutina.');
+      alert(t('gym.alertLoadLastError'));
       return;
     }
     gym.weeklyRoutine = { weekLabel: data.week_label, days: data.days || [], updatedAt: new Date().toISOString() };
@@ -341,11 +342,11 @@ export async function openGymRoutineArchiveTab() {
     .order('archived_at', { ascending: false });
   if (error) {
     console.error('No se ha podido leer el archivo de rutinas', error);
-    alert('No se ha podido abrir el histórico de rutinas.');
+    alert(t('gym.alertOpenArchiveError'));
     return;
   }
   if (!data || !data.length) {
-    alert('Todavía no hay ninguna rutina archivada.');
+    alert(t('gym.alertNoArchived'));
     return;
   }
   const html = buildGymRoutineArchiveHtml(data);
@@ -357,7 +358,7 @@ export async function openGymRoutineArchiveTab() {
 function formatGymArchivedAt(iso) {
   if (!iso) return '';
   const d = new Date(iso);
-  return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+  return d.toLocaleDateString(getLang() === 'ca' ? 'ca-ES' : 'es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
 // El documento se genera como texto (es otra ventana, no un componente): todo lo que
@@ -367,42 +368,42 @@ function buildGymRoutineArchiveHtml(rows) {
     const days = row.days || [];
     const daysHtml = days.map((d, i) => {
       const groupSplit = typeof d.group_split === 'boolean' ? d.group_split : false;
-      const groupsToShow = groupSplit ? [['Forwards', 'forwards'], ['Backs', 'backs']] : [[null, 'forwards']];
+      const groupsToShow = groupSplit ? [[translate('gym.groupForwards'), 'forwards'], [translate('gym.groupBacks'), 'backs']] : [[null, 'forwards']];
       const tablesHtml = groupsToShow.map(([label, group]) => {
         const exercises = gymRoutineDayExercisesForGroup(d, group);
         return `
             ${label ? `<div class="group-label">${escapeHtml(label)}</div>` : ''}
             <table>
-              <thead><tr><th>Ejercicio</th><th>Series</th><th>Repeticiones</th><th>Carga</th><th>Descanso</th></tr></thead>
+              <thead><tr><th>${translate('gym.colExercise')}</th><th>${translate('gym.colSeries')}</th><th>${translate('gym.colReps')}</th><th>${translate('gym.colLoad')}</th><th>${translate('gym.colRest')}</th></tr></thead>
               <tbody>
                 ${exercises.length ? exercises.map((ex) => `
                   <tr><td>${escapeHtml(ex.name)}</td><td>${escapeHtml(ex.sets)}</td><td>${escapeHtml(ex.reps)}</td><td>${escapeHtml(ex.load)}</td><td>${escapeHtml(ex.rest || '—')}</td></tr>
-                `).join('') : `<tr><td colspan="5" class="empty">Sin ejercicios registrados.</td></tr>`}
+                `).join('') : `<tr><td colspan="5" class="empty">${translate('gym.archiveNoExercises')}</td></tr>`}
               </tbody>
             </table>
           `;
       }).join('');
       return `
           <div class="day">
-            <h3>Día ${i + 1}${d.focus || d.day ? ' · ' + escapeHtml(d.focus || d.day) : ''}</h3>
+            <h3>${translate('gym.dayLabel', { n: i + 1 })}${d.focus || d.day ? ' · ' + escapeHtml(d.focus || d.day) : ''}</h3>
             ${tablesHtml}
           </div>
         `;
     }).join('');
     return `
         <section class="week">
-          <h2>${escapeHtml(row.week_label || 'Semana sin etiqueta')}</h2>
-          <div class="week-meta">Archivada el ${escapeHtml(formatGymArchivedAt(row.archived_at))}</div>
-          ${daysHtml || '<p class="empty">Sin días registrados.</p>'}
+          <h2>${escapeHtml(row.week_label || translate('gym.archiveUnlabeledWeek'))}</h2>
+          <div class="week-meta">${escapeHtml(translate('gym.archivedOn', { date: formatGymArchivedAt(row.archived_at) }))}</div>
+          ${daysHtml || `<p class="empty">${translate('gym.archiveNoDays')}</p>`}
         </section>
       `;
   }).join('');
 
   return `<!DOCTYPE html>
-<html lang="es">
+<html lang="${getLang()}">
 <head>
 <meta charset="UTF-8">
-<title>Rutinas antiguas — CN Peñas</title>
+<title>${translate('gym.archiveDocTitle')}</title>
 <style>
   body{ font-family:'Roboto',Arial,sans-serif; background:#F4F6F9; color:#1C2B3A; margin:0; padding:24px; }
   h1{ font-family:'Oswald',Arial,sans-serif; text-transform:uppercase; margin:0 0 20px; }
@@ -420,7 +421,7 @@ function buildGymRoutineArchiveHtml(rows) {
   </style>
 </head>
 <body>
-  <h1>Rutinas antiguas</h1>
+  <h1>${translate('gym.archiveHeading')}</h1>
   ${weeksHtml}
 </body>
 </html>`;
@@ -430,7 +431,9 @@ function buildGymRoutineArchiveHtml(rows) {
 export const routineUpload = $state({
   open: false,
   busy: false,
-  status: '',
+  // Mensaje de estado: clave i18n (+ variables) para que siga el cambio de idioma, o
+  // un texto tal cual (el error que devuelve la función Edge). Ver uploadStatusText().
+  status: null,
   // Como antes, el color del mensaje se queda el último que se puso aunque se vuelva
   // a abrir el modal (al abrirlo solo se vacía el texto).
   statusColor: 'var(--text-muted)',
@@ -439,33 +442,43 @@ export const routineUpload = $state({
 
 export function openGymRoutineUploadModal() {
   if (routineUpload.fileInput) routineUpload.fileInput.value = '';
-  routineUpload.status = '';
+  routineUpload.status = null;
   routineUpload.open = true;
 }
 export function closeGymRoutineUploadModal() {
   routineUpload.open = false;
 }
-function setUploadStatus(color, text) {
+function setUploadStatus(color, key, vars) {
   routineUpload.statusColor = color;
-  routineUpload.status = text;
+  routineUpload.status = { key, vars };
+}
+function setUploadStatusRaw(color, text) {
+  routineUpload.statusColor = color;
+  routineUpload.status = { text };
+}
+// Texto del mensaje de estado en el idioma activo (reactivo: se usa en la plantilla).
+export function uploadStatusText() {
+  const st = routineUpload.status;
+  if (!st) return '';
+  return st.key ? t(st.key, st.vars) : st.text;
 }
 export async function uploadGymRoutinePdf() {
   const fileInput = routineUpload.fileInput;
   const file = fileInput.files && fileInput.files[0];
 
   if (!file) {
-    setUploadStatus('var(--bad)', 'Elige primero un archivo PDF.');
+    setUploadStatus('var(--bad)', 'gym.uploadChooseFile');
     return;
   }
 
   routineUpload.busy = true;
-  setUploadStatus('var(--text-muted)', 'Subiendo y leyendo el PDF con Gemini… puede tardar unos segundos.');
+  setUploadStatus('var(--text-muted)', 'gym.uploadUploading');
 
   try {
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData && sessionData.session ? sessionData.session.access_token : null;
     if (!accessToken) {
-      setUploadStatus('var(--bad)', 'Tu sesión ha caducado, vuelve a iniciar sesión e inténtalo de nuevo.');
+      setUploadStatus('var(--bad)', 'gym.uploadSessionExpired');
       return;
     }
 
@@ -480,15 +493,16 @@ export async function uploadGymRoutinePdf() {
     const result = await res.json();
 
     if (!res.ok || result.error) {
-      setUploadStatus('var(--bad)', result.error || 'No se ha podido procesar el PDF.');
+      if (result.error) setUploadStatusRaw('var(--bad)', result.error);
+      else setUploadStatus('var(--bad)', 'gym.uploadProcessError');
       return;
     }
 
     gym.weeklyRoutine = { weekLabel: result.routine.week_label, days: result.routine.days || [], updatedAt: new Date().toISOString() };
-    setUploadStatus('var(--ok)', '¡Rutina actualizada! Cerrando…');
+    setUploadStatus('var(--ok)', 'gym.uploadDone');
     setTimeout(closeGymRoutineUploadModal, 900);
   } catch (e) {
-    setUploadStatus('var(--bad)', 'Error al subir el PDF: ' + e.message);
+    setUploadStatus('var(--bad)', 'gym.uploadError', { error: e.message });
   } finally {
     routineUpload.busy = false;
   }
@@ -581,6 +595,13 @@ export function gymQuickCalcResult(exercise) {
     raw: raw.toFixed(1),
     weight: record.weight,
   };
+}
+
+// "de <b>Nombre</b>" (en catalán "d'<b>Anna</b>" delante de vocal), con el nombre
+// escapado, para los textos de la calculadora rápida que llevan el nombre en negrita.
+export function ofNameHtml(name) {
+  const prefix = withDePrefix(name).slice(0, -name.length || undefined);
+  return prefix + '<b>' + escapeHtml(name) + '</b>';
 }
 
 // ---- Panel 1: calculadora de %RM avanzada ----
@@ -767,7 +788,7 @@ function setMyRm(exercise, weight) {
 export async function saveGymRm() {
   const weight = toNumber(rmModal.weight);
   if (isNaN(weight) || weight < 0) {
-    alert('Escribe un peso válido (puede ser 0).');
+    alert(t('gym.alertInvalidWeight'));
     return;
   }
   const exercise = rmModal.exercise;
@@ -790,7 +811,7 @@ export async function addGymCustomExercise() {
   const isManager = canManageGeneralExercises();
 
   if (!name) {
-    alert('Escribe el nombre del ejercicio.');
+    alert(t('gym.alertNoExerciseName'));
     nameInput.focus();
     return;
   }
@@ -799,12 +820,12 @@ export async function addGymCustomExercise() {
   if (weightRaw !== '') {
     weight = parseFloat(weightRaw);
     if (isNaN(weight) || weight < 0) {
-      alert('Escribe un peso válido (puede ser 0), o déjalo en blanco.');
+      alert(t('gym.alertInvalidWeightOrBlank'));
       weightInput.focus();
       return;
     }
   } else if (!isManager) {
-    alert('Escribe un peso válido (puede ser 0).');
+    alert(t('gym.alertInvalidWeight'));
     weightInput.focus();
     return;
   }
@@ -822,7 +843,7 @@ export async function addGymCustomExercise() {
       .single();
     if (error) {
       console.error('No se pudo añadir el ejercicio general', error);
-      alert('No se ha podido añadir el ejercicio. Inténtalo de nuevo.');
+      alert(t('gym.alertAddExerciseError'));
       return;
     }
     gym.exercises.push(data);
@@ -856,8 +877,8 @@ export async function deleteGymExercise(name) {
   const generalRow = gym.exercises.find((ex) => ex.name.toLowerCase() === key);
 
   if (!confirm((isFixed || generalRow)
-    ? `¿Eliminar "${name}" para todo el equipo? Dejará de verse en Mis Marcas, la calculadora rápida y el ránking.`
-    : `¿Eliminar "${name}" de tus marcas?`
+    ? t('gym.confirmDeleteExerciseTeam', { name })
+    : t('gym.confirmDeleteExerciseMine', { name })
   )) return;
 
   if (isFixed) {
@@ -867,7 +888,7 @@ export async function deleteGymExercise(name) {
     });
     if (error) {
       console.error('No se pudo eliminar el ejercicio fijo', error);
-      alert('No se ha podido eliminar. Inténtalo de nuevo.');
+      alert(t('gym.alertDeleteError'));
       return;
     }
     gym.removedDefaultExercises.add(key);
@@ -876,7 +897,7 @@ export async function deleteGymExercise(name) {
     const { error } = await supabase.from('gym_exercises').delete().eq('id', generalId);
     if (error) {
       console.error('No se pudo eliminar el ejercicio', error);
-      alert('No se ha podido eliminar. Inténtalo de nuevo.');
+      alert(t('gym.alertDeleteError'));
       return;
     }
     gym.exercises = gym.exercises.filter((ex) => ex.id !== generalId);
@@ -977,7 +998,7 @@ export function closeGymCheckinModal() {
 export async function saveGymCheckin() {
   const time = checkinModal.time;
   if (!time) {
-    alert('Elige una hora.');
+    alert(t('gym.alertChooseTime'));
     return;
   }
   const todayIso = todayLocalIso();
@@ -995,7 +1016,7 @@ export async function saveGymCheckin() {
     }, { onConflict: 'profile_id,attendance_date' });
     if (error) {
       console.error('No se ha podido guardar tu asistencia al gimnasio en Supabase', error);
-      alert('Te has apuntado en la app, pero no se ha podido sincronizar con Supabase: ' + error.message);
+      alert(t('gym.alertCheckinSyncError', { error: error.message }));
     }
   }
 }
@@ -1012,7 +1033,7 @@ export async function cancelGymCheckin() {
       .eq('attendance_date', todayIso);
     if (error) {
       console.error('No se ha podido quitar tu asistencia al gimnasio en Supabase', error);
-      alert('Te has quitado en la app, pero no se ha podido sincronizar con Supabase: ' + error.message);
+      alert(t('gym.alertCancelCheckinSyncError', { error: error.message }));
     }
   }
 }

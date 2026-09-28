@@ -3,10 +3,11 @@
   import { setSection } from '../../shell/navigation.svelte.js';
   import { currentUserId } from '../../lib/roster.js';
   import { displayName } from '../../lib/names.js';
+  import { withDePrefix } from '../../lib/dates.js';
   import {
     dayDetail, setGymRoutineDayGroup, asText, quickCalc, gymQuickCalcPercents, gymAllExercises,
     gymQuickCalcSelectedPlayer, gymQuickCalcResult, toggleGymQuickCalcPlayerMenu, closeGymQuickCalcPlayerMenu,
-    selectGymQuickCalcPlayer, goToGymMarks, rmCalc, toggleGymRmCalcBanner, closeGymRmCalcBanner, calculateGymRmTable,
+    selectGymQuickCalcPlayer, goToGymMarks, escapeHtml, ofNameHtml, rmCalc, toggleGymRmCalcBanner, closeGymRmCalcBanner, calculateGymRmTable,
   } from './gym.svelte.js';
 
   const exercises = $derived(gymAllExercises());
@@ -33,14 +34,14 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 <div class="back-link" onclick={() => setSection('gym-entrenamiento')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('gym.myTraining')}</span></div>
-<div class="section-head"><h2 id="gym-routine-day-detalle-title">{dayDetail.n === null ? 'Día 1' : t('gym.dayLabel', { n: dayDetail.n })}</h2></div>
+<div class="section-head"><h2 id="gym-routine-day-detalle-title">{t('gym.dayLabel', { n: dayDetail.n === null ? 1 : dayDetail.n })}</h2></div>
 
 <div class="card">
   <span id="gym-routine-day-detalle-focus" style="display:block; font-size:11.5px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.02em; margin-bottom:12px;">{dayDetail.focus}</span>
   <div id="gym-routine-day-detalle-split-note" class="gym-split-note" style:display={dayDetail.splitVisible ? 'inline-flex' : 'none'}><span class="dot"></span><span id="gym-routine-day-detalle-split-note-text">{dayDetail.splitKey ? t(dayDetail.splitKey) : ''}</span></div>
   <div class="gym-day-group-tabs">
-    <button class="gym-day-group-tab" class:active={dayDetail.group === 'forwards'} data-group="forwards" onclick={() => setGymRoutineDayGroup('forwards')}>Forwards</button>
-    <button class="gym-day-group-tab" class:active={dayDetail.group === 'backs'} data-group="backs" onclick={() => setGymRoutineDayGroup('backs')}>Backs</button>
+    <button class="gym-day-group-tab" class:active={dayDetail.group === 'forwards'} data-group="forwards" onclick={() => setGymRoutineDayGroup('forwards')}>{t('gym.groupForwards')}</button>
+    <button class="gym-day-group-tab" class:active={dayDetail.group === 'backs'} data-group="backs" onclick={() => setGymRoutineDayGroup('backs')}>{t('gym.groupBacks')}</button>
   </div>
   <table class="gym-exercise-table">
     <thead>
@@ -54,7 +55,7 @@
     </thead>
     <tbody id="gym-routine-day-detalle-exercises">
       {#if dayDetail.exercises && !dayDetail.exercises.length}
-        <tr><td colspan="5" class="modal-sub" style="padding:14px 8px;">No hay ejercicios registrados para este grupo en este día.</td></tr>
+        <tr><td colspan="5" class="modal-sub" style="padding:14px 8px;">{t('gym.noExercisesGroupDay')}</td></tr>
       {:else if dayDetail.exercises}
         {#each dayDetail.exercises as ex, i (i)}
           <tr>
@@ -115,7 +116,7 @@
       <button class="btn" style="margin-top:12px;" onclick={calculateGymRmTable}>{t('gym.calculate')}</button>
       <div id="gym-rm-calc-result">
         {#if rmCalc.result && rmCalc.result.oneRm === null}
-          <div class="modal-sub" style="margin-top:12px;">Escribe tu 1RM, o un peso y unas repeticiones, para calcularlo.</div>
+          <div class="modal-sub" style="margin-top:12px;">{t('gym.rmCalcNeedInput')}</div>
         {:else if rmCalc.result}
           <table class="gym-rm-calc-table">
             <tbody>
@@ -133,8 +134,8 @@
     <p class="modal-sub" style="margin-bottom:10px;">{t('gym.quickCalcSub')}</p>
     <div id="gym-quick-calc-player-badge" class="gym-quick-calc-player-badge" style:display={badgePlayer ? 'inline-flex' : 'none'}>
       {#if badgePlayer}
-        <span>Calculando la marca de <b>{displayName(badgePlayer)}</b></span>
-        <button type="button" onclick={() => selectGymQuickCalcPlayer(currentUserId)} aria-label="Volver a tu calculadora" title="Volver a tu calculadora">
+        <span>{@html t('gym.calculatingMarkOf', { ofName: ofNameHtml(displayName(badgePlayer)) })}</span>
+        <button type="button" onclick={() => selectGymQuickCalcPlayer(currentUserId)} aria-label={t('gym.backToMyCalc')} title={t('gym.backToMyCalc')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       {/if}
@@ -143,7 +144,7 @@
       <label>
         <span>{t('gym.colExercise')}</span>
         <select id="gym-quick-calc-exercise" bind:value={quickCalc.exercise}>
-          <option value="">Elige un ejercicio</option>
+          <option value="">{t('gym.chooseExercise')}</option>
           {#each exercises as ex (ex)}<option value={ex}>{ex}</option>{/each}
         </select>
       </label>
@@ -158,22 +159,22 @@
     <div id="gym-quick-calc-result">
       {#if quickCalc.shown}
         {#if result.kind === 'prompt'}
-          <div class="gym-quick-calc-empty">Elige un ejercicio y un % para calcular.</div>
+          <div class="gym-quick-calc-empty">{t('gym.quickPrompt')}</div>
         {:else if result.kind === 'noMarkMine'}
           <div class="gym-quick-calc-empty">
-            Todavía no tienes una marca (1RM) registrada para <b>{result.exercise}</b>.
+            {@html t('gym.noMarkMine', { exercise: '<b>' + escapeHtml(result.exercise) + '</b>' })}
             <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions, a11y_missing_attribute -->
-            <a onclick={goToGymMarks}>Regístrala en Mis Marcas ›</a>
+            <a onclick={goToGymMarks}>{t('gym.registerInMyMarks')}</a>
           </div>
         {:else if result.kind === 'noMarkTheirs'}
           <div class="gym-quick-calc-empty">
-            <b>{result.name}</b> todavía no tiene una marca (1RM) registrada para <b>{result.exercise}</b>.
+            {@html t('gym.noMarkTheirs', { name: '<b>' + escapeHtml(result.name) + '</b>', exercise: '<b>' + escapeHtml(result.exercise) + '</b>' })}
           </div>
         {:else}
           <div class="gym-quick-calc-out">
-            <span class="pct">{result.pct}% de {result.isMe ? 'tu' : `la de ${result.name}`} {result.exercise}</span>
+            <span class="pct">{result.isMe ? t('gym.quickOutPctMine', { pct: result.pct, exercise: result.exercise }) : t('gym.quickOutPctTheirs', { pct: result.pct, ofName: withDePrefix(result.name), exercise: result.exercise })}</span>
             <span class="kg">{result.kg} kg</span>
-            <span class="raw">Exacto: {result.raw} kg · {result.isMe ? 'tu marca' : 'su marca'}: {result.weight} kg</span>
+            <span class="raw">{t(result.isMe ? 'gym.quickOutRawMine' : 'gym.quickOutRawTheirs', { raw: result.raw, weight: result.weight })}</span>
           </div>
         {/if}
       {/if}

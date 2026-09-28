@@ -31,7 +31,7 @@
   </div>
   <div id="gym-attendance-today">
     {#if !attendance.length}
-      <div class="att-roster-empty">Todavía no se ha apuntado nadie hoy.</div>
+      <div class="att-roster-empty">{t('gym.noCheckinsToday')}</div>
     {:else}
       {#each attendance as e, i (i)}
         {@const p = rosterById[e.playerId]}
@@ -41,7 +41,7 @@
             <div class="meta"><b>{displayName(p)}</b></div>
             <span class="time">{e.time}</span>
             {#if e.playerId === currentUserId}
-              <button class="cancel-btn" onclick={cancelGymCheckin} aria-label="Quitarme de hoy" title="Quitarme de hoy">
+              <button class="cancel-btn" onclick={cancelGymCheckin} aria-label={t('gym.removeMeToday')} title={t('gym.removeMeToday')}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
               </button>
             {/if}
@@ -66,7 +66,7 @@
       </thead>
       <tbody id="gym-ranking-table-body">
         {#if !rows.withRecord.length && !rows.without.length}
-          <tr><td colspan="4"><div class="att-roster-empty">Todavía no hay nadie en la plantilla.</div></td></tr>
+          <tr><td colspan="4"><div class="att-roster-empty">{t('gym.rankingEmpty')}</div></td></tr>
         {:else}
           {#each rows.withRecord as entry, i (i)}
             <tr class={i === 0 ? 'gym-rank-top' : ''}>
@@ -80,7 +80,7 @@
             <tr>
               <td class="rank-cell">—</td>
               <td class="player-row"><div class="meta"><b>{displayName(entry.p)}</b></div></td>
-              <td class="weight-cell no-rm">Sin registrar</td>
+              <td class="weight-cell no-rm">{t('gym.notRegistered')}</td>
               <td class="updated-cell">—</td>
             </tr>
           {/each}

@@ -747,5 +747,71 @@ export const ca = {
   'tricount.alertNeedPayer': 'Indica qui ha pagat la despesa.',
   'tricount.alertNeedParticipants': 'Tria entre qui es reparteix la despesa.',
   'tricount.alertUpdateError': "No s'ha pogut desar el canvi. Torna-ho a provar.",
-  'tricount.alertSaveError': "No s'ha pogut desar la despesa. Torna-ho a provar."
+  'tricount.alertSaveError': "No s'ha pogut desar la despesa. Torna-ho a provar.",
+
+  // ---- i18n pase 3: Gym ----
+  // Gym: pestañas de grupo y detalle de un día
+  'gym.groupForwards': 'Forwards',
+  'gym.groupBacks': 'Backs',
+  'gym.noExercisesGroupDay': 'No hi ha exercicis registrats per a aquest grup en aquest dia.',
+  // Gym: calculadora de % RM y calculadora rápida (los nombres de ejercicio no se traducen)
+  'gym.rmCalcNeedInput': 'Escriu el teu 1RM, o un pes i unes repeticions, per calcular-lo.',
+  'gym.calculatingMarkOf': 'Calculant la marca {ofName}',
+  'gym.backToMyCalc': 'Tornar a la teva calculadora',
+  'gym.chooseExercise': 'Tria un exercici',
+  'gym.quickPrompt': 'Tria un exercici i un % per calcular.',
+  'gym.noMarkMine': 'Encara no tens cap marca (1RM) registrada per a {exercise}.',
+  'gym.registerInMyMarks': 'Registra-la a Les meves marques ›',
+  'gym.noMarkTheirs': '{name} encara no té cap marca (1RM) registrada per a {exercise}.',
+  'gym.quickOutPctMine': '{pct}% de la teva {exercise}',
+  'gym.quickOutPctTheirs': '{pct}% de la {ofName} {exercise}',
+  'gym.quickOutRawMine': 'Exacte: {raw} kg · la teva marca: {weight} kg',
+  'gym.quickOutRawTheirs': 'Exacte: {raw} kg · la seva marca: {weight} kg',
+  // Gym: Mi Entrenamiento (rutina vacía) y Mis Marcas
+  'gym.noRoutineThisWeek': "Encara no s'ha pujat la rutina d'aquesta setmana.",
+  'gym.uploadRoutine': 'Pujar la rutina',
+  'gym.notRegistered': 'Sense registrar',
+  'gym.viewHistory': 'Veure històric',
+  'gym.deleteExercise': 'Eliminar exercici',
+  'gym.newExercisePlaceholder': 'Nou exercici…',
+  'gym.kgOptional': 'Kg (opcional)',
+  'gym.addExercise': 'Afegir exercici',
+  // Gym: histórico de marcas
+  'gym.historyTitleOf': 'Històric — {exercise}',
+  'gym.historyLoading': 'Carregant històric…',
+  'gym.historyEmpty': 'Encara no hi ha marques registrades per a aquest exercici.',
+  'gym.historyLoadFailed': "No s'ha pogut portar l'històric complet des de Supabase — només es mostra el que s'ha desat en aquesta sessió.",
+  // Gym: Equipo (asistencia de hoy y ranking)
+  'gym.noCheckinsToday': "Encara no s'ha apuntat ningú avui.",
+  'gym.removeMeToday': "Treure'm d'avui",
+  'gym.rankingEmpty': 'Encara no hi ha ningú a la plantilla.',
+  // Gym: estado de la subida del PDF de la rutina (el error que devuelve la función Edge se muestra tal cual)
+  'gym.uploadChooseFile': 'Tria primer un arxiu PDF.',
+  'gym.uploadUploading': 'Pujant i llegint el PDF amb Gemini… pot trigar uns segons.',
+  'gym.uploadSessionExpired': 'La teva sessió ha caducat, torna a iniciar sessió i torna-ho a provar.',
+  'gym.uploadProcessError': "No s'ha pogut processar el PDF.",
+  'gym.uploadDone': 'Rutina actualitzada! Tancant…',
+  'gym.uploadError': 'Error en pujar el PDF: {error}',
+  // Gym: página de rutinas antiguas (se genera en el idioma activo al abrirla)
+  'gym.archiveDocTitle': 'Rutines antigues — CN Peñas',
+  'gym.archiveHeading': 'Rutines antigues',
+  'gym.archiveUnlabeledWeek': 'Setmana sense etiqueta',
+  'gym.archivedOn': 'Arxivada el {date}',
+  'gym.archiveNoExercises': 'Sense exercicis registrats.',
+  'gym.archiveNoDays': 'Sense dies registrats.',
+  // Gym: alertas y confirmaciones
+  'gym.alertLoadLastArchivedError': "No s'ha pogut carregar l'última rutina arxivada.",
+  'gym.alertNoArchived': 'Encara no hi ha cap rutina arxivada.',
+  'gym.alertLoadLastError': "No s'ha pogut carregar l'última rutina.",
+  'gym.alertOpenArchiveError': "No s'ha pogut obrir l'històric de rutines.",
+  'gym.alertInvalidWeight': 'Escriu un pes vàlid (pot ser 0).',
+  'gym.alertNoExerciseName': "Escriu el nom de l'exercici.",
+  'gym.alertInvalidWeightOrBlank': 'Escriu un pes vàlid (pot ser 0), o deixa-ho en blanc.',
+  'gym.alertAddExerciseError': "No s'ha pogut afegir l'exercici. Torna-ho a provar.",
+  'gym.confirmDeleteExerciseTeam': "Eliminar \"{name}\" per a tot l'equip? Deixarà de veure's a Les meves marques, la calculadora ràpida i el rànquing.",
+  'gym.confirmDeleteExerciseMine': 'Eliminar "{name}" de les teves marques?',
+  'gym.alertDeleteError': "No s'ha pogut eliminar. Torna-ho a provar.",
+  'gym.alertChooseTime': 'Tria una hora.',
+  'gym.alertCheckinSyncError': "T'has apuntat a l'app, però no s'ha pogut sincronitzar amb Supabase: {error}",
+  'gym.alertCancelCheckinSyncError': "T'has desapuntat a l'app, però no s'ha pogut sincronitzar amb Supabase: {error}"
 };
