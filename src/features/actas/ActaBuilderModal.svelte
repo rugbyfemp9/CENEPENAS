@@ -4,7 +4,7 @@
   import { t } from '../../lib/i18n.svelte.js';
   import ActaBuilderRow from './ActaBuilderRow.svelte';
   import {
-    actaBuilder, builderRows, addActaBuilderRow, closeMatchReportBuilderModal, saveActaBuilder,
+    actaBuilder, builderRows, addActaBuilderRow, closeMatchReportBuilderModal, saveActaBuilder, builderStatusText,
   } from './builder.svelte.js';
 </script>
 
@@ -34,7 +34,7 @@
     </table>
   </div>
   <button class="btn-ghost" type="button" onclick={addActaBuilderRow}>{t('partido.addPlayer')}</button>
-  <div id="acta-builder-status" style="font-size:12.5px; color:{actaBuilder.statusColor}; margin-top:12px;">{actaBuilder.status}</div>
+  <div id="acta-builder-status" style="font-size:12.5px; color:{actaBuilder.statusColor}; margin-top:12px;">{builderStatusText()}</div>
   <div class="modal-actions">
     <button class="btn-ghost" id="acta-builder-cancel-btn" onclick={closeMatchReportBuilderModal} disabled={actaBuilder.busy}>{t('att.cancel')}</button>
     <button class="btn" id="acta-builder-save-btn" onclick={saveActaBuilder} disabled={actaBuilder.busy}>{t('partido.saveActa')}</button>

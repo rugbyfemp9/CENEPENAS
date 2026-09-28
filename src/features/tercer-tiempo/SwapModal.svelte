@@ -9,7 +9,7 @@
 
 <Modal id="swap-modal" bind:open={swapModal.open} boxStyle="max-width:400px;">
   <h3 style="margin-top:0;">{t('tercer.cantAttend')}</h3>
-  <div class="modal-sub" id="swap-modal-sub">{swapModal.sub}</div>
+  <div class="modal-sub" id="swap-modal-sub">{swapModal.matchLabel ? t('tercer.swapSub', { match: swapModal.matchLabel }) : ''}</div>
   <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
     <span>{t('tercer.swapWithLabel')}</span>
     {#key swapModal.seq}

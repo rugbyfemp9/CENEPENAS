@@ -14,7 +14,7 @@
 
 <!-- Cerrar (clic fuera o botón "atrás") también olvida a qué jugadora se estaba editando. -->
 <Modal id="edit-profile-modal" bind:open={() => editProfile.open, (v) => { if (!v) closeEditProfileModal(); }} boxStyle="max-width:380px;">
-  <h3 style="margin-top:0;" id="edit-profile-modal-title">{editProfile.title}</h3>
+  <h3 style="margin-top:0;" id="edit-profile-modal-title">{editProfile.title ?? t('profile.editTitle')}</h3>
   <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
     <label style={labelStyle}>
       <span>{t('profile.nameLabel')}</span>

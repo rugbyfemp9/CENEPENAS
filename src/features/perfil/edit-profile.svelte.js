@@ -23,7 +23,8 @@ function selectValue(value, values) {
 
 export const editProfile = $state({
   open: false,
-  title: 'Editar perfil',
+  // null = todavía no se ha abierto nunca ("Editar perfil", traducido por el modal).
+  title: null,
   // Si "targetId" tiene valor, es la cuenta admin editando el perfil de otra jugadora
   // (viene del botón "Editar" de Jugadoras); si no, cada persona edita el suyo propio.
   targetId: null,

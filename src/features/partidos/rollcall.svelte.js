@@ -10,11 +10,13 @@ import { attEvents } from '../asistencia/events.js';
 import { attEventIso } from '../../lib/dates.js';
 import { finesState, canManageFines, persistFineInsert, refreshAfterChange, loadFines } from '../multas/multas.svelte.js';
 import { findNextMatch } from './partidos.svelte.js';
+import { t } from '../../lib/i18n.svelte.js';
 
 export const rollcall = $state({
   open: false,
   // null = todavía no se ha pintado nunca (caja vacía);
-  // { empty, rows: [...], summary } (empty = nadie confirmado todavía)
+  // { empty, rows: [...], marked, total } (empty = nadie confirmado todavía; el resumen
+  // "x de y marcadas" lo traduce el modal)
   view: null,
 });
 
@@ -41,7 +43,7 @@ export async function openRollCallModal() {
   matchdayRollCallSavedAt[rollCallMatchId] = savedAt;
 
   if (savedAt && !canManageFines()) {
-    alert('Esta lista ya se ha pasado y guardado. Solo Comi Tesoreria puede volver a abrirla para corregirla.');
+    alert(t('rollcall.alertLocked'));
     return;
   }
 
@@ -62,7 +64,7 @@ export function renderRollCallList() {
   const state = matchdayRollCall[rollCallMatchId] || {};
 
   if (confirmedIds.length === 0) {
-    rollcall.view = { empty: true, rows: [], summary: '' };
+    rollcall.view = { empty: true, rows: [], marked: 0, total: 0 };
     return;
   }
 
@@ -83,7 +85,7 @@ export function renderRollCallList() {
   });
 
   const marked = Object.values(state).filter(Boolean).length;
-  rollcall.view = { empty: false, rows, summary: `${marked} de ${confirmedIds.length} marcadas` };
+  rollcall.view = { empty: false, rows, marked, total: confirmedIds.length };
 }
 
 export function setRollCallMark(playerId, mark) {
@@ -165,7 +167,7 @@ export async function saveRollCall() {
     updated_at: new Date().toISOString(),
   });
   if (error) {
-    alert('La lista se ha guardado en la app, pero no se ha podido sincronizar: ' + error.message);
+    alert(t('rollcall.alertSyncError', { error: error.message }));
   }
 
   closeRollCallModal();

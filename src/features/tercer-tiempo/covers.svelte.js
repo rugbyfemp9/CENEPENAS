@@ -79,7 +79,7 @@ async function persistCoverInsert(localId, cover) {
     .select()
     .single();
   if (error) {
-    alert('La solicitud se ha guardado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
+    alert(t('tercer.alertCoverSyncError', { error: error.message }));
     return;
   }
   const local = thirdTimeCovers.find((c) => c.id === localId);
@@ -89,7 +89,7 @@ async function persistCoverInsert(localId, cover) {
 async function persistCoverUpdate(coverId, patch) {
   const { error } = await supabase.from('third_time_covers').update(patch).eq('id', coverId);
   if (error) {
-    alert('El cambio se ha aplicado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
+    alert(t('tercer.syncErrorApplied', { error: error.message }));
   }
 }
 // Inserta una deuda nueva (favor pendiente de devolver) y devuelve su id real de Supabase.
@@ -106,7 +106,7 @@ async function persistDebtInsert(debt) {
     .select()
     .single();
   if (error) {
-    alert('La deuda se ha guardado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
+    alert(t('tercer.alertDebtSyncError', { error: error.message }));
     return null;
   }
   return data.id;
@@ -117,7 +117,7 @@ async function persistDebtUpdate(debtId, patch) {
   if ('settledMatchLabel' in patch) remotePatch.settled_match_label = patch.settledMatchLabel;
   const { error } = await supabase.from('third_time_debts').update(remotePatch).eq('id', debtId);
   if (error) {
-    alert('El cambio se ha aplicado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
+    alert(t('tercer.syncErrorApplied', { error: error.message }));
   }
 }
 
@@ -158,7 +158,9 @@ export function resolveThirdTimeDebts() {
 // ---- Modal "No puedo asistir"
 export const swapModal = $state({
   open: false,
-  sub: '',
+  // Partido del subtítulo ("Vas a pedir que alguien te cubra en …"): el texto lo
+  // traduce el modal, así sigue el cambio de idioma.
+  matchLabel: '',
   // Compañeras que se ofrecen (se fijan al abrir el modal).
   // NOTA: se ofrece todo el roster menos una misma, staff y jugadoras del otro grupo incluidas.
   options: [],
@@ -173,7 +175,7 @@ export function openSwapModal() {
   if (!current) return;
   swapModalCtx = { matchId: current.match.id, matchLabel: current.match.label };
 
-  swapModal.sub = t('tercer.swapSub', { match: current.match.label });
+  swapModal.matchLabel = current.match.label;
   swapModal.options = roster.filter((p) => p.id !== currentUserId)
     .map((p) => ({ id: p.id, name: displayName(p) }));
   swapModal.seq++;

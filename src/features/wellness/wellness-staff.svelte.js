@@ -66,6 +66,20 @@ export function onEnterStaffPanel() {
 // porque no llevan Wellness/RPE), del más reciente al más antiguo, y carga
 // automáticamente el que estuviera seleccionado (p.ej. desde el botón 📊 de una
 // tarjeta, ver goToWellnessStaffAnalysis()) o, si no había ninguno, el más reciente.
+function staffEventLabel(ev) {
+  return `${ev.label} · ${eventWhenDisplay(ev)}`;
+}
+
+// Al cambiar de idioma: la fecha de cada opción del desplegable (día de la semana)
+// depende del idioma, así que se vuelven a calcular los textos (misma lista y orden).
+export function relabelWellnessStaffEvents() {
+  if (!staff.eventOptions || !staff.eventOptions.length) return;
+  staff.eventOptions = staff.eventOptions.map((opt) => {
+    const ev = attEvents.find((e) => e.id === opt.id);
+    return ev ? { ...opt, label: staffEventLabel(ev) } : opt;
+  });
+}
+
 function populateWellnessStaffEventSelect() {
   const now = new Date();
   const pastEvents = attEvents
@@ -82,7 +96,7 @@ function populateWellnessStaffEventSelect() {
   }
 
   const previousSelection = staff.selectedEventId;
-  staff.eventOptions = pastEvents.map((ev) => ({ id: ev.id, label: `${ev.label} · ${eventWhenDisplay(ev)}` }));
+  staff.eventOptions = pastEvents.map((ev) => ({ id: ev.id, label: staffEventLabel(ev) }));
 
   const stillExists = previousSelection && pastEvents.some((ev) => ev.id === previousSelection);
   const eventId = stillExists ? previousSelection : pastEvents[0].id;

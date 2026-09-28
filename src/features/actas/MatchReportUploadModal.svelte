@@ -2,7 +2,7 @@
   // MODAL: SUBIR PDF DEL ACTA DEL PARTIDO
   import Modal from '../../lib/Modal.svelte';
   import { t } from '../../lib/i18n.svelte.js';
-  import { reportUpload, closeMatchReportUploadModal, uploadMatchReportPdf } from './upload.svelte.js';
+  import { reportUpload, closeMatchReportUploadModal, uploadMatchReportPdf, uploadStatusText } from './upload.svelte.js';
 </script>
 
 <Modal id="match-report-upload-modal" bind:open={reportUpload.open} boxStyle="max-width:380px;">
@@ -13,7 +13,7 @@
       <span>{t('partido.pdfFileLabel')}</span>
       <input type="file" id="match-report-pdf-input" accept="application/pdf" bind:this={reportUpload.fileInput} style="font-family:'Roboto',sans-serif; font-size:13px;">
     </label>
-    <div id="match-report-upload-status" style="font-size:12.5px; color:{reportUpload.statusColor};">{reportUpload.status}</div>
+    <div id="match-report-upload-status" style="font-size:12.5px; color:{reportUpload.statusColor};">{uploadStatusText()}</div>
   </div>
   <div class="modal-actions">
     <button class="btn-ghost" id="match-report-upload-cancel-btn" onclick={closeMatchReportUploadModal} disabled={reportUpload.busy}>{t('att.cancel')}</button>

@@ -38,7 +38,7 @@ export function buildPersonalBanner() {
 
   let noteExtra = '';
   if (coveringFor.length) {
-    noteExtra = ' · cubres a ' + coveringFor.map((c) => name(c.fromPlayerId)).join(', ');
+    noteExtra = t('tercer.coveringFor', { names: coveringFor.map((c) => name(c.fromPlayerId)).join(', ') });
   }
   const groupLine = `${t('tercer.groupLabel', { letter: myGroup })} · ${match.label}`;
   const box = { cookGroup, hint: t('tercer.viewMembers') };

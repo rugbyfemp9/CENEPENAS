@@ -55,11 +55,23 @@ async function loadTullidesForEvent(eventId) {
   tullidas.byEventId[eventId] = data || [];
 }
 
+function tullidesSubFor(ev) {
+  return `${ev.label} · ${eventWhenDisplay(ev)}`;
+}
+
+// Al cambiar de idioma: la fecha del subtítulo (día de la semana) depende del idioma,
+// así que si el modal está abierto se vuelve a calcular.
+export function refreshTullidesSub() {
+  if (!tullidas.open) return;
+  const ev = attEvents.find((e) => e.id === tullidas.eventId);
+  if (ev) tullidas.sub = tullidesSubFor(ev);
+}
+
 export function openTullidesModal() {
   const currentEventId = attSelection.currentEventId;
   const ev = attEvents.find((e) => e.id === currentEventId);
   if (!ev) return;
-  tullidas.sub = `${ev.label} · ${eventWhenDisplay(ev)}`;
+  tullidas.sub = tullidesSubFor(ev);
   tullidas.eventId = currentEventId;
   if (tullidas.input) tullidas.input.value = '';
   tullidas.open = true;

@@ -854,5 +854,52 @@ export const ca = {
   // Asistencia / Eventos: campo Lugar (el lugar que se guarda no se traduce) y calendario
   'att.placePlaceholder': 'Sala del club',
   'att.viewOnMaps': '📍 Veure "{query}" a Google Maps',
-  'att.calendarDefaultMonth': 'Agost 2026'
+  'att.calendarDefaultMonth': 'Agost 2026',
+
+  // ---- i18n pase 4b: Partidos, Actas, Tullidas, Wellness y Tercer tiempo ----
+  // Partidos: "Recuerda" (los elementos de la lista vienen de Supabase y no se traducen; los básicos que se siembran siguen igual)
+  'checklist.title': 'Què portar al partit',
+  'checklist.sub': 'Marca-ho amb la casella quan ja ho tinguis a punt',
+  'checklist.loading': 'Carregant…',
+  'checklist.delete': 'Eliminar',
+  'checklist.empty': 'No hi ha res a la llista. Afegeix el que necessitis portar 👇',
+  'checklist.addAria': 'Afegir',
+  'checklist.addPlaceholder': 'Afegir alguna cosa més…',
+  'checklist.close': 'Tancar',
+  'checklist.alertAddError': "No s'ha pogut afegir. Torna-ho a provar.",
+  // Partidos: "Lista" (las marcas guardadas no cambian)
+  'rollcall.title': 'Passar llista',
+  'rollcall.sub': 'Jugadores confirmades per al partit — marca qui ha arribat (✓) o falta/arriba tard (✗)',
+  'rollcall.empty': 'Encara no hi ha cap jugadora confirmada per a aquest partit.',
+  'rollcall.present': 'Present',
+  'rollcall.absentOrLate': 'Falta o arriba tard',
+  'rollcall.cancel': 'Cancel·lar',
+  'rollcall.save': 'Desar',
+  'rollcall.summary': '{marked} de {total} marcades',
+  'rollcall.alertLocked': "Aquesta llista ja s'ha passat i desat. Només la Comi Tresoreria la pot tornar a obrir per corregir-la.",
+  'rollcall.alertSyncError': "La llista s'ha desat a l'app, però no s'ha pogut sincronitzar: {error}",
+  // Actas: constructor a mano, estado de la subida del PDF y alertas (el error que devuelve el servidor se muestra tal cual)
+  'actas.choosePlayer': 'Triar…',
+  'actas.addCard': '+ targeta',
+  'actas.removePlayer': 'Treure jugadora',
+  'actas.matchNotFound': "No s'ha pogut identificar el partit.",
+  'actas.chooseFileFirst': 'Tria primer un fitxer PDF.',
+  'actas.uploading': "Pujant i llegint l'acta amb Gemini… pot trigar uns segons.",
+  'actas.sessionExpired': 'La teva sessió ha caducat, torna a iniciar sessió i torna-ho a provar.',
+  'actas.processError': "No s'ha pogut processar l'acta.",
+  'actas.uploadUnmatched': ' ({count} jugadora/es no identificades: revisa-les)',
+  'actas.uploadDone': 'Acta carregada! ({matched}/{processed} jugadores creuades){warning} Tancant…',
+  'actas.uploadError': "Error en pujar l'acta: {error}",
+  'actas.confirmDelete': "Segur que vols esborrar l'acta d'aquest partit? Es perdran totes les dades: jugadores, minuts, punts i targetes.",
+  'actas.alertDeleteError': "No s'ha pogut esborrar l'acta: {error}",
+  'actas.builderNoPlayers': 'Afegeix almenys una jugadora i tria el seu nom.',
+  'actas.builderSaving': "Desant l'acta…",
+  'actas.builderSaved': 'Acta desada!',
+  'actas.builderSaveError': "No s'ha pogut desar: {error}",
+  // Tercer tiempo: banner del detalle, modal de comida (título inicial), alertas de cambios de turno y deudas
+  'tercer.coveringFor': ' · cobreixes {names}',
+  'tercer.addTitle': 'Afegir',
+  'tercer.alertCoverSyncError': "La sol·licitud s'ha desat a l'app, però no s'ha pogut sincronitzar amb Supabase: {error}",
+  'tercer.alertDebtSyncError': "El deute s'ha desat a l'app, però no s'ha pogut sincronitzar amb Supabase: {error}",
+  'tercer.groupModalDefaultTitle': 'Grup'
 };

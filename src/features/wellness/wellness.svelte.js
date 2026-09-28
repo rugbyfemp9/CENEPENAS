@@ -63,13 +63,25 @@ export function setWellnessMood(val) {
   wellnessModal.mood = (val !== null && Number(val) === Number(wellnessModal.mood)) ? null : val;
 }
 
+function wellnessSubFor(ev) {
+  return `${ev.label} · ${eventWhenDisplay(ev)}`;
+}
+
+// Al cambiar de idioma: la fecha del subtítulo (día de la semana) depende del idioma,
+// así que si el modal está abierto se vuelve a calcular.
+export function refreshWellnessModalSub() {
+  if (!wellnessModal.open) return;
+  const ev = attEvents.find((e) => e.id === wellnessModal.eventId);
+  if (ev) wellnessModal.sub = wellnessSubFor(ev);
+}
+
 export async function openWellnessModal(eventId) {
   if (!canUseWellness()) return;
   const ev = attEvents.find((e) => e.id === eventId);
   if (!ev) return;
 
   wellnessModal.eventId = eventId;
-  wellnessModal.sub = `${ev.label} · ${eventWhenDisplay(ev)}`;
+  wellnessModal.sub = wellnessSubFor(ev);
 
   // Valores por defecto mientras se cargan (si ya había una respuesta previa, se
   // sobrescriben en cuanto llega la respuesta de Supabase, más abajo).

@@ -12,9 +12,8 @@ import { setSection } from '../../shell/navigation.svelte.js';
 import { supabase } from '../../lib/supabase.js';
 import { rosterById } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
-import { t } from '../../lib/i18n.svelte.js';
 import { resolveThirdTimeDebts, loadThirdTimeCovers, loadThirdTimeDebts } from './covers.svelte.js';
-import { loadThirdTimeFood, findFoodEntryForPlayer, renderThirdTimeFood, foodModal } from './food.svelte.js';
+import { loadThirdTimeFood, findFoodEntryForPlayer, renderThirdTimeFood } from './food.svelte.js';
 import { thirdTimeGroups, thirdTimeActiveMatch, selectTercerMatch } from './groups.js';
 import { buildInicioBanner, buildList, buildHistory, groupPreviewCol } from './views.js';
 import { buildDetailTitle, buildPersonalBanner, buildSwapSummary } from './detail-views.js';
@@ -64,17 +63,18 @@ export function closeThirdTimeGroupsOverviewModal() {
 }
 
 // ---- Modal de un grupo: sus integrantes y qué ha apuntado cada una (fijado al abrirlo)
-export const groupModal = $state({ open: false, title: 'Grupo', sub: '', rows: [] });
+// Los textos (título, subtítulo y "Por apuntarse") los traduce el modal a partir de la
+// letra del grupo y el partido, así siguen el cambio de idioma.
+// letter: null = todavía no se ha abierto nunca (título "Grupo" y subtítulo vacío).
+export const groupModal = $state({ open: false, letter: null, matchLabel: '', rows: [] });
 
 export function openThirdTimeGroupModal(groupLetter) {
   const memberIds = thirdTimeGroups[groupLetter] || [];
   const current = thirdTimeActiveMatch();
   const matchLabel = current ? current.match.label : '';
 
-  groupModal.title = t('tercer.groupLabel', { letter: groupLetter });
-  groupModal.sub = matchLabel
-    ? t('tercer.groupOrgWithMatch', { match: matchLabel })
-    : t('tercer.groupOrg');
+  groupModal.letter = groupLetter;
+  groupModal.matchLabel = matchLabel;
 
   const rows = [];
   memberIds.forEach((id) => {
@@ -86,7 +86,7 @@ export function openThirdTimeGroupModal(groupLetter) {
       ready: !!found,
       name: displayName(player),
       pos: String(player.pos),
-      dish: found ? `${found.category.emoji} ${found.entry.detail}` : t('tercer.notSignedUp'),
+      dish: found ? `${found.category.emoji} ${found.entry.detail}` : null, // null = "Por apuntarse"
     });
   });
   groupModal.rows = rows;
@@ -108,11 +108,11 @@ export function subscribeToThirdTimeRealtime() {
 }
 
 // Al cambiar de idioma se repintaba lo mismo que desde setLang() (js/core/i18n.js):
-// la tarjeta de Inicio, todo el Tercer tiempo y la comida. Además, el subtítulo del
-// modal de comida llevaba data-i18n="tercer.foodSubSelf" y applyI18n() lo volvía a
-// poner aunque estuviera apuntando a una compañera.
+// la tarjeta de Inicio, todo el Tercer tiempo y la comida. Los modales de comida, de
+// un grupo y de cambio de turno traducen sus textos solos; el de "Grupos del tercer
+// tiempo", si está abierto, se vuelve a calcular.
 export function onLangChange() {
   renderThirdTime();
   renderThirdTimeFood();
-  foodModal.sub = null;
+  if (groupsOverviewModal.open) groupsOverviewModal.cols = [groupPreviewCol('A'), groupPreviewCol('B')];
 }

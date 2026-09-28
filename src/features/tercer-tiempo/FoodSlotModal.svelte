@@ -5,16 +5,24 @@
   import {
     foodModal, toggleFoodTeammatePicker, onFoodTeammateChange, closeFoodSlotModal, confirmFoodSlot,
   } from './food.svelte.js';
+
+  const title = $derived(foodModal.catKey === undefined
+    ? t('tercer.addTitle')
+    : t('tercer.addToCategory', { category: foodModal.catKey ? t('tercer.food.' + foodModal.catKey) : '' }));
+  const sub = $derived(foodModal.target
+    ? t('tercer.foodSubOther', { name: foodModal.target.name ?? t('sharedLineup.someone') })
+    : t('tercer.foodSubSelf'));
+  const confirmText = $derived(foodModal.target ? t('tercer.signHerUp') : t('tercer.signMeUp'));
 </script>
 
 <Modal id="food-slot-modal" bind:open={foodModal.open} boxStyle="max-width:360px;">
   <div class="food-modal-head">
-    <h3 style="margin:0;" id="food-slot-modal-title">{foodModal.title}</h3>
+    <h3 style="margin:0;" id="food-slot-modal-title">{title}</h3>
     <button class="food-modal-teammate-btn" class:active={foodModal.pickerOpen} onclick={toggleFoodTeammatePicker} title={t('tercer.pickTeammate')}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 11a4 4 0 10-8 0 4 4 0 008 0z"/><path d="M3 21c0-4 3.4-7 7-7"/><path d="M18 8v6M21 11h-6"/></svg>
     </button>
   </div>
-  <div class="modal-sub" id="food-slot-modal-sub">{foodModal.sub ?? t('tercer.foodSubSelf')}</div>
+  <div class="modal-sub" id="food-slot-modal-sub">{sub}</div>
 
   <div id="food-teammate-picker" style="display:none; margin-top:10px;" style:display={foodModal.pickerOpen ? 'block' : 'none'}>
     <label style="display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;">
@@ -29,6 +37,6 @@
   </label>
   <div class="modal-actions">
     <button class="btn-ghost" onclick={closeFoodSlotModal}>{t('att.cancel')}</button>
-    <button class="btn" id="food-slot-confirm-btn" onclick={confirmFoodSlot}>{foodModal.confirmText}</button>
+    <button class="btn" id="food-slot-confirm-btn" onclick={confirmFoodSlot}>{confirmText}</button>
   </div>
 </Modal>

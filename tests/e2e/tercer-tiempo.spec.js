@@ -700,6 +700,33 @@ test('Catalan texts', async ({ page }) => {
   ]);
   await expect(page.locator('#sec-tercer-detalle .tt-food-section .fantasy-label')).toHaveText('Què portem');
 
+  // Food modal: title, subtitle and button, which follow a language change while open.
+  await foodCat(page, 'Arròs').locator('.tt-food-slot.empty').first().click();
+  await expect(foodModal(page)).toHaveClass(/active/);
+  await expect(page.locator('#food-slot-modal-title')).toHaveText('Afegir a Arròs / Llegums');
+  await expect(page.locator('#food-slot-modal-sub')).toHaveText("S'apunta amb el teu nom automàticament.");
+  await expect(page.locator('#food-slot-confirm-btn')).toHaveText("Apunta't");
+  await page.locator('.food-modal-teammate-btn').click();
+  await page.locator('#food-teammate-select').selectOption({ label: 'Tanke' });
+  await expect(page.locator('#food-slot-modal-sub')).toHaveText("S'apuntarà amb el nom de Tanke.");
+  await expect(page.locator('#food-slot-confirm-btn')).toHaveText('Apunta-la');
+  await page.evaluate(() => window.setLang('es'));
+  await expect(page.locator('#food-slot-modal-title')).toHaveText('Añadir a Arroz / Legumbres');
+  await expect(page.locator('#food-slot-modal-sub')).toHaveText('Se apuntará con el nombre de Tanke.');
+  await expect(page.locator('#food-slot-confirm-btn')).toHaveText('Apuntarla');
+  await page.evaluate(() => window.setLang('ca'));
+  await foodModal(page).getByRole('button', { name: 'Cancel·la', exact: true }).click();
+  await expect(foodModal(page)).not.toHaveClass(/active/);
+
+  // Group modal and "No puc assistir" modal
+  await page.locator('#tt-banner .tt-group-box').click();
+  await expect(page.locator('#tt-group-modal-title')).toHaveText('Grup A');
+  await expect(page.locator('#tt-group-modal-sub')).toHaveText('Organització del tercer temps · Partido vs Santboi');
+  await page.locator('#tt-group-modal').getByRole('button', { name: 'Tancar' }).click();
+  await personal(page).locator('.tt-swap-btn').click();
+  await expect(page.locator('#swap-modal-sub')).toHaveText('Li demanaràs a algú que et cobreixi a "Partido vs Santboi". Quan ho confirmis, li arribarà un avís a la teva companya perquè accepti el canvi.');
+  await page.locator('#swap-modal').getByRole('button', { name: 'Cancel·la', exact: true }).click();
+
   await page.locator('#sec-tercer-detalle .back-link').click();
   await expect(page.locator('#sec-tercer h2')).toHaveText('Tercer temps');
   await expect(listRows(page).locator('.tt-list-role')).toHaveText(['Et toca cuinar', 'Et toca netejar']);

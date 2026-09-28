@@ -132,11 +132,13 @@ export async function setFoodSlotStatus(catKey, index, status) {
 // ---- Modal para apuntarse a una categoría
 export const foodModal = $state({
   open: false,
-  title: 'Añadir',
-  // null = el texto de partida del marcado (data-i18n="tercer.foodSubSelf"), que
-  // también volvía a ponerse al cambiar de idioma aunque el modal estuviera abierto.
-  sub: null,
-  confirmText: 'Apuntarme',
+  // Los textos (título, subtítulo y botón) los traduce el modal a partir de estos datos,
+  // así siguen el cambio de idioma.
+  // undefined = todavía no se ha abierto nunca (título "Añadir"); si no, la categoría
+  // (null si no se ha encontrado: "Añadir a ").
+  catKey: undefined,
+  // null = se apunta una misma; si no, { name } de la compañera (name null = "Alguien").
+  target: null,
   detail: '',
   pickerOpen: false,
   // Todo el roster (una misma incluida), fijado al abrir el modal.
@@ -151,10 +153,9 @@ export function openFoodSlotModal(catKey) {
   foodModalTargetPlayerId = currentUserId;
 
   const cat = foodCategories.find((c) => c.key === catKey);
-  foodModal.title = t('tercer.addToCategory', { category: cat ? t('tercer.food.' + cat.key) : '' });
+  foodModal.catKey = cat ? cat.key : null;
   foodModal.detail = '';
-  foodModal.sub = t('tercer.foodSubSelf');
-  foodModal.confirmText = t('tercer.signMeUp');
+  foodModal.target = null;
 
   // Selector de compañera, cerrado por defecto (se apunta una misma)
   foodModal.pickerOpen = false;
@@ -181,10 +182,7 @@ export function onFoodTeammateChange(playerId) {
 function updateFoodModalTargetTexts() {
   const isMe = foodModalTargetPlayerId === currentUserId;
   const player = rosterById[foodModalTargetPlayerId];
-  foodModal.sub = isMe
-    ? t('tercer.foodSubSelf')
-    : t('tercer.foodSubOther', { name: player ? displayName(player) : t('sharedLineup.someone') });
-  foodModal.confirmText = isMe ? t('tercer.signMeUp') : t('tercer.signHerUp');
+  foodModal.target = isMe ? null : { name: player ? displayName(player) : null };
 }
 export function closeFoodSlotModal() {
   foodModal.open = false;

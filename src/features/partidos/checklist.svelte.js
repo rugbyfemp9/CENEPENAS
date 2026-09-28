@@ -7,6 +7,7 @@
 // cambio, incluida la fila de "Añadir algo más…".
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
+import { t } from '../../lib/i18n.svelte.js';
 
 const MATCHDAY_CHECKLIST_DEFAULTS = [
   'Botes tacos', 'Mijetes', 'Hombreres', 'Pantalons equipció', 'Leggins o samarreta interior',
@@ -111,7 +112,7 @@ export async function addMatchdayChecklistItem() {
 
   if (error) {
     console.error('No se ha podido añadir el elemento', error);
-    alert('No se ha podido añadir. Inténtalo de nuevo.');
+    alert(t('checklist.alertAddError'));
     return;
   }
   matchdayChecklistItems.push(data);

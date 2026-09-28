@@ -91,7 +91,7 @@ export const es = {
   'partido.colPlayerUpper': 'JUGADORA',
   'partido.colState': 'ESTADO',
   'partido.colMin': 'MIN',
-  'partido.colPoints': 'PUNTS',
+  'partido.colPoints': 'PUNTOS',
   'partido.colCardsUpper': 'TARJETAS',
   'partido.cardRed': 'Roja',
   'partido.cardYellow': 'Amarilla',
@@ -855,5 +855,52 @@ export const es = {
   // Asistencia / Eventos: campo Lugar (el lugar que se guarda no se traduce) y calendario
   'att.placePlaceholder': 'Sala del club',
   'att.viewOnMaps': '📍 Ver "{query}" en Google Maps',
-  'att.calendarDefaultMonth': 'Agosto 2026'
+  'att.calendarDefaultMonth': 'Agosto 2026',
+
+  // ---- i18n pase 4b: Partidos, Actas, Tullidas, Wellness y Tercer tiempo ----
+  // Partidos: "Recuerda" (los elementos de la lista vienen de Supabase y no se traducen; los básicos que se siembran siguen igual)
+  'checklist.title': 'Qué llevar al partido',
+  'checklist.sub': 'Márcalo con la casilla cuando ya lo tengas listo',
+  'checklist.loading': 'Cargando…',
+  'checklist.delete': 'Eliminar',
+  'checklist.empty': 'No hay nada en la lista. Añade lo que necesites llevar 👇',
+  'checklist.addAria': 'Añadir',
+  'checklist.addPlaceholder': 'Añadir algo más…',
+  'checklist.close': 'Cerrar',
+  'checklist.alertAddError': 'No se ha podido añadir. Inténtalo de nuevo.',
+  // Partidos: "Lista" (las marcas guardadas no cambian)
+  'rollcall.title': 'Pasar lista',
+  'rollcall.sub': 'Jugadoras confirmadas para el partido — marca quién ha llegado (✓) o falta/llega tarde (✗)',
+  'rollcall.empty': 'Todavía no hay ninguna jugadora confirmada para este partido.',
+  'rollcall.present': 'Presente',
+  'rollcall.absentOrLate': 'Falta o llega tarde',
+  'rollcall.cancel': 'Cancelar',
+  'rollcall.save': 'Guardar',
+  'rollcall.summary': '{marked} de {total} marcadas',
+  'rollcall.alertLocked': 'Esta lista ya se ha pasado y guardado. Solo Comi Tesoreria puede volver a abrirla para corregirla.',
+  'rollcall.alertSyncError': 'La lista se ha guardado en la app, pero no se ha podido sincronizar: {error}',
+  // Actas: constructor a mano, estado de la subida del PDF y alertas (el error que devuelve el servidor se muestra tal cual)
+  'actas.choosePlayer': 'Elegir…',
+  'actas.addCard': '+ tarjeta',
+  'actas.removePlayer': 'Quitar jugadora',
+  'actas.matchNotFound': 'No se ha podido identificar el partido.',
+  'actas.chooseFileFirst': 'Elige primero un archivo PDF.',
+  'actas.uploading': 'Subiendo y leyendo el acta con Gemini… puede tardar unos segundos.',
+  'actas.sessionExpired': 'Tu sesión ha caducado, vuelve a iniciar sesión e inténtalo de nuevo.',
+  'actas.processError': 'No se ha podido procesar el acta.',
+  'actas.uploadUnmatched': ' ({count} jugadora/s no identificadas: revísalas)',
+  'actas.uploadDone': '¡Acta cargada! ({matched}/{processed} jugadoras cruzadas){warning} Cerrando…',
+  'actas.uploadError': 'Error al subir el acta: {error}',
+  'actas.confirmDelete': '¿Seguro que quieres borrar el acta de este partido? Se perderán todos los datos: jugadoras, minutos, puntos y tarjetas.',
+  'actas.alertDeleteError': 'No se ha podido borrar el acta: {error}',
+  'actas.builderNoPlayers': 'Añade al menos una jugadora y elige su nombre.',
+  'actas.builderSaving': 'Guardando acta…',
+  'actas.builderSaved': '¡Acta guardada!',
+  'actas.builderSaveError': 'No se ha podido guardar: {error}',
+  // Tercer tiempo: banner del detalle, modal de comida (título inicial), alertas de cambios de turno y deudas
+  'tercer.coveringFor': ' · cubres a {names}',
+  'tercer.addTitle': 'Añadir',
+  'tercer.alertCoverSyncError': 'La solicitud se ha guardado en la app, pero no se pudo sincronizar con Supabase: {error}',
+  'tercer.alertDebtSyncError': 'La deuda se ha guardado en la app, pero no se pudo sincronizar con Supabase: {error}',
+  'tercer.groupModalDefaultTitle': 'Grupo'
 };

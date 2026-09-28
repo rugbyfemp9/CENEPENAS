@@ -130,7 +130,7 @@ export const partidoDetalle = $state({
 export function openPartidoDetail(eventId) {
   partidoDetalle.currentId = eventId;
   const ev = attEvents.find((e) => e.id === eventId);
-  partidoDetalle.title = ev ? ev.label : 'Partido';
+  partidoDetalle.title = ev ? ev.label : null;
   setSection('partido-detalle');
   if (actas.reports[eventId] !== undefined) {
     renderMatchReport(eventId); // ya la teníamos en caché de esta sesión: se pinta al momento

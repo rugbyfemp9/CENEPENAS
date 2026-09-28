@@ -344,6 +344,10 @@ test('reminder and rating modal in Catalan', async ({ page }) => {
   await expect(modal(page).locator('.wellness-phase-mood .wellness-field-label')).toHaveText("Estat d'ànim");
   await expect(modal(page).locator('.wellness-toggle-label')).toHaveText('Tens alguna molèstia física?');
   await expect(page.locator('#wellness-rpe-desc')).toHaveText('Un poc dur');
+  // The subtitle's date follows a language change while the modal is open.
+  await expect(page.locator('#wellness-modal-sub')).toHaveText('Entreno · Dimecres 23/09/26 · CEM Mar Bella · 20:30 - 22:00h');
+  await page.evaluate(() => window.setLang('es'));
+  await expect(page.locator('#wellness-modal-sub')).toHaveText('Entreno · Miércoles 23/09/26 · CEM Mar Bella · 20:30 - 22:00h');
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -660,5 +664,8 @@ test('staff panel headings in Catalan', async ({ page }) => {
   await page.locator('.wstaff-alert-card.discomfort').click();
   await expect(page.locator('#wstaff-alert-modal-title')).toHaveText('Molèsties');
   await expect(page.locator('#wstaff-alert-modal-count')).toHaveText('1 jugadora');
+  // The event picker's dates follow the language too (same selection).
+  await expect(page.locator('#wstaff-event-select option').first()).toHaveText('Entreno · Dimecres 23/09/26 · CEM Mar Bella · 20:30 - 22:00h');
+  await expect(page.locator('#wstaff-event-select')).toHaveValue(EVENT_IDS.trWed);
   expect(relevantErrors(errors)).toEqual([]);
 });

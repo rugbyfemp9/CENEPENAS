@@ -13,6 +13,7 @@ import { toRemotePlayerId } from '../../lib/session.svelte.js';
 import { rosterById } from '../../lib/roster.js';
 import { partidoDetalle } from '../partidos/partidos.svelte.js';
 import { actas, loadMatchReport } from './actas.svelte.js';
+import { t } from '../../lib/i18n.svelte.js';
 
 export const actaBuilder = $state({
   open: false,
@@ -102,24 +103,31 @@ export function removeActaBuilderCard(i, ci) {
   renderActaBuilderRows();
 }
 
-function setStatus(color, text) {
+// El estado se guarda como clave (+ variables) y se traduce al pintarse, así sigue el
+// cambio de idioma.
+function setStatus(color, key, vars) {
   actaBuilder.statusColor = color;
-  actaBuilder.status = text;
+  actaBuilder.status = { key, vars };
+}
+
+export function builderStatusText() {
+  const s = actaBuilder.status;
+  return s ? t(s.key, s.vars) : '';
 }
 
 export async function saveActaBuilder() {
   const validRows = actaBuilderRows.filter((r) => r.playerId);
   if (validRows.length === 0) {
-    setStatus('var(--bad)', 'Añade al menos una jugadora y elige su nombre.');
+    setStatus('var(--bad)', 'actas.builderNoPlayers');
     return;
   }
   if (!partidoDetalle.currentId) {
-    setStatus('var(--bad)', 'No se ha podido identificar el partido.');
+    setStatus('var(--bad)', 'actas.matchNotFound');
     return;
   }
 
   actaBuilder.busy = true;
-  setStatus('var(--text-muted)', 'Guardando acta…');
+  setStatus('var(--text-muted)', 'actas.builderSaving');
 
   try {
     const { error: headerError } = await supabase.from('match_reports').upsert({
@@ -184,10 +192,10 @@ export async function saveActaBuilder() {
     }
 
     await loadMatchReport(partidoDetalle.currentId);
-    setStatus('var(--ok)', '¡Acta guardada!');
+    setStatus('var(--ok)', 'actas.builderSaved');
     setTimeout(closeMatchReportBuilderModal, 900);
   } catch (e) {
-    setStatus('var(--bad)', 'No se ha podido guardar: ' + e.message);
+    setStatus('var(--bad)', 'actas.builderSaveError', { error: e.message });
   } finally {
     actaBuilder.busy = false;
   }

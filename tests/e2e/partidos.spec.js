@@ -480,8 +480,7 @@ test('a player sees the acta of a played match, starters first, read-only', asyn
   await openAppReady(page);
   await openPartido(page, 'Partido vs Gòtics');
 
-  await expect(page.locator('#match-report-box thead th')).toHaveText(['Nº', 'JUGADORA', 'ESTADO', 'MIN', 'A', 'T', 'CC', 'PUNTS', 'TARJETAS']);
-  // NOTE: the Spanish "points" header is the Catalan word "PUNTS".
+  await expect(page.locator('#match-report-box thead th')).toHaveText(['Nº', 'JUGADORA', 'ESTADO', 'MIN', 'A', 'T', 'CC', 'PUNTOS', 'TARJETAS']);
   await expect(reportRows(page)).toHaveCount(6);
   await expect(reportRows(page).locator('td.name')).toHaveText([
     'Marta Rovira', 'Carla Font', 'Júlia Serra', 'Paula Vidal', 'Laura Gil (sin perfil en la app)', 'Aina Soler',
@@ -908,6 +907,7 @@ test('Tullidas from a match detail in Asistencia; the button is only shown for m
 
   await page.evaluate(() => window.setLang('ca'));
   await expect(page.locator('#tullides-modal-title')).toHaveText('Tullides🤕');
+  await expect(page.locator('#tullides-modal-sub')).toHaveText('Partido vs Cornellà · Dissabte 03/10/26 · Camp Municipal de Rugby La Bòbila · 16:30h');
   await expect(page.locator('#tullides-input')).toHaveAttribute('placeholder', 'Quin embenat necessites?');
   await tullidesModal(page).getByRole('button', { name: 'Tancar' }).click();
   await expect(tullidesModal(page)).not.toHaveClass(/active/);

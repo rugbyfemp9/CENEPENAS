@@ -7,10 +7,10 @@
 
   const kind = $derived(staff.alertModal.kind);
   const rows = $derived(staff.alerts[kind]);
-  // Antes de abrirlo por primera vez se ve el marcado inicial ("0 jugadoras").
+  // Antes de abrirlo por primera vez se ve el marcado inicial ("0 jugadoras", traducido).
   const countText = $derived(staff.alertModal.everOpened
     ? `${rows.length} ${rows.length === 1 ? t('wstaff.alertModalPlayerSingular') : t('wstaff.alertModalPlayerPlural')}`
-    : '0 jugadoras');
+    : `0 ${t('wstaff.alertModalPlayerPlural')}`);
 </script>
 
 <Modal id="wstaff-alert-modal" bind:open={() => staff.alertModal.open, (v) => { if (v) staff.alertModal.open = true; else closeWellnessAlertModal(); }} boxStyle="max-width:400px;">
