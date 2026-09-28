@@ -18,6 +18,7 @@ import { rosterById } from '../roster.js';
 import { computeDisplayNames, displayName, initials } from '../names.js';
 import { todayLocalIso } from '../dates.js';
 import { formatEuro } from '../format.js';
+import { t } from '../i18n.svelte.js';
 
 const netOf = (entries) => entries.reduce((sum, e) => sum + (e.type === 'ingreso' ? e.amount : -e.amount), 0);
 
@@ -42,7 +43,7 @@ export function createTreasury({ table, canManage, members, messages }) {
     // El botón "Editar"/"Hecho" solo cambia al pulsarlo (si se pierde el permiso con
     // el modo edición activo, se sale del modo edición pero el botón no se toca).
     editBtnActive: false,
-    editBtnLabel: null,   // null = el texto traducido de "comi.edit"
+    editBtnLabel: null,   // clave del texto ('comi.done' / 'comi.edit'); null = "comi.edit"
   });
   const addForm = $state({ open: false, iso: '', concept: '', type: 'ingreso', amount: '', members: null, responsibleId: '' });
   const breakdown = $state({ open: false, rows: [] });
@@ -68,7 +69,7 @@ export function createTreasury({ table, canManage, members, messages }) {
     if (!canManage()) return;
     view.editMode = !view.editMode;
     view.editBtnActive = view.editMode;
-    view.editBtnLabel = view.editMode ? 'Hecho' : 'Editar';
+    view.editBtnLabel = view.editMode ? 'comi.done' : 'comi.edit';
     render();
 
     // Al pulsar "Hecho" (salir del modo edición) se guardan los cambios para todo el equipo
@@ -166,7 +167,8 @@ export function createTreasury({ table, canManage, members, messages }) {
     // añadir este campo), para que el desglose siga cuadrando con el saldo total.
     const unassigned = entries.filter((e) => !e.responsibleId || !rosterById[e.responsibleId]);
     if (unassigned.length) {
-      rows.push({ name: 'Sin responsable asignado', net: netOf(unassigned), count: unassigned.length, unassigned: true });
+      // (el nombre se pone traducido en TreasuryBreakdownModal)
+      rows.push({ name: '', net: netOf(unassigned), count: unassigned.length, unassigned: true });
     }
 
     const rowsDisplayNames = computeDisplayNames(rows.filter((r) => !r.unassigned));
@@ -217,13 +219,13 @@ export function createTreasury({ table, canManage, members, messages }) {
     const responsibleId = members().length ? addForm.responsibleId : null;
 
     if (!iso || !concept || !amount || amount <= 0) {
-      alert('Rellena la fecha, el concepto y un importe válido.');
+      alert(t('comi.alertFillFields'));
       return;
     }
 
     const entry = await addEntry({ iso, concept, type, amount, responsibleId });
     if (!entry) {
-      alert('No se ha podido guardar el movimiento. Inténtalo de nuevo.');
+      alert(t('comi.alertSaveError'));
       return;
     }
     closeAdd();

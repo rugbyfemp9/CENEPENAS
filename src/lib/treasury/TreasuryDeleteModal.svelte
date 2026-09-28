@@ -1,6 +1,6 @@
 <script>
-  // Confirmación antes de eliminar un movimiento. Los textos llegan de fuera porque en
-  // Comi Tesoreria están traducidos y en Comi Tercer Temps van siempre en castellano.
+  // Confirmación antes de eliminar un movimiento. Los textos (ya traducidos) llegan
+  // de fuera, como getters, desde el index.js de cada comisión.
   import Modal from '../Modal.svelte';
 
   let { treasury, id, title, message, no, yes } = $props();

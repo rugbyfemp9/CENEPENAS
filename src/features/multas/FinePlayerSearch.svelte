@@ -22,7 +22,7 @@
   <input type="text" id="{prefix}-player-search-input" class="fine-player-search-input" class:has-selection={search.hasSelection}
          placeholder={t('fines.searchPlaceholder')} autocomplete="off"
          value={search.query} oninput={(e) => onPlayerSearchInput(modal, e.currentTarget.value)} onfocus={() => onPlayerSearchFocus(modal)}>
-  <div class="fine-player-search-results" class:open={search.resultsOpen} id="{prefix}-player-search-results">{#if search.results === null}<div class="fine-player-search-empty">Sin coincidencias</div>{:else}{#each search.results as p}
+  <div class="fine-player-search-results" class:open={search.resultsOpen} id="{prefix}-player-search-results">{#if search.results === null}<div class="fine-player-search-empty">{t('fines.noMatches')}</div>{:else}{#each search.results as p}
     <button type="button" class="fine-player-search-result" onclick={() => selectPlayer(modal, p.id)}>
       <span class="avatar"><Avatar {...p.avatar} /></span>
       <span>{p.shown}</span>

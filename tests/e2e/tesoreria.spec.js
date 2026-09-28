@@ -282,19 +282,21 @@ test('Catalan texts', async ({ page }) => {
   await expect(page.locator('#sec-comi-tesoreria .treasury-banner-hint')).toHaveText('Veure desglossament per integrant ›');
   await expect(page.locator('#sec-comi-tesoreria .treasury-table-toolbar-label')).toHaveText('Moviments');
   await expect(page.locator('#sec-comi-tesoreria .back-link')).toHaveText('Comissions');
-  // NOTE: the table header and the type pills are rendered by JS in Spanish only.
-  await expect(page.locator('#treasury-table-head th')).toHaveText(['Fecha', 'Concepto', 'Tipo', 'Importe']);
-  await expect(rows(page).locator('.type-pill').first()).toHaveText('Gasto');
+  await expect(page.locator('#treasury-table-head th')).toHaveText(['Data', 'Concepte', 'Tipus', 'Import']);
+  await expect(rows(page).locator('.type-pill').first()).toHaveText('Despesa');
 
   await page.locator('#sec-comi-tesoreria .treasury-banner').click();
   const breakdown = page.locator('#treasury-breakdown-modal');
   await expect(breakdown.locator('h3')).toHaveText('Desglossament per integrant');
   await expect(breakdown.locator('.modal-sub')).toHaveText('El que ha mogut cada persona de la Comi Tresoreria');
+  await expect(breakdown.locator('.tv-breakdown-row .meta b')).toHaveText(['Carla', 'Sense responsable assignat']);
+  await expect(breakdown.locator('.tv-breakdown-row .meta span')).toHaveText(['0 moviments', '4 moviments']);
   await breakdown.getByRole('button', { name: 'Tancar' }).click();
   await expect(breakdown).not.toHaveClass(/active/);
 
   await page.locator('#treasury-edit-btn').click();
-  await rows(page).nth(0).getByRole('button', { name: 'Eliminar movimiento' }).click();
+  await expect(page.locator('#treasury-edit-btn-label')).toHaveText('Fet');
+  await rows(page).nth(0).getByRole('button', { name: 'Eliminar moviment' }).click();
   const confirmModal = page.locator('#delete-treasury-confirm-modal');
   await expect(confirmModal.locator('h3')).toHaveText('Eliminar moviment');
   await expect(confirmModal.locator('p')).toHaveText('Segur que vols eliminar aquest moviment? Aquesta acció no es pot desfer.');

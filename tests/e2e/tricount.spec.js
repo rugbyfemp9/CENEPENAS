@@ -413,8 +413,7 @@ test('Catalan texts', async ({ page }) => {
   await expect(page.locator('.tricount-balance-card .hint').first()).toHaveText('li deuen');
   await expect(page.locator('#tricount-settlement-toggle')).toHaveText('Veure reemborsaments suggerits');
   await page.locator('#tricount-settlement-toggle').click();
-  // NOTE: the toggle label is hardcoded in Spanish once it has been clicked.
-  await expect(page.locator('#tricount-settlement-toggle')).toHaveText('Ocultar reembolsos sugeridos');
+  await expect(page.locator('#tricount-settlement-toggle')).toHaveText('Amagar reemborsaments suggerits');
   await expect(page.locator('.tricount-settlement-item .txt').first()).toHaveText('Carla ha de pagar 21,60 € a Rovi');
   await expect(page.locator('.tricount-settlement-item button').first()).toHaveText('Marcar com a pagat');
   await expect(page.locator('#tricount-settled-head')).toHaveText('Pagaments ja liquidats');

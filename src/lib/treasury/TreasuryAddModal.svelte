@@ -2,6 +2,7 @@
   // Modal "Añadir movimiento" (Comi Tesoreria y Comi Tercer Temps: mismo marcado,
   // cambian los ids, los placeholders y el aviso de "nadie en la comisión").
   import Modal from '../Modal.svelte';
+  import { t } from '../i18n.svelte.js';
 
   let { treasury, ids, conceptPlaceholder, amountPlaceholder, noMembersText } = $props();
   const form = $derived(treasury.addForm);
@@ -13,37 +14,37 @@
 </script>
 
 <Modal id={ids.modal} bind:open={form.open} boxStyle="max-width:380px;">
-  <h3 style="margin-top:0;">Añadir movimiento</h3>
+  <h3 style="margin-top:0;">{t('comi.addMovement')}</h3>
   <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
     <label style={labelStyle}>
-      Fecha
+      {t('comi.colDate')}
       <input type="date" id={ids.date} bind:value={form.iso} style={inputStyle}>
     </label>
     <label style={labelStyle}>
-      Concepto
+      {t('comi.colConcept')}
       <input type="text" id={ids.concept} placeholder={conceptPlaceholder} bind:value={form.concept} style={inputStyle}>
     </label>
     <!-- svelte-ignore a11y_label_has_associated_control -->
     <label style={labelStyle}>
-      Tipo
+      {t('comi.type')}
       <div class="tx-type-toggle">
         <button type="button" class="tx-type-btn gasto" id={ids.typeGasto} class:active={form.type === 'gasto'} onclick={() => treasury.setType('gasto')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7 7 7-7"/></svg>
-          Gastos
+          {t('comi.typeExpenses')}
         </button>
         <button type="button" class="tx-type-btn ingreso" id={ids.typeIngreso} class:active={form.type === 'ingreso'} onclick={() => treasury.setType('ingreso')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
-          Ingresos
+          {t('comi.typeIncomes')}
         </button>
       </div>
       <input type="hidden" id={ids.type} value={form.type}>
     </label>
     <label style={labelStyle}>
-      Importe (€)
+      {t('comi.amountEur')}
       <input type="number" id={ids.amount} placeholder={amountPlaceholder} min="0" step="0.01" bind:value={form.amount} style={inputStyle}>
     </label>
     <label style={labelStyle}>
-      Responsable
+      {t('comi.responsible')}
       <select id={ids.responsible} bind:value={form.responsibleId} style="{inputStyle} background:var(--white);" style:display={noMembers ? 'none' : null}>
         {#each form.members || [] as p (p.id)}<option value={p.id}>{p.name}</option>{/each}
       </select>
@@ -53,7 +54,7 @@
     </label>
   </div>
   <div class="modal-actions">
-    <button class="btn-ghost" onclick={treasury.closeAdd}>Cancelar</button>
-    <button class="btn" onclick={treasury.save}>Guardar</button>
+    <button class="btn-ghost" onclick={treasury.closeAdd}>{t('att.cancel')}</button>
+    <button class="btn" onclick={treasury.save}>{t('att.saveGeneric')}</button>
   </div>
 </Modal>

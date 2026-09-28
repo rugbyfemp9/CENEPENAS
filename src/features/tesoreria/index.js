@@ -15,9 +15,9 @@ export function install() {
       typeGasto: 'tx-type-gasto', typeIngreso: 'tx-type-ingreso', type: 'treasury-type-input',
       amount: 'treasury-amount-input', responsible: 'treasury-responsible-input', responsibleEmpty: 'treasury-responsible-empty',
     },
-    conceptPlaceholder: 'Cuotas de agosto',
+    get conceptPlaceholder() { return t('comi.conceptPlaceholderTesoreria'); },
     amountPlaceholder: '150',
-    noMembersText: 'Todavía nadie tiene marcado "Comi Tesoreria" en su perfil.',
+    get noMembersText() { return t('fines.noTreasuryPerson'); },
   });
   mountAt(TreasuryBreakdownModal, 'treasury-breakdown-modal', {
     treasury, id: 'treasury-breakdown-modal', listId: 'treasury-breakdown-list',

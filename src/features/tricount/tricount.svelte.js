@@ -23,8 +23,8 @@ export const tricount = $state({
   settlements: [],
   tab: 'gastos',            // 'gastos' | 'saldos'
   settlementOpen: false,    // "Ver reembolsos sugeridos", colapsado por defecto
-  // Texto del botón de reembolsos tras pulsarlo (fijo en castellano); null = el texto
-  // traducido de "tricount.viewSettlements", que vuelve a ponerse al cambiar de idioma.
+  // Clave del texto del botón de reembolsos tras pulsarlo; null = "tricount.viewSettlements",
+  // que vuelve a ponerse al cambiar de idioma.
   settlementToggleLabel: null,
 });
 
@@ -177,7 +177,7 @@ export function setTricountTab(tab) {
 export function toggleSettlementPanel() {
   const opening = !tricount.settlementOpen;
   tricount.settlementOpen = opening;
-  tricount.settlementToggleLabel = opening ? 'Ocultar reembolsos sugeridos' : 'Ver reembolsos sugeridos';
+  tricount.settlementToggleLabel = opening ? 'tricount.hideSettlements' : 'tricount.viewSettlements';
 }
 
 export async function settleTricountPayment(fromId, toId, amount) {
@@ -223,7 +223,7 @@ export function openEditTricountModal(id) {
   const exp = tricount.expenses.find((e) => e.id === id);
   if (!exp) return;
   if (!exp.createdBy || exp.createdBy !== auth.userId) {
-    alert('Solo quien creó el gasto puede editarlo.');
+    alert(t('tricount.alertOnlyCreatorEdit'));
     return;
   }
   expenseForm.editingId = id;
@@ -255,15 +255,15 @@ export async function saveTricountExpense() {
   const participants = Array.from(expenseForm.participants);
 
   if (!label || !amount || amount <= 0) {
-    alert('Ponle un concepto y un importe válido al gasto.');
+    alert(t('tricount.alertNeedConceptAmount'));
     return;
   }
   if (!paidBy) {
-    alert('Indica quién ha pagado el gasto.');
+    alert(t('tricount.alertNeedPayer'));
     return;
   }
   if (participants.length === 0) {
-    alert('Elige entre quién se reparte el gasto.');
+    alert(t('tricount.alertNeedParticipants'));
     return;
   }
 
@@ -280,7 +280,7 @@ export async function saveTricountExpense() {
       .single();
     if (error) {
       console.error('No se pudo actualizar el gasto', error);
-      alert('No se ha podido guardar el cambio. Inténtalo de nuevo.');
+      alert(t('tricount.alertUpdateError'));
       return;
     }
     const updated = expenseRowToEntry(data);
@@ -298,7 +298,7 @@ export async function saveTricountExpense() {
       .single();
     if (error) {
       console.error('No se pudo guardar el gasto', error);
-      alert('No se ha podido guardar el gasto. Inténtalo de nuevo.');
+      alert(t('tricount.alertSaveError'));
       return;
     }
     tricount.expenses.push(expenseRowToEntry(data));

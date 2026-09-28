@@ -5,6 +5,7 @@
 import { rosterById } from '../../lib/roster.js';
 import { session } from '../../lib/session.svelte.js';
 import { createTreasury } from '../../lib/treasury/treasury.svelte.js';
+import { t } from '../../lib/i18n.svelte.js';
 
 // Solo Comi Tesoreria puede añadir/editar/borrar movimientos de la tesorería del
 // club; el resto del equipo puede consultar el saldo y la tabla con total normalidad
@@ -27,6 +28,7 @@ export const treasury = createTreasury({
     loadError: 'No se ha podido cargar la tesorería',
     addError: 'No se pudo guardar el movimiento de tesorería',
     persistError: 'No se pudo guardar la tesorería',
-    noMembersNoEntries: 'Todavía no hay nadie en Comi Tesoreria ni movimientos registrados.',
+    // Se muestra en el desglose: getter para que siga el idioma activo.
+    get noMembersNoEntries() { return t('comi.noMembersNoEntriesTesoreria'); },
   },
 });

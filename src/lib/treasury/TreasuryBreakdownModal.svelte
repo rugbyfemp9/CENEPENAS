@@ -20,8 +20,8 @@
         <div class="tv-breakdown-row {r.unassigned ? 'unassigned' : ''}">
           <div class="avatar">{#if r.unassigned}—{:else}<Avatar url={r.avatarUrl} fallback={r.initials} injured={r.injured} injuryIcon={r.injuryIcon} />{/if}</div>
           <div class="meta">
-            <b>{r.shownName}</b>
-            <span>{r.count} movimiento{r.count === 1 ? '' : 's'}</span>
+            <b>{r.unassigned ? t('comi.unassigned') : r.shownName}</b>
+            <span>{t(r.count === 1 ? 'comi.movementCountOne' : 'comi.movementCountMany', { count: r.count })}</span>
           </div>
           <div class="net {r.netClass}">{r.sign}{formatEuro(Math.abs(r.net))}</div>
         </div>

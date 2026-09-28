@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase.js';
 import { roster } from '../../lib/roster.js';
 import { session } from '../../lib/session.svelte.js';
 import { createTreasury } from '../../lib/treasury/treasury.svelte.js';
+import { t } from '../../lib/i18n.svelte.js';
 
 // Solo Comi Tercer Temps puede añadir/marcar/borrar cosas de la lista de la compra y
 // de su saldo; el resto del equipo puede consultar todo con total normalidad (la
@@ -78,6 +79,7 @@ export const tercerTreasury = createTreasury({
     loadError: 'No se ha podido cargar la tesorería de Comi Tercer Temps',
     addError: 'No se pudo guardar el movimiento de Comi Tercer Temps',
     persistError: 'No se pudo guardar la tesorería de Comi Tercer Temps',
-    noMembersNoEntries: 'Todavía no hay nadie en Comi Tercer Temps ni movimientos registrados.',
+    // Se muestra en el desglose: getter para que siga el idioma activo.
+    get noMembersNoEntries() { return t('comi.noMembersNoEntriesTercer'); },
   },
 });

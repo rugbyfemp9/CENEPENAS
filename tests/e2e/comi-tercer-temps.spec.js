@@ -85,6 +85,8 @@ test('empty shopping list message for a commission member', async ({ page }) => 
   const { errors } = await openComi(page, { user: PAULA, seed: emptyShopping });
   await expect(page.locator('#tercer-shopping-list')).toHaveText('La lista está vacía. Añade lo que haga falta comprar 👆');
   await expect(page.locator('#tercer-shopping-add-row')).toBeVisible();
+  await page.evaluate(() => window.setLang('ca'));
+  await expect(page.locator('#tercer-shopping-list')).toHaveText('La llista és buida. Afegeix el que calgui comprar 👆');
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -314,8 +316,7 @@ test('Catalan texts', async ({ page }) => {
   await expect(page.locator('#comi-tercer-panel-saldo .treasury-banner-label')).toHaveText("Saldo total de l'equip");
   await expect(page.locator('#comi-tercer-panel-saldo .treasury-banner-hint')).toHaveText('Veure desglossament per integrant ›');
   await expect(page.locator('#comi-tercer-panel-saldo .treasury-table-toolbar-label')).toHaveText('Moviments');
-  // NOTE: the table header and the type pills are rendered by JS in Spanish only.
-  await expect(page.locator('#tercer-treasury-table-head th')).toHaveText(['Fecha', 'Concepto', 'Tipo', 'Importe']);
+  await expect(page.locator('#tercer-treasury-table-head th')).toHaveText(['Data', 'Concepte', 'Tipus', 'Import']);
 
   await page.locator('#comi-tercer-panel-saldo .treasury-banner').click();
   const modal = page.locator('#tercer-treasury-breakdown-modal');

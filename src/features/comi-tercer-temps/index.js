@@ -15,20 +15,19 @@ export function install() {
       typeGasto: 'tx-tercer-type-gasto', typeIngreso: 'tx-tercer-type-ingreso', type: 'tercer-treasury-type-input',
       amount: 'tercer-treasury-amount-input', responsible: 'tercer-treasury-responsible-input', responsibleEmpty: 'tercer-treasury-responsible-empty',
     },
-    conceptPlaceholder: 'Bebida y hielo',
+    get conceptPlaceholder() { return t('comi.conceptPlaceholderTercer'); },
     amountPlaceholder: '60',
-    noMembersText: 'Todavía nadie tiene marcado "Comi Tercer Temps" en su perfil.',
+    get noMembersText() { return t('comi.noMembersTercer'); },
   });
   mountAt(TreasuryBreakdownModal, 'tercer-treasury-breakdown-modal', {
     treasury: tercerTreasury, id: 'tercer-treasury-breakdown-modal', listId: 'tercer-treasury-breakdown-list',
     get sub() { return t('comi.breakdownSubTercer'); },
   });
-  // Este modal nunca se tradujo: textos fijos en castellano.
   mountAt(TreasuryDeleteModal, 'delete-tercer-treasury-confirm-modal', {
     treasury: tercerTreasury, id: 'delete-tercer-treasury-confirm-modal',
-    title: 'Eliminar movimiento',
-    message: '¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.',
-    no: 'No',
-    yes: 'Sí, eliminar',
+    get title() { return t('comi.deleteMovementTitle'); },
+    get message() { return t('comi.deleteMovementConfirm'); },
+    get no() { return t('att.no'); },
+    get yes() { return t('att.yesDelete'); },
   });
 }

@@ -111,11 +111,11 @@
           <div class="right">
             <span class="amt">{formatEuro(exp.amount)}</span>
             {#if exp.canEdit}
-              <button type="button" class="tricount-expense-del" onclick={() => openEditTricountModal(exp.id)} aria-label="Editar" title="Editar">
+              <button type="button" class="tricount-expense-del" onclick={() => openEditTricountModal(exp.id)} aria-label={t('tricount.edit')} title={t('tricount.edit')}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
               </button>
             {/if}
-            <button type="button" class="tricount-expense-del" onclick={() => deleteTricountExpense(exp.id)} aria-label="Eliminar" title="Eliminar">
+            <button type="button" class="tricount-expense-del" onclick={() => deleteTricountExpense(exp.id)} aria-label={t('tricount.delete')} title={t('tricount.delete')}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
             </button>
           </div>
@@ -136,7 +136,7 @@
 
   <!-- Reembolsos sugeridos: colapsado por defecto -->
   <button type="button" class="tricount-settlement-toggle" id="tricount-settlement-toggle" class:open={tricount.settlementOpen} onclick={toggleSettlementPanel} style="margin-top:22px;">
-    <span>{tricount.settlementToggleLabel ?? t('tricount.viewSettlements')}</span>
+    <span>{t(tricount.settlementToggleLabel ?? 'tricount.viewSettlements')}</span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
   </button>
   <div class="tricount-settlement-collapse" id="tricount-settlement-collapse" style="display:{tricount.settlementOpen ? 'block' : 'none'};">

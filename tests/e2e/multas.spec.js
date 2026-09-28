@@ -723,11 +723,10 @@ test('Catalan texts', async ({ page }) => {
   await expect(page.locator('#sec-multas .back-link')).toHaveText('Vestidor');
   await expect(page.locator('#sec-multas .fines-table th')).toHaveText(['Jugadora', 'Motiu', 'Import', 'Estat']);
   await expect(tableRows(page).first().locator('.badge')).toHaveText('Pendent');
-  await expect(rowOf(page, 'Juls').locator('.fine-chip').nth(0)).toHaveAttribute('title', 'Retraso · 2 € · Clic per marcar com a pagada');
+  await expect(rowOf(page, 'Juls').locator('.fine-chip').nth(0)).toHaveAttribute('title', 'Retard · 2 € · Clic per marcar com a pagada');
 
   await expect(myCard(page).locator('.my-fines-head .label')).toHaveText('Deus');
-  // NOTE: the reason labels are not translated.
-  await expect(myCard(page).locator('.my-fine-row .reason')).toHaveText(['Retraso', 'Tarjeta amarilla']);
+  await expect(myCard(page).locator('.my-fine-row .reason')).toHaveText(['Retard', 'Targeta groga']);
   await expect(myCard(page).locator('.fine-awaiting-badge')).toHaveText('Esperant confirmació…');
 
   await myCard(page).getByRole('button', { name: 'Pagar multa' }).click();
@@ -744,8 +743,7 @@ test('Catalan texts', async ({ page }) => {
   await expect(page.locator('#inicio-fines-banner .txt b')).toHaveText('Multes');
   await expect(page.locator('#inicio-fines-banner .txt span')).toHaveText('Paga la coca, primer avís · Deus 7 € 🔪');
   await goToSection(page, 'vestuario');
-  // NOTE: the Vestuario card total is always in Spanish.
-  await expect(page.locator('#vest-multas-total')).toHaveText('23 € pendientes');
+  await expect(page.locator('#vest-multas-total')).toHaveText('23 € pendents');
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -765,9 +763,8 @@ test('Catalan texts for a treasurer (confirm request, add and edit modals)', asy
   await expect(fineModal(page).locator('.modal-sub')).toHaveText('Tria la jugadora i un o diversos motius');
   await expect(page.locator('#fine-player-search-input')).toHaveAttribute('placeholder', 'Cerca per nom o malnom…');
   await expect(fineModal(page).getByRole('button', { name: 'Desa la multa' })).toBeVisible();
-  // NOTE: the "no matches" text is hardcoded in Spanish.
   await page.locator('#fine-player-search-input').fill('zzz');
-  await expect(page.locator('#fine-player-search-results .fine-player-search-empty')).toHaveText('Sin coincidencias');
+  await expect(page.locator('#fine-player-search-results .fine-player-search-empty')).toHaveText('Sense coincidències');
   await fineModal(page).getByRole('button', { name: "Cancel·la" }).click();
 
   await editToggle(page).click();

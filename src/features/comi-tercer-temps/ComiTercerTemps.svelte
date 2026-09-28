@@ -30,14 +30,14 @@
     </div>
     <div id="tercer-shopping-list">
       {#if shopping.items.length === 0}
-        <div class="shopping-empty">La lista está vacía.{canManage ? ' Añade lo que haga falta comprar 👆' : ''}</div>
+        <div class="shopping-empty">{t('comi.shoppingEmpty')}{canManage ? ' ' + t('comi.shoppingEmptyHint') : ''}</div>
       {:else}
         {#each shopping.items as item (item.id)}
           <label class="shopping-item" class:checked={item.checked}>
             <input type="checkbox" checked={item.checked} disabled={!canManage} onchange={() => toggleShoppingItem(item.id)}>
             <span class="shopping-item-label">{item.label}</span>
             {#if canManage}
-              <button type="button" class="shopping-item-del" onclick={(e) => { e.preventDefault(); deleteShoppingItem(item.id); }} aria-label="Eliminar" title="Eliminar">
+              <button type="button" class="shopping-item-del" onclick={(e) => { e.preventDefault(); deleteShoppingItem(item.id); }} aria-label={t('att.delete')} title={t('att.delete')}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
               </button>
             {/if}

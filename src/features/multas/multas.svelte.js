@@ -32,6 +32,13 @@ export const fineReasons = [
 ];
 export const fineReasonById = Object.fromEntries(fineReasons.map((r) => [r.id, r]));
 
+// Texto del motivo en el idioma activo. `label` (castellano) se sigue usando tal cual
+// en el concepto que se guarda en la tesorería al pagar una multa (ver paidConcept).
+const reasonLabelKeys = { amarilla: 'fines.reasonAmarilla', roja: 'fines.reasonRoja', retraso: 'fines.reasonRetraso', tercer: 'fines.reasonTercer' };
+export function reasonLabel(r) {
+  return t(reasonLabelKeys[r.id]);
+}
+
 // Multas del equipo (antes el array `fines` de js/core/state.js).
 export const finesState = $state({ list: [] });
 
@@ -149,7 +156,7 @@ export async function persistFineInsert(localId, fine) {
     .single();
 
   if (error) {
-    alert('La multa se ha guardado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
+    alert(t('fines.alertSyncInsertError', { error: error.message }));
     return;
   }
   const local = finesState.list.find((f) => f.id === localId);
@@ -169,7 +176,7 @@ async function persistFineUpdate(fineId, patch) {
 
   const { error } = await supabase.from('fines').update(remotePatch).eq('id', fineId);
   if (error) {
-    alert('El cambio se ha aplicado en la app, pero no se pudo sincronizar con Supabase: ' + error.message);
+    alert(t('fines.alertSyncUpdateError', { error: error.message }));
   }
 }
 
@@ -179,24 +186,24 @@ async function persistFineUpdate(fineId, patch) {
 // (Ahora mismo no la llama nadie: el borrado se hace desde el modal de edición.)
 export async function deleteFine(fineId) {
   if (!canManageFines()) {
-    alert('Solo Comi Tesoreria puede deshacer una multa.');
+    alert(t('fines.onlyTreasuryUndo'));
     return;
   }
-  if (!confirm('¿Deshacer esta multa? Se eliminará por completo.')) return;
+  if (!confirm(t('fines.undoConfirm'))) return;
 
   finesState.list = finesState.list.filter((f) => f.id !== fineId);
   refreshAfterChange();
 
   const { data, error } = await supabase.from('fines').delete().eq('id', fineId).select();
   if (error) {
-    alert('No se ha podido deshacer la multa en Supabase: ' + error.message);
+    alert(t('fines.undoError', { error: error.message }));
     loadFines(); // por si acaso, recargamos el estado real desde el servidor
   } else if (!data || data.length === 0) {
     // Supabase no da error si el borrado no afecta a ninguna fila (p.ej. si una
     // política de RLS lo bloquea): por eso se comprueba aquí explícitamente. Si pasa,
     // recargamos desde el servidor para que la multa "fantasma" vuelva a aparecer
     // ahora (y no como sorpresa en el próximo refresh) y avisamos del motivo real.
-    alert('La multa no se ha podido eliminar en Supabase (probablemente por permisos). Revisa la política de borrado de la tabla "fines".');
+    alert(t('fines.undoPermissionError'));
     loadFines();
   }
 }
@@ -218,7 +225,7 @@ const sumAmounts = (list) => list.reduce((sum, f) => sum + fineReasonById[f.reas
 // cargadas coincide con el texto de partida del marcado ("0 € pendientes").
 export function vestuarioTotalText() {
   const pending = finesState.list.filter((f) => f.status === 'pendiente');
-  return sumAmounts(pending) + ' € pendientes';
+  return t('fines.vestTotal', { total: sumAmounts(pending) });
 }
 
 function myPendingFines() {
@@ -233,7 +240,7 @@ export function myFinesSummary() {
     total: sumAmounts(myPending),
     rows: myPending.map((f) => {
       const r = fineReasonById[f.reasonId];
-      return { id: f.id, label: r.label, amount: r.amount, awaiting: !!f.paidToId };
+      return { id: f.id, label: reasonLabel(r), amount: r.amount, awaiting: !!f.paidToId };
     }),
   };
 }
@@ -268,7 +275,7 @@ export function fineConfirmRequests() {
       const payer = rosterById[f.playerId];
       const reason = fineReasonById[f.reasonId];
       const payerName = payer ? displayName(payer) : t('sharedLineup.someone');
-      return { id: f.id, payerName, avatar: payer ? avatarOf(payer, payerName) : null, label: reason.label, amount: reason.amount };
+      return { id: f.id, payerName, avatar: payer ? avatarOf(payer, payerName) : null, label: reasonLabel(reason), amount: reason.amount };
     });
 }
 
@@ -308,11 +315,11 @@ export function finesTable() {
       const anyAwaiting = group.some((f) => f.paidToId);
       const label = (count > 1 ? `${count}${r.short}` : r.short) + (anyAwaiting ? ' ⏳' : '');
       const editTitle = count > 1
-        ? t('fines.chipEditMulti', { count, label: r.label, amount: r.amount })
-        : t('fines.chipEditSingle', { label: r.label, amount: r.amount });
+        ? t('fines.chipEditMulti', { count, label: reasonLabel(r), amount: r.amount })
+        : t('fines.chipEditSingle', { label: reasonLabel(r), amount: r.amount });
       const payTitle = (count > 1
-        ? t('fines.chipPayMulti', { count, label: r.label, amount: r.amount })
-        : t('fines.chipPaySingle', { label: r.label, amount: r.amount }))
+        ? t('fines.chipPayMulti', { count, label: reasonLabel(r), amount: r.amount })
+        : t('fines.chipPaySingle', { label: reasonLabel(r), amount: r.amount }))
         + (anyAwaiting ? ` ${t('fines.chipSomeAwaiting')}` : '');
       return { reasonId, label, targetId: target.id, title: editMode ? editTitle : payTitle };
     });
@@ -378,6 +385,8 @@ export function closePayFineModal() {
   payModal.fineId = null;
 }
 
+// El concepto se guarda en la tesorería (Supabase): va siempre en castellano, como
+// antes, sea cual sea el idioma de quien paga o confirma.
 function paidConcept(f) {
   const player = rosterById[f.playerId];
   const reason = fineReasonById[f.reasonId];
@@ -392,7 +401,7 @@ export function confirmPayFine(selectedValue) {
   const members = treasuryCommissionMembers();
   const responsibleId = members.length ? selectedValue : null;
   if (members.length && !responsibleId) {
-    alert('Elige a quién de Comi Tesoreria se le ha pagado.');
+    alert(t('fines.alertChoosePaidTo'));
     return;
   }
 
@@ -480,7 +489,7 @@ export function finesHistory() {
       return {
         avatar: { url: player ? player.avatarUrl : '', fallback: initials(player ? displayName(player) : '?'), injured: false, injuryIcon: '' },
         name: player ? displayName(player) : t('sharedLineup.someone'),
-        reasonLabel: reason ? reason.label : '',
+        reasonLabel: reason ? reasonLabel(reason) : '',
         amount: reason ? reason.amount : '',
         paidToName: paidTo ? displayName(paidTo) : null,
         date: f.paidAt ? formatFullDate(f.paidAt) : '—',
@@ -541,7 +550,7 @@ function renderPlayerSearchResults(search) {
   }
 
   search.results = matches.map((p) => {
-    const shown = displayNames.get(p.id) || p.name || 'Sin nombre';
+    const shown = displayNames.get(p.id) || p.name || t('plantilla.noName');
     return { id: p.id, shown, avatar: { url: p.avatarUrl, fallback: initials(shown), injured: p.injured, injuryIcon: p.injuryIcon } };
   });
   search.resultsOpen = true;
@@ -650,7 +659,7 @@ export const editFineModal = $state({
 
 export function openEditFineModal(fineId) {
   if (!canManageFines()) {
-    alert('Solo Comi Tesoreria puede editar multas.');
+    alert(t('fines.onlyTreasuryEdit'));
     return;
   }
   const fines = finesState.list;
@@ -746,7 +755,7 @@ export async function deleteFineFromEditModal() {
     // política de RLS lo bloquea), solo devuelve menos filas de las esperadas.
     // Se recarga desde el servidor para que cualquier multa "fantasma" vuelva a
     // aparecer ahora mismo (y no como sorpresa en el próximo refresh).
-    alert('Alguna multa no se ha podido eliminar en Supabase (probablemente por permisos). Revisa la política de borrado de la tabla "fines".');
+    alert(t('fines.deletePermissionError'));
     loadFines();
   }
 }
