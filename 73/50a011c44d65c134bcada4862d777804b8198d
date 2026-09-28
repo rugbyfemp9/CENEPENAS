@@ -1,0 +1,67 @@
+tests/e2e/tesoreria.spec.js
+  s_1fdfe932c62174::t_858ce6d0f0af24 285-286,299
+  s_1fdfe932c62174::t_878761e283f97e 292-293,298
+tests/e2e/comi-tercer-temps.spec.js
+  s_1fdfe932c62174::t_878761e283f97e 88-89
+  s_1fdfe932c62174::t_858ce6d0f0af24 319
+src/lib/treasury/TreasuryDeleteModal.svelte
+  s_1fdfe932c62174::t_5719781bcccea4 2-3
+src/lib/i18n/ca.js
+  s_1fdfe932c62174::t_0746305bc06712 700-701,704-717,719-739,741-742,744-750
+  s_1fdfe932c62174::t_9f82b1918942a7 702-703,718,740,743
+tests/e2e/tricount.spec.js
+  s_1fdfe932c62174::t_858ce6d0f0af24 416
+src/features/tesoreria/index.js
+  s_1fdfe932c62174::t_5b76cfba17a6b9 18,20
+tests/e2e/multas.spec.js
+  s_1fdfe932c62174::t_858ce6d0f0af24 726,729,746,767
+src/lib/treasury/TreasuryAddModal.svelte
+  s_1fdfe932c62174::t_5719781bcccea4 5,17,20,24,29,33,37,43,47,57-58
+src/features/multas/FineReasonGrid.svelte
+  s_1fdfe932c62174::t_49de1b6cc1f087 3,9
+src/features/comi-tercer-temps/comi-tercer-temps.svelte.js
+  s_1fdfe932c62174::t_5b76cfba17a6b9 9,82-83
+src/features/tricount/tricount.svelte.js
+  s_1fdfe932c62174::t_5b76cfba17a6b9 26-27,180,226,258,262,266,283,301
+src/features/multas/multas.svelte.js
+  s_1fdfe932c62174::t_49de1b6cc1f087 388-389
+  s_1fdfe932c62174::t_8a81e2194e0230 35-41,159,179,189,192,199,206,228,243,278,318-319,321-322,404,492,553,662,758
+src/lib/treasury/TreasuryTable.svelte
+  s_1fdfe932c62174::t_5719781bcccea4 2-3,6,20,26,35,46,52
+src/features/tesoreria/tesoreria.svelte.js
+  s_1fdfe932c62174::t_5b76cfba17a6b9 8,31-32
+src/features/multas/VestTotal.svelte
+  s_1fdfe932c62174::t_49de1b6cc1f087 3
+src/features/comi-tercer-temps/index.js
+  s_1fdfe932c62174::t_5b76cfba17a6b9 18,20,28-31
+src/lib/treasury/treasury.svelte.js
+  s_1fdfe932c62174::t_5719781bcccea4 21,46,72,170-171,222,228
+src/lib/treasury/TreasuryBreakdownModal.svelte
+  s_1fdfe932c62174::t_5719781bcccea4 23-24
+src/features/comi-tercer-temps/ComiTercerTemps.svelte
+  s_1fdfe932c62174::t_5b76cfba17a6b9 33,40
+src/features/tricount/Tricount.svelte
+  s_1fdfe932c62174::t_5b76cfba17a6b9 114,118,139
+src/features/multas/FinePlayerSearch.svelte
+  s_1fdfe932c62174::t_49de1b6cc1f087 25
+src/lib/i18n/es.js
+  s_1fdfe932c62174::t_0746305bc06712 701-751
+src/lib/treasury/TreasuryEditButton.svelte
+  s_1fdfe932c62174::t_5719781bcccea4 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7350a011c44d65c134bcada4862d777804b8198d",
+  "prompts": {},
+  "sessions": {
+    "s_1fdfe932c62174": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "419d9252-d141-4c7a-abbb-db795391f30e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
