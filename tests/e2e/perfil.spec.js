@@ -275,6 +275,11 @@ test('Catalan: labels, stats and table of the profile', async ({ page }) => {
     'Nom', 'Malnom', 'Telèfon', 'Data de naixement', 'Comissió', 'Rang', 'Posició', 'Rol', 'Núm. de Llicència',
   ]);
   await expect(modal(page).locator('.modal-actions button')).toHaveText(['Cancel·la', 'Desa']);
+  // Role and rank option labels are translated; their values (saved to Supabase) are not.
+  await expect(page.locator('#profile-rol-input option')).toHaveText(['Sense assignar', 'Jugadora', 'Capitana', 'Entrenador/a', 'Delegat/da', 'Junta directiva', 'Fisios']);
+  await expect(page.locator('#profile-rol-input option[value="delegado/a"]')).toHaveText('Delegat/da');
+  await expect(page.locator('#profile-rango-input option')).toHaveText(['Sense assignar', 'Veterana', 'Novata', 'Sang de Fang']);
+  await expect(page.locator('#profile-btn')).toHaveAttribute('aria-label', 'Veure el meu perfil');
   expect(relevantErrors(errors)).toEqual([]);
 });
 

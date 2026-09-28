@@ -137,7 +137,7 @@ export async function saveProfileEdits() {
       .eq('id', targetId);
 
     if (updateError) {
-      alert('El perfil se ha actualizado en la app, pero no se pudo guardar en Supabase: ' + updateError.message);
+      alert(t('profile.alertSaveError', { error: updateError.message }));
     }
   }
 

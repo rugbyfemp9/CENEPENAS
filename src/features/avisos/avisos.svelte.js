@@ -13,6 +13,7 @@ import { myProfile, myRosterEntry } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
 import { storage } from '../../lib/storage.js';
 import { monthAbbrLabel, autoMonthAbbr } from '../../lib/dates.js';
+import { t } from '../../lib/i18n.svelte.js';
 
 export const notices = $state({
   status: 'idle',   // 'loading' mientras se pide la lista de avisos fijados
@@ -109,7 +110,7 @@ export async function deleteNotice(id) {
     const { error } = await supabase.from('notices').delete().eq('id', id);
     if (error) throw error;
   } catch (e) {
-    alert('No se ha podido eliminar el aviso.');
+    alert(t('notices.alertDeleteError'));
     return;
   }
   refreshPinned();
@@ -131,12 +132,12 @@ export function openAddNoticeModal() {
 export async function saveNotice() {
   const text = noticeForm.text.trim();
   if (!text) {
-    alert('Escribe el texto del aviso.');
+    alert(t('notices.alertNoText'));
     return;
   }
   const userId = auth.userId;
   if (!userId) {
-    alert('Inicia sesión para publicar un aviso.');
+    alert(t('notices.alertLoginRequired'));
     return;
   }
 
@@ -156,7 +157,7 @@ export async function saveNotice() {
     const { error } = await supabase.from('notices').insert(row);
     if (error) throw error;
   } catch (e) {
-    alert('No se ha podido publicar el aviso. Inténtalo de nuevo.');
+    alert(t('notices.alertPublishError'));
     return;
   }
 

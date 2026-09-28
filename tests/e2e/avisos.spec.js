@@ -284,8 +284,12 @@ test('Catalan: title, add button and the date of a new notice are translated', a
   await page.evaluate(() => window.setLang('ca'));
   await expect(page.locator('#inicio-notices-card h3')).toHaveText('Avisos');
   await openAddModal(page, 'Afegir avís');
-  // NOTE: the add-notice modal (title, type buttons, hint, Cancelar/Publicar) and its
-  // alerts are hardcoded in Spanish; they are not translated to Catalan.
+  // The add-notice modal is translated too (title, type buttons, hint, buttons).
+  await expect(modal(page).locator('h3')).toHaveText('Afegir avís');
+  await expect(modal(page).locator('#notice-type-quick button')).toHaveText(['📌 Fixat a Avisos', '📢 Notificació a dalt']);
+  await expect(modal(page).locator('#notice-type-hint')).toHaveText('Es queda fixat a "Avisos" fins que tu l\'esborris.');
+  await expect(modal(page).locator('#notice-text-input')).toHaveAttribute('placeholder', "Escriu aquí l'avís...");
+  await expect(modal(page).locator('.modal-actions button')).toHaveText(['Cancel·la', 'Publicar']);
   await page.locator('#notice-text-input').fill('Sopar d\'equip');
   await modal(page).locator('.modal-actions .btn').click();
 

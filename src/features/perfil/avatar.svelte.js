@@ -31,7 +31,7 @@ export async function removeAvatarPhoto() {
   if (!myProfile.avatarUrl) return;
   // El menú se cierra en pantalla antes de que salga el confirm() (que bloquea).
   flushSync();
-  if (!confirm('¿Eliminar tu foto de perfil?')) return;
+  if (!confirm(t('profile.confirmRemovePhoto'))) return;
 
   if (auth.userId) {
     const { error: updateError } = await supabase
@@ -40,7 +40,7 @@ export async function removeAvatarPhoto() {
       .eq('id', auth.userId);
 
     if (updateError) {
-      alert('No se ha podido eliminar la foto: ' + updateError.message);
+      alert(t('profile.alertRemovePhotoError', { error: updateError.message }));
       return;
     }
   }
@@ -61,11 +61,11 @@ export async function handleAvatarUpload(event) {
   if (!file) return;
 
   if (!file.type.startsWith('image/')) {
-    alert('Elige un archivo de imagen (JPG, PNG…).');
+    alert(t('profile.alertNotImage'));
     return;
   }
   if (file.size > 15 * 1024 * 1024) {
-    alert('La imagen pesa demasiado. Elige una de menos de 15 MB.');
+    alert(t('profile.alertImageTooBig'));
     return;
   }
 
@@ -87,11 +87,11 @@ export async function handleAvatarUpload(event) {
     blob = await compressImageFile(file, 320, 0.82);
   } catch (e) {
     console.error('No se ha podido comprimir la imagen', e);
-    alert('No se ha podido procesar la imagen. Prueba con otra foto.');
+    alert(t('profile.alertProcessError'));
     return;
   }
   if (!blob) {
-    alert('No se ha podido procesar la imagen. Prueba con otra foto.');
+    alert(t('profile.alertProcessError'));
     return;
   }
 
@@ -134,7 +134,7 @@ async function compressImageFile(file, maxDim, quality) {
 async function uploadAvatarBlob(blob, extHint) {
   const authUserId = auth.userId;
   if (!authUserId) {
-    alert('Inicia sesión para poder subir una foto de perfil.');
+    alert(t('profile.alertLoginToUpload'));
     return false;
   }
 
@@ -153,7 +153,7 @@ async function uploadAvatarBlob(blob, extHint) {
     .upload(path, blob, { upsert: true, cacheControl: '31536000' });
 
   if (uploadError) {
-    alert('No se ha podido subir la foto: ' + uploadError.message);
+    alert(t('profile.alertUploadError', { error: uploadError.message }));
     perfil.uploading = false;
     return false;
   }
@@ -170,7 +170,7 @@ async function uploadAvatarBlob(blob, extHint) {
   perfil.uploading = false;
 
   if (updateError) {
-    alert('La foto se subió, pero no se pudo guardar en tu perfil: ' + updateError.message);
+    alert(t('profile.alertUploadSaveError', { error: updateError.message }));
     return false;
   }
 
@@ -320,7 +320,7 @@ export async function saveAvatarAdjust() {
 
   const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.82));
   if (!blob) {
-    alert('No se ha podido procesar la imagen.');
+    alert(t('profile.alertProcessErrorShort'));
     return;
   }
   const ok = await uploadAvatarBlob(blob, 'jpg');

@@ -47,8 +47,8 @@
       <input type="file" id="pf-avatar-input" accept="image/*" style="display:none;" bind:this={input} onchange={handleAvatarUpload}>
     </div>
     <div class="pf-hero-info">
-      <b id="profile-name-display">{perfil.view ? perfil.view.name : 'Tu nombre'}</b>
-      <span id="profile-mote-role-display">{perfil.view ? perfil.view.moteRole : 'Configura tu rol'}</span>
+      <b id="profile-name-display">{perfil.view ? perfil.view.name : t('profile.defaultName')}</b>
+      <span id="profile-mote-role-display">{perfil.view ? perfil.view.moteRole : t('profile.setUpRole')}</span>
       <span id="profile-licencia-hero-display" class="pf-hero-licencia">{perfil.view ? perfil.view.licenciaHero : ''}</span>
     </div>
   </div>

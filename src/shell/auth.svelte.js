@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase.js';
 import { setAuthUserId, setIsAdmin, refreshSession } from '../lib/session.svelte.js';
 import { myProfile, rosterById } from '../lib/roster.js';
 import { effectiveRoleForPermissions } from '../lib/permissions.js';
+import { t } from '../lib/i18n.svelte.js';
 import { flushPendingPushToken } from '../lib/push.js';
 import { toggleWellnessStaffCardVisibility, toggleStaffOnlyPagesVisibility } from './visibility.svelte.js';
 import { renderProfile, setEmail } from '../features/perfil/perfil.svelte.js';
@@ -32,6 +33,12 @@ export const authUi = $state({
   // null = sin color propio (como antes de tocarlo por primera vez)
   registerErrorColor: null,
 });
+
+// Los mensajes de error/aviso del acceso son o un texto tal cual (el de Supabase)
+// o { key, vars } del diccionario, que se traduce al pintarlo (y cambia con el idioma).
+export function authMessage(msg) {
+  return typeof msg === 'string' ? msg : t(msg.key, msg.vars);
+}
 
 export const loginForm = $state({ email: '', password: '' });
 
@@ -86,7 +93,7 @@ export async function handleRegister() {
   authUi.registerError = '';
 
   if (!email || !password || !nombre || !rol) {
-    authUi.registerError = 'Rellena al menos email, contraseña, nombre y rol.';
+    authUi.registerError = { key: 'auth.errRequiredFields' };
     return;
   }
 
@@ -119,7 +126,7 @@ export async function handleRegister() {
       id: userId, nombre, apellido, mote, telefono, fecha_nacimiento, rol, rango, posicion, comision, licencia, grupo_tercer_tiempo
     });
     if (profileError) {
-      authUi.registerError = 'Se ha creado la cuenta, pero no se pudo guardar el perfil: ' + profileError.message;
+      authUi.registerError = { key: 'auth.errProfileSave', vars: { error: profileError.message } };
       return;
     }
   }
@@ -129,7 +136,7 @@ export async function handleRegister() {
   } else {
     // El proyecto de Supabase tiene activada la confirmación por email
     authUi.registerErrorColor = 'var(--ok)';
-    authUi.registerError = 'Cuenta creada. Revisa tu email para confirmarla y luego inicia sesión.';
+    authUi.registerError = { key: 'auth.accountCreated' };
   }
 }
 
@@ -139,7 +146,7 @@ export async function handleLogin() {
   authUi.loginError = '';
 
   if (!email || !password) {
-    authUi.loginError = 'Introduce tu email y contraseña.';
+    authUi.loginError = { key: 'auth.errLoginRequired' };
     return;
   }
 

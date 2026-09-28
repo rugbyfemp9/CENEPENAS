@@ -1,59 +1,60 @@
 <script>
   // Formulario de registro del overlay de acceso (src/shell/AuthOverlay.svelte).
-  import { authUi, registerForm, showAuthView, handleRegister, registerAsksPlayerFields } from './auth.svelte.js';
+  import { t } from '../lib/i18n.svelte.js';
+  import { authUi, registerForm, showAuthView, handleRegister, registerAsksPlayerFields, authMessage } from './auth.svelte.js';
 </script>
 
 <div id="auth-register-view" style:display={authUi.view === 'register' ? 'block' : 'none'}>
-  <h3>Crear cuenta</h3>
+  <h3>{t('auth.createAccount')}</h3>
   <div class="auth-field-group">
-    <label>Email
-      <input type="email" id="register-email-input" placeholder="tu@email.com" autocomplete="username" bind:value={registerForm.email}>
+    <label>{t('profile.email')}
+      <input type="email" id="register-email-input" placeholder={t('auth.emailPlaceholder')} autocomplete="username" bind:value={registerForm.email}>
     </label>
-    <label>Contraseña
-      <input type="password" id="register-password-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password" bind:value={registerForm.password}>
+    <label>{t('auth.password')}
+      <input type="password" id="register-password-input" placeholder={t('auth.passwordPlaceholder')} autocomplete="new-password" bind:value={registerForm.password}>
     </label>
-    <label>Nombre
-      <input type="text" id="register-nombre-input" placeholder="Nombre" bind:value={registerForm.nombre}>
+    <label>{t('profile.nameLabel')}
+      <input type="text" id="register-nombre-input" placeholder={t('profile.nameLabel')} bind:value={registerForm.nombre}>
     </label>
-    <label>Apellido
-      <input type="text" id="register-apellido-input" placeholder="Apellido" bind:value={registerForm.apellido}>
+    <label>{t('auth.lastName')}
+      <input type="text" id="register-apellido-input" placeholder={t('auth.lastName')} bind:value={registerForm.apellido}>
     </label>
-    <label>Mote
-      <input type="text" id="register-mote-input" placeholder="Apodo (opcional)" bind:value={registerForm.mote}>
+    <label>{t('profile.nicknameLabel')}
+      <input type="text" id="register-mote-input" placeholder={t('profile.nicknamePlaceholder')} bind:value={registerForm.mote}>
     </label>
-    <label>Fecha de nacimiento
+    <label>{t('plantilla.birthdate')}
       <input type="date" id="register-fecha-nacimiento-input" bind:value={registerForm.fecha_nacimiento}>
     </label>
-    <label>Rol
+    <label>{t('plantilla.role')}
       <select id="register-rol-input" bind:value={registerForm.rol}>
-        <option value="">Selecciona un rol</option>
-        <option value="jugadora">Jugadora</option>
-        <option value="Capitana">Capitana</option>
-        <option value="entrenador/a">Entrenador/a</option>
-        <option value="delegado/a">Delegado/a</option>
-        <option value="directiva">Junta directiva</option>
-        <option value="fisio">Fisios</option>
+        <option value="">{t('auth.selectRole')}</option>
+        <option value="jugadora">{t('role.player')}</option>
+        <option value="Capitana">{t('role.captain')}</option>
+        <option value="entrenador/a">{t('role.coach')}</option>
+        <option value="delegado/a">{t('role.delegate')}</option>
+        <option value="directiva">{t('role.board')}</option>
+        <option value="fisio">{t('role.physio')}</option>
       </select>
     </label>
     <div id="register-jugadora-fields" style="flex-direction:column; gap:12px;" style:display={registerAsksPlayerFields() ? 'flex' : 'none'}>
-      <label>Rango
+      <label>{t('plantilla.rango')}
         <select id="register-rango-input" bind:value={registerForm.rango}>
-          <option value="">Selecciona un rango</option>
-          <option value="veterana">Veterana</option>
-          <option value="novata">Novata</option>
+          <option value="">{t('auth.selectRank')}</option>
+          <option value="veterana">{t('rank.veterana')}</option>
+          <option value="novata">{t('rank.novata')}</option>
           <option value="sang_de_fang">Sang de Fang</option>
         </select>
       </label>
-      <label>Posición
+      <label>{t('plantilla.positionLabel')}
         <select id="register-posicion-input" bind:value={registerForm.posicion}>
-          <option value="">Selecciona una posición</option>
-          <option value="delantera">Delantera</option>
+          <option value="">{t('auth.selectPosition')}</option>
+          <option value="delantera">{t('plantilla.posForward')}</option>
           <option value="3/4">3/4</option>
         </select>
       </label>
-      <label>Comisión
+      <label>{t('plantilla.commission')}
         <select id="register-comision-input" bind:value={registerForm.comision}>
-          <option value="">Sin asignar</option>
+          <option value="">{t('plantilla.unassigned')}</option>
           <option value="Comi Xarxes">Comi Xarxes</option>
           <option value="Comi Tesoreria">Comi Tesoreria</option>
           <option value="Comi Gira">Comi Gira</option>
@@ -61,13 +62,13 @@
           <option value="Comi Activitats">Comi Activitats</option>
         </select>
       </label>
-      <label>Núm. de licencia
-        <input type="text" id="register-licencia-input" placeholder="Ej. 123456" bind:value={registerForm.licencia}>
+      <label>{t('plantilla.license')}
+        <input type="text" id="register-licencia-input" placeholder={t('profile.licensePlaceholder')} bind:value={registerForm.licencia}>
       </label>
     </div>
   </div>
-  <div class="auth-error" id="register-error" style:color={authUi.registerErrorColor}>{authUi.registerError}</div>
-  <button class="btn auth-submit-btn" onclick={handleRegister}>Crear cuenta</button>
+  <div class="auth-error" id="register-error" style:color={authUi.registerErrorColor}>{authMessage(authUi.registerError)}</div>
+  <button class="btn auth-submit-btn" onclick={handleRegister}>{t('auth.createAccount')}</button>
   <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions, a11y_missing_attribute -->
-  <div class="auth-switch">¿Ya tienes cuenta? <a onclick={() => showAuthView('login')}>Inicia sesión</a></div>
+  <div class="auth-switch">{t('auth.haveAccount')} <a onclick={() => showAuthView('login')}>{t('auth.loginLink')}</a></div>
 </div>

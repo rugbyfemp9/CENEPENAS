@@ -47,8 +47,8 @@
       <span>{t('plantilla.rango')}</span>
       <select id="profile-rango-input" bind:value={editProfile.rango} style={selectStyle}>
         <option value="">{t('plantilla.unassigned')}</option>
-        <option value="veterana">Veterana</option>
-        <option value="novata">Novata</option>
+        <option value="veterana">{t('rank.veterana')}</option>
+        <option value="novata">{t('rank.novata')}</option>
         <option value="sang_de_fang">Sang de Fang</option>
       </select>
     </label>
@@ -64,12 +64,12 @@
       <span>{t('plantilla.role')}</span>
       <select id="profile-rol-input" bind:value={editProfile.rol} style={selectStyle}>
         <option value="">{t('plantilla.unassigned')}</option>
-        <option value="jugadora">Jugadora</option>
-        <option value="Capitana">Capitana</option>
-        <option value="entrenador/a">Entrenador/a</option>
-        <option value="delegado/a">Delegado/a</option>
-        <option value="directiva">Junta directiva</option>
-        <option value="fisio">Fisios</option>
+        <option value="jugadora">{t('role.player')}</option>
+        <option value="Capitana">{t('role.captain')}</option>
+        <option value="entrenador/a">{t('role.coach')}</option>
+        <option value="delegado/a">{t('role.delegate')}</option>
+        <option value="directiva">{t('role.board')}</option>
+        <option value="fisio">{t('role.physio')}</option>
       </select>
     </label>
     <label style={labelStyle}>

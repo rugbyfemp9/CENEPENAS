@@ -598,13 +598,24 @@ test('mobile language toggle switches between ES and CAT', async ({ page }) => {
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('a saved language is applied on start, but the login form stays in Spanish', async ({ page }) => {
+test('a saved language is applied on start, including the login form', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('cnpenas:lang', 'ca'));
   const { errors } = await startLoggedOut(page);
   await expect(page.locator('html')).toHaveAttribute('lang', 'ca');
-  // NOTE: the auth overlay has no translations.
-  await expect(loginView(page).locator('h3')).toHaveText('Iniciar sesión');
+  // The auth overlay follows the language too.
+  await expect(loginView(page).locator('h3')).toHaveText('Iniciar sessió');
   await expect(loginView(page).getByRole('button', { name: 'Entrar' })).toBeVisible();
+  await expect(loginView(page).locator('.auth-switch')).toHaveText('No tens compte? Registra\'t');
+  await expect(page.locator('#login-email-input')).toHaveAttribute('placeholder', 'el-teu@email.com');
+  await loginView(page).getByRole('button', { name: 'Entrar' }).click();
+  await expect(page.locator('#login-error')).toHaveText('Introdueix el teu email i contrasenya.');
+  await loginView(page).locator('.auth-switch a').click();
+  await expect(page.locator('#auth-register-view h3')).toHaveText('Crear compte');
+  await expect(page.locator('#register-password-input')).toHaveAttribute('placeholder', 'Mínim 6 caràcters');
+  await expect(page.locator('#register-rol-input option')).toHaveText(['Selecciona un rol', 'Jugadora', 'Capitana', 'Entrenador/a', 'Delegat/da', 'Junta directiva', 'Fisios']);
+  await page.locator('#auth-register-view .auth-submit-btn').click();
+  await expect(page.locator('#register-error')).toHaveText('Omple com a mínim email, contrasenya, nom i rol.');
+  await page.locator('#auth-register-view .auth-switch a').click();
   await login(page, 'jugadora@cnpenas.test');
   await expect(overlay(page)).toBeHidden();
   await expect(sidebarBtn(page, 'inicio')).toHaveText('Inici');
