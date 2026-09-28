@@ -814,5 +814,46 @@ export const es = {
   'gym.alertDeleteError': 'No se ha podido eliminar. Inténtalo de nuevo.',
   'gym.alertChooseTime': 'Elige una hora.',
   'gym.alertCheckinSyncError': 'Te has apuntado en la app, pero no se ha podido sincronizar con Supabase: {error}',
-  'gym.alertCancelCheckinSyncError': 'Te has quitado en la app, pero no se ha podido sincronizar con Supabase: {error}'
+  'gym.alertCancelCheckinSyncError': 'Te has quitado en la app, pero no se ha podido sincronizar con Supabase: {error}',
+
+  // ---- i18n pase 4a: Fantasy y Asistencia / Eventos / Calendario ----
+  // Fantasy: desplegable de partidos, banquillo, campo y "Mis alineaciones" (el nombre del partido no se traduce)
+  'fantasy.noMatchesYet': 'Todavía no hay partidos creados',
+  'fantasy.nextMatchPrefix': 'Próximo partido — ',
+  'fantasy.noPlayersAvailable': 'No hay jugadoras disponibles.',
+  'fantasy.createMatchFirst': 'Crea un partido en Asistencia para poder montar una alineación.',
+  'fantasy.clearPitch': 'Vaciar el campo',
+  'fantasy.loading': 'Cargando…',
+  'fantasy.noSavedLineups': 'Aún no tienes alineaciones guardadas para este partido.',
+  'fantasy.placedCount': '{placed}/{total} colocadas',
+  // Fantasy: posiciones del campo (solo se muestran; la alineación guardada solo lleva números)
+  'fantasy.posProp': 'Pilar',
+  'fantasy.posHooker': 'Talonador',
+  'fantasy.posLock': '2ª línea',
+  'fantasy.posWing': 'Ala',
+  'fantasy.posNumber8': 'Octavo',
+  'fantasy.posScrumHalf': 'Medio melé',
+  'fantasy.posFlyHalf': 'Apertura',
+  'fantasy.posCentre': 'Centro',
+  'fantasy.posFullback': 'Zaguero',
+  'fantasy.posSub': 'Suplente',
+  // Fantasy: "Compartidas contigo" (el nombre de la alineación viene de Supabase y no se traduce)
+  'fantasy.noSharedLineups': 'Todavía no hay alineaciones compartidas contigo para este partido.',
+  'fantasy.sharedItemMeta': '{name} · para {audience}',
+  'fantasy.audienceYou': 'Ti',
+  // Fantasy: alertas y confirmaciones
+  'fantasy.alertNoFreeSlots': 'Ya no quedan huecos ni en el campo ni en el banquillo de suplentes. Quita a alguien para hacer sitio.',
+  'fantasy.confirmClearPitch': '¿Quitar a todas las jugadoras del campo?',
+  'fantasy.alertNoName': 'Ponle un nombre a la alineación.',
+  'fantasy.alertSaveError': 'No se ha podido guardar. Inténtalo de nuevo.',
+  'fantasy.alertLoadError': 'No se ha podido cargar esa alineación.',
+  'fantasy.confirmDeleteSaved': '¿Eliminar esta alineación guardada?',
+  'fantasy.alertChooseAudience': 'Elige con quién quieres compartirla.',
+  'fantasy.alertPlaceOne': 'Coloca al menos una jugadora antes de publicar.',
+  'fantasy.alertPublishError': 'No se ha podido publicar. Inténtalo de nuevo.',
+  'fantasy.alertPublished': 'Alineación publicada para: {audience}',
+  // Asistencia / Eventos: campo Lugar (el lugar que se guarda no se traduce) y calendario
+  'att.placePlaceholder': 'Sala del club',
+  'att.viewOnMaps': '📍 Ver "{query}" en Google Maps',
+  'att.calendarDefaultMonth': 'Agosto 2026'
 };

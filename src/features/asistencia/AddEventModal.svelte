@@ -21,7 +21,7 @@
   <div class="field-group" style="display:flex; flex-direction:column; gap:12px; margin:14px 0 18px;">
     <label style={labelStyle}>
       <span>{t('att.eventTitleLabel')}</span>
-      <input type="text" id="new-event-title" placeholder={f.titlePlaceholder} bind:value={f.titleValue} style={inputStyle}>
+      <input type="text" id="new-event-title" placeholder={f.titlePlaceholder ?? t('att.meetingTitlePlaceholder')} bind:value={f.titleValue} style={inputStyle}>
     </label>
     <label style={labelStyle}>
       <span>{t('att.eventDateLabel')}</span>

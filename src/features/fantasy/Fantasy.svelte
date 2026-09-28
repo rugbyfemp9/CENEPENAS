@@ -38,7 +38,7 @@
   <label class="fantasy-label" for="fantasy-match-select">{t('fantasy.matchLabel')}</label>
   <select id="fantasy-match-select" class="fantasy-select" disabled={fantasy.matchSelectDisabled} bind:value={fantasy.selectedMatchId} onchange={(e) => onFantasyMatchChange(e.currentTarget.value)}>
     {#each fantasy.matchOptions as opt (opt.value)}
-      <option value={opt.value}>{opt.text}</option>
+      <option value={opt.value}>{opt.textKey ? t(opt.textKey) : (opt.prefixKey ? t(opt.prefixKey) : '') + opt.text}</option>
     {/each}
   </select>
 </div>
@@ -58,9 +58,9 @@
         {#if fantasy.version}
           {#if available.length === 0}
             {#if fantasy.selectedMatchId}
-              <div class="fantasy-bench-empty">No hay jugadoras disponibles.</div>
+              <div class="fantasy-bench-empty">{t('fantasy.noPlayersAvailable')}</div>
             {:else}
-              <div class="fantasy-bench-empty">Crea un partido en Asistencia para poder montar una alineación.</div>
+              <div class="fantasy-bench-empty">{t('fantasy.createMatchFirst')}</div>
             {/if}
           {:else}
             {#each available as p (p.id)}
@@ -81,7 +81,7 @@
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="fantasy-pitch" id="fantasy-pitch" ondragover={(e) => e.preventDefault()}>
       {#if fantasy.version}
-        <button type="button" class="fantasy-pitch-refresh-btn" onclick={() => resetFantasyLineup()} title="Vaciar el campo" aria-label="Vaciar el campo">
+        <button type="button" class="fantasy-pitch-refresh-btn" onclick={() => resetFantasyLineup()} title={t('fantasy.clearPitch')} aria-label={t('fantasy.clearPitch')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg>
         </button>
         <div class="pitch-ingoal top"></div>
@@ -108,7 +108,7 @@
             <button class="slot-shape" draggable={s.filled ? 'true' : 'false'}
                     ondragstart={(e) => onSlotDragStart(e, s.pos.num)}
                     ontouchstart={(e) => onSlotTouchStart(e, s.pos.num)}
-                    onclick={() => onSlotClick(s.pos.num)} title="{s.pos.num} · {s.pos.label}{s.filled ? ' · ' + s.name : ''}">
+                    onclick={() => onSlotClick(s.pos.num)} title="{s.pos.num} · {t(s.pos.labelKey)}{s.filled ? ' · ' + s.name : ''}">
               {#if s.filled}
                 <span class="jstripes"></span><span class="jsleeve l"></span><span class="jsleeve r"></span><span class="slot-num-filled">{s.pos.num}</span>
               {:else}
@@ -125,18 +125,18 @@
       <div class="fantasy-label">{t('fantasy.myLineups')}</div>
       <div class="fantasy-saved-list" id="fantasy-saved-list">
         {#if fantasy.savedStatus === 'loading'}
-          <div class="fantasy-saved-empty">Cargando…</div>
+          <div class="fantasy-saved-empty">{t('fantasy.loading')}</div>
         {:else if fantasy.savedStatus === 'empty'}
-          <div class="fantasy-saved-empty">Aún no tienes alineaciones guardadas para este partido.</div>
+          <div class="fantasy-saved-empty">{t('fantasy.noSavedLineups')}</div>
         {:else if fantasy.savedStatus === 'list'}
           {#each fantasy.savedItems as it (it.id)}
             <div class="fantasy-saved-item">
               <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
               <div class="info" onclick={() => loadSavedLineup(it.id)}>
                 <b>{it.name}</b>
-                <span>{placedCount(it.lineup)}/{fantasyAllPositions.length} colocadas</span>
+                <span>{t('fantasy.placedCount', { placed: placedCount(it.lineup), total: fantasyAllPositions.length })}</span>
               </div>
-              <button class="del-btn" onclick={() => deleteSavedLineup(it.id)} title="Eliminar">✕</button>
+              <button class="del-btn" onclick={() => deleteSavedLineup(it.id)} title={t('att.delete')}>✕</button>
             </div>
           {/each}
         {/if}

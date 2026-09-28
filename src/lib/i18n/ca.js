@@ -813,5 +813,46 @@ export const ca = {
   'gym.alertDeleteError': "No s'ha pogut eliminar. Torna-ho a provar.",
   'gym.alertChooseTime': 'Tria una hora.',
   'gym.alertCheckinSyncError': "T'has apuntat a l'app, però no s'ha pogut sincronitzar amb Supabase: {error}",
-  'gym.alertCancelCheckinSyncError': "T'has desapuntat a l'app, però no s'ha pogut sincronitzar amb Supabase: {error}"
+  'gym.alertCancelCheckinSyncError': "T'has desapuntat a l'app, però no s'ha pogut sincronitzar amb Supabase: {error}",
+
+  // ---- i18n pase 4a: Fantasy y Asistencia / Eventos / Calendario ----
+  // Fantasy: desplegable de partidos, banquillo, campo y "Mis alineaciones" (el nombre del partido no se traduce)
+  'fantasy.noMatchesYet': 'Encara no hi ha partits creats',
+  'fantasy.nextMatchPrefix': 'Proper partit — ',
+  'fantasy.noPlayersAvailable': 'No hi ha jugadores disponibles.',
+  'fantasy.createMatchFirst': 'Crea un partit a Assistència per poder muntar una alineació.',
+  'fantasy.clearPitch': 'Buidar el camp',
+  'fantasy.loading': 'Carregant…',
+  'fantasy.noSavedLineups': 'Encara no tens alineacions desades per a aquest partit.',
+  'fantasy.placedCount': '{placed}/{total} col·locades',
+  // Fantasy: posiciones del campo (solo se muestran; la alineación guardada solo lleva números)
+  'fantasy.posProp': 'Pilar',
+  'fantasy.posHooker': 'Talonador',
+  'fantasy.posLock': '2a línia',
+  'fantasy.posWing': 'Ala',
+  'fantasy.posNumber8': 'Número 8',
+  'fantasy.posScrumHalf': 'Mig de melé',
+  'fantasy.posFlyHalf': 'Obertura',
+  'fantasy.posCentre': 'Centre',
+  'fantasy.posFullback': 'Zaguer',
+  'fantasy.posSub': 'Suplent',
+  // Fantasy: "Compartidas contigo" (el nombre de la alineación viene de Supabase y no se traduce)
+  'fantasy.noSharedLineups': 'Encara no hi ha alineacions compartides amb tu per a aquest partit.',
+  'fantasy.sharedItemMeta': '{name} · per a {audience}',
+  'fantasy.audienceYou': 'Tu',
+  // Fantasy: alertas y confirmaciones
+  'fantasy.alertNoFreeSlots': 'Ja no queden llocs lliures ni al camp ni a la banqueta de suplents. Treu algú per fer lloc.',
+  'fantasy.confirmClearPitch': 'Vols treure totes les jugadores del camp?',
+  'fantasy.alertNoName': "Posa-li un nom a l'alineació.",
+  'fantasy.alertSaveError': "No s'ha pogut desar. Torna-ho a provar.",
+  'fantasy.alertLoadError': "No s'ha pogut carregar aquesta alineació.",
+  'fantasy.confirmDeleteSaved': 'Vols eliminar aquesta alineació desada?',
+  'fantasy.alertChooseAudience': 'Tria amb qui la vols compartir.',
+  'fantasy.alertPlaceOne': 'Col·loca almenys una jugadora abans de publicar.',
+  'fantasy.alertPublishError': "No s'ha pogut publicar. Torna-ho a provar.",
+  'fantasy.alertPublished': 'Alineació publicada per a: {audience}',
+  // Asistencia / Eventos: campo Lugar (el lugar que se guarda no se traduce) y calendario
+  'att.placePlaceholder': 'Sala del club',
+  'att.viewOnMaps': '📍 Veure "{query}" a Google Maps',
+  'att.calendarDefaultMonth': 'Agost 2026'
 };

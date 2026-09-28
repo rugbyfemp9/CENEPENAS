@@ -45,7 +45,7 @@
     <div class="cal-modal-main">
       <div class="cal-nav">
         <button class="cal-nav-btn" onclick={() => calShiftMonth(-1)}>‹</button>
-        <div class="cal-month-label" id="cal-month-label">{g ? g.label : 'Agosto 2026'}</div>
+        <div class="cal-month-label" id="cal-month-label">{g ? g.label : t('att.calendarDefaultMonth')}</div>
         <button class="cal-nav-btn" onclick={() => calShiftMonth(1)}>›</button>
       </div>
       <div class="cal-weekdays">

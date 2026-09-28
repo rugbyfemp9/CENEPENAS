@@ -18,36 +18,38 @@ import { displayName } from '../../lib/names.js';
 import { storage } from '../../lib/storage.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventType, monthAbbrLabel } from '../../lib/dates.js';
+import { t } from '../../lib/i18n.svelte.js';
 
-// 15 posiciones de rugby con su forma habitual sobre el campo (x/y en %)
+// 15 posiciones de rugby con su forma habitual sobre el campo (x/y en %). `labelKey` es
+// la clave i18n del nombre de la posición (solo se muestra, en el title de cada camiseta).
 export const fantasyPositions = [
-  { num: 1, label: 'Pilar', x: 34.9, y: 16 },
-  { num: 2, label: 'Talonador', x: 47.5, y: 16 },
-  { num: 3, label: 'Pilar', x: 60.1, y: 16 },
-  { num: 4, label: '2ª línea', x: 41.2, y: 27 },
-  { num: 5, label: '2ª línea', x: 53.8, y: 27 },
-  { num: 6, label: 'Ala', x: 29.3, y: 35 },
-  { num: 7, label: 'Ala', x: 65.7, y: 35 },
-  { num: 8, label: 'Octavo', x: 47.5, y: 40 },
-  { num: 9, label: 'Medio melé', x: 57.8, y: 49 },
-  { num: 10, label: 'Apertura', x: 37.2, y: 55 },
-  { num: 11, label: 'Ala', x: 20.6, y: 66 },
-  { num: 12, label: 'Centro', x: 40.6, y: 65 },
-  { num: 13, label: 'Centro', x: 57.6, y: 65 },
-  { num: 14, label: 'Ala', x: 74.4, y: 66 },
-  { num: 15, label: 'Zaguero', x: 47.5, y: 79 },
+  { num: 1, labelKey: 'fantasy.posProp', x: 34.9, y: 16 },
+  { num: 2, labelKey: 'fantasy.posHooker', x: 47.5, y: 16 },
+  { num: 3, labelKey: 'fantasy.posProp', x: 60.1, y: 16 },
+  { num: 4, labelKey: 'fantasy.posLock', x: 41.2, y: 27 },
+  { num: 5, labelKey: 'fantasy.posLock', x: 53.8, y: 27 },
+  { num: 6, labelKey: 'fantasy.posWing', x: 29.3, y: 35 },
+  { num: 7, labelKey: 'fantasy.posWing', x: 65.7, y: 35 },
+  { num: 8, labelKey: 'fantasy.posNumber8', x: 47.5, y: 40 },
+  { num: 9, labelKey: 'fantasy.posScrumHalf', x: 57.8, y: 49 },
+  { num: 10, labelKey: 'fantasy.posFlyHalf', x: 37.2, y: 55 },
+  { num: 11, labelKey: 'fantasy.posWing', x: 20.6, y: 66 },
+  { num: 12, labelKey: 'fantasy.posCentre', x: 40.6, y: 65 },
+  { num: 13, labelKey: 'fantasy.posCentre', x: 57.6, y: 65 },
+  { num: 14, labelKey: 'fantasy.posWing', x: 74.4, y: 66 },
+  { num: 15, labelKey: 'fantasy.posFullback', x: 47.5, y: 79 },
 ];
 
 // 8 suplentes, distribuidos en el margen derecho del campo
 export const fantasySubPositions = [
-  { num: 16, label: 'Suplente', x: 93.5, y: 15 },
-  { num: 17, label: 'Suplente', x: 93.5, y: 25 },
-  { num: 18, label: 'Suplente', x: 93.5, y: 35 },
-  { num: 19, label: 'Suplente', x: 93.5, y: 45 },
-  { num: 20, label: 'Suplente', x: 93.5, y: 55 },
-  { num: 21, label: 'Suplente', x: 93.5, y: 65 },
-  { num: 22, label: 'Suplente', x: 93.5, y: 75 },
-  { num: 23, label: 'Suplente', x: 93.5, y: 85 },
+  { num: 16, labelKey: 'fantasy.posSub', x: 93.5, y: 15 },
+  { num: 17, labelKey: 'fantasy.posSub', x: 93.5, y: 25 },
+  { num: 18, labelKey: 'fantasy.posSub', x: 93.5, y: 35 },
+  { num: 19, labelKey: 'fantasy.posSub', x: 93.5, y: 45 },
+  { num: 20, labelKey: 'fantasy.posSub', x: 93.5, y: 55 },
+  { num: 21, labelKey: 'fantasy.posSub', x: 93.5, y: 65 },
+  { num: 22, labelKey: 'fantasy.posSub', x: 93.5, y: 75 },
+  { num: 23, labelKey: 'fantasy.posSub', x: 93.5, y: 85 },
 ];
 
 export const fantasyAllPositions = fantasyPositions.concat(fantasySubPositions);
@@ -66,7 +68,8 @@ export const fantasy = $state({
   lineup: Object.fromEntries(fantasyAllPositions.map((p) => [p.num, null])),
   selectedMatchId: null,
   // Opciones del desplegable de partidos, fijadas en refreshFantasyMatchesAndUI()
-  // (el texto con el mes traducido se calcula en ese momento, como antes).
+  // (el texto con el mes traducido se calcula en ese momento, como antes; el prefijo
+  // "Próximo partido — " y el texto de "no hay partidos" van como claves i18n).
   matchOptions: [],
   matchSelectDisabled: false,
   // Posiciones con algo arrastrándose encima (clase .drag-over). Al volver a pintar el
@@ -124,14 +127,16 @@ export function refreshFantasyMatchesAndUI() {
   const matches = attEvents.filter((ev) => attEventType(ev) === 'match');
 
   if (!matches.length) {
-    fantasy.matchOptions = [{ value: '', text: 'Todavía no hay partidos creados' }];
+    fantasy.matchOptions = [{ value: '', textKey: 'fantasy.noMatchesYet' }];
     fantasy.matchSelectDisabled = true;
     fantasy.selectedMatchId = null;
   } else {
     fantasy.matchSelectDisabled = false;
     fantasy.matchOptions = matches.map((ev, i) => ({
       value: ev.id,
-      text: `${i === 0 ? 'Próximo partido — ' : ''}${ev.label} (${ev.date} ${monthAbbrLabel(ev.month)})`,
+      // El prefijo "Próximo partido — " va como clave (se traduce en la plantilla).
+      prefixKey: i === 0 ? 'fantasy.nextMatchPrefix' : null,
+      text: `${ev.label} (${ev.date} ${monthAbbrLabel(ev.month)})`,
     }));
     // Si el partido que ya tenías elegido sigue existiendo, se mantiene (para no perder
     // la alineación que estabas montando); si no, se coge el primero de la lista.
@@ -189,7 +194,7 @@ function renderFantasyLineupUI() {
 export function onBenchCardClick(playerId) {
   const nextPos = fantasyAllPositions.find((p) => !fantasy.lineup[p.num]);
   if (!nextPos) {
-    alert('Ya no quedan huecos ni en el campo ni en el banquillo de suplentes. Quita a alguien para hacer sitio.');
+    alert(t('fantasy.alertNoFreeSlots'));
     return;
   }
   assignToSlot(nextPos.num, playerId, null);
@@ -332,7 +337,7 @@ export function onTouchDragEnd(ev) {
 }
 
 export function resetFantasyLineup(skipConfirm) {
-  if (!skipConfirm && !confirm('¿Quitar a todas las jugadoras del campo?')) return;
+  if (!skipConfirm && !confirm(t('fantasy.confirmClearPitch'))) return;
   fantasyAllPositions.forEach((p) => { fantasy.lineup[p.num] = null; });
   renderFantasyLineupUI();
 }
@@ -349,7 +354,7 @@ export function closeSaveLineupModal() {
 }
 export async function confirmSaveLineup() {
   const name = saveModal.name.trim();
-  if (!name) { alert('Ponle un nombre a la alineación.'); return; }
+  if (!name) { alert(t('fantasy.alertNoName')); return; }
 
   // Se guarda en Supabase con owner_id = tu usuario: la política de seguridad de la
   // tabla (RLS) hace que nadie más que tú pueda leer ni esta fila ni ninguna otra con
@@ -363,7 +368,7 @@ export async function confirmSaveLineup() {
 
   if (error) {
     console.error('No se pudo guardar la alineación', error);
-    alert('No se ha podido guardar. Inténtalo de nuevo.');
+    alert(t('fantasy.alertSaveError'));
     return;
   }
   closeSaveLineupModal();
@@ -408,14 +413,14 @@ export async function loadSavedLineup(id) {
     .eq('id', id)
     .maybeSingle();
 
-  if (error || !data) { alert('No se ha podido cargar esa alineación.'); return; }
+  if (error || !data) { alert(t('fantasy.alertLoadError')); return; }
   applyLoadedLineup(data);
 }
 
 export async function deleteSavedLineup(id) {
-  if (!confirm('¿Eliminar esta alineación guardada?')) return;
+  if (!confirm(t('fantasy.confirmDeleteSaved'))) return;
   const { error } = await supabase.from('fantasy_lineups').delete().eq('id', id);
-  if (error) { alert('No se ha podido eliminar. Inténtalo de nuevo.'); }
+  if (error) { alert(t('gym.alertDeleteError')); }
   loadSavedLineupsList();
 }
 
@@ -442,13 +447,14 @@ export function selectPublishAudience(type) {
 }
 export async function confirmPublish() {
   const publishAudience = publishModal.audience;
-  if (!publishAudience) { alert('Elige con quién quieres compartirla.'); return; }
-  if (Object.values(fantasy.lineup).every((v) => !v)) { alert('Coloca al menos una jugadora antes de publicar.'); return; }
+  if (!publishAudience) { alert(t('fantasy.alertChooseAudience')); return; }
+  if (Object.values(fantasy.lineup).every((v) => !v)) { alert(t('fantasy.alertPlaceOne')); return; }
 
   const personaId = publishAudience === 'persona' ? publishModal.personId : null;
+  // Solo para el aviso de "publicada" (no se guarda).
   const audienceLabel = {
-    jugadoras: 'Jugadoras', staff: 'Staff', capitanas: 'Capitanas',
-    persona: displayName(roster.find((p) => p.id === personaId)) || 'Una persona',
+    jugadoras: t('nav.plantilla'), staff: t('fantasy.audienceStaff'), capitanas: t('fantasy.audienceCaptains'),
+    persona: displayName(roster.find((p) => p.id === personaId)) || t('fantasy.audiencePerson'),
   }[publishAudience];
 
   // Se guarda en Supabase: la política de seguridad de fantasy_published_lineups es la
@@ -457,6 +463,7 @@ export async function confirmPublish() {
   const { error } = await supabase.from('fantasy_published_lineups').insert({
     published_by: auth.userId,
     match_id: fantasy.selectedMatchId,
+    // El nombre se guarda en Supabase: va siempre en castellano, como antes.
     name: 'Alineación de ' + (myRosterEntry() ? displayName(myRosterEntry()) : 'un usuario'),
     lineup: $state.snapshot(fantasy.lineup),
     audience: publishAudience,
@@ -465,11 +472,11 @@ export async function confirmPublish() {
 
   if (error) {
     console.error('No se pudo publicar la alineación', error);
-    alert('No se ha podido publicar. Inténtalo de nuevo.');
+    alert(t('fantasy.alertPublishError'));
     return;
   }
   closePublishModal();
-  alert('Alineación publicada para: ' + audienceLabel);
+  alert(t('fantasy.alertPublished', { audience: audienceLabel }));
 }
 
 // --- Compartidas contigo (lo que otras han publicado y te incluye) ---
@@ -481,7 +488,8 @@ export const sharedModal = $state({
   items: [],
 });
 
-const AUDIENCE_LABELS = { jugadoras: 'Jugadoras', staff: 'Staff', capitanas: 'Capitanas', persona: 'Ti' };
+// Claves i18n de "para …" en la lista (se traducen en la plantilla).
+const AUDIENCE_LABEL_KEYS = { jugadoras: 'nav.plantilla', staff: 'fantasy.audienceStaff', capitanas: 'fantasy.audienceCaptains', persona: 'fantasy.audienceYou' };
 
 export function openSharedLineupsModal() {
   sharedModal.open = true;
@@ -511,8 +519,9 @@ async function loadSharedLineupsList() {
     return {
       id: it.id,
       name: it.name,
-      publisherName: publisher ? displayName(publisher) : 'Alguien',
-      audienceLabel: AUDIENCE_LABELS[it.audience] || '',
+      // null = "Alguien" (traducido en la plantilla)
+      publisherName: publisher ? displayName(publisher) : null,
+      audienceKey: AUDIENCE_LABEL_KEYS[it.audience] || null,
     };
   });
   sharedModal.status = 'list';
@@ -525,7 +534,7 @@ export async function loadSharedLineup(id) {
     .eq('id', id)
     .maybeSingle();
 
-  if (error || !data) { alert('No se ha podido cargar esa alineación.'); return; }
+  if (error || !data) { alert(t('fantasy.alertLoadError')); return; }
 
   applyLoadedLineup(data);
   closeSharedLineupsModal();

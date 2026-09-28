@@ -942,6 +942,8 @@ test('in Catalan the presets, the calendar and the popover are translated', asyn
   await expect(page.locator('#new-event-title')).toHaveValue('Entrenament');
   await expect(page.locator('#field-start-time-label')).toHaveText('Inici');
   await expect(page.locator('#field-place-label-text')).toHaveText('Lloc (opcional)');
+  await expect(page.locator('#place-maps-preview a')).toHaveText('📍 Veure "CEM Mar Bella, Av. del Litoral, Barcelona" a Google Maps');
+  await expect(page.locator('#new-event-place')).toHaveAttribute('placeholder', 'Sala del club');
   await page.locator('#new-event-date').fill('2026-10-08');
   await eventModal(page).locator('.modal-actions .btn').click();
   await expect.poll(() => eventWrites(backend).length).toBe(1);

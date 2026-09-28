@@ -8,16 +8,16 @@
   <h3 style="margin-top:0;">{t('fantasy.sharedWithYou')}</h3>
   <div class="fantasy-saved-list" id="shared-lineups-list">
     {#if sharedModal.status === 'loading'}
-      <div class="fantasy-saved-empty">Cargando…</div>
+      <div class="fantasy-saved-empty">{t('fantasy.loading')}</div>
     {:else if sharedModal.status === 'empty'}
-      <div class="fantasy-saved-empty">Todavía no hay alineaciones compartidas contigo para este partido.</div>
+      <div class="fantasy-saved-empty">{t('fantasy.noSharedLineups')}</div>
     {:else if sharedModal.status === 'list'}
       {#each sharedModal.items as it (it.id)}
         <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
         <div class="shared-lineup-item" onclick={() => loadSharedLineup(it.id)}>
           <div class="info">
             <b>{it.name}</b>
-            <span>{it.publisherName} · para {it.audienceLabel}</span>
+            <span>{t('fantasy.sharedItemMeta', { name: it.publisherName ?? t('sharedLineup.someone'), audience: it.audienceKey ? t(it.audienceKey) : '' })}</span>
           </div>
         </div>
       {/each}

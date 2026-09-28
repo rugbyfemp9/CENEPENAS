@@ -788,6 +788,7 @@ test('Inicio banner: own lineups do not show it; unknown publisher or match use 
 });
 
 test('Fantasy and the Inicio banner in Catalan', async ({ page }) => {
+  const dialogs = recordDialogs(page);
   const { errors } = await setupApp(page);
   await openApp(page);
   await page.evaluate(() => window.setLang('ca'));
@@ -802,17 +803,24 @@ test('Fantasy and the Inicio banner in Catalan', async ({ page }) => {
   await expect(actions(page).getByRole('button')).toHaveText(['Compartides', "Desa l'alineació", 'Publica']);
   await expect(page.locator('#sec-fantasy .fantasy-side .fantasy-label')).toContainText('Disponibles');
   await expect(page.locator('#fantasy-saved-card .fantasy-label')).toHaveText('Les meves alineacions');
-  // NOTE: texts rendered by fantasy.js itself are not translated (only the month is).
-  await expect(select(page).locator('option').first()).toHaveText('Próximo partido — Partido vs Santboi (26 Set)');
-  await expect(bench(page)).toHaveText('No hay jugadoras disponibles.');
-  await expect(savedItems(page).locator('.info span')).toHaveText('4/23 colocadas');
-  await expect(pitch(page).getByRole('button', { name: 'Vaciar el campo' })).toBeVisible();
+  // The match label comes from the event data and is not translated (only the month is).
+  await expect(select(page).locator('option').first()).toHaveText('Proper partit — Partido vs Santboi (26 Set)');
+  await expect(bench(page)).toHaveText('No hi ha jugadores disponibles.');
+  await expect(savedItems(page).locator('.info span')).toHaveText('4/23 col·locades');
+  await expect(savedItems(page).getByTitle('Eliminar')).toBeVisible();
+  await expect(pitch(page).getByRole('button', { name: 'Buidar el camp' })).toBeVisible();
+  await pitch(page).getByRole('button', { name: 'Buidar el camp' }).click();
+  expect(dialogs.messages).toEqual(['Vols treure totes les jugadores del camp?']);
+  await expect(slotButton(page, 10)).toHaveAttribute('title', /^10 · Obertura/);
+  await expect(slotButton(page, 16)).toHaveAttribute('title', /^16 · Suplent/);
 
   await actions(page).getByRole('button', { name: "Desa l'alineació" }).click();
   await expect(saveModal(page).locator('h3')).toHaveText("Desa l'alineació");
   await expect(saveModal(page)).toContainText('Nom');
   await expect(page.locator('#lineup-name-input')).toHaveAttribute('placeholder', 'Ex. Pla A vs Sagunt');
   await expect(saveModal(page).locator('.modal-actions').getByRole('button')).toHaveText(["Cancel·la", 'Desar']);
+  await saveModal(page).getByRole('button', { name: 'Desar' }).click();
+  await expect.poll(() => dialogs.messages.at(-1)).toBe("Posa-li un nom a l'alineació.");
   await saveModal(page).getByRole('button', { name: "Cancel·la" }).click();
   await expect(saveModal(page)).not.toHaveClass(/active/);
 
@@ -820,12 +828,14 @@ test('Fantasy and the Inicio banner in Catalan', async ({ page }) => {
   await expect(publishModal(page).locator('h3')).toHaveText("Comparteix l'alineació amb");
   await expect(publishModal(page).locator('.publish-audience-opt')).toHaveText(['Jugadores', 'Staff', 'Capitanes', 'Una persona']);
   await expect(publishModal(page).locator('.modal-actions').getByRole('button')).toHaveText(["Cancel·la", 'Publica']);
+  await publishModal(page).locator('.modal-actions').getByRole('button', { name: 'Publica' }).click();
+  await expect.poll(() => dialogs.messages.at(-1)).toBe('Tria amb qui la vols compartir.');
   await publishModal(page).getByRole('button', { name: "Cancel·la" }).click();
 
   await actions(page).getByRole('button', { name: 'Compartides' }).click();
   await expect(sharedModal(page).locator('h3')).toHaveText('Compartides amb tu');
-  // NOTE: list texts are not translated.
-  await expect(sharedModal(page).locator('.shared-lineup-item .info span')).toHaveText('Rovi · para Ti');
+  // The lineup name and the publisher's name are data and stay as they are.
+  await expect(sharedModal(page).locator('.shared-lineup-item .info span')).toHaveText('Rovi · per a Tu');
   await sharedModal(page).getByRole('button', { name: 'Tancar' }).click();
   await expect(sharedModal(page)).not.toHaveClass(/active/);
   expect(relevantErrors(errors)).toEqual([]);

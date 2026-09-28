@@ -38,7 +38,7 @@ export const eventForm = $state({
   title: null,
   startLabel: null,
   showDelete: false,
-  titlePlaceholder: 'Reunión de directiva',
+  titlePlaceholder: null, // null = el de la reunión (traducido)
   titleValue: '',
   date: '',
   meetTime: '',
@@ -46,7 +46,7 @@ export const eventForm = $state({
   endTime: '',
   place: '',
   placeRequired: false,
-  placeLabel: 'Lugar (opcional)',
+  placeLabel: null, // null = "Lugar (opcional)" (traducido)
   homeSelected: false,
   showPlaceHint: false,
   showMeet: true,
