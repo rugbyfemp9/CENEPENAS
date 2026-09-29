@@ -11,7 +11,7 @@
 // Google Fonts o el CDN de supabase-js sigue yendo siempre directo a la red,
 // sin pasar por caché, para no servir nunca datos del club desactualizados.
 
-const CACHE_NAME = 'cnpenas-v3';
+const CACHE_NAME = 'cnpenas-v4';
 
 // Rutas relativas a la carpeta donde vive este sw.js (CENEPENAS/), para que
 // funcione igual si algún día cambia el nombre del repo.
@@ -83,6 +83,47 @@ self.addEventListener('fetch', (event) => {
         .catch(() => cachedResponse);
 
       return cachedResponse || networkFetch;
+    })
+  );
+});
+
+// ---- Notificaciones push (Firebase Cloud Messaging) ----
+// Las notificaciones llegan aquí aunque la app esté cerrada. Antes las recibía un
+// segundo service worker (firebase-messaging-sw.js), pero se registraba en
+// "/firebase-messaging-sw.js", que en GitHub Pages es la raíz del dominio (404), y
+// aunque se hubiera encontrado se habría pisado con este: solo puede haber un service
+// worker por carpeta. Así que ahora las recibe este mismo, sin el SDK de Firebase: FCM
+// entrega un JSON con los campos del mensaje en "data" (title, body, url, tag), que es
+// lo que manda la función de Supabase.
+self.addEventListener('push', (event) => {
+  let data = {};
+  try { data = event.data?.json()?.data || {}; } catch { /* no era JSON */ }
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'CNPENAS', {
+      body: data.body || '',
+      icon: 'assets/img/applogo.png',
+      badge: 'assets/img/applogo.png',
+      // Mismo tag = sustituye a la anterior (p.ej. dos recordatorios del mismo entreno)
+      tag: data.tag || undefined,
+      data: { url: data.url || '.' },
+    })
+  );
+});
+
+// Al tocar la notificación: si la app ya está abierta la traemos delante (en la sección
+// que diga la notificación); si no, la abrimos.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.url || '.', self.registration.scope).href;
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windows) => {
+      const open = windows.find((w) => w.url.startsWith(self.registration.scope));
+      // navigate() falla si esa ventana aún no la controla este service worker: al
+      // menos queda delante.
+      if (open) return open.focus().then(() => open.navigate(url)).catch(() => {});
+      return self.clients.openWindow(url);
     })
   );
 });

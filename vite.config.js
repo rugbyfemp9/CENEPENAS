@@ -6,7 +6,7 @@ import { cpSync } from 'node:fs';
 // pasar por Vite: en desarrollo ya están en la raíz del proyecto y al compilar se copian
 // a dist/ en la misma ruta, así que las rutas de siempre (assets/img/...) funcionan
 // igual en los dos casos. Los estilos sí los empaqueta Vite (se importan en src/main.js).
-const STATIC = ['assets', 'sw.js', 'manifest.json', 'firebase-messaging-sw.js'];
+const STATIC = ['assets', 'sw.js', 'manifest.json'];
 const STATIC_URL = /^(\.\/)?assets\/|^(\.\/)?manifest\.json$/;
 
 function legacyStatic() {

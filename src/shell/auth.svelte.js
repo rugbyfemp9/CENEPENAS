@@ -5,7 +5,8 @@ import { setAuthUserId, setIsAdmin, refreshSession } from '../lib/session.svelte
 import { myProfile, rosterById } from '../lib/roster.js';
 import { effectiveRoleForPermissions } from '../lib/permissions.js';
 import { t } from '../lib/i18n.svelte.js';
-import { flushPendingPushToken } from '../lib/push.js';
+import { flushPendingPushToken } from '../lib/push.svelte.js';
+import { setSection } from './navigation.svelte.js';
 import { toggleWellnessStaffCardVisibility, toggleStaffOnlyPagesVisibility } from './visibility.svelte.js';
 import { renderProfile, setEmail } from '../features/perfil/perfil.svelte.js';
 import { toggleAttAddButtonVisibility, refreshSharedEventsAndUI } from '../features/asistencia/asistencia.svelte.js';
@@ -245,6 +246,13 @@ export async function onAuthenticated(user) {
   try {
     await refreshSharedEventsAndUI();
   } catch (e) { console.error('No se han podido refrescar Asistencia/Wellness al iniciar sesión', e); }
+
+  // Las notificaciones de "aún no has respondido" abren la app en ./#asistencia:
+  // entramos directas en Asistencia (ya con los eventos cargados) y quitamos el #.
+  if (location.hash === '#asistencia') {
+    history.replaceState(history.state, '', location.pathname + location.search);
+    setSection('asistencia');
+  }
 
   try {
     await loadGymAfterLogin();

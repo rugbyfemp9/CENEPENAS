@@ -41,14 +41,13 @@ src/
 css/                        Estilos, uno por zona (se importan en src/main.js; el orden
                             es la cascada)
 assets/img/                 Logos, escudos y portadas de la galería
-sw.js                       Service worker (instalación como PWA + caché)
-firebase-messaging-sw.js    Service worker de las notificaciones en segundo plano
+sw.js                       Service worker (instalación como PWA, caché y notificaciones push)
 tests/e2e/                  Tests de Playwright
 scripts/                    Utilidades (comparar capturas de pantalla)
 config.toml                 Configuración local de Supabase
 ```
 
-`assets/`, el manifest y los service workers no pasan por Vite: en desarrollo se sirven
+`assets/`, el manifest y el service worker no pasan por Vite: en desarrollo se sirven
 desde la raíz y al compilar se copian tal cual a `dist/` (ver `vite.config.js`), así que
 sus rutas (`assets/img/...`) son las mismas en los dos casos.
 
