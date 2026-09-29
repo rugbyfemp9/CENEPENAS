@@ -1,0 +1,45 @@
+css/components.css
+  s_2b16505ded1b04::t_07d011be07e80a 16-27
+src/shell/auth.svelte.js
+  s_2b16505ded1b04::t_65187faac0a986 9,250-255
+  s_2b16505ded1b04::t_bc89768ad6c76a 8
+README.md
+  s_2b16505ded1b04::t_c25220da70ea4a 44,50
+src/shell/Inicio.svelte
+  s_2b16505ded1b04::t_07d011be07e80a 7,18
+vite.config.js
+  s_2b16505ded1b04::t_2204bbdce1d46b 9
+sw.js
+  s_2b16505ded1b04::t_c25220da70ea4a 123-125
+  s_2b16505ded1b04::t_2204bbdce1d46b 14,89-122,126
+src/main.js
+  s_2b16505ded1b04::t_b013eb8f33506c 24
+tests/e2e/push.spec.js
+  s_2b16505ded1b04::t_1ce676d96584a5 92-99,103,108,111,115-122,124
+  s_2b16505ded1b04::t_0bb8fb3e619572 1-91,100-102,104-107,109-110,112-114,123
+src/shell/PushBanner.svelte
+  s_2b16505ded1b04::t_176e7bf45cd811 16
+  s_2b16505ded1b04::t_07d011be07e80a 1-15,17-20
+src/lib/i18n/es.js
+  s_2b16505ded1b04::t_07d011be07e80a 170-173
+src/lib/push.svelte.js
+  s_2b16505ded1b04::t_bc89768ad6c76a 76-89,92-93,95,113-115,127-152
+src/lib/i18n/ca.js
+  s_2b16505ded1b04::t_07d011be07e80a 169-172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6db827bc8d5d57737f3851636bfb7aaef9d5192e",
+  "prompts": {},
+  "sessions": {
+    "s_2b16505ded1b04": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "48991a2b-6ab6-4706-83a7-f043b74bd704",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
