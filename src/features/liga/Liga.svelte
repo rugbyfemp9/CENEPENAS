@@ -1,10 +1,12 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
-  import { setSection } from '../../shell/navigation.svelte.js';
-  import TeamCrest from './TeamCrest.svelte';
-  import { LEAGUE_OWN_TEAM, LEAGUE_STANDINGS, LEAGUE_RESULTS } from './liga.js';
+  import { nav, setSection } from '../../shell/navigation.svelte.js';
+  import { LEAGUE_EMBED_URL, LEAGUE_SOURCE_URL } from './liga.js';
 
-  let tab = $state('clasificacion');
+  // El widget pesa (~260 KB más jQuery): solo se carga la primera vez que se abre Liga,
+  // y luego se queda cargado para no recargarlo en cada visita.
+  let opened = $state(false);
+  $effect(() => { if (nav.current === 'liga') opened = true; });
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
@@ -14,53 +16,14 @@
   <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Divisió d'Honor Catalana AON</span>
 </div>
 
-<div class="simple-tabs liga-tabs">
-  <button class:active={tab === 'clasificacion'} data-liga-tab="clasificacion" onclick={() => (tab = 'clasificacion')}>{t('liga.tabStandings')}</button>
-  <button class:active={tab === 'resultados'} data-liga-tab="resultados" onclick={() => (tab = 'resultados')}>{t('liga.tabResults')}</button>
-</div>
-
-<!-- rugby.cat bloquea que su widget (matchready.es) se incruste en otras páginas
-     (X-Frame-Options), así que no es viable mostrarlo en directo aquí dentro.
-     Esta tabla es una foto fija de los datos; para verla siempre al día usa el
-     enlace de abajo, o pídeme que la actualice y la repaso a mano. -->
-<div class="liga-panel" class:active={tab === 'clasificacion'} id="liga-panel-clasificacion">
-  <div class="card liga-table-card">
-    <div class="liga-table-scroll">
-      <table class="liga-table" id="liga-standings-table">
-        <thead>
-          <tr><th>#</th><th style="text-align:left;">{t('liga.teamCol')}</th><th>J</th><th>G</th><th>E</th><th>P</th><th>PF</th><th>PC</th><th>DP</th><th>AF</th><th>AC</th><th>BO</th><th>BD</th><th>Pts</th></tr>
-        </thead>
-        <tbody>
-          {#each LEAGUE_STANDINGS as row (row.team)}
-            <tr class={row.team === LEAGUE_OWN_TEAM ? 'liga-own-team' : ''}>
-              <td class="liga-pos">{row.pos}</td>
-              <td class="liga-team"><TeamCrest name={row.team} />{row.team}</td>
-              <td>{row.j}</td><td>{row.g}</td><td>{row.e}</td><td>{row.p}</td>
-              <td>{row.pf}</td><td>{row.pc}</td><td>{row.dp > 0 ? '+' : ''}{row.dp}</td>
-              <td>{row.af}</td><td>{row.ac}</td><td>{row.bo}</td><td>{row.bd}</td>
-              <td class="liga-pts">{row.pts}</td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<div class="liga-panel" class:active={tab === 'resultados'} id="liga-panel-resultados">
-  <div id="liga-results-list">
-    {#each LEAGUE_RESULTS as round (round.jornada)}
-      <div class="liga-jornada-heading">{round.jornada}</div>
-      {#each round.matches as m, i (i)}
-        <div class="liga-match {m.home === LEAGUE_OWN_TEAM || m.away === LEAGUE_OWN_TEAM ? 'liga-own-match' : ''}">
-          <div class="teams"><TeamCrest name={m.home} />{m.home} <span class="score">{m.score}</span> {m.away}<TeamCrest name={m.away} /></div>
-          <div class="date">{m.date}</div>
-        </div>
-      {/each}
-    {/each}
-  </div>
+<!-- El widget de matchready trae sus propias pestañas (Calendari / Classificació /
+     Quadre de competició), así que aquí no ponemos otras. -->
+<div class="card liga-embed-card">
+  {#if opened}
+    <iframe class="liga-embed" src={LEAGUE_EMBED_URL} title={t('liga.embedTitle')} referrerpolicy="no-referrer"></iframe>
+  {/if}
 </div>
 
 <div class="liga-source-note">
-  <span>{t('liga.sourceNotePrefix')}</span> <a href="https://rugby.cat/dhc-femenina/divisio-dhonor-catalana-aon/" target="_blank" rel="noopener">rugby.cat</a><span>{t('liga.sourceNoteSuffix')}</span>
+  <span>{t('liga.sourceNotePrefix')}</span> <a href={LEAGUE_SOURCE_URL} target="_blank" rel="noopener">rugby.cat</a><span>{t('liga.sourceNoteSuffix')}</span>
 </div>

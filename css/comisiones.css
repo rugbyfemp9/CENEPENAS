@@ -37,40 +37,11 @@
 .simple-tabs button.active{ background:var(--navy); border-color:var(--navy); color:#fff; }
 .comi-tercer-panel{ display:none; }
 .comi-tercer-panel.active{ display:block; }
-.liga-panel{ display:none; }
-.liga-panel.active{ display:block; }
-.liga-table-card{ padding:0; overflow:hidden; }
 .liga-table-scroll{ overflow-x:auto; }
-.liga-table{ border-collapse:collapse; width:100%; min-width:640px; font-size:12.5px; }
-.liga-table th, .liga-table td{ padding:10px 8px; text-align:center; white-space:nowrap; }
-.liga-table th{ font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); border-bottom:1.5px solid var(--line); }
-.liga-table td.liga-pos{ font-weight:700; color:var(--text-muted); }
-.liga-table td.liga-team{ text-align:left; font-weight:700; font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.01em; color:var(--navy); display:flex; align-items:center; gap:8px; }
-.liga-table td.liga-pts{ font-weight:700; color:var(--navy); }
-.liga-table tr.liga-own-team{ background:var(--sky-light); }
-.liga-table tr:not(:last-child) td{ border-bottom:1px solid var(--line); }
-/* Escudo de equipo (insignia con iniciales, ya que no usamos escudos oficiales) */
-.liga-crest{
-  width:22px; height:22px; border-radius:7px; flex-shrink:0;
-  display:inline-flex; align-items:center; justify-content:center;
-  font-family:'Oswald',sans-serif; font-weight:700; font-size:9px; letter-spacing:.02em;
-  color:#fff;
-}
-.liga-match .teams .liga-crest{ margin:0 2px; }
-.liga-jornada-heading{
-  font-family:'Oswald',sans-serif; font-size:14px; font-weight:600; text-transform:uppercase;
-  letter-spacing:.04em; color:var(--navy); margin:18px 0 8px;
-}
-#liga-results-list > .liga-jornada-heading:first-child{ margin-top:0; }
-.liga-match{
-  background:var(--white); border-radius:12px; padding:11px 14px; margin-bottom:8px;
-  box-shadow:0 6px 18px -14px rgba(15,27,45,.35);
-  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
-}
-.liga-match.liga-own-match{ box-shadow:0 0 0 1.5px var(--sky) inset, 0 6px 18px -14px rgba(15,27,45,.35); }
-.liga-match .teams{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; font-family:'Oswald',sans-serif; text-transform:uppercase; color:var(--navy); flex-wrap:wrap; }
-.liga-match .teams .score{ color:var(--sky-dark); font-size:13.5px; }
-.liga-match .date{ font-size:11.5px; color:var(--text-muted); flex-shrink:0; }
+/* El iframe es de otro dominio, así que no podemos ajustar su altura al contenido:
+   le damos una altura fija y el contenido hace scroll dentro. */
+.liga-embed-card{ padding:0; overflow:hidden; }
+.liga-embed{ display:block; width:100%; height:75vh; min-height:520px; border:0; background:#fff; }
 .liga-source-note{ font-size:11.5px; color:var(--text-muted); margin-top:16px; line-height:1.4; }
 .liga-source-note a{ color:var(--sky-dark); font-weight:600; text-decoration:none; }
 .liga-source-note a:hover{ text-decoration:underline; }

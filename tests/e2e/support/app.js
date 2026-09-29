@@ -21,6 +21,8 @@ export const SECTIONS = [
 
 export { USERS };
 
+export const MATCHREADY_STUB = '<!doctype html><title>stub</title><h3>Sénior Femení - F DHCAT</h3><table><tr><td>2</td><td>CNPN</td></tr></table>';
+
 /**
  * Prepares `page` before the app is loaded.
  * @param {import('@playwright/test').Page} page
@@ -33,6 +35,9 @@ export async function setupApp(page, { user = USERS.admin, seed = defaultSeed } 
 
   await page.clock.setFixedTime(NOW);
   await page.addInitScript(([storageKey, session]) => {
+    // Init scripts also run inside iframes (the Liga widget), where localStorage can be
+    // off-limits; only the app itself needs this.
+    if (window.top !== window) return;
     let s = 42;
     Math.random = () => (s = (s * 16807) % 2147483647) / 2147483647;
     if (session) localStorage.setItem(storageKey, JSON.stringify(session));
@@ -42,12 +47,45 @@ export async function setupApp(page, { user = USERS.admin, seed = defaultSeed } 
   await mockRealtime(page);
   // Fonts, Firebase and any other third party: blocked so runs are deterministic.
   await page.route(/fonts\.googleapis\.com|fonts\.gstatic\.com|www\.gstatic\.com\/firebasejs|picsum\.photos/, (route) => route.abort());
+  // The Liga iframe (matchready.es) gets a stub page instead: an aborted iframe load
+  // leaves Chromium's error page in the frame, which never reaches networkidle.
+  await page.route(/matchready\.es/, (route) => route.fulfill({ contentType: 'text/html', body: MATCHREADY_STUB }));
 
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
   page.on('dialog', (d) => d.dismiss().catch(() => {}));
+  trackInflight(page);
 
   return { backend, errors };
+}
+
+// Requests the app itself (main frame) has in flight, and when the last one ended.
+// Once an iframe has been added after load (the Liga widget), Playwright's page-wide
+// networkidle is only re-checked when a main-frame request finishes, so a section that
+// makes no request would wait on it forever; goToSection uses this instead then.
+const inflight = new WeakMap();
+function trackInflight(page) {
+  const state = { open: new Set(), lastChange: Date.now() };
+  inflight.set(page, state);
+  const isApp = (r) => { try { return r.frame() === page.mainFrame(); } catch { return false; } };
+  page.on('request', (r) => { if (isApp(r)) { state.open.add(r); state.lastChange = Date.now(); } });
+  const done = (r) => { if (state.open.delete(r)) state.lastChange = Date.now(); };
+  page.on('requestfinished', done);
+  page.on('requestfailed', done);
+}
+
+async function waitForAppIdle(page, quietMs = 500) {
+  const state = inflight.get(page);
+  if (!state || page.frames().length === 1) return page.waitForLoadState('networkidle');
+  await waitUntil(() => state.open.size === 0 && Date.now() - state.lastChange >= quietMs);
+}
+
+async function waitUntil(check, timeout = 30_000) {
+  const start = Date.now();
+  while (!check()) {
+    if (Date.now() - start > timeout) throw new Error('app requests did not settle');
+    await new Promise((r) => setTimeout(r, 50));
+  }
 }
 
 // Errors that also happen on the untouched app (blocked third-party requests).
@@ -69,6 +107,6 @@ export async function openApp(page) {
 
 export async function goToSection(page, id) {
   await page.evaluate((sectionId) => window.setSection(sectionId), id);
-  await page.waitForLoadState('networkidle');
+  await waitForAppIdle(page);
   await page.waitForTimeout(250);
 }

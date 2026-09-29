@@ -594,11 +594,9 @@ export const es = {
   'galeria.coverLabel': 'Foto de portada (URL)',
   'galeria.albumUrlLabel': 'Enlace del álbum de Google Photos',
 
-  'liga.tabStandings': 'Clasificación',
-  'liga.tabResults': 'Resultados',
-  'liga.teamCol': 'Equipo',
-  'liga.sourceNotePrefix': 'Datos de la temporada 2025-26, según',
-  'liga.sourceNoteSuffix': '. rugby.cat no permite incrustar su tabla en directo en otras páginas, así que esto es una foto fija: para verla siempre actualizada, abre el enlace, o pídeme que la revise y la ponga al día.',
+  'liga.embedTitle': "Clasificación de la Divisió d'Honor Catalana AON",
+  'liga.sourceNotePrefix': 'Datos en directo de',
+  'liga.sourceNoteSuffix': '. Si no se ve, abre el enlace.',
 
   'nav.wellnessStaff': 'Percepción del esfuerzo',
   'vestuario.wellnessStaff.subtitle': 'Análisis de carga y estado físico',
