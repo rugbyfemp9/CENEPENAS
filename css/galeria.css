@@ -1,0 +1,60 @@
+/* ============ GALERÍA ============ */
+
+/* Nivel 1: tarjetas de temporada — banners anchos con foto de fondo, en línea con
+   el resto de banners de la app (scoreboard, tt-banner...) */
+.gallery-seasons{ display:flex; flex-direction:column; gap:14px; margin-top:14px; }
+.season-card{
+  all:unset; cursor:pointer; box-sizing:border-box; display:block; width:100%;
+  position:relative; height:132px; border-radius:var(--radius); overflow:hidden;
+  background-size:cover; background-position:center;
+  box-shadow:0 10px 30px -16px rgba(15,27,45,.45); transition:.15s ease;
+}
+.season-card:hover{ box-shadow:0 14px 34px -14px rgba(15,27,45,.55); }
+.season-card:hover .season-card-cover{ transform:scale(1.04); }
+.season-card-cover{
+  position:absolute; inset:0; background-size:cover; background-position:center;
+  transition:transform .3s ease;
+}
+.season-card-overlay{
+  position:absolute; inset:0;
+  background:linear-gradient(100deg, rgba(15,27,45,.88) 0%, rgba(15,27,45,.55) 55%, rgba(15,27,45,.15) 100%);
+  display:flex; flex-direction:column; justify-content:center; align-items:flex-start;
+  padding:18px 22px; color:#fff;
+}
+.season-card-title{ font-family:'Oswald',sans-serif; font-size:19px; font-weight:600; text-transform:uppercase; letter-spacing:.02em; }
+.season-card-sub{ font-size:12.5px; color:rgba(255,255,255,.8); margin-top:4px; font-weight:500; }
+.season-card-current{
+  display:inline-flex; align-items:center; gap:5px; margin-top:9px;
+  background:rgba(74,159,216,.9); color:#fff; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.05em; padding:4px 10px; border-radius:999px;
+  font-family:'Oswald',sans-serif;
+}
+
+/* Nivel 2: álbumes de una temporada */
+.gallery-albums{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+  gap:14px; margin-top:14px;
+}
+.album-card{
+  all:unset; cursor:pointer; box-sizing:border-box; display:block;
+  position:relative; aspect-ratio:4/3; border-radius:var(--radius); overflow:hidden;
+  background:var(--bg); box-shadow:0 10px 26px -16px rgba(15,27,45,.4); transition:.15s ease;
+}
+.album-card:hover{ box-shadow:0 14px 30px -14px rgba(15,27,45,.5); }
+.album-card img{ width:100%; height:100%; object-fit:cover; display:block; transition:.2s ease; }
+.album-card:hover img{ transform:scale(1.05); }
+.album-card .cap{
+  position:absolute; left:0; right:0; bottom:0; padding:22px 14px 12px;
+  background:linear-gradient(to top, rgba(15,27,45,.88), transparent);
+  color:#fff; text-align:left;
+}
+.album-card .cap b{ display:block; font-family:'Oswald',sans-serif; font-size:13.5px; text-transform:uppercase; letter-spacing:.02em; line-height:1.25; }
+.album-card .cap span{ display:block; font-size:11px; color:rgba(255,255,255,.8); margin-top:2px; }
+.album-card .cap .ext-icon{ display:inline-flex; vertical-align:middle; margin-left:5px; opacity:.85; }
+.album-card .cap .ext-icon svg{ width:11px; height:11px; }
+
+.gallery-empty{ color:var(--text-muted); font-size:13.5px; padding:24px 4px; text-align:center; }
+@media (max-width:640px){
+  .season-card{ height:104px; }
+  .season-card-title{ font-size:16px; }
+}

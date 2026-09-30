@@ -7,7 +7,7 @@
   "background_color": "#F5F7FA",
   "theme_color": "#4A9FD8",
   "icons": [
-    { "src": "foto/applogo.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "foto/applogo.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "assets/img/applogo.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/img/applogo.png", "sizes": "512x512", "type": "image/png" }
   ]
 }

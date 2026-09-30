@@ -1,0 +1,112 @@
+// Shared page setup for the e2e tests: deterministic clock and randomness, the
+// fake Supabase backend, an optional logged-in session, and no external network.
+import { FakeSupabase, PROJECT_REF, SUPABASE_ORIGIN, mockRealtime, sessionFor } from './fake-supabase.js';
+import { seed as defaultSeed, USERS } from '../fixtures/seed.js';
+
+export const NOW = new Date('2026-09-25T10:00:00+02:00');
+
+export const VIEWPORTS = {
+  desktop: { width: 1280, height: 900 },
+  mobile: { width: 390, height: 844 },
+};
+
+// Every section of the app (the <section id="sec-..."> elements in index.html).
+export const SECTIONS = [
+  'inicio', 'asistencia', 'asistencia-detalle', 'vestuario', 'wellness-staff', 'test',
+  'partidos', 'partido-detalle', 'gym', 'gym-entrenamiento', 'gym-entrenamiento-dia',
+  'gym-equipo', 'comisiones', 'comi-activitats', 'comi-xarxes', 'comi-tercer-temps',
+  'comi-tesoreria', 'comi-gira', 'multas', 'tricount', 'liga', 'tercer', 'tercer-historial',
+  'tercer-detalle', 'plantilla', 'fantasy', 'galeria', 'perfil',
+];
+
+export { USERS };
+
+export const MATCHREADY_STUB = '<!doctype html><title>stub</title><h3>Sénior Femení - F DHCAT</h3><table><tr><td>2</td><td>CNPN</td></tr></table>';
+
+/**
+ * Prepares `page` before the app is loaded.
+ * @param {import('@playwright/test').Page} page
+ * @param {{ user?: object|null, seed?: object }} options  user: one of USERS, or null for logged out
+ */
+export async function setupApp(page, { user = USERS.admin, seed = defaultSeed } = {}) {
+  const backend = new FakeSupabase({ seed, users: USERS, now: NOW });
+  backend.currentUser = user;
+  const errors = [];
+
+  await page.clock.setFixedTime(NOW);
+  await page.addInitScript(([storageKey, session]) => {
+    // Init scripts also run inside iframes (the Liga widget), where localStorage can be
+    // off-limits; only the app itself needs this.
+    if (window.top !== window) return;
+    let s = 42;
+    Math.random = () => (s = (s * 16807) % 2147483647) / 2147483647;
+    if (session) localStorage.setItem(storageKey, JSON.stringify(session));
+  }, [`sb-${PROJECT_REF}-auth-token`, user ? sessionFor(user, NOW) : null]);
+
+  await page.route(`${SUPABASE_ORIGIN}/**`, (route) => backend.handle(route));
+  await mockRealtime(page);
+  // Fonts, Firebase and any other third party: blocked so runs are deterministic.
+  await page.route(/fonts\.googleapis\.com|fonts\.gstatic\.com|www\.gstatic\.com\/firebasejs|picsum\.photos/, (route) => route.abort());
+  // The Liga iframe (matchready.es) gets a stub page instead: an aborted iframe load
+  // leaves Chromium's error page in the frame, which never reaches networkidle.
+  await page.route(/matchready\.es/, (route) => route.fulfill({ contentType: 'text/html', body: MATCHREADY_STUB }));
+
+  page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
+  page.on('console', (m) => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
+  page.on('dialog', (d) => d.dismiss().catch(() => {}));
+  trackInflight(page);
+
+  return { backend, errors };
+}
+
+// Requests the app itself (main frame) has in flight, and when the last one ended.
+// Once an iframe has been added after load (the Liga widget), Playwright's page-wide
+// networkidle is only re-checked when a main-frame request finishes, so a section that
+// makes no request would wait on it forever; goToSection uses this instead then.
+const inflight = new WeakMap();
+function trackInflight(page) {
+  const state = { open: new Set(), lastChange: Date.now() };
+  inflight.set(page, state);
+  const isApp = (r) => { try { return r.frame() === page.mainFrame(); } catch { return false; } };
+  page.on('request', (r) => { if (isApp(r)) { state.open.add(r); state.lastChange = Date.now(); } });
+  const done = (r) => { if (state.open.delete(r)) state.lastChange = Date.now(); };
+  page.on('requestfinished', done);
+  page.on('requestfailed', done);
+}
+
+async function waitForAppIdle(page, quietMs = 500) {
+  const state = inflight.get(page);
+  if (!state || page.frames().length === 1) return page.waitForLoadState('networkidle');
+  await waitUntil(() => state.open.size === 0 && Date.now() - state.lastChange >= quietMs);
+}
+
+async function waitUntil(check, timeout = 30_000) {
+  const start = Date.now();
+  while (!check()) {
+    if (Date.now() - start > timeout) throw new Error('app requests did not settle');
+    await new Promise((r) => setTimeout(r, 50));
+  }
+}
+
+// Errors that also happen on the untouched app (blocked third-party requests).
+export const IGNORED_ERRORS = [/Failed to load resource/, /net::ERR_FAILED/];
+
+export function relevantErrors(errors) {
+  return errors.filter((e) => !IGNORED_ERRORS.some((re) => re.test(e)));
+}
+
+export async function openApp(page) {
+  await page.goto('./index.html');
+  // With a session, wait until login has finished (the overlay is hidden) — on a
+  // loaded machine that can take a while — then until the Supabase reads settle.
+  await page.waitForFunction((key) => !localStorage.getItem(key)
+    || document.getElementById('auth-overlay')?.classList.contains('hidden'), `sb-${PROJECT_REF}-auth-token`, { timeout: 20_000 });
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(300);
+}
+
+export async function goToSection(page, id) {
+  await page.evaluate((sectionId) => window.setSection(sectionId), id);
+  await waitForAppIdle(page);
+  await page.waitForTimeout(250);
+}

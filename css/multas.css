@@ -1,0 +1,166 @@
+/* ============ MULTAS — motivos fijos y modal de alta ============ */
+.fine-chip{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:inline-flex; align-items:center; gap:5px;
+  padding:5px 12px; border-radius:999px; margin:2px 5px 2px 0;
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  color:#fff; font-family:'Oswald',sans-serif;
+}
+.fine-chip[data-reason="amarilla"]{ background:linear-gradient(135deg,#E8B93A,#C99A1D); }
+.fine-chip[data-reason="roja"]{ background:linear-gradient(135deg, var(--bad), #B8443A); }
+.fine-chip[data-reason="retraso"]{ background:linear-gradient(135deg, var(--warn), #C96E2C); }
+.fine-chip[data-reason="tercer"]{ background:linear-gradient(135deg, var(--sky), var(--sky-dark)); }
+
+.fine-chip-wrap{ position:relative; display:inline-flex; align-items:center; margin:2px 5px 2px 0; }
+.fine-chip-wrap .fine-chip{ margin:0; }
+.fine-chip-undo{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:18px; height:18px; border-radius:50%; margin-left:2px; flex-shrink:0;
+  background:var(--bg); border:1px solid var(--line); color:var(--text-muted);
+  font-size:10px; line-height:1;
+}
+.fine-chip-undo:hover{ border-color:var(--bad); color:var(--bad); }
+
+.fine-modal-section{ margin-bottom:16px; }
+.fine-modal-label{
+  font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted);
+  font-weight:700; margin-bottom:8px; font-family:'Oswald',sans-serif;
+}
+/* Buscador predictivo de jugadora (modal de alta de multa): casilla de texto +
+   desplegable flotante con los resultados, filtrando en tiempo real sobre el
+   roster ya registrado en la app (sin datos ficticios). */
+.fine-player-search{ position:relative; }
+.fine-player-search-input{
+  width:100%; font-family:'Roboto',sans-serif; font-size:14px;
+  padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); color:var(--navy);
+}
+.fine-player-search-input.has-selection{ border-color:var(--sky); background:var(--sky-light); color:var(--sky-dark); font-weight:600; }
+.fine-player-search-results{
+  display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:20;
+  background:var(--white); border:1.5px solid var(--line); border-radius:14px;
+  box-shadow:0 12px 28px rgba(15,27,45,.14); max-height:220px; overflow-y:auto; padding:6px;
+}
+.fine-player-search-results.open{ display:block; }
+.fine-player-search-result{
+  all:unset; cursor:pointer; box-sizing:border-box; width:100%;
+  display:flex; align-items:center; gap:10px;
+  padding:7px 8px; border-radius:10px;
+  font-size:13.5px; font-weight:600; color:var(--navy); font-family:'Roboto',sans-serif;
+}
+.fine-player-search-result:hover, .fine-player-search-result:focus{ background:var(--sky-light); color:var(--sky-dark); }
+.fine-player-search-result .avatar{ width:28px; height:28px; font-size:11px; border-radius:9px; }
+.fine-player-search-result .avatar-injured-badge{ width:12px; height:12px; top:-3px; right:-3px; border-width:1.5px; }
+.fine-player-search-result .avatar-injured-badge svg{ width:7px; height:7px; }
+.fine-player-search-empty{ padding:10px 8px; font-size:13px; color:var(--text-muted); }
+
+/* Avisos de "me han pagado una multa" a la persona de Comi Tesoreria que debe
+   confirmarlo antes de que se dé por pagada de verdad. */
+.fine-confirm-requests{ flex-direction:column; gap:10px; margin-bottom:16px; }
+.fine-confirm-row{
+  display:flex; align-items:center; gap:12px;
+  background:var(--sky-light); border:1.5px solid var(--sky); border-radius:16px; padding:12px 14px;
+}
+.fine-confirm-msg{ flex:1; min-width:0; font-size:13.5px; color:var(--navy); line-height:1.35; }
+.fine-confirm-msg b{ font-family:'Oswald',sans-serif; }
+.fine-confirm-sub{ display:block; font-size:11.5px; color:var(--text-muted); margin-top:1px; }
+.fine-confirm-actions{ display:flex; gap:6px; flex-shrink:0; }
+.fine-confirm-actions button{
+  all:unset; cursor:pointer; box-sizing:border-box; width:34px; height:34px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700;
+  border:1.5px solid var(--line); background:var(--white); color:var(--text-muted);
+}
+.fine-confirm-actions button.v{ color:var(--ok); border-color:var(--ok); }
+.fine-confirm-actions button.v:hover{ background:var(--ok); color:#fff; }
+.fine-confirm-actions button.x{ color:var(--bad); border-color:var(--bad); }
+.fine-confirm-actions button.x:hover{ background:var(--bad); color:#fff; }
+
+/* Etiqueta que sustituye al botón "Pagar multa" mientras se espera la confirmación
+   de la persona de Comi Tesoreria a la que se marcó como pagada. */
+.fine-awaiting-badge{
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  color:var(--text-muted); font-family:'Oswald',sans-serif; white-space:nowrap;
+}
+
+.fine-reason-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.fine-reason-box{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:flex; flex-direction:column; gap:2px;
+  padding:12px 14px; border-radius:14px; border:1.5px solid var(--line); background:var(--white);
+  transition:.15s ease;
+}
+.fine-reason-box b{ font-size:19px; text-transform:uppercase; letter-spacing:.02em; font-family:'Oswald',sans-serif; }
+.fine-reason-box span{ font-size:12px; color:var(--text-muted); }
+.fine-reason-box[data-reason="amarilla"]{ border-left:4px solid #E8B93A; }
+.fine-reason-box[data-reason="roja"]{ border-left:4px solid var(--bad); }
+.fine-reason-box[data-reason="retraso"]{ border-left:4px solid var(--warn); }
+.fine-reason-box[data-reason="tercer"]{ border-left:4px solid var(--sky); }
+.fine-reason-box.selected[data-reason="amarilla"]{ background:linear-gradient(135deg,#E8B93A,#C99A1D); }
+.fine-reason-box.selected[data-reason="roja"]{ background:linear-gradient(135deg, var(--bad), #B8443A); }
+.fine-reason-box.selected[data-reason="retraso"]{ background:linear-gradient(135deg, var(--warn), #C96E2C); }
+.fine-reason-box.selected[data-reason="tercer"]{ background:linear-gradient(135deg, var(--sky), var(--sky-dark)); }
+.fine-reason-box.selected{ border-left-color:transparent; }
+.fine-reason-box.selected b, .fine-reason-box.selected span{ color:#fff; }
+
+/* Resumen personal — lo que debe el usuario que ha iniciado sesión */
+.my-fines-card{ margin-bottom:16px; padding:0; overflow:hidden; }
+
+/* Banner de "Multas pendientes" en Inicio: mismo tamaño que el banner de Tercer tiempo (.tt-personal),
+   con color y mensaje según el estado de las multas propias del usuario. */
+.tt-personal.fines-ok{ background:linear-gradient(120deg, var(--ok) 0%, #227a54 100%); }
+.tt-personal.fines-warn{ background:linear-gradient(120deg, var(--warn) 0%, #b8672c 100%); }
+.tt-personal.fines-danger{ background:linear-gradient(120deg, var(--bad) 0%, #8a2f26 100%); }
+.tt-personal .icon.emoji{ font-size:22px; }
+.my-fines-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 20px; flex-wrap:wrap; }
+.my-fines-head.owing{ background:linear-gradient(120deg, var(--bad) 0%, #a83c32 100%); color:#fff; }
+.my-fines-head.clear{ background:linear-gradient(120deg, var(--ok) 0%, #227a54 100%); color:#fff; }
+.my-fines-head .label{ font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; font-weight:600; opacity:.85; }
+.my-fines-head .amount{ font-size:26px; font-weight:700; font-family:'Oswald',sans-serif; margin-top:2px; }
+.my-fines-list{ display:flex; flex-direction:column; }
+.my-fine-row{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 20px; border-bottom:1px solid var(--line);
+}
+.my-fine-row:last-child{ border-bottom:none; }
+.my-fine-row .reason{ font-size:13.5px; font-weight:600; }
+.my-fine-row .amt{ font-size:12.5px; color:var(--text-muted); margin-top:2px; }
+.pay-fine-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; flex-shrink:0;
+  background:linear-gradient(90deg, var(--sky), var(--sky-dark)); color:#fff;
+  padding:9px 16px; border-radius:10px; font-size:12px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.03em; font-family:'Oswald',sans-serif;
+}
+
+.fine-total-row{
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--bg); border-radius:14px; padding:12px 16px; margin-bottom:2px;
+  font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted);
+}
+.fine-total-row b{ font-size:20px; color:var(--navy); font-family:'Oswald',sans-serif; letter-spacing:0; }
+
+/* Modal de justificación / comentario */
+.modal-overlay{
+  display:none; position:fixed; inset:0; background:rgba(15,27,45,.55); z-index:500;
+  align-items:center; justify-content:center; padding:20px;
+}
+.modal-overlay.active{ display:flex; }
+.modal-box{
+  background:var(--white); border-radius:var(--radius); padding:24px;
+  max-width:420px; width:100%; box-shadow:0 20px 50px -15px rgba(15,27,45,.5);
+}
+.modal-box h3{ margin:0 0 4px; font-size:17px; text-transform:uppercase; letter-spacing:.02em; }
+.modal-box .modal-sub{ color:var(--text-muted); font-size:12.5px; margin-bottom:14px; }
+.modal-box textarea{
+  width:100%; min-height:90px; border:1.5px solid var(--line); border-radius:12px;
+  padding:10px 12px; font-family:'Roboto',sans-serif; font-size:13.5px; color:var(--navy);
+  resize:vertical;
+}
+.modal-box textarea:focus{ outline:none; border-color:var(--sky); }
+.modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:16px; }
+.btn-ghost{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  padding:10px 18px; border-radius:12px; font-size:13px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);
+  border:1.5px solid var(--line); font-family:'Oswald',sans-serif;
+}
+.att-roster-empty{ color:var(--text-muted); font-size:13px; padding:18px; text-align:center; }
