@@ -15,6 +15,7 @@ npm run dev        # servidor de desarrollo con recarga al guardar
 npm run build      # compila en dist/
 npm run preview    # sirve dist/ tal cual se publicará
 npm run test:e2e   # tests en un navegador de verdad, con un Supabase simulado
+npm run test:functions  # tests de las funciones de Supabase (con Deno, vía npx)
 ```
 
 Ojo: con `npm run dev` y `npm run preview` la web usa el **Supabase real**, así que lo
@@ -44,6 +45,9 @@ assets/img/                 Logos, escudos y portadas de la galería
 sw.js                       Service worker (instalación como PWA, caché y notificaciones push)
 tests/e2e/                  Tests de Playwright
 scripts/                    Utilidades (comparar capturas de pantalla)
+supabase/functions/         Funciones de Supabase (Deno); _shared/ la usan también la
+                            app (season.js: el calendario de entrenos)
+supabase/migrations/        Cambios de la base de datos
 config.toml                 Configuración local de Supabase
 ```
 
@@ -82,3 +86,50 @@ SNAPSHOT_DIR=.snapshots/antes npx playwright test snapshot
 SNAPSHOT_DIR=.snapshots/despues npx playwright test snapshot
 node scripts/compare-snapshots.mjs .snapshots/antes .snapshots/despues
 ```
+
+## Recordatorios de asistencia
+
+Cada 15 minutos, `pg_cron` (en Supabase) llama a la función
+`supabase/functions/training-reminders`. La función busca los entrenos y partidos que
+empiezan en las próximas 24 h y manda una notificación push, en catalán, a cada
+jugadora (roles `jugadora` y `Capitana`) que tiene las notificaciones activadas y aún
+no ha dicho ni que sí ni que no. Cada una recibe un solo aviso por evento: queda
+apuntado en la tabla `att_reminders_sent`. Al tocar el aviso se abre la app en
+Asistencia.
+
+Los entrenos automáticos (lunes, miércoles y viernes) no están en la base de datos:
+la función los genera con el mismo calendario que la app
+(`supabase/functions/_shared/season.js`). Si se cambia el calendario de la temporada,
+hay que volver a desplegar la función.
+
+Puesta en marcha, una sola vez (hace falta el CLI de Supabase con sesión iniciada:
+`supabase login` y `supabase link --project-ref tpbuxspqibwitqzstdcz`):
+
+1. En Firebase → Configuración del proyecto → **Cuentas de servicio** → *Generar nueva
+   clave privada*. Se descarga un JSON: no se sube nunca al repositorio.
+2. Guardar los secretos de la función (el segundo es una contraseña cualquiera,
+   p.ej. `openssl rand -hex 32`):
+   ```
+   supabase secrets set FIREBASE_SERVICE_ACCOUNT="$(cat clave-firebase.json)" REMINDERS_CRON_SECRET=<contraseña>
+   ```
+3. En Supabase → SQL Editor, guardar en Vault la URL de la función y la misma contraseña:
+   ```sql
+   select vault.create_secret('https://tpbuxspqibwitqzstdcz.supabase.co/functions/v1/training-reminders', 'reminders_url');
+   select vault.create_secret('<contraseña>', 'reminders_secret');
+   ```
+4. Crear la tabla y el temporizador, y desplegar la función:
+   ```
+   supabase db push
+   supabase functions deploy training-reminders --no-verify-jwt
+   ```
+   (`--no-verify-jwt` porque quien la llama es `pg_cron`, sin sesión: la protege la
+   contraseña de la cabecera `x-cron-secret`.)
+   Si `supabase db push` se niega porque la base de datos tiene migraciones que no están
+   en el repositorio, se puede pegar el archivo de `supabase/migrations/` tal cual en el
+   SQL Editor.
+
+Para comprobar que funciona: en el SQL Editor,
+`select * from cron.job_run_details order by start_time desc limit 5;` y la respuesta
+de la función en `select status_code, content from net._http_response order by id desc limit 5;`
+(p.ej. `{"events":1,"reminded":3,...}`). Los errores salen en Supabase → Edge Functions
+→ training-reminders → Logs.

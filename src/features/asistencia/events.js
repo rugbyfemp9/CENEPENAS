@@ -11,6 +11,7 @@ import { auth } from '../../lib/session.svelte.js';
 import { myProfile, roster } from '../../lib/roster.js';
 import { weekdayFullLabel, formatShortDate, autoMonthAbbr } from '../../lib/dates.js';
 import { forgetTullidesForEvent } from '../tullidas/tullidas.svelte.js';
+import { SEASON, autoTrainingDates, autoTrainingId } from '../../../supabase/functions/_shared/season.js';
 
 export const attEvents = [];
 
@@ -53,53 +54,30 @@ export function generateCustomEventId() {
 const pendingForEveryone = () => Object.fromEntries(roster.map((p) => [p.id, 'pending']));
 
 // ---- Generación automática de entrenos — temporada 2026-2027 ----
-// Lunes, miércoles y viernes de 20:30 a 22:00, del 1 de septiembre de 2026 al 31 de mayo
-// de 2027, saltando festivos nacionales y festivos de Barcelona (calendarios laborales
-// oficiales de España y del Ayuntamiento de Barcelona para 2026 y 2027).
-const seasonHolidays = new Set([
-  '2026-09-11', // Diada Nacional de Catalunya
-  '2026-09-24', // La Mercè (festivo local de Barcelona)
-  '2026-10-12', // Fiesta Nacional de España
-  '2026-11-01', // Todos los Santos
-  '2026-12-06', // Día de la Constitución
-  '2026-12-08', // La Inmaculada Concepción
-  '2026-12-25', // Navidad
-  '2026-12-26', // Sant Esteve
-  '2027-01-01', // Año Nuevo
-  '2027-01-06', // Reyes
-  '2027-03-26', // Viernes Santo
-  '2027-03-29', // Lunes de Pascua Florida
-  '2027-05-17', // Pascua Granada (festivo local de Barcelona)
-]);
-
+// El calendario (días, horas y festivos) vive en supabase/functions/_shared/season.js,
+// porque la función de Supabase de los recordatorios de asistencia necesita la misma lista.
 function generateAutoTrainings() {
-  const events = [];
-  const start = new Date(2026, 8, 1);  // 1 de septiembre de 2026
-  const end   = new Date(2027, 4, 31); // 31 de mayo de 2027
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const dow = d.getDay(); // 1 = lunes, 3 = miércoles, 5 = viernes
-    if (dow !== 1 && dow !== 3 && dow !== 5) continue;
-    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    if (seasonHolidays.has(iso)) continue;
-    events.push({
-      id: 'auto-' + iso,
+  return autoTrainingDates().map((iso) => {
+    const [y, m, d] = iso.split('-').map(Number);
+    const dow = new Date(y, m - 1, d).getDay();
+    return {
+      id: autoTrainingId(iso),
       label: 'Entreno',
       type: 'training',
-      date: d.getDate(),
-      month: autoMonthAbbr[d.getMonth()],
+      date: d,
+      month: autoMonthAbbr[m - 1],
       iso,
-      when: `${weekdayFullLabel(dow)} ${formatShortDate(iso)} · CEM Mar Bella · 20:30 - 22:00h`,
-      place: 'CEM Mar Bella',
-      placeMapsUrl: buildMapsSearchUrl('CEM Mar Bella, Av. del Litoral, Barcelona'),
+      when: `${weekdayFullLabel(dow)} ${formatShortDate(iso)} · ${SEASON.place} · ${SEASON.startTime.replace('h', '')} - ${SEASON.endTime}`,
+      place: SEASON.place,
+      placeMapsUrl: buildMapsSearchUrl(SEASON.mapsQuery),
       isHome: true,
-      meetTime: '20:15h',
-      startTime: '20:30h',
-      endTime: '22:00h',
+      meetTime: SEASON.meetTime,
+      startTime: SEASON.startTime,
+      endTime: SEASON.endTime,
       attendance: pendingForEveryone(),
       comments: {},
-    });
-  }
-  return events;
+    };
+  });
 }
 
 // Al arrancar (src/main.js): los entrenos de la temporada y el partido fijo.

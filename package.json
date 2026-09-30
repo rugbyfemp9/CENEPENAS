@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:functions": "npx -y deno test --no-lock supabase/functions"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
