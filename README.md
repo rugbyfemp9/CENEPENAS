@@ -89,9 +89,10 @@ node scripts/compare-snapshots.mjs .snapshots/antes .snapshots/despues
 
 ## Recordatorios de asistencia
 
-Cada 15 minutos, `pg_cron` (en Supabase) llama a la función
+Una vez al día, a las 18:30 UTC (las 20:30 de Madrid en verano y las 19:30 en
+invierno), `pg_cron` (en Supabase) llama a la función
 `supabase/functions/training-reminders`. La función busca los entrenos y partidos que
-empiezan en las próximas 24 h y manda una notificación push, en catalán, a cada
+empiezan en las próximas 25 h y manda una notificación push, en catalán, a cada
 jugadora (roles `jugadora` y `Capitana`) que tiene las notificaciones activadas y aún
 no ha dicho ni que sí ni que no. Cada una recibe un solo aviso por evento: queda
 apuntado en la tabla `att_reminders_sent`. Al tocar el aviso se abre la app en

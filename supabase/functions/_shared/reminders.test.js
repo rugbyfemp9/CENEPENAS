@@ -1,5 +1,6 @@
 // deno test supabase/functions   (npm run test:functions)
 import { assert, assertEquals } from 'jsr:@std/assert@1';
+import { autoTrainingDates } from './season.js';
 import { fcmMessage, madridInstant, parseTime, pickRecipients, reminderText, remindableEvents } from './reminders.js';
 
 const at = (isoUtc) => Date.parse(isoUtc);
@@ -22,19 +23,49 @@ Deno.test('madridInstant follows summer and winter time', () => {
   assertEquals(madridInstant('2027-03-28', '20:30'), at('2027-03-28T18:30:00Z')); // back to summer
 });
 
-Deno.test('an automatic training enters the window exactly 24 h before it starts', () => {
+Deno.test('an automatic training enters the window 25 h before it starts', () => {
   const start = madridInstant('2026-10-05', '20:30'); // Monday
-  assertEquals(ids(remindableEvents([], start - 24 * 3600e3 - 60e3)), []);
-  assertEquals(ids(remindableEvents([], start - 24 * 3600e3)), ['auto-2026-10-05']);
+  const H = 3600e3;
+  assertEquals(ids(remindableEvents([], start - 25 * H - 60e3)), []);
+  assertEquals(ids(remindableEvents([], start - 25 * H)), ['auto-2026-10-05']);
   assertEquals(ids(remindableEvents([], start - 60e3)), ['auto-2026-10-05']);
   assertEquals(ids(remindableEvents([], start)), []); // already started
 });
 
-Deno.test('the window works across the change to winter time', () => {
-  // Monday 26 Oct 20:30 CET, the day after the clocks go back (Sunday 25 Oct lasts 25 h)
-  const start = madridInstant('2026-10-26', '20:30');
-  assertEquals(ids(remindableEvents([], start - 23.9 * 3600e3)), ['auto-2026-10-26']);
-  assertEquals(ids(remindableEvents([], start - 24.1 * 3600e3)), []);
+// The real schedule: pg_cron at 18:30 UTC every day ('30 18 * * *').
+function dailyRuns(fromIso, toIso) {
+  const runs = [];
+  for (let t = Date.parse(fromIso + 'T18:30:00Z'); t <= Date.parse(toIso + 'T18:30:00Z'); t += 24 * 3600e3) runs.push(t);
+  return runs;
+}
+
+Deno.test('with one run a day, every training of the season gets one reminder the evening before', () => {
+  const remindedAt = new Map(); // event id → run that reminded it
+  for (const run of dailyRuns('2026-08-31', '2027-05-31')) {
+    for (const ev of remindableEvents([], run)) if (!remindedAt.has(ev.id)) remindedAt.set(ev.id, { run, ev });
+  }
+  const trainings = autoTrainingDates();
+  assertEquals(remindedAt.size, trainings.length);
+  for (const iso of trainings) {
+    const { run, ev } = remindedAt.get('auto-' + iso);
+    const hoursBefore = (ev.startsAt - run) / 3600e3;
+    // 24 h in summer (run at 20:30 Madrid), 25 h in winter (run at 19:30 Madrid)
+    assert(hoursBefore === 24 || hoursBefore === 25, `${iso}: reminded ${hoursBefore} h before`);
+    assertEquals(reminderText(ev, run).title, 'Entreno demà a les 20:30');
+  }
+});
+
+Deno.test('with one run a day, a match at any time of day is reminded once, up to 25 h before', () => {
+  const rows = ['09:00h', '11:30h', '17:30h', '20:00h', '21:00h', '23:30h'].map((time, i) => (
+    { id: `ce-${i}`, type: 'match', label: 'Partit', iso: '2026-11-07', start_time: time, meet_time: '' }
+  ));
+  const reminded = new Map();
+  for (const run of dailyRuns('2026-11-04', '2026-11-08')) {
+    for (const ev of remindableEvents(rows, run)) if (ev.type === 'match' && !reminded.has(ev.id)) reminded.set(ev.id, (ev.startsAt - run) / 3600e3);
+  }
+  // Saturday 7 Nov is winter time: runs at 19:30 Madrid. Up to 20:00 the Friday run
+  // catches it; 21:00 and 23:30 are more than 25 h after it, so Saturday's run does.
+  assertEquals([...reminded.values()], [13.5, 16, 22, 24.5, 1.5, 4]);
 });
 
 Deno.test('holidays have no training, so nothing to remind', () => {

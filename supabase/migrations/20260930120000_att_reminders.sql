@@ -19,11 +19,12 @@ alter table public.att_reminders_sent enable row level security;
 create extension if not exists pg_cron;
 create extension if not exists pg_net with schema extensions;
 
--- Cada 15 minutos. La función avisa de lo que empieza en las próximas 24 h, así que cada
--- aviso sale entre 24 h y 23 h 45 min antes (o en cuanto se crea el evento, si es más tarde).
+-- Una vez al día, a las 18:30 UTC (pg_cron va en UTC): las 20:30 de Madrid en verano y
+-- las 19:30 en invierno, la hora de los entrenos. La función avisa de lo que empieza en
+-- las próximas 25 h, así que el entreno del día siguiente recibe el aviso ~24 h antes.
 select cron.schedule(
   'att-reminders',
-  '*/15 * * * *',
+  '30 18 * * *',
   $$
   select net.http_post(
     url := (select decrypted_secret from vault.decrypted_secrets where name = 'reminders_url'),

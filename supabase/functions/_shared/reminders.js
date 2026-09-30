@@ -1,14 +1,20 @@
 // ---- Recordatorios de asistencia: qué se avisa, a quién y con qué texto ----
 // Lógica pura (sin red ni base de datos) de supabase/functions/training-reminders, para
 // poder probarla sola. Cada vez que se ejecuta la función:
-//   1. remindableEvents(): entrenos y partidos que empiezan en las próximas 24 h;
+//   1. remindableEvents(): entrenos y partidos que empiezan en las próximas 25 h;
 //   2. pickRecipients(): jugadoras con notificaciones activadas que aún no han dicho ni
 //      que sí ni que no, y a las que todavía no se ha avisado de ese evento;
 //   3. reminderText() / fcmMessage(): el aviso, siempre en catalán.
 import { autoTrainingDates, autoTrainingId, SEASON } from './season.js';
 
 export const TIME_ZONE = 'Europe/Madrid';
-export const REMIND_WITHIN_MS = 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// La función se ejecuta una vez al día, a las 18:30 UTC: las 20:30 de Madrid en verano
+// y las 19:30 en invierno (pg_cron va en UTC y no sigue el cambio de hora). Mira 25 h
+// hacia delante y no 24: en invierno el entreno de las 20:30 del día siguiente está a
+// 25 h. Así cada evento recibe un solo aviso, casi siempre ~24 h antes.
+export const REMIND_WITHIN_MS = 25 * 60 * 60 * 1000;
 
 // Solo se avisa a las jugadoras (Capitana incluida), nunca al staff.
 export const PLAYER_ROLES = ['jugadora', 'Capitana'];
@@ -57,7 +63,7 @@ export function madridDate(ms) {
 // id, type, label, iso, start_time, meet_time). Una fila con el mismo id que un entreno
 // automático lo sustituye (es ese entreno editado), igual que en
 // loadSharedEventsFromStorage() de la app. Devuelve los entrenos y partidos que empiezan
-// en (ahora, ahora + 24 h], con su instante de inicio en startsAt.
+// en (ahora, ahora + 25 h], con su instante de inicio en startsAt.
 export function remindableEvents(storedRows, nowMs) {
   const byId = new Map();
   for (const iso of autoTrainingDates()) {
@@ -115,7 +121,7 @@ const WEEKDAYS_CA = ['diumenge', 'dilluns', 'dimarts', 'dimecres', 'dijous', 'di
 function dayWord(startsAt, nowMs) {
   const eventDay = madridDate(startsAt);
   if (eventDay === madridDate(nowMs)) return 'avui';
-  if (eventDay === madridDate(nowMs + REMIND_WITHIN_MS)) return 'demà';
+  if (eventDay === madridDate(nowMs + DAY_MS)) return 'demà';
   const [y, m, d] = eventDay.split('-').map(Number);
   return WEEKDAYS_CA[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
 }

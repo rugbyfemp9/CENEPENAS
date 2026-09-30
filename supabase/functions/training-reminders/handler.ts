@@ -1,6 +1,7 @@
-// ---- Recordatorios de asistencia (la ejecuta pg_cron cada 15 minutos) ----
+// ---- Recordatorios de asistencia (la ejecuta pg_cron una vez al día) ----
 // Avisa por notificación push a cada jugadora que aún no ha respondido (ni sí ni no) a
-// un entreno o partido que empieza en las próximas 24 h. Cada jugadora recibe un solo
+// un entreno o partido que empieza en las próximas 25 h (ver REMIND_WITHIN_MS en
+// ../_shared/reminders.js). Cada jugadora recibe un solo
 // aviso por evento: se apunta en att_reminders_sent. Qué se avisa y a quién está en
 // ../_shared/reminders.js; aquí solo se lee Supabase y se manda a Firebase.
 //
@@ -60,7 +61,8 @@ export async function handle(req: Request, env: Env = Deno.env, nowMs = Date.now
         else if (result.unregistered) deadTokens.push(device.token);
         else failures.push(`${event.id} → ${userId}: ${result.error}`);
       }
-      // Si no ha llegado a ningún dispositivo se vuelve a intentar en la próxima ejecución.
+      // Si no ha llegado a ningún dispositivo no se apunta: se vuelve a intentar mañana si
+      // el evento aún no ha empezado.
       if (delivered) reminded.push({ event_id: event.id, user_id: userId });
     }
 

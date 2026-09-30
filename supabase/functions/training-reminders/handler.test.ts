@@ -148,14 +148,14 @@ Deno.test('reminds the players who have not answered, once', async () => {
   assertEquals(db.att_reminders_sent.map((r) => r.user_id), ['marta', 'aina']);
   assert(!db.push_subscriptions.some((s) => s.fcm_token === 'laia-old-phone'));
 
-  // Fifteen minutes later (next cron run): nobody is reminded again, and Google isn't even asked.
+  // Running again (e.g. by hand from the SQL editor): nobody is reminded twice, and Google isn't even asked.
   const second = await run(db);
   assertEquals(second.body, { events: 1, reminded: 0 });
   assertEquals(second.sent.length, 0);
   assertEquals(second.tokenRequests(), 0);
 });
 
-Deno.test('no events in the next 24 h: nothing else is read', async () => {
+Deno.test('no events in the next 25 h: nothing else is read', async () => {
   const db = seed();
   db.att_events = [];
   // Saturday morning: the next training is Monday
