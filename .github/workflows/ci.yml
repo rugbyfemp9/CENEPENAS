@@ -29,5 +29,9 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - run: deno check --no-lock supabase/functions/training-reminders/index.ts
-      - run: deno test --no-lock supabase/functions
+      # Desde supabase/functions, para que Deno use su deno.json y no el package.json de la
+      # web (que le haría buscar supabase-js en un node_modules que este job no instala).
+      - run: deno check --no-lock training-reminders/index.ts
+        working-directory: supabase/functions
+      - run: deno test --no-lock
+        working-directory: supabase/functions
