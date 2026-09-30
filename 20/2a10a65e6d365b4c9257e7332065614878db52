@@ -1,0 +1,30 @@
+README.md
+  s_2b16505ded1b04::t_6bb27c795b4c2c 92-93,95
+supabase/functions/training-reminders/handler.ts
+  s_2b16505ded1b04::t_6bb27c795b4c2c 1,3-4,64-65
+supabase/functions/_shared/reminders.js
+  s_2b16505ded1b04::t_6bb27c795b4c2c 4,11-17,66,124
+supabase/functions/_shared/reminders.test.js
+  s_2b16505ded1b04::t_05e88ce42deb21 3,26,28-30,35-65
+  s_2b16505ded1b04::t_d83b11b5187503 66-68
+supabase/migrations/20260930120000_att_reminders.sql
+  s_2b16505ded1b04::t_6bb27c795b4c2c 22-24,27
+supabase/functions/training-reminders/handler.test.ts
+  s_2b16505ded1b04::t_d83b11b5187503 151,158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "202a10a65e6d365b4c9257e7332065614878db52",
+  "prompts": {},
+  "sessions": {
+    "s_2b16505ded1b04": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "48991a2b-6ab6-4706-83a7-f043b74bd704",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
