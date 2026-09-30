@@ -1,0 +1,25 @@
+supabase/functions/training-reminders/handler.test.ts
+  s_2b16505ded1b04::t_c2c511aa5063d9 108,112,119,158-168
+supabase/functions/_shared/reminders.js
+  s_2b16505ded1b04::t_4c2a2a93053651 16-17,67-68,85
+README.md
+  ai_agent 132-137
+supabase/functions/training-reminders/handler.ts
+  s_2b16505ded1b04::t_4c2a2a93053651 12-13,16,37-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7cc58f5a26044297754e730752e8ea06ba7f69b0",
+  "prompts": {},
+  "sessions": {
+    "s_2b16505ded1b04": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "48991a2b-6ab6-4706-83a7-f043b74bd704",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
