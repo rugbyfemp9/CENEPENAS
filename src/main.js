@@ -21,7 +21,7 @@ import '../css/fantasy.css';
 import '../css/auth.css';
 
 import { mountAt } from './lib/mount.js';
-import { installPush } from './lib/push.js';
+import { installPush } from './lib/push.svelte.js';
 import { registerServiceWorker } from './lib/sw-register.js';
 import { refreshSession } from './lib/session.svelte.js';
 import { supabase } from './lib/supabase.js';

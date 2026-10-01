@@ -4,6 +4,7 @@
   import { t } from '../lib/i18n.svelte.js';
   import { nav, setSection } from './navigation.svelte.js';
   import { visibility } from './visibility.svelte.js';
+  import PushBanner from './PushBanner.svelte';
 </script>
 
 <section class="section" class:active={nav.current === 'inicio'} id="sec-inicio">
@@ -14,6 +15,7 @@
   <!-- Recordatorio de valoración Wellness/RPE del entreno más reciente ya finalizado
        y todavía sin valorar. Solo jugadoras: lo pinta Svelte (src/features/wellness/WellnessReminderBanner.svelte). -->
   <div data-mount="wellness-reminder-banner"></div>
+  <PushBanner />
   <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
   <div class="league-banner" id="league-banner" onclick={() => setSection('liga')} style="cursor:pointer;">
     <div class="lg-info">
