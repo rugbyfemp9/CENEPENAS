@@ -81,6 +81,23 @@ test('opening the app at #asistencia (a tapped notification) goes straight to As
   expect(new URL(page.url()).hash).toBe('');
 });
 
+// With the app already open, sw.js navigates the window to ./#asistencia: only the
+// hash changes, so the page doesn't reload (and the "back" handler gets a popstate).
+test('a tapped notification with the app already open goes to Asistencia', async ({ page }) => {
+  await setupApp(page, { user: USERS.player });
+  await openApp(page);
+  await page.evaluate(() => window.setSection('multas'));
+
+  await page.evaluate(() => { location.hash = 'asistencia'; });
+
+  await expect(page.locator('#sec-asistencia')).toHaveClass(/active/);
+  expect(new URL(page.url()).hash).toBe('');
+
+  // "Back" returns to where you were before the notification
+  await page.goBack();
+  await expect(page.locator('#sec-multas')).toHaveClass(/active/);
+});
+
 test.describe('service worker', () => {
   test.use({ serviceWorkers: 'allow' });
 

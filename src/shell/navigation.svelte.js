@@ -11,6 +11,7 @@
 import { flushSync } from 'svelte';
 import { bottomTabOf, sidebarTabOf } from './sections.js';
 import { canViewWellnessStaff, STAFF_HIDDEN_SECTIONS } from '../lib/permissions.js';
+import { auth } from '../lib/session.svelte.js';
 import { showSeasons, loadGalleryData } from '../features/galeria/galeria.svelte.js';
 import { refreshFantasyMatchesAndUI, checkInicioSharedLineupBanner } from '../features/fantasy/fantasy.svelte.js';
 import { refreshSharedEventsAndUI } from '../features/asistencia/asistencia.svelte.js';
@@ -181,6 +182,10 @@ export function installHistory() {
   //  1) Si hay algún modal abierto, el "atrás" solo lo cierra (no cambia de sección).
   //  2) Si no hay modal abierto, se vuelve a la sección anterior del historial.
   window.addEventListener('popstate', function (event) {
+    // Con la app ya abierta, tocar una notificación solo le cambia el # (ver
+    // openSectionFromHash): no es un "atrás", así que no se vuelve a Inicio.
+    if (openSectionFromHash()) return;
+
     const openModal = document.querySelector('.modal-overlay.active');
     if (openModal) {
       openModal.classList.remove('active');
@@ -196,6 +201,25 @@ export function installHistory() {
     const id = (event.state && event.state.section) || 'inicio';
     setSection(id, { fromPopState: true });
   });
+}
+
+// Las notificaciones de "aún no has respondido" abren la app en ./#asistencia (sw.js,
+// o el listener de la app nativa en src/lib/push.svelte.js). Si la app estaba cerrada,
+// lo mira onAuthenticated() al iniciar sesión; si ya estaba abierta, solo cambia el #
+// (sin recargar) y llega aquí por el popstate. Sin sesión todavía se deja el # para
+// onAuthenticated(). Devuelve true si ha entrado en Asistencia.
+export function openSectionFromHash() {
+  if (location.hash !== '#asistencia' || !auth.userId) return false;
+  // Quitamos el # de la entrada que ha creado la notificación, que pasa a ser la de
+  // la sección en la que estabas (para que "atrás" vuelva ahí).
+  history.replaceState({ section: nav.current || 'inicio' }, '', location.pathname + location.search);
+  const openModal = document.querySelector('.modal-overlay.active');
+  if (openModal) {
+    openModal.classList.remove('active');
+    openModal.dispatchEvent(new Event('modal:close'));
+  }
+  setSection('asistencia');
+  return true;
 }
 
 // Mientras cualquier <select> de la app tiene el foco (su panel puede estar desplegado),

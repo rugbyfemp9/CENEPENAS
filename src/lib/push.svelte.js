@@ -56,6 +56,14 @@ async function initNativePush() {
       console.error('Error al registrar dispositivo en FCM:', error);
     });
 
+    // Al tocar la notificación: ponemos el # de su url (./#asistencia) y la app entra
+    // en esa sección (openSectionFromHash, src/shell/navigation.svelte.js), ya esté
+    // abierta o se acabe de abrir y aún no haya iniciado sesión.
+    PushNotifications.addListener('pushNotificationActionPerformed', ({ notification }) => {
+      const url = notification?.data?.url;
+      if (url) location.hash = new URL(url, location.href).hash;
+    });
+
     let permStatus = await PushNotifications.checkPermissions();
 
     if (permStatus.receive === 'prompt' || permStatus.receive === 'prompt-with-rationale') {
