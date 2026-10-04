@@ -9,7 +9,7 @@ export const titles = {
   vestuario: ['Vestuario', 'Multas, tercer tiempo, comisiones y perfil'],
   multas: ['Multas', 'Gestión de sanciones internas del equipo'],
   tricount: ['Tricount', 'Gastos compartidos entre el equipo'],
-  liga: ['Liga', 'Clasificación y resultados de la Divisió d\'Honor Catalana AON'],
+  liga: ['Liga', 'Clasificación y resultados de la Divisió d\'Honor Catalana Femenina'],
   tercer: ['Tercer tiempo', 'Elige un partido para ver su tercer tiempo'],
   'tercer-historial': ['Pasados', 'Tercers tiempos ya celebrados'],
   'tercer-detalle': ['Tercer tiempo', 'Organización del después de partido'],

@@ -598,7 +598,7 @@ export const ca = {
   'galeria.coverLabel': 'Foto de portada (URL)',
   'galeria.albumUrlLabel': "Enllaç de l'àlbum de Google Photos",
 
-  'liga.embedTitle': "Classificació de la Divisió d'Honor Catalana AON",
+  'liga.embedTitle': "Classificació de la Divisió d'Honor Catalana Femenina",
   'liga.sourceNotePrefix': 'Dades en directe de',
   'liga.sourceNoteSuffix': ". Si no es veu, obre l'enllaç.",
 

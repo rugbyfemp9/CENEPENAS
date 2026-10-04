@@ -13,7 +13,7 @@
 <div class="back-link" onclick={() => setSection('vestuario')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('fines.backLabel')}</span></div>
 <div class="section-head">
   <h2>{t('nav.liga')}</h2>
-  <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Divisió d'Honor Catalana AON</span>
+  <span style="font-size:12px; color:var(--text-muted); font-weight:600;">Divisió d'Honor Catalana Femenina</span>
 </div>
 
 <!-- El widget de matchready trae sus propias pestañas (Calendari / Classificació /
