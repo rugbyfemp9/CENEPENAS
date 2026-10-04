@@ -1,0 +1,36 @@
+src/features/asistencia/attendance.svelte.js
+  s_39eabaa4541489::t_2aa756fcb80fb9 31
+  s_39eabaa4541489::t_79735c8a12e4a3 14,32
+css/components.css
+  s_39eabaa4541489::t_3154ff05df435c 7,12
+  s_39eabaa4541489::t_3ea3956fd29047 15-16
+src/lib/i18n/es.js
+  s_39eabaa4541489::t_3ea3956fd29047 170
+src/features/wellness/WellnessReminderBanner.svelte
+  s_39eabaa4541489::t_3ea3956fd29047 2,5,14,16
+  s_39eabaa4541489::t_2aa756fcb80fb9 3
+src/lib/i18n/ca.js
+  s_39eabaa4541489::t_5dc8d0bc47f549 169
+tests/e2e/wellness.spec.js
+  s_39eabaa4541489::t_82519ebb315896 15,91-95,331,334-335,337-339,348-362,376-377
+  s_39eabaa4541489::t_2aa756fcb80fb9 16,204-205,330,332-333,336,340-347
+src/features/wellness/wellness.svelte.js
+  s_39eabaa4541489::t_2aa756fcb80fb9 156-159,185,220-221
+  s_39eabaa4541489::t_79735c8a12e4a3 19,164-165,171,209,219,222-225
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d3e7e33466a2dcece6b3e4a66787950825ebf0ad",
+  "prompts": {},
+  "sessions": {
+    "s_39eabaa4541489": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "899220ed-8678-4e83-8e04-e14b307b479e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
