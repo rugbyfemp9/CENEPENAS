@@ -1,0 +1,26 @@
+tests/e2e/push.spec.js
+  s_d49c974b24c147::t_2d53ee65cdfd5a 84-100
+src/shell/auth.svelte.js
+  s_d49c974b24c147::t_c960210c7460c0 252
+  s_d49c974b24c147::t_e527ea0a0a8a63 9
+src/shell/navigation.svelte.js
+  s_d49c974b24c147::t_c960210c7460c0 14,185-188,206-222
+src/lib/push.svelte.js
+  s_d49c974b24c147::t_a10b32ca531b62 59-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4a5b8bde71f4eef9100fa564904ad40244cb0f6b",
+  "prompts": {},
+  "sessions": {
+    "s_d49c974b24c147": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "57e3b5f8-9388-4814-8c81-3db4afb8d114",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
