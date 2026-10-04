@@ -1,0 +1,31 @@
+src/shell/sections.js
+  s_39eabaa4541489::t_bac7fe8c6b1a9c 12
+src/features/liga/Liga.svelte
+  s_39eabaa4541489::t_bac7fe8c6b1a9c 16
+src/lib/i18n/ca.js
+  s_39eabaa4541489::t_bac7fe8c6b1a9c 601
+src/lib/i18n/es.js
+  s_39eabaa4541489::t_bac7fe8c6b1a9c 602
+src/features/liga/liga.js
+  s_39eabaa4541489::t_bac7fe8c6b1a9c 1
+  s_39eabaa4541489::t_224d518b0d3e54 5-9
+tests/e2e/liga.spec.js
+  s_39eabaa4541489::t_224d518b0d3e54 6,63
+  s_39eabaa4541489::t_22d54a4d0057f7 32,47,89,93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "47df10a7cc3105e31e38aa670f6a110ff5215cf5",
+  "prompts": {},
+  "sessions": {
+    "s_39eabaa4541489": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "899220ed-8678-4e83-8e04-e14b307b479e",
+        "model": "unknown"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
