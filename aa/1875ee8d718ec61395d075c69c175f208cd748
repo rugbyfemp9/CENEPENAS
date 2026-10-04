@@ -1,0 +1,29 @@
+src/features/asistencia/events.js
+  s_39eabaa4541489::t_e2e46d1c2cbc32 83-84
+src/main.js
+  s_39eabaa4541489::t_fb5cb0b1015e8e 84-85
+tests/e2e/fantasy.spec.js
+  s_39eabaa4541489::t_35e418616a95e3 108,112,806
+src/features/fantasy/fantasy.svelte.js
+  s_39eabaa4541489::t_18c90fdf1ec9ec 20-21
+  s_39eabaa4541489::t_c8a6b2b0d79167 139,142,146-147,149
+  s_39eabaa4541489::t_d0179fd33ebe77 128-131
+tests/e2e/fixtures/seed.js
+  s_39eabaa4541489::t_fb5cb0b1015e8e 8,57,174-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "aa1875ee8d718ec61395d075c69c175f208cd748",
+  "prompts": {},
+  "sessions": {
+    "s_39eabaa4541489": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "899220ed-8678-4e83-8e04-e14b307b479e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
