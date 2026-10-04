@@ -11,6 +11,7 @@ import { attEvents, attSelection } from './events.js';
 import { renderEventList, renderEventDetail } from './asistencia.svelte.js';
 import { renderNextMatchBanner } from '../partidos/partidos.svelte.js';
 import { renderProfile } from '../perfil/perfil.svelte.js';
+import { renderWellnessReminderBanner } from '../wellness/wellness.svelte.js';
 
 export function setMyRsvp(eventId, status, btnEl) {
   const ev = attEvents.find((e) => e.id === eventId);
@@ -27,6 +28,8 @@ export function setMyRsvp(eventId, status, btnEl) {
   if (attSelection.currentEventId === eventId) renderEventDetail();
   renderNextMatchBanner();
   renderProfile();
+  // El recordatorio de Wellness se salta los eventos con "No asistiré".
+  renderWellnessReminderBanner();
 
   // Guarda mi respuesta de forma compartida para que la vean todas las jugadoras
   saveMyAttendanceToStorage(eventId, ev.attendance.me, ev.comments.me);

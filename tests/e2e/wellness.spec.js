@@ -12,7 +12,8 @@
 //                    derecho"), Carla 5 (gt8, mood 5), Paula 6 (7-8, mood 3)
 //   auto-2026-09-21: Juls 6 (7-8, mood 4), Rovi 8 (lt6, mood 3, "Sobrecarga en isquios")
 //   match 2026-09-19 (17:30-19:00 = 90 min): Juls 9, Rovi 10 ("Golpe en el hombro")
-// The player (Juls) has not rated 09-23, so the Inicio banner points there.
+// The player (Juls) has not rated 09-23, so the Inicio banner points there. The banner
+// skips sessions the player said "No asistiré" to; unanswered ones still count.
 import { test, expect } from '@playwright/test';
 import { setupApp, openApp, goToSection, USERS, relevantErrors } from './support/app.js';
 import { seed, IDS, EVENT_IDS } from './fixtures/seed.js';
@@ -87,7 +88,11 @@ test('Inicio reminder banner opens the rating modal of the latest unrated sessio
   const { backend, errors } = await openAsPlayer(page);
   await expect(banner(page)).toBeVisible();
   await expect(banner(page).locator('b')).toHaveText('¡Tienes algo pendiente de valorar!');
-  await expect(banner(page).locator('span')).toHaveText('Valora la carga del último entreno o partido');
+  await expect(banner(page).locator('.txt span')).toHaveText([
+    'Valora la carga del último entreno o partido',
+    'Entreno · Miércoles 23/09/26 · CEM Mar Bella · 20:30 - 22:00h',
+  ]);
+  await expect(banner(page).getByRole('button')).toHaveText('No he venido');
 
   await banner(page).click();
   await expect(modal(page)).toHaveClass(/active/);
@@ -196,9 +201,8 @@ test('saving upserts one attendance_wellness row and the banner moves to the nex
   });
   expect(updated_at).toBe('2026-09-25T08:00:00.000Z');
 
-  // 09-21 and the 09-19 match are already rated, so the banner now points to Fri 09-18.
-  // NOTE: the banner looks at every ended training/match of the season, so a player
-  // who never rated September's early sessions always keeps a pending reminder.
+  // 09-21 and the 09-19 match are already rated, so the banner now points to Fri 09-18
+  // (not answered, so it still counts).
   await expect(banner(page)).toBeVisible();
   await banner(page).click();
   await expect(page.locator('#wellness-modal-sub')).toHaveText('Entreno · Viernes 18/09/26 · CEM Mar Bella · 20:30 - 22:00h');
@@ -323,6 +327,39 @@ test('no reminder banner when the player has rated every ended training and matc
   expect(relevantErrors(errors)).toEqual([]);
 });
 
+test('the reminder skips sessions answered "No asistiré" but not unanswered ones', async ({ page }) => {
+  const s = clone(seed);
+  // 09-23: "No asistiré" → skipped. 09-21 and the 09-19 match are rated, so the banner
+  // falls through to Fri 09-18, which she never answered.
+  s.att_attendance.find((r) => r.event_id === EVENT_IDS.trWed && r.user_id === IDS.player).status = 'no';
+  const { errors } = await openAsPlayer(page, { seed: s });
+  await expect(banner(page).locator('.txt .ev')).toHaveText('Entreno · Viernes 18/09/26 · CEM Mar Bella · 20:30 - 22:00h');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('"No he venido" changes the answer to "No asistiré", asks for a reason and moves the banner on', async ({ page }) => {
+  const s = clone(seed);
+  // Every other ended session is rated, so after 09-23 there is nothing left to remind.
+  for (const iso of ['2026-09-02', '2026-09-04', '2026-09-07', '2026-09-09', '2026-09-14', '2026-09-16', '2026-09-18']) {
+    s.attendance_wellness.push({ event_id: `auto-${iso}`, user_id: IDS.player, rpe: 4, sleep_hours: '7-8', mood: 3, has_discomfort: false, discomfort_detail: '', updated_at: '2026-09-24T10:00:00Z' });
+  }
+  s.attendance_wellness.push({ event_id: EVENT_IDS.matchPast1, user_id: IDS.player, rpe: 4, sleep_hours: '7-8', mood: 3, has_discomfort: false, discomfort_detail: '', updated_at: '2026-09-24T10:00:00Z' });
+  const { backend, errors } = await openAsPlayer(page, { seed: s });
+  await expect(banner(page)).toBeVisible();
+  await banner(page).getByRole('button', { name: 'No he venido' }).click();
+
+  // The rating modal does not open; the usual "No asistiré" justification modal does.
+  await expect(modal(page)).not.toHaveClass(/active/);
+  await expect(page.locator('#comment-modal')).toHaveClass(/active/);
+  await expect(banner(page)).toBeHidden();
+
+  const writes = writesTo(backend, 'att_attendance');
+  expect(writes).toHaveLength(1);
+  expect(writes[0].body[0]).toMatchObject({ event_id: EVENT_IDS.trWed, user_id: IDS.player, status: 'no' });
+  expect(writesTo(backend, 'attendance_wellness')).toEqual([]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
 test('staff roles never get the reminder banner nor the player wellness button', async ({ page }) => {
   const { errors } = await setupApp(page, { user: JORDI });
   await openAppReady(page);
@@ -336,7 +373,8 @@ test('reminder and rating modal in Catalan', async ({ page }) => {
   const { errors } = await openAsPlayer(page);
   await page.evaluate(() => window.setLang('ca'));
   await expect(banner(page).locator('b')).toHaveText('Tens alguna cosa pendent de valorar!');
-  await expect(banner(page).locator('span')).toHaveText("Valora la càrrega de l'últim entrenament o partit");
+  await expect(banner(page).locator('.txt span').first()).toHaveText("Valora la càrrega de l'últim entrenament o partit");
+  await expect(banner(page).getByRole('button')).toHaveText('No he vingut');
   await banner(page).click();
   await expect(modal(page).locator('.wellness-phase-sleep .wellness-field-label')).toHaveText('Hores de son');
   // NOTE: the middle sleep option is "7-8h" in Catalan but "6-8h" in Spanish (value '7-8').

@@ -16,6 +16,7 @@ import { canUseWellness } from '../../lib/permissions.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso, attEventType, eventWhenDisplay, hasEventEnded } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
+import { setMyRsvp } from '../asistencia/attendance.svelte.js';
 
 // Cada valor del 1 al 10 tiene su propio emoji, color y texto descriptivo, tal como
 // los ha definido el club (algunos "emoji" son directamente el círculo de color).
@@ -152,17 +153,22 @@ export async function saveWellnessModal() {
 
 // ---- Banner "Entreno pendiente de valorar" (Inicio) ----
 // Recuerda a las jugadoras que valoren el Wellness/RPE del entreno finalizado más
-// reciente que todavía no tienen valorado. Solo visible para el rol jugadora (misma
-// condición que el resto del módulo, ver canUseWellness()).
+// reciente que todavía no tienen valorado. Se saltan los eventos a los que dijo "No
+// asistiré" (no hay nada que valorar); los que no contestó sí cuentan, porque pudo
+// venir igualmente. Solo visible para el rol jugadora (misma condición que el resto
+// del módulo, ver canUseWellness()).
 export const reminder = $state({
   // null = todavía sin calcular (manda el CSS: oculto); luego 'flex' o 'none'
   display: null,
   eventId: null,
+  // "Entreno · Lunes 28/09/26 · ..." del evento pendiente (para saber cuál es)
+  sub: '',
 });
 
 function hideReminder() {
   reminder.display = 'none';
   reminder.eventId = null;
+  reminder.sub = '';
 }
 
 export async function renderWellnessReminderBanner() {
@@ -176,7 +182,7 @@ export async function renderWellnessReminderBanner() {
   // evento finalizado de una jugadora era un partido, el banner nunca lo encontraba
   // aunque tuviera una valoración pendiente de verdad.
   const pastTrainings = attEvents
-    .filter((ev) => attEventType(ev) !== 'meeting' && hasEventEnded(ev, now))
+    .filter((ev) => attEventType(ev) !== 'meeting' && ev.attendance?.me !== 'no' && hasEventEnded(ev, now))
     .sort((a, b) => {
       const isoCmp = attEventIso(b).localeCompare(attEventIso(a));
       if (isoCmp !== 0) return isoCmp;
@@ -200,6 +206,7 @@ export async function renderWellnessReminderBanner() {
   if (!pending) { hideReminder(); return; }
 
   reminder.eventId = pending.id;
+  reminder.sub = wellnessSubFor(pending);
   reminder.display = 'flex';
 }
 
@@ -208,4 +215,12 @@ export async function renderWellnessReminderBanner() {
 export function openWellnessReminderBanner() {
   if (!reminder.eventId) return;
   openWellnessModal(reminder.eventId);
+}
+
+// "No he venido": no vino (aunque hubiera dicho "Asistiré" o no hubiera contestado).
+// Se cambia su respuesta a "No asistiré" (igual que desde Asistencia, con su modal de justificación), así la
+// asistencia queda bien y el banner pasa al siguiente evento pendiente, si lo hay.
+export function markReminderEventNotAttended() {
+  if (!reminder.eventId) return;
+  setMyRsvp(reminder.eventId, 'no');
 }

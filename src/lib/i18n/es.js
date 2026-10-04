@@ -167,6 +167,7 @@ export const es = {
 
   'wellnessReminder.title': '¡Tienes algo pendiente de valorar!',
   'wellnessReminder.subtitle': 'Valora la carga del último entreno o partido',
+  'wellnessReminder.notAttended': 'No he venido',
   'pushBanner.title': '¿Te avisamos de los entrenos?',
   'pushBanner.subtitle': 'Activa las notificaciones y te recordaremos confirmar la asistencia',
   'pushBanner.enable': 'Activar',

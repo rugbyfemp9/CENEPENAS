@@ -166,6 +166,7 @@ export const ca = {
 
   'wellnessReminder.title': 'Tens alguna cosa pendent de valorar!',
   'wellnessReminder.subtitle': "Valora la càrrega de l'últim entrenament o partit",
+  'wellnessReminder.notAttended': 'No he vingut',
   'pushBanner.title': "T'avisem dels entrenos?",
   'pushBanner.subtitle': "Activa les notificacions i et recordarem confirmar l'assistència",
   'pushBanner.enable': 'Activa',
