@@ -103,14 +103,13 @@ test('Fantasy shows the match selector, an empty pitch with 15 + 8 slots and the
   await expect(page.locator('#sec-fantasy label.fantasy-label')).toHaveText('Partido');
   await expect(select(page)).toBeEnabled();
   await expect(select(page).locator('option')).toHaveText([
-    'Próximo partido — Partido vs Santboi (26 Sep)',
     'Partido vs Tarragona (12 Sep)',
     'Partido vs Gòtics (19 Sep)',
+    'Próximo partido — Partido vs Santboi (26 Sep)',
     'Partido vs Cornellà (3 Oct)',
     'Partido vs Badalona (10 Oct)',
   ]);
-  // NOTE: "Próximo partido" is simply the first match in the events list (the
-  // hardcoded ce1), not computed from the dates; past matches are listed too.
+  // Matches are sorted by date (past ones included) and the next one is preselected.
   await expect(select(page)).toHaveValue(EVENT_IDS.matchNext);
   await expect(actions(page).getByRole('button')).toHaveText(['Compartidas', 'Guardar alineación', 'Publicar']);
 
@@ -804,7 +803,7 @@ test('Fantasy and the Inicio banner in Catalan', async ({ page }) => {
   await expect(page.locator('#sec-fantasy .fantasy-side .fantasy-label')).toContainText('Disponibles');
   await expect(page.locator('#fantasy-saved-card .fantasy-label')).toHaveText('Les meves alineacions');
   // The match label comes from the event data and is not translated (only the month is).
-  await expect(select(page).locator('option').first()).toHaveText('Proper partit — Partido vs Santboi (26 Set)');
+  await expect(select(page).locator('option').nth(2)).toHaveText('Proper partit — Partido vs Santboi (26 Set)');
   await expect(bench(page)).toHaveText('No hi ha jugadores disponibles.');
   await expect(savedItems(page).locator('.info span')).toHaveText('4/23 col·locades');
   await expect(savedItems(page).getByTitle('Eliminar')).toBeVisible();

@@ -5,7 +5,7 @@
 //     Mon/Wed/Fri 20:30-22:00 with ids 'auto-YYYY-MM-DD' (2026-09-24 is a holiday).
 //     Relevant ones: auto-2026-09-21 (Mon), auto-2026-09-23 (Wed), auto-2026-09-25
 //     (today, not yet ended at 10:00), auto-2026-09-28 (Mon), auto-2026-09-30 (Wed).
-//   - Hardcoded home match 'ce1' (js/main.js): "Partido vs Santboi", Sat 2026-09-26.
+//   - Home match 'ce1' (stored in att_events): "Partido vs Santboi", Sat 2026-09-26.
 //
 // Column names were taken from the row mappers / select strings / insert+upsert
 // payloads of the app code in public/js (see the comment above each table).
@@ -54,7 +54,7 @@ export const USERS = {
 const EV = {
   matchPast1: 'ce-seed-match-0912', // home, past  (tercer temps index 0)
   matchPast2: 'ce-seed-match-0919', // home, past  (tercer temps index 1) - has acta
-  matchNext:  'ce1',                // hardcoded in main.js, home, tomorrow (index 2)
+  matchNext:  'ce1',                // home, tomorrow (index 2)
   matchAway:  'ce-seed-match-1003', // away, future (not in tercer temps)
   matchHome:  'ce-seed-match-1010', // home, future (index 3)
   meeting:    'ce-seed-meeting-0929',
@@ -170,6 +170,12 @@ export const seed = {
       when_text: 'Sábado 19/09/26 · CEM Mar Bella · 17:30 - 19:00h', place: 'CEM Mar Bella',
       place_maps_url: mapsUrl('CEM Mar Bella, Av. del Litoral, Barcelona'), is_home: true,
       meet_time: '16:30h', start_time: '17:30h', end_time: '19:00h', intensity: null
+    },
+    {
+      id: EV.matchNext, type: 'match', label: 'Partido vs Santboi', date: 26, month: 'Sep', iso: '2026-09-26',
+      when_text: 'Sábado 26/09/26 · CEM Mar Bella · 17:30h', place: 'CEM Mar Bella',
+      place_maps_url: mapsUrl('CEM Mar Bella, Av. del Litoral, Barcelona'), is_home: true,
+      meet_time: '', start_time: '17:30h', end_time: '', intensity: null
     },
     {
       id: EV.meeting, type: 'meeting', label: 'Reunión de equipo', date: 29, month: 'Sep', iso: '2026-09-29',

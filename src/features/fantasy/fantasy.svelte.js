@@ -17,7 +17,8 @@ import { myRosterEntry, roster, rosterById } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
 import { storage } from '../../lib/storage.js';
 import { attEvents } from '../asistencia/events.js';
-import { attEventType, monthAbbrLabel } from '../../lib/dates.js';
+import { attEventIso, attEventType, monthAbbrLabel } from '../../lib/dates.js';
+import { findNextMatch } from '../partidos/partidos.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
 
 // 15 posiciones de rugby con su forma habitual sobre el campo (x/y en %). `labelKey` es
@@ -124,7 +125,10 @@ export async function loadAfterLogin() {
 // para que el desplegable de partidos y el banquillo de disponibles reflejen siempre
 // el roster y los partidos más recientes (que llegan de forma asíncrona desde Supabase).
 export function refreshFantasyMatchesAndUI() {
-  const matches = attEvents.filter((ev) => attEventType(ev) === 'match');
+  const matches = attEvents
+    .filter((ev) => attEventType(ev) === 'match')
+    .sort((a, b) => attEventIso(a).localeCompare(attEventIso(b)));
+  const nextMatchId = findNextMatch()?.id;
 
   if (!matches.length) {
     fantasy.matchOptions = [{ value: '', textKey: 'fantasy.noMatchesYet' }];
@@ -132,16 +136,17 @@ export function refreshFantasyMatchesAndUI() {
     fantasy.selectedMatchId = null;
   } else {
     fantasy.matchSelectDisabled = false;
-    fantasy.matchOptions = matches.map((ev, i) => ({
+    fantasy.matchOptions = matches.map((ev) => ({
       value: ev.id,
       // El prefijo "Próximo partido — " va como clave (se traduce en la plantilla).
-      prefixKey: i === 0 ? 'fantasy.nextMatchPrefix' : null,
+      prefixKey: ev.id === nextMatchId ? 'fantasy.nextMatchPrefix' : null,
       text: `${ev.label} (${ev.date} ${monthAbbrLabel(ev.month)})`,
     }));
     // Si el partido que ya tenías elegido sigue existiendo, se mantiene (para no perder
-    // la alineación que estabas montando); si no, se coge el primero de la lista.
+    // la alineación que estabas montando); si no, se coge el próximo partido (o, si ya
+    // no queda ninguno por jugar, el último de la temporada).
     if (!matches.some((m) => m.id === fantasy.selectedMatchId)) {
-      fantasy.selectedMatchId = matches[0].id;
+      fantasy.selectedMatchId = nextMatchId ?? matches[matches.length - 1].id;
     }
   }
 

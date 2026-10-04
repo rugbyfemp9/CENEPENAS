@@ -80,28 +80,10 @@ function generateAutoTrainings() {
   });
 }
 
-// Al arrancar (src/main.js): los entrenos de la temporada y el partido fijo.
+// Al arrancar (src/main.js): los entrenos de la temporada. Los partidos se crean
+// desde Asistencia y llegan de att_events (loadSharedEventsFromStorage).
 export function initEvents() {
   attEvents.push(...generateAutoTrainings());
-
-  // Partido añadido manualmente: CNPN (casa) vs Santboi, sábado 26/09/2026.
-  attEvents.push({
-    id: 'ce1',
-    type: 'match',
-    label: 'Partido vs Santboi',
-    date: 26,
-    month: 'Sep',
-    iso: '2026-09-26',
-    when: `${weekdayFullLabel(6)} ${formatShortDate('2026-09-26')} · ${HOME_VENUE.display} · 17:30h`,
-    place: HOME_VENUE.display,
-    placeMapsUrl: buildMapsSearchUrl(HOME_VENUE.mapsQuery),
-    isHome: true,
-    meetTime: '',
-    startTime: '17:30h',
-    endTime: '',
-    attendance: pendingForEveryone(),
-    comments: {},
-  });
 }
 
 // ---- Eventos compartidos (Supabase, tabla att_events) ----

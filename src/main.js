@@ -81,8 +81,8 @@ supabase.auth.getSession().then(({ data }) => {
   }
 });
 
-// Asistencia: los entrenos de la temporada y el partido fijo contra Santboi se
-// generan aquí, en el mismo momento que antes, y luego se pinta la lista.
+// Asistencia: los entrenos de la temporada se generan aquí, en el mismo momento
+// que antes, y luego se pinta la lista.
 initEvents();
 
 renderEventList();
