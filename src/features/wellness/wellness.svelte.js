@@ -47,6 +47,8 @@ export const wellnessModal = $state({
   sleep: null, // 'lt6' | '7-8' | 'gt8' | null (todavía sin elegir)
   mood: null, // 1-5 | null (todavía sin elegir)
   discomfortDetail: '',
+  // "No he venido" solo tiene sentido si no ha dicho ya "No asistiré"
+  canMarkNotAttended: false,
 });
 
 export function setWellnessDiscomfort(hasDiscomfort) {
@@ -83,6 +85,7 @@ export async function openWellnessModal(eventId) {
 
   wellnessModal.eventId = eventId;
   wellnessModal.sub = wellnessSubFor(ev);
+  wellnessModal.canMarkNotAttended = ev.attendance?.me !== 'no';
 
   // Valores por defecto mientras se cargan (si ya había una respuesta previa, se
   // sobrescriben en cuanto llega la respuesta de Supabase, más abajo).
@@ -114,6 +117,17 @@ export async function openWellnessModal(eventId) {
 export function closeWellnessModal() {
   wellnessModal.open = false;
   wellnessModal.eventId = null;
+}
+
+// "No he venido": no vino, aunque hubiera dicho "Asistiré" o no hubiera contestado.
+// Se cambia su respuesta a "No asistiré" (igual que desde Asistencia, con su modal de
+// justificación), así la asistencia queda bien y el banner de Inicio pasa al
+// siguiente evento pendiente, si lo hay.
+export function markWellnessEventNotAttended() {
+  const eventId = wellnessModal.eventId;
+  if (!eventId) return;
+  closeWellnessModal();
+  setMyRsvp(eventId, 'no');
 }
 
 export async function saveWellnessModal() {
@@ -215,12 +229,4 @@ export async function renderWellnessReminderBanner() {
 export function openWellnessReminderBanner() {
   if (!reminder.eventId) return;
   openWellnessModal(reminder.eventId);
-}
-
-// "No he venido": no vino (aunque hubiera dicho "Asistiré" o no hubiera contestado).
-// Se cambia su respuesta a "No asistiré" (igual que desde Asistencia, con su modal de justificación), así la
-// asistencia queda bien y el banner pasa al siguiente evento pendiente, si lo hay.
-export function markReminderEventNotAttended() {
-  if (!reminder.eventId) return;
-  setMyRsvp(reminder.eventId, 'no');
 }

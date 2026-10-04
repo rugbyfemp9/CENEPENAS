@@ -5,7 +5,7 @@
   import { t } from '../../lib/i18n.svelte.js';
   import {
     wellnessModal as wm, wellnessRpeLevel, setWellnessSleep, setWellnessMood, setWellnessDiscomfort,
-    closeWellnessModal, saveWellnessModal,
+    closeWellnessModal, saveWellnessModal, markWellnessEventNotAttended,
   } from './wellness.svelte.js';
 
   const level = $derived(wm.shown ? wellnessRpeLevel(wm.rpe) : null);
@@ -16,6 +16,9 @@
 <Modal id="wellness-modal" bind:open={() => wm.open, (v) => { if (v) wm.open = true; else closeWellnessModal(); }} boxStyle="max-width:400px;">
   <h3 style="margin-top:0;">{t('att.wellnessTitle')}</h3>
   <div class="modal-sub" id="wellness-modal-sub">{wm.sub}</div>
+  {#if wm.canMarkNotAttended}
+    <button class="btn-ghost wellness-not-attended" onclick={markWellnessEventNotAttended}>{t('att.wellnessNotAttended')}</button>
+  {/if}
 
   <!-- FASE 1: RPE con slider -->
   <div class="wellness-phase">

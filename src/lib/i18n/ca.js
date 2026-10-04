@@ -166,7 +166,6 @@ export const ca = {
 
   'wellnessReminder.title': 'Tens alguna cosa pendent de valorar!',
   'wellnessReminder.subtitle': "Valora la càrrega de l'últim entrenament o partit",
-  'wellnessReminder.notAttended': 'No he vingut',
   'pushBanner.title': "T'avisem dels entrenos?",
   'pushBanner.subtitle': "Activa les notificacions i et recordarem confirmar l'assistència",
   'pushBanner.enable': 'Activa',
@@ -427,6 +426,7 @@ export const ca = {
   'att.saveGeneric': 'Desa',
   'att.wellnessButton': 'Wellness',
   'att.wellnessTitle': 'Wellness / RPE',
+  'att.wellnessNotAttended': 'No he vingut',
   'att.rpeLabel': 'Esforç percebut (RPE)',
   'att.rpe1': 'Molt, molt suau',
   'att.rpe2': 'Molt suau',

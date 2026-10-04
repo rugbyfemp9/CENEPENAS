@@ -92,12 +92,13 @@ test('Inicio reminder banner opens the rating modal of the latest unrated sessio
     'Valora la carga del último entreno o partido',
     'Entreno · Miércoles 23/09/26 · CEM Mar Bella · 20:30 - 22:00h',
   ]);
-  await expect(banner(page).getByRole('button')).toHaveText('No he venido');
+  await expect(banner(page).getByRole('button')).toHaveCount(0);
 
   await banner(page).click();
   await expect(modal(page)).toHaveClass(/active/);
   await expect(modal(page).locator('h3')).toHaveText('Wellness / RPE');
   await expect(page.locator('#wellness-modal-sub')).toHaveText('Entreno · Miércoles 23/09/26 · CEM Mar Bella · 20:30 - 22:00h');
+  await expect(modal(page).locator('.wellness-not-attended')).toHaveText('No he venido');
   await expect(page.locator('#wellness-rpe-slider')).toHaveValue('5');
   await expect(page.locator('#wellness-rpe-value')).toHaveText('5');
   await expect(page.locator('#wellness-rpe-emoji')).toHaveText('🏃‍♀️');
@@ -345,10 +346,11 @@ test('"No he venido" changes the answer to "No asistiré", asks for a reason and
   }
   s.attendance_wellness.push({ event_id: EVENT_IDS.matchPast1, user_id: IDS.player, rpe: 4, sleep_hours: '7-8', mood: 3, has_discomfort: false, discomfort_detail: '', updated_at: '2026-09-24T10:00:00Z' });
   const { backend, errors } = await openAsPlayer(page, { seed: s });
-  await expect(banner(page)).toBeVisible();
-  await banner(page).getByRole('button', { name: 'No he venido' }).click();
+  await banner(page).click();
+  await expect(modal(page)).toHaveClass(/active/);
+  await modal(page).getByRole('button', { name: 'No he venido' }).click();
 
-  // The rating modal does not open; the usual "No asistiré" justification modal does.
+  // The rating modal closes and the usual "No asistiré" justification modal opens.
   await expect(modal(page)).not.toHaveClass(/active/);
   await expect(page.locator('#comment-modal')).toHaveClass(/active/);
   await expect(banner(page)).toBeHidden();
@@ -357,6 +359,17 @@ test('"No he venido" changes the answer to "No asistiré", asks for a reason and
   expect(writes).toHaveLength(1);
   expect(writes[0].body[0]).toMatchObject({ event_id: EVENT_IDS.trWed, user_id: IDS.player, status: 'no' });
   expect(writesTo(backend, 'attendance_wellness')).toEqual([]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('no "No he venido" button when the rating modal is opened for an event answered "No asistiré"', async ({ page }) => {
+  const s = clone(seed);
+  s.att_attendance.find((r) => r.event_id === EVENT_IDS.trWed && r.user_id === IDS.player).status = 'no';
+  const { errors } = await openAsPlayer(page, { seed: s });
+  await openPastEventDetail(page, 'Miércoles 23/09/26');
+  await page.locator('#att-detail-wellness-btn').click();
+  await expect(modal(page)).toHaveClass(/active/);
+  await expect(modal(page).locator('.wellness-not-attended')).toHaveCount(0);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -374,8 +387,8 @@ test('reminder and rating modal in Catalan', async ({ page }) => {
   await page.evaluate(() => window.setLang('ca'));
   await expect(banner(page).locator('b')).toHaveText('Tens alguna cosa pendent de valorar!');
   await expect(banner(page).locator('.txt span').first()).toHaveText("Valora la càrrega de l'últim entrenament o partit");
-  await expect(banner(page).getByRole('button')).toHaveText('No he vingut');
   await banner(page).click();
+  await expect(modal(page).getByRole('button', { name: 'No he vingut' })).toBeVisible();
   await expect(modal(page).locator('.wellness-phase-sleep .wellness-field-label')).toHaveText('Hores de son');
   // NOTE: the middle sleep option is "7-8h" in Catalan but "6-8h" in Spanish (value '7-8').
   await expect(sleepOpts(page)).toHaveText(['<6h', '7-8h', '>8h']);

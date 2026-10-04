@@ -198,6 +198,7 @@
 .wellness-mood-opt.selected{ background:var(--sky-light); border-color:var(--sky); transform:scale(1.12); }
 
 .wellness-phase-molesties{ margin-top:4px; padding-top:16px; border-top:1.5px solid var(--line); }
+.btn-ghost.wellness-not-attended{ margin-top:8px; padding:6px 14px; font-size:12px; color:var(--bad); }
 .wellness-toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .wellness-toggle-label{ font-size:13px; font-weight:600; color:var(--navy); flex:1; }
 .wellness-toggle-pill{ display:flex; background:var(--bg); border-radius:999px; padding:3px; border:1.5px solid var(--line); flex-shrink:0; }

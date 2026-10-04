@@ -13,7 +13,6 @@
 .wellness-reminder-banner .txt b{ font-size:14px; color:var(--navy); font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.02em; }
 .wellness-reminder-banner .txt span{ font-size:12.5px; color:#5C4A0A; font-weight:600; }
 .wellness-reminder-banner .txt .ev{ font-weight:500; }
-.wellness-reminder-banner .not-attended{ margin-left:auto; flex-shrink:0; }
 
 /* ============ BANNER "ACTIVA LAS NOTIFICACIONES" (Inicio) ============ */
 .push-banner{
