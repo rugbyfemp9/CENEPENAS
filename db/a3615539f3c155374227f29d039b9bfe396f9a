@@ -1,0 +1,30 @@
+tests/e2e/jugadas.spec.js
+  s_db282c67488fed::t_e0b15cb8d7d571 494,604,626-627,708,727-728,730,782,821,847-849,860-924
+  s_db282c67488fed::t_8706e898e192c7 623
+src/features/jugadas/PlayBoardFull.svelte
+  s_db282c67488fed::t_633e03152bc13d 10,127-135
+src/lib/i18n/ca.js
+  s_db282c67488fed::t_633e03152bc13d 646,667-669
+src/features/jugadas/editor.svelte.js
+  s_db282c67488fed::t_633e03152bc13d 15-22,141-177,182,203-204
+src/lib/i18n/es.js
+  s_db282c67488fed::t_633e03152bc13d 647,668-670
+css/jugadas.css
+  s_db282c67488fed::t_633e03152bc13d 185-195,199
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "dba3615539f3c155374227f29d039b9bfe396f9a",
+  "prompts": {},
+  "sessions": {
+    "s_db282c67488fed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3d95ab8-a6e5-4408-a412-5bb0b9d04234",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
