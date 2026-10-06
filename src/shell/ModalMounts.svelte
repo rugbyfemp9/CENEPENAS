@@ -128,3 +128,6 @@
 
 <!-- MODAL: VER UNA JUGADA -->
 <div data-mount="play-modal"></div>
+
+<!-- MODAL: AÑADIR UNA JUGADA (solo admins) -->
+<div data-mount="add-play-modal"></div>

@@ -155,3 +155,123 @@ test('Catalan: section texts and category names (name_ca, or name_es when empty)
   await expect(filter(page, 'Ataque')).toHaveText('Ataque 2');
   expect(relevantErrors(errors)).toEqual([]);
 });
+
+// ---------------------------------------------------------------------------
+// Adding plays (admins only)
+// ---------------------------------------------------------------------------
+
+const addBtn = (page) => page.locator('#add-play-btn');
+const addModal = (page) => page.locator('#add-play-modal');
+const storageWrites = (backend) => backend.mutations.filter((m) => m.kind === 'storage');
+const dialogs = (page) => {
+  const seen = [];
+  page.on('dialog', (d) => seen.push(d.message()));
+  return seen;
+};
+
+test('players do not see the + button', async ({ page }) => {
+  const { errors } = await open(page, { user: USERS.player });
+  await goToSection(page, 'jugadas');
+  await expect(sec(page).locator('.play-card')).toHaveCount(5);
+  await expect(addBtn(page)).toHaveCount(0);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('admin adds a play with a video: uploads it to the "plays" bucket and saves its URL', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await filter(page, 'Touch').click();
+  await addBtn(page).click();
+
+  await expect(addModal(page)).toHaveClass(/active/);
+  await expect(addModal(page).locator('h3')).toHaveText('Añadir jugada');
+  // The current filter is the default category.
+  await expect(page.locator('#play-category-input')).toHaveValue('touch');
+  await expect(page.locator('#play-category-input option')).toHaveText(['Touch', 'Melé', 'Ataque', 'Defensa']);
+  await page.locator('#play-category-input').selectOption('defensa');
+  await page.locator('#play-title-input').fill('  Defensa en línea  ');
+  await page.locator('#play-description-input').fill('Subimos todas a la vez');
+  await page.locator('#play-video-input').setInputFiles({ name: 'Defensa.MOV', mimeType: 'video/quicktime', buffer: Buffer.from('fake video') });
+  await page.locator('#play-save-btn').click();
+
+  await expect(addModal(page)).not.toHaveClass(/active/);
+  const uploads = storageWrites(backend);
+  expect(uploads).toHaveLength(1);
+  expect(uploads[0].method).toBe('POST');
+  expect(uploads[0].path).toMatch(/^\/storage\/v1\/object\/plays\/[0-9a-f-]{36}\.mov$/);
+  const file = uploads[0].path.split('/').pop();
+
+  const inserts = restWrites(backend, 'plays');
+  expect(inserts).toHaveLength(1);
+  expect(inserts[0].method).toBe('INSERT');
+  expect(inserts[0].body).toEqual([{
+    category_id: 'defensa', title: 'Defensa en línea', description: 'Subimos todas a la vez',
+    video_url: expect.stringMatching(new RegExp(`/storage/v1/object/public/plays/${file}$`)), sort_order: 10,
+  }]);
+
+  // It shows up straight away, with its video.
+  await filter(page, 'Defensa').click();
+  await expect(sec(page).locator('.play-cap b')).toHaveText(['Defensa en línea']);
+  await expect(card(page, 'Defensa en línea').locator('.play-soon')).toHaveCount(0);
+  await expect(filter(page, 'Todas')).toHaveText('Todas 6');
+  await page.route(/\/storage\/v1\/object\/public\/plays\//, (route) => route.fulfill({ contentType: 'video/mp4', body: '' }));
+  await card(page, 'Defensa en línea').click();
+  await expect(modal(page).locator('video')).toHaveAttribute('src', inserts[0].body[0].video_url);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('admin adds a play without a video: nothing is uploaded and it says "Próximamente"', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await addBtn(page).click();
+  // From "Todas", the first category is preselected.
+  await expect(page.locator('#play-category-input')).toHaveValue('touch');
+  await page.locator('#play-title-input').fill('Touch en dos tiempos');
+  await page.locator('#play-save-btn').click();
+
+  await expect(addModal(page)).not.toHaveClass(/active/);
+  expect(storageWrites(backend)).toEqual([]);
+  // Touch already has sort_order 10 and 20: the new one goes last.
+  expect(restWrites(backend, 'plays')[0].body).toEqual([{ category_id: 'touch', title: 'Touch en dos tiempos', description: null, video_url: null, sort_order: 30 }]);
+  await expect(sec(page).locator('.jugadas-group[data-category="touch"] .play-cap b')).toHaveText(['Touch corta', 'Touch al fondo', 'Touch en dos tiempos']);
+  await expect(card(page, 'Touch en dos tiempos').locator('.play-soon')).toHaveText('Próximamente');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('admin form: a name is required, only videos are accepted, and it starts empty each time', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  const seen = dialogs(page);
+  await goToSection(page, 'jugadas');
+  await addBtn(page).click();
+
+  await page.locator('#play-title-input').fill('   ');
+  await page.locator('#play-save-btn').click();
+  await expect.poll(() => seen).toEqual(['Elige una categoría y ponle un nombre a la jugada.']);
+
+  await page.locator('#play-title-input').fill('Con foto');
+  await page.locator('#play-video-input').setInputFiles({ name: 'foto.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('x') });
+  await page.locator('#play-save-btn').click();
+  await expect.poll(() => seen).toEqual(['Elige una categoría y ponle un nombre a la jugada.', 'El archivo tiene que ser un vídeo.']);
+  await expect(addModal(page)).toHaveClass(/active/);
+  expect(storageWrites(backend)).toEqual([]);
+  expect(restWrites(backend, 'plays')).toEqual([]);
+
+  await addModal(page).getByRole('button', { name: 'Cancelar' }).click();
+  await addBtn(page).click();
+  await expect(page.locator('#play-title-input')).toHaveValue('');
+  await expect(page.locator('#play-video-input')).toHaveValue('');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('Catalan: the add-play form is translated', async ({ page }) => {
+  const { errors } = await open(page);
+  await page.evaluate(() => window.setLang('ca'));
+  await goToSection(page, 'jugadas');
+  await expect(addBtn(page)).toHaveAttribute('aria-label', 'Afegir jugada');
+  await addBtn(page).click();
+  await expect(addModal(page).locator('h3')).toHaveText('Afegir jugada');
+  await expect(page.locator('#play-category-input option')).toHaveText(['Touch', 'Melé', 'Atac', 'Defensa']);
+  await expect(addModal(page)).toContainText('Vídeo (opcional, màx. 50 MB)');
+  await expect(addModal(page).getByRole('button', { name: 'Desa', exact: true })).toBeVisible();
+  expect(relevantErrors(errors)).toEqual([]);
+});

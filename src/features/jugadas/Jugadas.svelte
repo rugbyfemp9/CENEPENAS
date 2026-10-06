@@ -2,7 +2,7 @@
   import { t } from '../../lib/i18n.svelte.js';
   import { cssUrl } from '../../lib/url.js';
   import { setSection } from '../../shell/navigation.svelte.js';
-  import { jugadas, setFilter, openPlay, playsOf, categoryName } from './jugadas.svelte.js';
+  import { jugadas, setFilter, openPlay, playsOf, categoryName, canManagePlays, openAddPlayModal } from './jugadas.svelte.js';
 
   // En "Todas" solo salen las categorías que tienen alguna jugada; al filtrar por una
   // categoría vacía se dice que está vacía.
@@ -17,6 +17,11 @@
 <div class="back-link" onclick={() => setSection('vestuario')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('fines.backLabel')}</span></div>
 <div class="section-head">
   <h2>{t('nav.jugadas')}</h2>
+  {#if canManagePlays()}
+    <button class="cal-open-btn" id="add-play-btn" onclick={openAddPlayModal} aria-label={t('jugadas.addPlay')} title={t('jugadas.addPlay')}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  {/if}
 </div>
 
 {#if jugadas.status === 'loading' || jugadas.status === 'idle'}
