@@ -1,0 +1,56 @@
+src/shell/sections.js
+  s_db282c67488fed::t_5763437324f8c6 18,48,85
+src/shell/Main.svelte
+  s_db282c67488fed::t_5763437324f8c6 104-106
+tests/e2e/support/app.js
+  s_db282c67488fed::t_7c5868c5f853e1 19
+src/features/jugadas/jugadas.svelte.js
+  s_db282c67488fed::t_6be9aa7f319169 1-34
+src/lib/i18n/ca.js
+  s_db282c67488fed::t_5763437324f8c6 14,32,606-615
+src/shell/ModalMounts.svelte
+  s_db282c67488fed::t_6be9aa7f319169 128-130
+src/features/jugadas/jugadas.js
+  s_db282c67488fed::t_6be9aa7f319169 1-29
+tests/e2e/shell.spec.js
+  s_db282c67488fed::t_1aae4d3c14ee66 501
+  s_db282c67488fed::t_7c5868c5f853e1 28-29,351,427,433,435,560
+css/vestuario.css
+  s_db282c67488fed::t_5763437324f8c6 23
+src/shell/Sidebar.svelte
+  s_db282c67488fed::t_5763437324f8c6 53-56
+src/features/jugadas/index.js
+  s_db282c67488fed::t_6be9aa7f319169 1-8
+css/jugadas.css
+  s_db282c67488fed::t_5763437324f8c6 1-76
+tests/e2e/jugadas.spec.js
+  s_db282c67488fed::t_c69bef5a97eacf 11-12,64-65
+  s_db282c67488fed::t_94384545e40bf5 1-10,13-63,66-86
+src/shell/Vestuario.svelte
+  s_db282c67488fed::t_5763437324f8c6 57-61
+src/features/jugadas/PlayModal.svelte
+  s_db282c67488fed::t_ce61cc8dd356fe 1-28
+src/features/jugadas/Jugadas.svelte
+  s_db282c67488fed::t_ce61cc8dd356fe 1-2,4-39,41-53
+  s_db282c67488fed::t_5763437324f8c6 3,40
+src/lib/i18n/es.js
+  s_db282c67488fed::t_5763437324f8c6 15,33,607-616
+src/main.js
+  s_db282c67488fed::t_5763437324f8c6 21,42,72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ea8d7b01570bd2b7f46c021d16f9d6ac6c11b82e",
+  "prompts": {},
+  "sessions": {
+    "s_db282c67488fed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3d95ab8-a6e5-4408-a412-5bb0b9d04234",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
