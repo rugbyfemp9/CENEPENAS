@@ -3,7 +3,7 @@
   import { t } from '../../lib/i18n.svelte.js';
   import { safeUrl } from '../../lib/url.js';
   import PlayAnimation from './PlayAnimation.svelte';
-  import { jugadas, openedPlay, categoryName, animationOf, canManagePlays } from './jugadas.svelte.js';
+  import { jugadas, openedPlay, categoryName, animationOf, canManagePlays, askDeletePlay } from './jugadas.svelte.js';
   import { editAnimation } from './editor.svelte.js';
 
   const play = $derived(openedPlay());
@@ -49,6 +49,11 @@
     </div>
   {/if}
   <div class="modal-actions">
+    {#if play && canManagePlays()}
+      <button class="play-delete-btn" id="play-delete-btn" onclick={askDeletePlay} aria-label={t('jugadas.deletePlay')} title={t('jugadas.deletePlay')}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+      </button>
+    {/if}
     <!-- Las admins pueden retocar la animación (también la de una jugada con vídeo). -->
     {#if play && canManagePlays() && animationOf(play)}
       <button class="btn-ghost" id="play-edit-anim-btn" onclick={() => editAnimation(play)}>{t('jugadas.editAnimation')}</button>
