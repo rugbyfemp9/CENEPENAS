@@ -11,8 +11,15 @@ import { setSection } from '../../shell/navigation.svelte.js';
 import { jugadas, playForm, canManagePlays, playsOf, animationOf } from './jugadas.svelte.js';
 import { clampPoint, STEP_MS_DEFAULT, PITCH_W, PITCH_L, FULL_PITCH_VIEWBOX } from './board.js';
 
-export const MAX_ATTACKERS = 15;
 export const MAX_DEFENDERS = 15;
+// Dorsales del banquillo del editor: en rugby el número es el puesto (9 = medio melé...).
+export const SHIRT_NUMBERS = Array.from({ length: 15 }, (_, i) => i + 1);
+// Dónde sale cada dorsal al sacarlo al campo (metros, alrededor de medio campo): una
+// melé y la línea de tres cuartos. Así, al sacar varias, ya quedan con forma de equipo.
+const DEFAULT_SPOTS = {
+  1: [29, 57], 2: [32, 57], 3: [35, 57], 4: [30.5, 59.5], 5: [33.5, 59.5], 6: [27, 59], 7: [38, 59], 8: [32, 62],
+  9: [32, 65], 10: [26, 68], 12: [21, 71], 13: [16, 74], 11: [9, 77], 14: [55, 74], 15: [32, 80],
+};
 // Velocidad de cada paso (lo que se tarda en llegar a él desde el anterior).
 export const STEP_SPEEDS = [
   { id: 'slow', ms: 2000 },
@@ -122,31 +129,57 @@ export function markDirty() {
 }
 
 // ---- Fichas ----
-const attackers = () => editor.anim.tokens.filter((tk) => tk.team === 'attack');
 const defenders = () => editor.anim.tokens.filter((tk) => tk.team === 'defense');
 export const hasBall = () => editor.anim?.tokens.some((tk) => tk.team === 'ball') ?? false;
 
 export function canAdd(team) {
   if (!editor.anim) return false;
-  if (team === 'attack') return attackers().length < MAX_ATTACKERS;
   if (team === 'defense') return defenders().length < MAX_DEFENDERS;
   return !hasBall();
 }
 
-// Las atacantes llevan el primer dorsal libre (1–15); las defensas, sin número. Salen
-// en fila cerca del centro (atacantes un poco más abajo que las defensas) para que no
-// se tapen unas a otras.
+// ---- Banquillo: las atacantes van por dorsal ----
+export function onPitch(n) {
+  return editor.anim?.tokens.some((tk) => tk.id === 'a' + n) ?? false;
+}
+
+// Si la ficha está en sitios distintos según el paso, tiene movimientos que se perderían.
+function hasMoves(id) {
+  const [first, ...rest] = editor.anim.steps.map((st) => st.pos[id]);
+  return rest.some((p) => p && first && (p[0] !== first[0] || p[1] !== first[1]));
+}
+
+function removeToken(id) {
+  editor.anim.tokens = editor.anim.tokens.filter((tk) => tk.id !== id);
+  for (const st of editor.anim.steps) delete st.pos[id];
+  if (editor.selectedId === id) editor.selectedId = null;
+  markDirty();
+}
+
+// Tocar un dorsal del banquillo saca a esa jugadora al campo (en su sitio de salida,
+// en todos los pasos); tocarlo otra vez la quita. Si ya tenía movimientos, se pregunta
+// antes, para que un toque sin querer no borre sus carreras.
+export function toggleAttacker(n) {
+  if (!editor.anim || !DEFAULT_SPOTS[n]) return;
+  const id = 'a' + n;
+  if (onPitch(n)) {
+    if (hasMoves(id) && !confirm(t('jugadas.benchRemoveConfirm', { n }))) return;
+    removeToken(id);
+    return;
+  }
+  editor.anim.tokens.push({ id, team: 'attack', label: String(n) });
+  for (const st of editor.anim.steps) st.pos[id] = clampPoint(DEFAULT_SPOTS[n]);
+  editor.selectedId = id;
+  markDirty();
+}
+
+// Las defensas van sin número y salen en fila por delante de la melé; el balón, en el
+// centro del campo.
 export function addToken(team) {
   if (!canAdd(team)) return;
   let token;
   let at;
-  if (team === 'attack') {
-    const used = new Set(attackers().map((tk) => Number(tk.label)));
-    let n = 1;
-    while (used.has(n)) n++;
-    token = { id: 'a' + n, team, label: String(n) };
-    at = [13 + ((n - 1) % 8) * 6, 66 + Math.floor((n - 1) / 8) * 5];
-  } else if (team === 'defense') {
+  if (team === 'defense') {
     const ids = new Set(defenders().map((tk) => tk.id));
     let n = 1;
     while (ids.has('d' + n)) n++;
@@ -167,12 +200,8 @@ export function selectToken(id) {
 }
 
 export function removeSelected() {
-  const id = editor.selectedId;
-  if (!id || !editor.anim) return;
-  editor.anim.tokens = editor.anim.tokens.filter((tk) => tk.id !== id);
-  for (const st of editor.anim.steps) delete st.pos[id];
-  editor.selectedId = null;
-  markDirty();
+  if (!editor.selectedId || !editor.anim) return;
+  removeToken(editor.selectedId);
 }
 
 // Mover una ficha solo cambia el paso que se está editando.

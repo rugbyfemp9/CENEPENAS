@@ -491,6 +491,7 @@ const bf = (page) => page.locator('#play-board-full');
 const edToken = (page, id) => bf(page).locator(`.play-board [data-token="${id}"]`);
 const tool = (page, name) => bf(page).locator('.play-editor-tools').getByRole('button', { name, exact: true });
 const chips = (page) => bf(page).locator('.play-editor-chips .play-anim-dot');
+const bench = (page, n) => bf(page).locator(`.bench-chip[data-num="${n}"]`);
 const near = (n) => expect.closeTo(n, 0);
 
 // Pitch metres → screen pixels of the full-screen board.
@@ -600,7 +601,7 @@ test('the board is full screen and the page cannot scroll while it is open', asy
 test('the phone back button closes the board but stays in the editor', async ({ page }) => {
   const { errors } = await open(page);
   await openNewAnimation(page);
-  await tool(page, 'Atacante').click();
+  await bench(page, 1).click();
   await page.goBack();
   await expect(bf(page)).not.toHaveClass(/active/);
   await expect(ed(page)).toHaveClass(/active/);
@@ -619,11 +620,11 @@ test('admin draws a new play step by step and saves it', async ({ page }) => {
 
   await expect(bf(page).locator('.pbf-title')).toContainText('Lineout 5');
   await expect(bf(page).locator('.pbf-title')).toContainText('Paso 1 de 1');
-  await expect(bf(page)).toContainText('Añade atacantes, defensas y el balón');
+  await expect(bf(page)).toContainText('Toca un dorsal para sacar a esa jugadora al campo');
   await expect(page.locator('#editor-preview-btn')).toBeDisabled();
 
-  await tool(page, 'Atacante').click();
-  await tool(page, 'Atacante').click();
+  await bench(page, 1).click();
+  await bench(page, 2).click();
   await tool(page, 'Defensa').click();
   await tool(page, 'Balón').click();
   await expect(tool(page, 'Balón')).toBeDisabled();
@@ -704,7 +705,7 @@ test('admin draws a new play step by step and saves it', async ({ page }) => {
 test('admin removes a token from every step and deletes a step', async ({ page }) => {
   const { errors } = await open(page);
   await openNewAnimation(page);
-  await tool(page, 'Atacante').click();
+  await bench(page, 1).click();
   await tool(page, 'Defensa').click();
   await page.locator('#editor-add-step').click();
   await page.locator('#editor-add-step').click();
@@ -723,10 +724,10 @@ test('admin removes a token from every step and deletes a step', async ({ page }
   await expect(chips(page)).toHaveText(['1']);
   await expect(page.locator('#editor-delete-step')).toBeDisabled();
 
-  // Attacker numbers fill the gaps, up to 15.
-  for (let i = 0; i < 14; i++) await tool(page, 'Atacante').click();
+  // The whole team: every number from the bench.
+  for (let n = 2; n <= 15; n++) await bench(page, n).click();
   await expect(bf(page).locator('.play-board [data-token^="a"]')).toHaveCount(15);
-  await expect(tool(page, 'Atacante')).toBeDisabled();
+  await expect(bf(page).locator('.bench-chip[aria-pressed="true"]')).toHaveCount(15);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -778,7 +779,7 @@ test('leaving the editor with unsaved changes asks first', async ({ page }) => {
   expect(seen).toEqual([]);
 
   await openNewAnimation(page);
-  await tool(page, 'Atacante').click();
+  await bench(page, 1).click();
   await page.locator('#board-done-btn').click();
   // setupApp dismisses dialogs, so "Cancel": it stays in the editor.
   await ed(page).locator('.back-link').click();
@@ -817,7 +818,7 @@ test('mobile: dragging on the full-screen board, with and without zoom', async (
   await page.setViewportSize(VIEWPORTS.mobile);
   const { backend, errors } = await open(page);
   await openNewAnimation(page);
-  await tool(page, 'Atacante').click();
+  await bench(page, 1).click();
   await drag(page, 'a1', [50, 64]);
   expect(await tokenPos(page, 'a1')).toEqual([near(50), near(64)]);
 
@@ -843,7 +844,9 @@ test('Catalan: editor texts', async ({ page }) => {
   const { errors } = await open(page);
   await page.evaluate(() => window.setLang('ca'));
   await openNewAnimation(page);
-  await expect(bf(page).locator('.play-editor-tools button')).toHaveText(['Atacant', 'Defensa', 'Pilota', 'Treure']);
+  await expect(bf(page).locator('.play-editor-tools button')).toHaveText(['Defensa', 'Pilota', 'Treure']);
+  await expect(bf(page).locator('.pbf-bench-label')).toHaveText('Jugadores');
+  await expect(bench(page, 9)).toHaveAttribute('aria-label', 'Jugadora 9');
   await expect(page.locator('#editor-add-step')).toHaveText('+ Pas');
   await expect(page.locator('#editor-preview-btn')).toHaveText('▶ Provar');
   await expect(page.locator('#board-done-btn')).toHaveText('Fet');
@@ -852,5 +855,72 @@ test('Catalan: editor texts', async ({ page }) => {
   await expect(ed(page).locator('h2')).toHaveText('Nova jugada');
   await expect(ed(page).locator('.play-editor-open')).toContainText('Obrir la pissarra');
   await expect(page.locator('#editor-save-btn')).toHaveText('Desa');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('the 1–15 bench puts exactly the numbers you tap on the pitch, in their usual spots', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  const seen = dialogs(page);
+  await openNewAnimation(page);
+  await expect(bf(page).locator('.bench-chip')).toHaveText(Array.from({ length: 15 }, (_, i) => String(i + 1)));
+  await expect(bf(page).locator('.bench-chip[aria-pressed="true"]')).toHaveCount(0);
+
+  await bench(page, 9).click();
+  await bench(page, 12).click();
+  await expect(bf(page).locator('.play-board [data-token]')).toHaveCount(2);
+  await expect(edToken(page, 'a9')).toContainText('9');
+  await expect(edToken(page, 'a12')).toContainText('12');
+  expect(await tokenPos(page, 'a9')).toEqual([32, 65]);
+  expect(await tokenPos(page, 'a12')).toEqual([21, 71]);
+  await expect(bench(page, 9)).toHaveAttribute('aria-pressed', 'true');
+  await expect(bench(page, 12)).toHaveAttribute('aria-pressed', 'true');
+  await expect(bench(page, 10)).toHaveAttribute('aria-pressed', 'false');
+  await expect(edToken(page, 'a12')).toHaveClass(/selected/);
+
+  // No moves yet: tapping again takes her off without asking.
+  await bench(page, 9).click();
+  await expect(edToken(page, 'a9')).toHaveCount(0);
+  await expect(bench(page, 9)).toHaveAttribute('aria-pressed', 'false');
+  expect(seen).toEqual([]);
+
+  // Back on, and she moves in step 2: now taking her off asks first.
+  await bench(page, 9).click();
+  await page.locator('#editor-add-step').click();
+  await drag(page, 'a9', [40, 70]);
+  await bench(page, 9).click();
+  await expect.poll(() => seen).toEqual(['La 9 ya tiene movimientos en la jugada. ¿Quitarla igualmente?']);
+  // setupApp dismisses dialogs ("Cancel"): she stays, moves included.
+  await expect(edToken(page, 'a9')).toHaveCount(1);
+  expect(await tokenPos(page, 'a9')).toEqual([near(40), near(70)]);
+
+  await page.locator('#board-save-btn').click();
+  await expect(sec(page)).toHaveClass(/active/);
+  const body = restWrites(backend, 'plays')[0].body[0];
+  expect(body.animation.tokens).toEqual([
+    { id: 'a12', team: 'attack', label: '12' }, { id: 'a9', team: 'attack', label: '9' },
+  ]);
+  expect(body.animation.steps[0].pos).toEqual({ a12: [21, 71], a9: [32, 65] });
+  expect(body.animation.steps[1].pos.a9).toEqual([near(40), near(70)]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('editing a saved play: the bench shows who is already on the pitch', async ({ page }) => {
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Salida del 8').click();
+  await modal(page).getByRole('button', { name: 'Editar animación' }).click();
+  await page.locator('#editor-open-board').click();
+  await expect(bf(page).locator('.bench-chip[aria-pressed="true"]')).toHaveText(['8', '9']);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('mobile: the bench fits in two rows and the board keeps most of the screen', async ({ page }) => {
+  await page.setViewportSize(VIEWPORTS.mobile);
+  const { errors } = await open(page);
+  await openNewAnimation(page);
+  const tops = await bf(page).locator('.bench-chip').evaluateAll((els) => [...new Set(els.map((e) => Math.round(e.getBoundingClientRect().top)))]);
+  expect(tops).toHaveLength(2);
+  const board = await bf(page).locator('.pbf-board').boundingBox();
+  expect(board.height).toBeGreaterThan(VIEWPORTS.mobile.height * 0.45);
   expect(relevantErrors(errors)).toEqual([]);
 });

@@ -182,9 +182,21 @@ html.board-open, html.board-open body{ overflow:hidden; overscroll-behavior:none
   padding:10px 12px calc(10px + env(safe-area-inset-bottom)); box-shadow:0 -8px 24px -12px rgba(15,27,45,.3);
 }
 .pbf-panel .play-editor-hint{ margin:0; }
+/* Banquillo 1–15: en el campo = relleno como la ficha; fuera = solo el contorno */
+.pbf-bench-label{ display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); margin-bottom:5px; }
+.pbf-bench-grid{ display:grid; grid-template-columns:repeat(8, minmax(0, 1fr)); gap:5px; }
+.bench-chip{
+  all:unset; cursor:pointer; box-sizing:border-box; height:34px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--line); color:var(--navy); background:var(--white);
+  font-family:'Oswald',sans-serif; font-size:14px; font-weight:700;
+}
+.bench-chip:hover{ border-color:var(--sky); }
+.bench-chip[aria-pressed="true"]{ background:#0F1B2D; border-color:#0F1B2D; color:#fff; }
 .pbf-preview-btn{ align-self:flex-start; }
 @media (min-width:901px){
   .pbf-body{ flex-direction:row; }
+  .pbf-bench-grid{ grid-template-columns:repeat(5, minmax(0, 1fr)); }
   .pbf-panel{ width:340px; padding:18px; gap:14px; box-shadow:-8px 0 24px -12px rgba(15,27,45,.3); overflow:hidden; }
 }
 .play-editor-tools, .play-editor-chips, .play-editor-speed{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
