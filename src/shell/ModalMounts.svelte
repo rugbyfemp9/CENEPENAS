@@ -125,3 +125,6 @@
 
 <!-- MODAL: AÑADIR ÁLBUM DE GALERÍA -->
 <div data-mount="add-album-modal"></div>
+
+<!-- MODAL: VER UNA JUGADA -->
+<div data-mount="play-modal"></div>

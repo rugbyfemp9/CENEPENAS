@@ -25,8 +25,8 @@ const authWrites = (backend) => backend.mutations.filter((m) => m.kind === 'auth
 const restWrites = (backend, table) => backend.mutations.filter((m) => m.kind === 'rest' && m.table === table);
 const tokenInStorage = (page) => page.evaluate((k) => localStorage.getItem(k), TOKEN_KEY);
 
-const PLAYER_SIDEBAR = ['Inicio', 'Asistencia', 'Multas', 'Tercer tiempo', 'Comisiones', 'Tricount', 'Liga', 'Fantasy', 'Galería', 'Jugadoras', 'Gym', 'Partidos', 'Mi perfil'];
-const STAFF_SIDEBAR = ['Inicio', 'Asistencia', 'Multas', 'Liga', 'Fantasy', 'Galería', 'Jugadoras', 'Gym', 'Partidos', 'Percepción del esfuerzo', 'Mi perfil'];
+const PLAYER_SIDEBAR = ['Inicio', 'Asistencia', 'Multas', 'Tercer tiempo', 'Comisiones', 'Tricount', 'Liga', 'Fantasy', 'Jugadas', 'Galería', 'Jugadoras', 'Gym', 'Partidos', 'Mi perfil'];
+const STAFF_SIDEBAR = ['Inicio', 'Asistencia', 'Multas', 'Liga', 'Fantasy', 'Jugadas', 'Galería', 'Jugadoras', 'Gym', 'Partidos', 'Percepción del esfuerzo', 'Mi perfil'];
 const STAFF_HIDDEN = ['tercer', 'tercer-historial', 'tercer-detalle', 'comisiones', 'comi-activitats', 'comi-xarxes', 'comi-tercer-temps', 'comi-tesoreria', 'comi-gira', 'tricount'];
 
 async function startLoggedOut(page, opts = {}) {
@@ -348,7 +348,7 @@ test('desktop sidebar: every link opens its section and is the only active one',
 
   const headings = {
     inicio: 'Inicio', asistencia: 'Asistencia', multas: 'Multas del equipo', tercer: 'Tercer tiempo', comisiones: 'Comisiones',
-    tricount: 'Tricount', liga: 'Liga', fantasy: 'Fantasy', galeria: 'Galería', plantilla: 'Jugadoras', gym: 'Gym', partidos: 'Partidos', perfil: 'Mi perfil',
+    tricount: 'Tricount', liga: 'Liga', fantasy: 'Fantasy', jugadas: 'Jugadas', galeria: 'Galería', plantilla: 'Jugadoras', gym: 'Gym', partidos: 'Partidos', perfil: 'Mi perfil',
   };
   for (const id of [...Object.keys(headings).slice(1), 'inicio']) {
     await sidebarBtn(page, id).click();
@@ -424,15 +424,15 @@ test('Vestuario hub: the cards a player sees and where they lead', async ({ page
   const { errors } = await start(page, { viewport: VIEWPORTS.mobile });
   await bottomBtn(page, 'vestuario').click();
   const cards = page.locator('#sec-vestuario .vest-card:visible');
-  await expect(cards.locator('.txt b')).toHaveText(['Gym', 'Multas', 'Tercer tiempo', 'Jugadoras', 'Galería', 'Comisiones', 'Liga', 'Tricount', 'Fantasy', 'Partidos', 'Test']);
+  await expect(cards.locator('.txt b')).toHaveText(['Gym', 'Multas', 'Tercer tiempo', 'Jugadoras', 'Galería', 'Comisiones', 'Liga', 'Tricount', 'Fantasy', 'Jugadas', 'Partidos', 'Test']);
   await expect(cards.locator('.txt span')).toHaveText([
     'Rutina, marcas y ranking', '23 € pendientes',
     // NOTE: hardcoded, stale subtitle (it is not computed from the next home match).
     'Próximo: 23 de agosto',
     'Lista de jugadoras y miembros del club', 'Fotos del equipo', 'Grupos de trabajo del club', 'Clasificación y resultados',
-    /./, 'Prueba alineaciones a tu manera', 'Todos los partidos de la temporada', 'Sección de pruebas',
+    /./, 'Prueba alineaciones a tu manera', 'Touch, melé, ataque y más', 'Todos los partidos de la temporada', 'Sección de pruebas',
   ]);
-  const targets = ['gym', 'multas', 'tercer', 'plantilla', 'galeria', 'comisiones', 'liga', 'tricount', 'fantasy', 'partidos', 'test'];
+  const targets = ['gym', 'multas', 'tercer', 'plantilla', 'galeria', 'comisiones', 'liga', 'tricount', 'fantasy', 'jugadas', 'partidos', 'test'];
   for (let i = 0; i < targets.length; i++) {
     await cards.nth(i).click();
     await expect(page.locator(`#sec-${targets[i]}`)).toHaveClass(/active/);
@@ -498,7 +498,7 @@ test('staff (admin) do not see the player pages and see the effort analysis page
   await expect(page.locator('#inicio-tricount-banner')).toBeHidden();
   await expect(page.locator('#inicio-fines-banner')).toBeVisible();
   await goToSection(page, 'vestuario');
-  await expect(page.locator('#sec-vestuario .vest-card:visible .txt b')).toHaveText(['Gym', 'Multas', 'Jugadoras', 'Galería', 'Liga', 'Fantasy', 'Partidos', 'Percepción del esfuerzo', 'Test']);
+  await expect(page.locator('#sec-vestuario .vest-card:visible .txt b')).toHaveText(['Gym', 'Multas', 'Jugadoras', 'Galería', 'Liga', 'Fantasy', 'Jugadas', 'Partidos', 'Percepción del esfuerzo', 'Test']);
   await sidebarBtn(page, 'wellness-staff').click();
   await expect(page.locator('#sec-wellness-staff')).toHaveClass(/active/);
   await expect(sidebarBtn(page, 'wellness-staff')).toHaveClass(/active/);
@@ -557,7 +557,7 @@ test('desktop ES / CAT switch translates the app, is remembered and sets <html l
   await expect(es).not.toHaveClass(/active/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'ca');
   expect(await page.evaluate(() => localStorage.getItem('cnpenas:lang'))).toBe('ca');
-  await expect(page.locator('.sidebar .nav button[data-section]:visible')).toHaveText(['Inici', 'Assistència', 'Multes', 'Tercer temps', 'Comissions', 'Tricount', 'Lliga', 'Fantasy', 'Galeria', 'Jugadores', 'Gym', 'Partits', 'El meu perfil']);
+  await expect(page.locator('.sidebar .nav button[data-section]:visible')).toHaveText(['Inici', 'Assistència', 'Multes', 'Tercer temps', 'Comissions', 'Tricount', 'Lliga', 'Fantasy', 'Jugades', 'Galeria', 'Jugadores', 'Gym', 'Partits', 'El meu perfil']);
   await expect(page.locator('.sidebar .brand .name span')).toHaveText('Panell del club');
   await expect(page.locator('#sec-inicio h2')).toHaveText('Inici');
   await expect(page.locator('#inicio-tercer-banner .txt span')).toHaveText('Et toca cuinar · Partido vs Santboi');

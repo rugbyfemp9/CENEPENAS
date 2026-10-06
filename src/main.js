@@ -18,6 +18,7 @@ import '../css/galeria.css';
 import '../css/comisiones.css';
 import '../css/nav.css';
 import '../css/fantasy.css';
+import '../css/jugadas.css';
 import '../css/auth.css';
 
 import { mountAt } from './lib/mount.js';
@@ -38,6 +39,7 @@ import * as tesoreria from './features/tesoreria/index.js';
 import * as comiTercerTemps from './features/comi-tercer-temps/index.js';
 import * as gym from './features/gym/index.js';
 import * as fantasy from './features/fantasy/index.js';
+import * as jugadas from './features/jugadas/index.js';
 import * as multas from './features/multas/index.js';
 import * as jugadoras from './features/jugadoras/index.js';
 import * as perfil from './features/perfil/index.js';
@@ -67,7 +69,7 @@ window.setSection = setSection;
 
 mountAt(App, 'app');
 
-for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, multas, jugadoras, perfil, wellness, partidos, actas, tullidas, tercerTiempo, asistencia]) feature.install();
+for (const feature of [galeria, test, liga, avisos, tricount, tesoreria, comiTercerTemps, gym, fantasy, jugadas, multas, jugadoras, perfil, wellness, partidos, actas, tullidas, tercerTiempo, asistencia]) feature.install();
 
 refreshSession();
 

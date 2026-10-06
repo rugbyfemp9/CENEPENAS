@@ -50,6 +50,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><g transform="rotate(-40 12 12)"><ellipse cx="12" cy="12" rx="9.5" ry="5.5"/><path d="M4.5 12h15"/><path d="M9 9.8v4.4M12 9.3v5.4M15 9.8v4.4"/></g></svg>
       <span>{t('nav.fantasy')}</span>
     </button>
+    <button class:active={nav.sidebarTab === 'jugadas'} data-section="jugadas" onclick={() => setSection('jugadas')}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M6.5 7.5l3 3M9.5 7.5l-3 3"/><circle cx="16.5" cy="16.5" r="2"/><path d="M8 15c2.5 0 5-2 6.5-5.5"/><path d="M12 9.5l2.5.5.5-2.5"/></svg>
+      <span>{t('nav.jugadas')}</span>
+    </button>
     <button class:active={nav.sidebarTab === 'galeria'} data-section="galeria" onclick={() => setSection('galeria')}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.8"/><path d="M21 15l-5-5-9 9"/></svg>
       <span>{t('nav.galeria')}</span>

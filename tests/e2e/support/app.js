@@ -16,7 +16,7 @@ export const SECTIONS = [
   'partidos', 'partido-detalle', 'gym', 'gym-entrenamiento', 'gym-entrenamiento-dia',
   'gym-equipo', 'comisiones', 'comi-activitats', 'comi-xarxes', 'comi-tercer-temps',
   'comi-tesoreria', 'comi-gira', 'multas', 'tricount', 'liga', 'tercer', 'tercer-historial',
-  'tercer-detalle', 'plantilla', 'fantasy', 'galeria', 'perfil',
+  'tercer-detalle', 'plantilla', 'fantasy', 'jugadas', 'galeria', 'perfil',
 ];
 
 export { USERS };

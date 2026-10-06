@@ -101,6 +101,9 @@
   <!-- Fantasy: la pinta Svelte (src/features/fantasy/Fantasy.svelte) -->
   <section class="section" class:active={nav.current === 'fantasy'} id="sec-fantasy"></section>
 
+  <!-- JUGADAS: las pinta Svelte (src/features/jugadas/Jugadas.svelte) -->
+  <section class="section" class:active={nav.current === 'jugadas'} id="sec-jugadas"></section>
+
   <!-- GALERÍA -->
   <!-- Galería: la pinta Svelte (src/features/galeria/Galeria.svelte) -->
   <section class="section" class:active={nav.current === 'galeria'} id="sec-galeria"></section>
