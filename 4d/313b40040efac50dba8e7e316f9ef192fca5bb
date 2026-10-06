@@ -1,0 +1,31 @@
+src/lib/i18n/ca.js
+  s_db282c67488fed::t_6454a4157c8591 37-47
+tests/e2e/test-plays-quiz.spec.js
+  s_db282c67488fed::t_f1414b2de01571 1-140
+css/vestuario.css
+  s_db282c67488fed::t_6454a4157c8591 40-47
+src/features/test/Test.svelte
+  s_db282c67488fed::t_6454a4157c8591 5-6,13-25,29,31,39-44,48-99
+tests/e2e/fixtures/seed.js
+  s_db282c67488fed::t_f1414b2de01571 83-97,643-644,653
+src/features/test/plays-quiz.svelte.js
+  s_db282c67488fed::t_3d95b7c2752e88 1-95
+src/lib/i18n/es.js
+  s_db282c67488fed::t_6454a4157c8591 38-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4d313b40040efac50dba8e7e316f9ef192fca5bb",
+  "prompts": {},
+  "sessions": {
+    "s_db282c67488fed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3d95ab8-a6e5-4408-a412-5bb0b9d04234",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
