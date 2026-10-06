@@ -25,6 +25,8 @@ export const jugadas = $state({
   modalOpen: false,
   openId: null,
   addModalOpen: false,
+  deleteOpen: false, // modal "¿Eliminar la jugada?" (solo admins)
+  deleting: false,
   formKey: 0,      // cambia en cada apertura del modal para vaciar el <input type="file">
 });
 
@@ -170,5 +172,50 @@ export async function saveNewPlay() {
   jugadas.plays.push(data);
   writeCache('plays', { categories: jugadas.categories, plays: jugadas.plays });
   jugadas.addModalOpen = false;
+  return true;
+}
+
+// ---- Eliminar una jugada (solo admins) ----
+// Desde el modal de la jugada: se cierra y se abre la confirmación en su lugar (así
+// solo hay un modal abierto y el "atrás" del móvil cierra el que se ve). Con "No" se
+// vuelve a la jugada.
+export function askDeletePlay() {
+  if (!canManagePlays() || !openedPlay()) return;
+  jugadas.modalOpen = false;
+  jugadas.deleteOpen = true;
+}
+
+export function cancelDeletePlay() {
+  jugadas.deleteOpen = false;
+  if (openedPlay()) jugadas.modalOpen = true;
+}
+
+// Ruta del vídeo dentro del bucket, si lo subió la app (si es un enlace externo, null).
+function videoPath(url) {
+  const marker = `/storage/v1/object/public/${VIDEO_BUCKET}/`;
+  const i = (url || '').indexOf(marker);
+  return i >= 0 ? decodeURIComponent(url.slice(i + marker.length).split('?')[0]) : null;
+}
+
+export async function confirmDeletePlay() {
+  const play = openedPlay();
+  if (!canManagePlays() || !play || jugadas.deleting) return false;
+  jugadas.deleting = true;
+  // .select(): si RLS no deja borrar, Supabase no da error, solo no borra nada.
+  const { data, error } = await supabase.from('plays').delete().eq('id', play.id).select('id');
+  jugadas.deleting = false;
+  if (error || !data || !data.length) {
+    console.error('No se ha podido eliminar la jugada', error);
+    alert(t('jugadas.alertDeleteError', { error: error ? error.message : t('jugadas.noPermission') }));
+    return false;
+  }
+  // El vídeo subido ya no lo usa nadie: fuera del bucket (si falla, solo queda el archivo).
+  const path = videoPath(play.video_url);
+  if (path) supabase.storage.from(VIDEO_BUCKET).remove([path]);
+
+  jugadas.plays = jugadas.plays.filter((p) => p.id !== play.id);
+  writeCache('plays', { categories: jugadas.categories, plays: jugadas.plays });
+  jugadas.deleteOpen = false;
+  jugadas.openId = null;
   return true;
 }

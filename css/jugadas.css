@@ -60,6 +60,13 @@
 }
 
 /* Modal de una jugada */
+.play-delete-btn{
+  all:unset; cursor:pointer; box-sizing:border-box; margin-right:auto; flex-shrink:0;
+  width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--line); color:var(--bad);
+}
+.play-delete-btn:hover{ border-color:var(--bad); background:#FBE7E5; }
+.play-delete-btn svg{ width:19px; height:19px; }
 .play-description{ margin:0 0 12px; font-size:13.5px; color:var(--text); line-height:1.45; white-space:pre-line; }
 .play-frame{
   aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:#0F1B2D;

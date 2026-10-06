@@ -134,3 +134,6 @@
 
 <!-- PIZARRA DEL EDITOR DE JUGADAS, A PANTALLA COMPLETA (solo admins) -->
 <div data-mount="play-board-full"></div>
+
+<!-- MODAL: CONFIRMAR ELIMINAR UNA JUGADA (solo admins) -->
+<div data-mount="delete-play-modal"></div>

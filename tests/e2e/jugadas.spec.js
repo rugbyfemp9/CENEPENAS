@@ -924,3 +924,119 @@ test('mobile: the bench fits in two rows and the board keeps most of the screen'
   expect(board.height).toBeGreaterThan(VIEWPORTS.mobile.height * 0.45);
   expect(relevantErrors(errors)).toEqual([]);
 });
+
+// ---------------------------------------------------------------------------
+// Deleting a play (admins): button in the play modal + confirmation modal
+// ---------------------------------------------------------------------------
+
+const delModal = (page) => page.locator('#delete-play-modal');
+const TOUCH_CORTA = '95000000-0000-4000-8000-000000000003';
+
+test('players get no delete button', async ({ page }) => {
+  const { errors } = await open(page, { user: USERS.player });
+  await goToSection(page, 'jugadas');
+  await card(page, 'Touch corta').click();
+  await expect(modal(page)).toHaveClass(/active/);
+  await expect(page.locator('#play-delete-btn')).toHaveCount(0);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('admin deletes a play after confirming; "No" goes back to the play', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Touch corta').click();
+  await modal(page).getByRole('button', { name: 'Eliminar' }).click();
+
+  // The play modal makes way for the confirmation.
+  await expect(modal(page)).not.toHaveClass(/active/);
+  await expect(delModal(page)).toHaveClass(/active/);
+  await expect(delModal(page).locator('h3')).toHaveText('¿Eliminar la jugada?');
+  await expect(delModal(page)).toContainText('Touch corta');
+  await expect(delModal(page)).toContainText('Desaparecerá para todo el equipo. No se puede deshacer.');
+
+  await delModal(page).getByRole('button', { name: 'No' }).click();
+  await expect(delModal(page)).not.toHaveClass(/active/);
+  await expect(modal(page)).toHaveClass(/active/);
+  await expect(modal(page).locator('h3')).toHaveText('Touch corta');
+  expect(restWrites(backend, 'plays')).toEqual([]);
+
+  await modal(page).getByRole('button', { name: 'Eliminar' }).click();
+  await delModal(page).getByRole('button', { name: 'Sí, eliminar' }).click();
+  await expect(delModal(page)).not.toHaveClass(/active/);
+  await expect(modal(page)).not.toHaveClass(/active/);
+
+  const writes = restWrites(backend, 'plays');
+  expect(writes).toHaveLength(1);
+  expect(writes[0].method).toBe('DELETE');
+  expect(writes[0].filters).toContainEqual(['id', `eq.${TOUCH_CORTA}`]);
+  // External video link (or none): nothing to remove from Storage.
+  expect(storageWrites(backend)).toEqual([]);
+  await expect(card(page, 'Touch corta')).toHaveCount(0);
+  await expect(filter(page, 'Todas')).toHaveText('Todas 4');
+  await expect(filter(page, 'Touch')).toHaveText('Touch 1');
+
+  // Still gone after coming back (the cache was updated too).
+  await goToSection(page, 'vestuario');
+  await goToSection(page, 'jugadas');
+  await expect(card(page, 'Touch corta')).toHaveCount(0);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('deleting a play with an uploaded video removes the video from the bucket', async ({ page }) => {
+  const uploaded = 'https://proj.supabase.test/storage/v1/object/public/plays/0b1c2d3e-video.mp4';
+  const plays = seed.plays.map((p) => (p.title === 'Touch corta' ? { ...p, video_url: uploaded } : p));
+  const { backend, errors } = await open(page, { seed: { ...seed, plays } });
+  await page.route(/proj\.supabase\.test/, (route) => route.fulfill({ contentType: 'video/mp4', body: '' }));
+  await goToSection(page, 'jugadas');
+  await card(page, 'Touch corta').click();
+  await modal(page).getByRole('button', { name: 'Eliminar' }).click();
+  await expect(delModal(page)).toContainText('y su vídeo también');
+  await delModal(page).getByRole('button', { name: 'Sí, eliminar' }).click();
+
+  await expect(card(page, 'Touch corta')).toHaveCount(0);
+  await expect.poll(() => storageWrites(backend)).toEqual([{ kind: 'storage', method: 'DELETE', path: '/storage/v1/object/plays' }]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('if Supabase does not delete anything (no permission), the play stays and it says so', async ({ page }) => {
+  const { errors } = await open(page);
+  const seen = dialogs(page);
+  // RLS without a delete policy: no error, just nothing deleted.
+  await page.route(/\/rest\/v1\/plays\b/, (route) => (route.request().method() === 'DELETE'
+    ? route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '[]' })
+    : route.fallback()));
+  await goToSection(page, 'jugadas');
+  await card(page, 'Touch corta').click();
+  await modal(page).getByRole('button', { name: 'Eliminar' }).click();
+  await delModal(page).getByRole('button', { name: 'Sí, eliminar' }).click();
+  await expect.poll(() => seen).toEqual(['No se ha podido eliminar la jugada: no tienes permiso']);
+  await expect(delModal(page)).toHaveClass(/active/);
+  await expect(card(page, 'Touch corta')).toHaveCount(1);
+  expect(relevantErrors(errors).filter((e) => !e.includes('No se ha podido eliminar la jugada'))).toEqual([]);
+});
+
+test('the phone back button on the confirmation goes back to the play', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Salida del 8').click();
+  await modal(page).getByRole('button', { name: 'Eliminar' }).click();
+  await expect(delModal(page)).toHaveClass(/active/);
+  await page.goBack();
+  await expect(delModal(page)).not.toHaveClass(/active/);
+  await expect(modal(page)).toHaveClass(/active/);
+  await expect(sec(page)).toHaveClass(/active/);
+  expect(restWrites(backend, 'plays')).toEqual([]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('Catalan: delete button and confirmation', async ({ page }) => {
+  const { errors } = await open(page);
+  await page.evaluate(() => window.setLang('ca'));
+  await goToSection(page, 'jugadas');
+  await card(page, 'Touch corta').click();
+  await modal(page).getByRole('button', { name: 'Eliminar' }).click();
+  await expect(delModal(page).locator('h3')).toHaveText('Vols eliminar la jugada?');
+  await expect(delModal(page)).toContainText("Desapareixerà per a tot l'equip. No es pot desfer.");
+  await expect(delModal(page).getByRole('button', { name: 'Sí, eliminar' })).toBeVisible();
+  expect(relevantErrors(errors)).toEqual([]);
+});
