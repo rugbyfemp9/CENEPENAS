@@ -6,6 +6,21 @@
 
   const play = $derived(openedPlay());
   const videoUrl = $derived(play ? safeUrl(play.video_url) : '');
+
+  // Al abrir una jugada, el vídeo empieza solo. Tocar la tarjeta cuenta como gesto de
+  // la usuaria, así que casi siempre se deja con sonido; si el navegador no lo deja
+  // (algunos móviles), arranca en silencio y se activa el sonido desde los controles.
+  let videoEl = $state(null);
+  $effect(() => {
+    if (!videoEl) return;
+    const el = videoEl;
+    el.play().catch(() => {
+      if (el.isConnected) {
+        el.muted = true;
+        el.play().catch(() => {});
+      }
+    });
+  });
 </script>
 
 <Modal id="play-modal" bind:open={jugadas.modalOpen} boxStyle="max-width:640px;">
@@ -18,7 +33,7 @@
            Las jugadas no tienen subtítulos (son animaciones sin voz). -->
       {#if videoUrl && jugadas.modalOpen}
         <!-- svelte-ignore a11y_media_has_caption -->
-        <video src={videoUrl} poster={safeUrl(play.poster_url) || undefined} controls playsinline></video>
+        <video bind:this={videoEl} src={videoUrl} poster={safeUrl(play.poster_url) || undefined} controls playsinline></video>
       {:else}
         <div class="play-frame-empty">
           <span class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>

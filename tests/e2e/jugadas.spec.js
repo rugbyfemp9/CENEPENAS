@@ -102,6 +102,58 @@ test('a play with a video plays it in the modal, and closing removes the player'
   expect(relevantErrors(errors)).toEqual([]);
 });
 
+// The fake video can't really play, so play() is replaced: it records each call (and
+// whether the video was muted) and, with blockSound, rejects unmuted calls the way a
+// phone that blocks autoplay with sound does.
+async function spyOnPlay(page, { blockSound = false } = {}) {
+  await page.addInitScript((block) => {
+    window.__playCalls = [];
+    HTMLMediaElement.prototype.play = function () {
+      window.__playCalls.push({ src: this.getAttribute('src'), muted: this.muted });
+      if (block && !this.muted) return Promise.reject(new DOMException('blocked', 'NotAllowedError'));
+      return Promise.resolve();
+    };
+  }, blockSound);
+}
+const playCalls = (page) => page.evaluate(() => window.__playCalls);
+const VIDEO = 'https://videos.cnpenas.test/bucle-10.mp4';
+
+test('opening a play with a video starts it straight away, with sound', async ({ page }) => {
+  await spyOnPlay(page);
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Bucle del 10').click();
+  await expect(modal(page).locator('video')).toHaveAttribute('src', VIDEO);
+  await expect.poll(() => playCalls(page)).toEqual([{ src: VIDEO, muted: false }]);
+
+  // Closing removes the player; opening it again starts it again.
+  await modal(page).getByRole('button', { name: 'Cerrar' }).click();
+  await card(page, 'Bucle del 10').click();
+  await expect.poll(() => playCalls(page)).toEqual([{ src: VIDEO, muted: false }, { src: VIDEO, muted: false }]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('if the browser blocks autoplay with sound, the video starts muted', async ({ page }) => {
+  await spyOnPlay(page, { blockSound: true });
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Bucle del 10').click();
+  await expect.poll(() => playCalls(page)).toEqual([{ src: VIDEO, muted: false }, { src: VIDEO, muted: true }]);
+  await expect.poll(() => modal(page).locator('video').evaluate((v) => v.muted)).toBe(true);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('a play without a video does not try to play anything', async ({ page }) => {
+  await spyOnPlay(page);
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Touch corta').click();
+  await expect(modal(page)).toHaveClass(/active/);
+  await page.waitForTimeout(200);
+  expect(await playCalls(page)).toEqual([]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
 test('no plays yet: the section says so', async ({ page }) => {
   const { errors } = await open(page, { seed: { ...seed, plays: [] } });
   await goToSection(page, 'jugadas');
