@@ -1,0 +1,23 @@
+src/lib/i18n/es.js
+  s_db282c67488fed::t_1a08a961a89556 620,627
+src/lib/i18n/ca.js
+  s_db282c67488fed::t_1a08a961a89556 619,626
+tests/e2e/jugadas.spec.js
+  s_db282c67488fed::t_1a08a961a89556 46-47,146,245,259
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b145367a147c122bdcba159f46057964a95235d3",
+  "prompts": {},
+  "sessions": {
+    "s_db282c67488fed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3d95ab8-a6e5-4408-a412-5bb0b9d04234",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
