@@ -27,6 +27,7 @@ import { treasury } from '../features/tesoreria/tesoreria.svelte.js';
 import { loadShoppingItems, tercerTreasury } from '../features/comi-tercer-temps/comi-tercer-temps.svelte.js';
 import { loadExpenses, loadSettlements } from '../features/tricount/tricount.svelte.js';
 import { loadPlays } from '../features/jugadas/jugadas.svelte.js';
+import { editorReady } from '../features/jugadas/editor.svelte.js';
 
 export const nav = $state({
   // La app siempre arranca en "Inicio".
@@ -126,6 +127,14 @@ export function setSection(id, opts) {
   // Jugadas: se traen de Supabase cada vez que se entra, por si han añadido alguna.
   if (id === 'jugadas') {
     loadPlays();
+  }
+
+  // Editor de pizarra: solo admins y con una jugada cargada (se entra desde Jugadas).
+  // Si se llega de otra forma (atrás del navegador después de guardar, URL...), se
+  // vuelve a Jugadas.
+  if (id === 'jugada-editor' && !editorReady()) {
+    setSection('jugadas');
+    return;
   }
 
   // Wellness / RPE equipo: solo Cos Tècnic (ver canViewWellnessStaff()). Si alguien

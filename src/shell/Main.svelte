@@ -104,6 +104,9 @@
   <!-- JUGADAS: las pinta Svelte (src/features/jugadas/Jugadas.svelte) -->
   <section class="section" class:active={nav.current === 'jugadas'} id="sec-jugadas"></section>
 
+  <!-- JUGADAS — EDITOR DE PIZARRA (solo admins): src/features/jugadas/PlayEditor.svelte -->
+  <section class="section" class:active={nav.current === 'jugada-editor'} id="sec-jugada-editor"></section>
+
   <!-- GALERÍA -->
   <!-- Galería: la pinta Svelte (src/features/galeria/Galeria.svelte) -->
   <section class="section" class:active={nav.current === 'galeria'} id="sec-galeria"></section>

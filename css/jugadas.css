@@ -91,6 +91,90 @@
   .jugadas-fab{ right:16px; bottom:calc(80px + env(safe-area-inset-bottom)); }
 }
 
+/* ---- Pizarra (jugadas animadas) ---- */
+.play-board{ display:block; width:100%; height:100%; }
+.play-board .pitch-lines line{ stroke:rgba(255,255,255,.4); stroke-width:1.5px; vector-effect:non-scaling-stroke; }
+.play-board .pitch-lines .l-main{ stroke:rgba(255,255,255,.65); stroke-width:2px; }
+.play-board .pitch-lines .l-half{ stroke:rgba(255,255,255,.55); stroke-width:2px; }
+.play-board .pitch-lines .l-dash{ stroke-dasharray:12 7; }
+.play-board .pitch-lines .l-tick{ stroke:rgba(255,255,255,.6); stroke-width:2px; }
+.play-board .tk-attack{ fill:#0F1B2D; stroke:#fff; stroke-width:.32; }
+.play-board .tk-defense{ fill:#E14B3F; stroke:#fff; stroke-width:.32; }
+.play-board .tk-ball{ fill:#F7F1E3; stroke:#7A4A1E; stroke-width:.22; }
+.play-board .tk-label{ fill:#fff; font-family:'Oswald',sans-serif; font-weight:700; font-size:1.75px; text-anchor:middle; pointer-events:none; }
+.play-board .tk-hit{ fill:transparent; }
+.play-board .board-token.interactive{ cursor:grab; touch-action:none; }
+.play-board .board-token.selected circle:not(.tk-hit), .play-board .board-token.selected ellipse{ stroke:#FFD54A; stroke-width:.5; }
+.play-board .board-ghost{ opacity:.45; }
+.play-board .board-arrow{ stroke:rgba(255,255,255,.85); stroke-width:2px; vector-effect:non-scaling-stroke; stroke-dasharray:6 4; }
+
+/* Miniatura de la tarjeta: el primer paso, por debajo del botón de play */
+.play-thumb-board{ position:absolute; inset:0; pointer-events:none; }
+.play-thumb .play-icon, .play-thumb .play-soon{ z-index:1; }
+.play-anim-badge{ background:rgba(74,159,216,.92); }
+
+/* Reproductor en el modal: la pizarra ocupa el marco 16:9 y los controles van debajo */
+.play-frame.has-anim{ aspect-ratio:auto; background:none; border-radius:0; overflow:visible; }
+.play-anim-board{ aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:#2B9761; }
+.play-anim-controls{ display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.play-anim-btn, .play-anim-speed, .play-anim-dot{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:inline-flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--line); color:var(--navy); font-family:'Oswald',sans-serif; font-weight:600;
+}
+.play-anim-btn{ width:38px; height:38px; border-radius:50%; }
+.play-anim-btn svg{ width:18px; height:18px; }
+.play-anim-btn:hover, .play-anim-speed:hover, .play-anim-dot:hover{ border-color:var(--sky); color:var(--sky-dark); }
+.play-anim-steps{ display:flex; gap:5px; flex-wrap:wrap; flex:1; min-width:0; }
+.play-anim-dot{ min-width:30px; height:30px; padding:0 6px; border-radius:15px; font-size:12.5px; }
+.play-anim-dot.active{ background:var(--navy); border-color:var(--navy); color:#fff; }
+.play-anim-speed{ height:30px; padding:0 10px; border-radius:15px; font-size:12.5px; margin-left:auto; }
+
+/* ---- Editor de pizarra ---- */
+.play-kind-toggle{ margin:12px 0 0; }
+.play-editor{ display:flex; flex-direction:column; gap:14px; margin-top:14px; }
+.play-editor-meta{ display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; padding:16px; }
+.play-editor-main{ display:flex; gap:18px; align-items:flex-start; }
+.play-editor-board{
+  flex:0 0 auto; width:min(100%, calc(72vh * 78 / 128)); aspect-ratio:78/128;
+  border-radius:var(--radius); overflow:hidden; background:#2B9761;
+  box-shadow:0 10px 30px -18px rgba(15,27,45,.35); user-select:none; -webkit-user-select:none;
+}
+.play-editor-board{ position:relative; }
+.play-editor-zoom{
+  all:unset; cursor:pointer; box-sizing:border-box; position:absolute; top:10px; right:10px; z-index:1;
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:rgba(15,27,45,.7); color:#fff;
+}
+.play-editor-zoom svg{ width:20px; height:20px; }
+.play-editor-zoom[aria-pressed="true"]{ background:var(--sky-dark); }
+.play-editor-preview{ flex:1; min-width:0; max-width:640px; }
+.play-editor-side{ flex:1; min-width:0; display:flex; flex-direction:column; gap:14px; }
+.play-editor-tools, .play-editor-chips, .play-editor-speed{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.play-editor-label, .play-editor-speed > span{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); margin-bottom:6px; }
+.play-editor-speed{ margin-top:10px; }
+.play-editor-speed > span{ margin:0 4px 0 0; }
+.play-editor-hint{ margin:6px 0 0; font-size:12.5px; color:var(--text-muted); line-height:1.4; }
+.play-editor-actions{ display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
+.editor-btn{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px; border-radius:16px;
+  border:1.5px solid var(--line); color:var(--navy); background:var(--white);
+  font-family:'Oswald',sans-serif; font-size:12.5px; font-weight:600; text-transform:uppercase; letter-spacing:.03em;
+}
+.editor-btn:hover:not(:disabled){ border-color:var(--sky); color:var(--sky-dark); }
+.editor-btn:disabled{ opacity:.4; cursor:default; }
+.editor-btn.danger:hover:not(:disabled){ border-color:var(--bad); color:var(--bad); }
+.editor-btn .dot{ width:12px; height:12px; border-radius:50%; border:1.5px solid #fff; box-shadow:0 0 0 1px var(--line); }
+.editor-btn .dot.attack{ background:#0F1B2D; }
+.editor-btn .dot.defense{ background:#E14B3F; }
+.editor-btn .dot.ball{ background:#F7F1E3; border-radius:50% / 40%; width:14px; height:10px; box-shadow:0 0 0 1px #7A4A1E; }
+@media (max-width:900px){
+  .play-editor-main{ flex-direction:column; }
+  .play-editor-board{ width:100%; }
+  .play-editor-side{ width:100%; }
+}
+
 @media (max-width:640px){
   .jugadas-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; }
   .play-cap{ padding:8px 10px 10px; }

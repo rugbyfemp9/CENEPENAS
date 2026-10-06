@@ -63,6 +63,23 @@ const EV = {
   trToday:    'auto-2026-09-25'
 };
 
+// Seeded play animation (see plays below): the 8 picks up from the base of the scrum,
+// passes to the 9, who runs; a defender chases. 3 steps.
+export const SALIDA_DEL_8 = {
+  v: 1,
+  tokens: [
+    { id: 'a8', team: 'attack', label: '8' },
+    { id: 'a9', team: 'attack', label: '9' },
+    { id: 'd7', team: 'defense', label: '' },
+    { id: 'ball', team: 'ball' }
+  ],
+  steps: [
+    { ms: 1200, pos: { a8: [30, 70], a9: [26, 66], d7: [36, 62], ball: [30, 71.5] } },
+    { ms: 1000, pos: { a8: [33, 66], a9: [26, 66], d7: [35, 64], ball: [33, 67.5] } },
+    { ms: 800, pos: { a8: [36, 62], a9: [20, 58], d7: [30, 60], ball: [21, 57.5] } }
+  ]
+};
+
 const mapsUrl = (q) => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
 
 // ---------------------------------------------------------------------------
@@ -605,8 +622,11 @@ export const seed = {
   ],
 
   // play_categories + plays: jugadas.svelte.js loadPlays, both select('*') ordered by
-  // sort_order (then id / created_at). Read-only from the app. "defensa" has no plays
-  // (hidden under "Todas"); name_ca null falls back to name_es; one play has a video.
+  // sort_order (then id / created_at). "defensa" has no plays (hidden under "Todas");
+  // name_ca null falls back to name_es; one play has a video.
+  // animation (board.js format, metres on a portrait 70x120 pitch): "Salida del 8" is a
+  // 3-step animation; "Bucle del 10" has a video AND an animation (the video wins);
+  // "Cruce en el centro" has an unusable one (falls back to "Vídeo no disponible").
   play_categories: [
     { id: 'touch', name_es: 'Touch', name_ca: 'Touch', emoji: '🙌', sort_order: 10, created_at: '2026-10-01T10:00:00Z' },
     { id: 'mele', name_es: 'Melé', name_ca: null, emoji: '🤝', sort_order: 20, created_at: '2026-10-01T10:00:00Z' },
@@ -614,11 +634,11 @@ export const seed = {
     { id: 'defensa', name_es: 'Defensa', name_ca: 'Defensa', emoji: '🛡️', sort_order: 40, created_at: '2026-10-01T10:00:00Z' }
   ],
   plays: [
-    { id: uid('95000000', 1), category_id: 'ataque', title: 'Bucle del 10', description: 'La 10 pasa a la 12 y vuelve por fuera', video_url: 'https://videos.cnpenas.test/bucle-10.mp4', poster_url: null, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
+    { id: uid('95000000', 1), category_id: 'ataque', title: 'Bucle del 10', description: 'La 10 pasa a la 12 y vuelve por fuera', video_url: 'https://videos.cnpenas.test/bucle-10.mp4', poster_url: null, animation: SALIDA_DEL_8, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
     { id: uid('95000000', 2), category_id: 'touch', title: 'Touch al fondo', description: null, video_url: null, poster_url: null, sort_order: 20, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
     { id: uid('95000000', 3), category_id: 'touch', title: 'Touch corta', description: 'Saltadora delantera, 3 jugadoras', video_url: null, poster_url: null, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
-    { id: uid('95000000', 4), category_id: 'mele', title: 'Salida del 8', description: null, video_url: null, poster_url: null, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
-    { id: uid('95000000', 5), category_id: 'ataque', title: 'Cruce en el centro', description: null, video_url: null, poster_url: null, sort_order: 20, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin }
+    { id: uid('95000000', 4), category_id: 'mele', title: 'Salida del 8', description: null, video_url: null, poster_url: null, animation: SALIDA_DEL_8, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
+    { id: uid('95000000', 5), category_id: 'ataque', title: 'Cruce en el centro', description: null, video_url: null, poster_url: null, animation: { v: 1, tokens: 'nope', steps: [] }, sort_order: 20, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin }
   ],
 
   // push_subscriptions: write-only from js/push.js upsert (profile_id, fcm_token,

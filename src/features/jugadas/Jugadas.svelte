@@ -2,7 +2,9 @@
   import { t } from '../../lib/i18n.svelte.js';
   import { cssUrl } from '../../lib/url.js';
   import { setSection } from '../../shell/navigation.svelte.js';
-  import { jugadas, setFilter, openPlay, playsOf, categoryName, canManagePlays, openAddPlayModal } from './jugadas.svelte.js';
+  import PlayBoard from './PlayBoard.svelte';
+  import { fitViewBox } from './board.js';
+  import { jugadas, setFilter, openPlay, playsOf, categoryName, canManagePlays, openAddPlayModal, animationOf } from './jugadas.svelte.js';
 
   // En "Todas" solo salen las categorías que tienen alguna jugada; al filtrar por una
   // categoría vacía se dice que está vacía.
@@ -46,10 +48,20 @@
       {:else}
         <div class="jugadas-grid">
           {#each plays as p (p.id)}
+            <!-- Con vídeo, manda el vídeo (igual que en el modal). -->
+            {@const anim = p.video_url ? null : animationOf(p)}
             <button class="play-card" onclick={() => openPlay(p.id)}>
               <div class="play-thumb" style={p.poster_url ? `background-image:url('${cssUrl(p.poster_url)}')` : null}>
-                <span class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-                {#if !p.video_url}<span class="play-soon">{t('jugadas.soon')}</span>{/if}
+                <!-- Sin portada, una jugada animada enseña su primer paso. -->
+                {#if anim && !p.poster_url}
+                  <div class="play-thumb-board"><PlayBoard {anim} positions={anim.steps[0].pos} viewBox={fitViewBox(anim)} /></div>
+                {/if}
+                {#if !anim}<span class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>{/if}
+                {#if anim}
+                  <span class="play-soon play-anim-badge">{t('jugadas.animationBadge')}</span>
+                {:else if !p.video_url}
+                  <span class="play-soon">{t('jugadas.soon')}</span>
+                {/if}
               </div>
               <div class="play-cap">
                 <b>{p.title}</b>

@@ -5,11 +5,13 @@
 // Se cargan cada vez que se entra en la sección (setSection), por si han añadido
 // alguna desde entonces; mientras tanto se pinta lo último que había en caché.
 // Las admins pueden añadir jugadas con el botón "+": el vídeo se sube al bucket
-// "plays" de Supabase Storage y la jugada guarda su URL pública.
+// "plays" de Supabase Storage y la jugada guarda su URL pública. Una jugada también
+// puede ser una animación de pizarra (columna "animation", ver board.js).
 import { supabase } from '../../lib/supabase.js';
 import { readCache, writeCache } from '../../lib/storage.js';
 import { session } from '../../lib/session.svelte.js';
 import { t, getLang } from '../../lib/i18n.svelte.js';
+import { normalizeAnimation } from './board.js';
 
 const VIDEO_BUCKET = 'plays';
 // El mismo límite que tiene el bucket: así se avisa antes de subir nada.
@@ -26,7 +28,8 @@ export const jugadas = $state({
   formKey: 0,      // cambia en cada apertura del modal para vaciar el <input type="file">
 });
 
-export const playForm = $state({ categoryId: '', title: '', description: '', file: null, saving: false });
+// kind: 'video' (se sube un vídeo) o 'animation' (se sigue en el editor de pizarra).
+export const playForm = $state({ kind: 'video', categoryId: '', title: '', description: '', file: null, saving: false });
 
 export async function loadPlays() {
   const cached = await readCache('plays');
@@ -68,6 +71,12 @@ export function openedPlay() {
   return jugadas.plays.find((p) => p.id === jugadas.openId) || null;
 }
 
+// La animación de una jugada (columna "animation"), ya revisada; null si no tiene o
+// si lo guardado no se puede pintar.
+export function animationOf(play) {
+  return play ? normalizeAnimation(play.animation) : null;
+}
+
 export function playsOf(categoryId) {
   return jugadas.plays.filter((p) => p.category_id === categoryId);
 }
@@ -89,6 +98,7 @@ export function canManagePlays() {
 export function openAddPlayModal() {
   if (!canManagePlays()) return;
   playForm.categoryId = jugadas.filter !== 'all' ? jugadas.filter : (jugadas.categories[0]?.id || '');
+  playForm.kind = 'video';
   playForm.title = '';
   playForm.description = '';
   playForm.file = null;
