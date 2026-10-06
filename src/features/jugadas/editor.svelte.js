@@ -26,6 +26,7 @@ export const editor = $state({
   anim: null,         // { v, tokens, steps } (board.js)
   step: 0,            // paso que se está editando
   selectedId: null,   // ficha seleccionada (la que se quita con "Quitar")
+  boardOpen: false,   // pizarra a pantalla completa (PlayBoardFull.svelte)
   preview: false,     // true = se está reproduciendo para probarla
   viewBox: FULL_PITCH_VIEWBOX, // encuadre de la pizarra (campo entero o acercado)
   zoomed: false,
@@ -45,6 +46,7 @@ function load(playId, meta, anim) {
   editor.anim = anim;
   editor.step = 0;
   editor.selectedId = null;
+  editor.boardOpen = false;
   editor.preview = false;
   editor.dirty = false;
   editor.saving = false;
@@ -73,10 +75,25 @@ export function toggleZoom() {
   editor.viewBox = [x, y, ZOOM_W, ZOOM_H].map((n) => Math.round(n * 10) / 10).join(' ');
 }
 
+// Una jugada nueva va directa a la pizarra (no hay nada que ver sin fichas).
 export function startNewAnimation(meta) {
   if (!canManagePlays()) return;
   load(null, meta, { v: 1, tokens: [], steps: [{ ms: STEP_MS_DEFAULT, pos: {} }] });
   setSection('jugada-editor');
+  openBoard();
+}
+
+// La pizarra se edita a pantalla completa y sin scroll: en el móvil, al arrastrar una
+// ficha la página se desplazaba en vez de moverse la ficha.
+export function openBoard() {
+  if (!editor.anim) return;
+  editor.preview = false;
+  editor.boardOpen = true;
+}
+
+export function closeBoard() {
+  editor.boardOpen = false;
+  editor.preview = false;
 }
 
 // Desde el modal "Añadir jugada" con "Animación": los datos del formulario pasan al
@@ -242,6 +259,7 @@ export async function saveAnimation() {
   else jugadas.plays.push(result.data);
   writeCache('plays', { categories: jugadas.categories, plays: jugadas.plays });
   editor.dirty = false;
+  editor.boardOpen = false;
   editor.anim = null;
   setSection('jugadas');
   return true;
