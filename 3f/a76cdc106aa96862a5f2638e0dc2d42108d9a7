@@ -1,0 +1,35 @@
+tests/e2e/jugadas.spec.js
+  s_db282c67488fed::t_8dcf38e77b2d66 486,490-493,496,498,519,528,536,563-615,620-622,630,649-651,653,655-657,660,662,666-668,670-671,673-674,700,711,717,721,723,728,739,741,745-751,754,775,782,795,797,799,816,834-836,846,849-853
+src/features/jugadas/editor.svelte.js
+  s_db282c67488fed::t_ee484c565450d9 29,49,78,83-96,262
+src/features/jugadas/PlayEditor.svelte
+  s_db282c67488fed::t_c8e7e5b588d6e1 2-5,8,10,17-18,46-52,54-59
+src/features/jugadas/index.js
+  s_db282c67488fed::t_1b324235e34fde 6,13
+css/jugadas.css
+  s_db282c67488fed::t_1b324235e34fde 137-189,191
+src/shell/ModalMounts.svelte
+  s_db282c67488fed::t_1b324235e34fde 134-136
+src/features/jugadas/PlayBoardFull.svelte
+  s_db282c67488fed::t_17e0a2a19baa1c 1-165
+src/lib/i18n/es.js
+  s_db282c67488fed::t_1b324235e34fde 665-668
+src/lib/i18n/ca.js
+  s_db282c67488fed::t_1b324235e34fde 664-667
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3fa76cdc106aa96862a5f2638e0dc2d42108d9a7",
+  "prompts": {},
+  "sessions": {
+    "s_db282c67488fed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3d95ab8-a6e5-4408-a412-5bb0b9d04234",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
