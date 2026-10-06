@@ -1,0 +1,38 @@
+src/shell/navigation.svelte.js
+  s_db282c67488fed::t_e716f413ad7c75 29,126-128
+src/features/jugadas/Jugadas.svelte
+  s_db282c67488fed::t_e716f413ad7c75 5,7-8,10-12,22-31,33-37,39-64
+src/features/jugadas/PlayModal.svelte
+  s_db282c67488fed::t_e716f413ad7c75 5,8,13-15,19,21
+  s_db282c67488fed::t_112681fa502527 17-18,20
+tests/e2e/jugadas.spec.js
+  s_db282c67488fed::t_09bbb4636b269f 12
+  s_db282c67488fed::t_5322fb61c26dcc 2-3,6,10,14-20,24,29,36-37,40,42-56,58-59,61-66,69,73-74,76,79-81,90-130,132,135,139-140,145-146,148-149,151-155
+tests/e2e/fixtures/seed.js
+  s_db282c67488fed::t_b4f188e4ba8880 607-623
+src/lib/i18n/es.js
+  s_db282c67488fed::t_e716f413ad7c75 609-611
+css/jugadas.css
+  s_db282c67488fed::t_e716f413ad7c75 57-60,63
+src/lib/i18n/ca.js
+  s_db282c67488fed::t_e716f413ad7c75 608-610
+src/features/jugadas/jugadas.svelte.js
+  s_db282c67488fed::t_67403a906e2de6 4
+  s_db282c67488fed::t_e716f413ad7c75 1-3,5-9,12-15,20-46,57,60-61,64-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "84c1522327b6ca82699366a0767f48d7725a1089",
+  "prompts": {},
+  "sessions": {
+    "s_db282c67488fed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3d95ab8-a6e5-4408-a412-5bb0b9d04234",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
