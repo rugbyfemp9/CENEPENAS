@@ -349,3 +349,135 @@ test('Catalan: the add-play form is translated', async ({ page }) => {
   await expect(addModal(page).getByRole('button', { name: 'Desa', exact: true })).toBeVisible();
   expect(relevantErrors(errors)).toEqual([]);
 });
+
+// ---------------------------------------------------------------------------
+// Animated plays (board): "Salida del 8" in the seed, 3 steps, ~3 s in total
+// ---------------------------------------------------------------------------
+
+const anim = (page) => modal(page).locator('.play-anim');
+const tokenAt = (scope, id) => scope.locator(`[data-token="${id}"]`);
+
+test('an animated play shows its first step as the card thumbnail and an "Animación" badge', async ({ page }) => {
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+
+  const thumb = card(page, 'Salida del 8').locator('.play-thumb-board svg');
+  await expect(thumb).toHaveCount(1);
+  await expect(thumb.locator('[data-token]')).toHaveCount(4);
+  await expect(tokenAt(thumb, 'a8')).toHaveAttribute('transform', 'translate(30 70)');
+  await expect(tokenAt(thumb, 'a8')).toContainText('8');
+  await expect(card(page, 'Salida del 8').locator('.play-soon')).toHaveText('Animación');
+
+  // Video + animation: the video wins, so no board and no badge.
+  await expect(card(page, 'Bucle del 10').locator('.play-thumb-board')).toHaveCount(0);
+  await expect(card(page, 'Bucle del 10').locator('.play-soon')).toHaveCount(0);
+  // Unusable animation data: treated as a play with nothing to show.
+  await expect(card(page, 'Cruce en el centro').locator('.play-thumb-board')).toHaveCount(0);
+  await expect(card(page, 'Cruce en el centro').locator('.play-soon')).toHaveText('Vídeo no disponible');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('opening an animated play plays it by itself and stops on the last step', async ({ page }) => {
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Salida del 8').click();
+
+  await expect(anim(page)).toBeVisible();
+  await expect(modal(page).locator('video, .play-frame-empty')).toHaveCount(0);
+  await expect(anim(page).locator('.play-anim-dot')).toHaveText(['1', '2', '3']);
+  await expect(anim(page)).toHaveAttribute('data-state', 'playing');
+  await expect(anim(page)).toHaveAttribute('data-state', 'ended', { timeout: 10_000 });
+  await expect(anim(page)).toHaveAttribute('data-step', '2');
+  await expect(anim(page).locator('.play-anim-dot.active')).toHaveText('3');
+  await expect(tokenAt(anim(page), 'a9')).toHaveAttribute('transform', 'translate(20 58)');
+  await expect(tokenAt(anim(page), 'ball')).toHaveAttribute('transform', 'translate(21 57.5)');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('step buttons jump to a step and pause; play after the end starts again', async ({ page }) => {
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Salida del 8').click();
+
+  await anim(page).locator('.play-anim-dot', { hasText: '2' }).click();
+  await expect(anim(page)).toHaveAttribute('data-state', 'paused');
+  await expect(anim(page)).toHaveAttribute('data-step', '1');
+  await expect(anim(page).locator('.play-anim-dot.active')).toHaveText('2');
+  await expect(tokenAt(anim(page), 'a8')).toHaveAttribute('transform', 'translate(33 66)');
+
+  await anim(page).locator('.play-anim-dot', { hasText: '1' }).click();
+  await expect(tokenAt(anim(page), 'a8')).toHaveAttribute('transform', 'translate(30 70)');
+
+  // Play from step 1 to the end, then play again: it starts over.
+  await anim(page).getByRole('button', { name: 'Reproducir' }).click();
+  await expect(anim(page)).toHaveAttribute('data-state', 'ended', { timeout: 10_000 });
+  await expect(anim(page).getByRole('button', { name: 'Reproducir' })).toBeVisible();
+  await anim(page).getByRole('button', { name: 'Reproducir' }).click();
+  await expect(anim(page)).toHaveAttribute('data-state', 'playing');
+  await expect(anim(page).getByRole('button', { name: 'Pausa' })).toBeVisible();
+  await anim(page).getByRole('button', { name: 'Pausa' }).click();
+  await expect(anim(page)).toHaveAttribute('data-state', 'paused');
+
+  await anim(page).getByRole('button', { name: 'Volver a empezar' }).click();
+  await expect(anim(page)).toHaveAttribute('data-state', 'playing');
+  await expect(anim(page)).toHaveAttribute('data-state', 'ended', { timeout: 10_000 });
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('speed button cycles 1× → 2× → 0.5× and the play still reaches the end', async ({ page }) => {
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Salida del 8').click();
+  const speedBtn = anim(page).getByRole('button', { name: 'Velocidad' });
+  await expect(speedBtn).toHaveText('1×');
+  await speedBtn.click();
+  await expect(speedBtn).toHaveText('2×');
+  await expect(anim(page)).toHaveAttribute('data-state', 'ended', { timeout: 10_000 });
+  await speedBtn.click();
+  await expect(speedBtn).toHaveText('0.5×');
+  await speedBtn.click();
+  await expect(speedBtn).toHaveText('1×');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('video + animation opens the video; unusable animation data shows the placeholder', async ({ page }) => {
+  await spyOnPlay(page);
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Bucle del 10').click();
+  await expect(modal(page).locator('video')).toHaveCount(1);
+  await expect(anim(page)).toHaveCount(0);
+  await modal(page).getByRole('button', { name: 'Cerrar' }).click();
+
+  await card(page, 'Cruce en el centro').click();
+  await expect(modal(page).locator('.play-frame-empty')).toContainText('El vídeo de esta jugada llegará pronto.');
+  await expect(anim(page)).toHaveCount(0);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('closing the modal removes the player; reopening starts from the first step', async ({ page }) => {
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Salida del 8').click();
+  await expect(anim(page)).toHaveAttribute('data-state', 'ended', { timeout: 10_000 });
+  await modal(page).getByRole('button', { name: 'Cerrar' }).click();
+  await expect(anim(page)).toHaveCount(0);
+
+  await card(page, 'Salida del 8').click();
+  await expect(anim(page)).toHaveAttribute('data-state', 'playing');
+  await expect(anim(page)).toHaveAttribute('data-step', '0');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('Catalan: animated play badge and player controls', async ({ page }) => {
+  const { errors } = await open(page);
+  await page.evaluate(() => window.setLang('ca'));
+  await goToSection(page, 'jugadas');
+  await expect(card(page, 'Salida del 8').locator('.play-soon')).toHaveText('Animació');
+  await card(page, 'Salida del 8').click();
+  await expect(anim(page).getByRole('button', { name: 'Tornar a començar' })).toBeVisible();
+  await expect(anim(page).getByRole('button', { name: 'Velocitat' })).toBeVisible();
+  await expect(anim(page).getByRole('group', { name: 'Passos de la jugada' })).toBeVisible();
+  await expect(anim(page).getByRole('button', { name: 'Pas 3' })).toBeVisible();
+  expect(relevantErrors(errors)).toEqual([]);
+});

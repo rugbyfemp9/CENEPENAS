@@ -91,6 +91,45 @@
   .jugadas-fab{ right:16px; bottom:calc(80px + env(safe-area-inset-bottom)); }
 }
 
+/* ---- Pizarra (jugadas animadas) ---- */
+.play-board{ display:block; width:100%; height:100%; }
+.play-board .pitch-lines line{ stroke:rgba(255,255,255,.4); stroke-width:1.5px; vector-effect:non-scaling-stroke; }
+.play-board .pitch-lines .l-main{ stroke:rgba(255,255,255,.65); stroke-width:2px; }
+.play-board .pitch-lines .l-half{ stroke:rgba(255,255,255,.55); stroke-width:2px; }
+.play-board .pitch-lines .l-dash{ stroke-dasharray:12 7; }
+.play-board .pitch-lines .l-tick{ stroke:rgba(255,255,255,.6); stroke-width:2px; }
+.play-board .tk-attack{ fill:#0F1B2D; stroke:#fff; stroke-width:.32; }
+.play-board .tk-defense{ fill:#E14B3F; stroke:#fff; stroke-width:.32; }
+.play-board .tk-ball{ fill:#F7F1E3; stroke:#7A4A1E; stroke-width:.22; }
+.play-board .tk-label{ fill:#fff; font-family:'Oswald',sans-serif; font-weight:700; font-size:1.75px; text-anchor:middle; pointer-events:none; }
+.play-board .tk-hit{ fill:transparent; }
+.play-board .board-token.interactive{ cursor:grab; touch-action:none; }
+.play-board .board-token.selected circle:not(.tk-hit), .play-board .board-token.selected ellipse{ stroke:#FFD54A; stroke-width:.5; }
+.play-board .board-ghost{ opacity:.45; }
+.play-board .board-arrow{ stroke:rgba(255,255,255,.85); stroke-width:2px; vector-effect:non-scaling-stroke; stroke-dasharray:6 4; }
+
+/* Miniatura de la tarjeta: el primer paso, por debajo del botón de play */
+.play-thumb-board{ position:absolute; inset:0; pointer-events:none; }
+.play-thumb .play-icon, .play-thumb .play-soon{ z-index:1; }
+.play-anim-badge{ background:rgba(74,159,216,.92); }
+
+/* Reproductor en el modal: la pizarra ocupa el marco 16:9 y los controles van debajo */
+.play-frame.has-anim{ aspect-ratio:auto; background:none; border-radius:0; overflow:visible; }
+.play-anim-board{ aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:#2B9761; }
+.play-anim-controls{ display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.play-anim-btn, .play-anim-speed, .play-anim-dot{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  display:inline-flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--line); color:var(--navy); font-family:'Oswald',sans-serif; font-weight:600;
+}
+.play-anim-btn{ width:38px; height:38px; border-radius:50%; }
+.play-anim-btn svg{ width:18px; height:18px; }
+.play-anim-btn:hover, .play-anim-speed:hover, .play-anim-dot:hover{ border-color:var(--sky); color:var(--sky-dark); }
+.play-anim-steps{ display:flex; gap:5px; flex-wrap:wrap; flex:1; min-width:0; }
+.play-anim-dot{ min-width:30px; height:30px; padding:0 6px; border-radius:15px; font-size:12.5px; }
+.play-anim-dot.active{ background:var(--navy); border-color:var(--navy); color:#fff; }
+.play-anim-speed{ height:30px; padding:0 10px; border-radius:15px; font-size:12.5px; margin-left:auto; }
+
 @media (max-width:640px){
   .jugadas-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; }
   .play-cap{ padding:8px 10px 10px; }
