@@ -483,17 +483,19 @@ test('Catalan: animated play badge and player controls', async ({ page }) => {
 });
 
 // ---------------------------------------------------------------------------
-// Board editor (admins): section "jugada-editor"
+// Board editor (admins): section "jugada-editor" + full-screen board (#play-board-full)
 // ---------------------------------------------------------------------------
 
 const ed = (page) => page.locator('#sec-jugada-editor');
-const edToken = (page, id) => ed(page).locator(`.play-board [data-token="${id}"]`);
-const tool = (page, name) => ed(page).locator('.play-editor-tools').getByRole('button', { name, exact: true });
+const bf = (page) => page.locator('#play-board-full');
+const edToken = (page, id) => bf(page).locator(`.play-board [data-token="${id}"]`);
+const tool = (page, name) => bf(page).locator('.play-editor-tools').getByRole('button', { name, exact: true });
+const chips = (page) => bf(page).locator('.play-editor-chips .play-anim-dot');
 const near = (n) => expect.closeTo(n, 0);
 
-// Pitch metres → screen pixels of the editor's board.
+// Pitch metres → screen pixels of the full-screen board.
 const toScreen = (page, [x, y]) => page.evaluate(([px, py]) => {
-  const svg = document.querySelector('#sec-jugada-editor .play-board');
+  const svg = document.querySelector('#play-board-full .play-board');
   const pt = svg.createSVGPoint();
   pt.x = px; pt.y = py;
   const s = pt.matrixTransform(svg.getScreenCTM());
@@ -514,6 +516,7 @@ const tokenPos = async (page, id) => {
   return tr.match(/translate\(([-\d.]+) ([-\d.]+)\)/).slice(1).map(Number);
 };
 
+// A new animation goes straight to the full-screen board.
 async function openNewAnimation(page, { title = 'Lineout 5', category = 'touch' } = {}) {
   await goToSection(page, 'jugadas');
   await addBtn(page).click();
@@ -522,6 +525,7 @@ async function openNewAnimation(page, { title = 'Lineout 5', category = 'touch' 
   await page.locator('#play-title-input').fill(title);
   await page.locator('#play-continue-btn').click();
   await expect(ed(page)).toHaveClass(/active/);
+  await expect(bf(page)).toHaveClass(/active/);
 }
 
 test('players (and admins with nothing loaded) cannot open the editor', async ({ page }) => {
@@ -529,6 +533,7 @@ test('players (and admins with nothing loaded) cannot open the editor', async ({
   await page.evaluate(() => window.setSection('jugada-editor'));
   await expect(sec(page)).toHaveClass(/active/);
   await expect(ed(page)).not.toHaveClass(/active/);
+  await expect(bf(page)).not.toHaveClass(/active/);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -555,14 +560,66 @@ test('admin: the add form switches between video and animation', async ({ page }
   expect(relevantErrors(errors)).toEqual([]);
 });
 
+test('the board is full screen and the page cannot scroll while it is open', async ({ page }) => {
+  await page.setViewportSize(VIEWPORTS.mobile);
+  const { errors } = await open(page);
+  await openNewAnimation(page);
+
+  // Covers the whole screen, bottom nav included.
+  const box = await bf(page).boundingBox();
+  expect(box).toEqual({ x: 0, y: 0, width: VIEWPORTS.mobile.width, height: VIEWPORTS.mobile.height });
+  await expect(page.locator('.bottom-nav')).toBeVisible();
+  expect(await page.evaluate(() => {
+    const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+    return document.elementFromPoint(nav.x + 10, nav.y + 10).closest('#play-board-full') !== null;
+  })).toBe(true);
+
+  // Page scroll locked, no browser gestures on the board, touchmove cancelled.
+  await expect(page.locator('html')).toHaveClass(/board-open/);
+  await expect(bf(page)).toHaveCSS('touch-action', 'none');
+  expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe('hidden');
+  const cancelled = await page.evaluate(() => {
+    const el = document.querySelector('#play-board-full .pbf-board');
+    const ev = new TouchEvent('touchmove', { bubbles: true, cancelable: true, touches: [] });
+    el.dispatchEvent(ev);
+    return ev.defaultPrevented;
+  });
+  expect(cancelled).toBe(true);
+  await page.mouse.wheel(0, 600);
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+
+  // "Listo" closes it and gives the page its scroll back.
+  await page.locator('#board-done-btn').click();
+  await expect(bf(page)).not.toHaveClass(/active/);
+  await expect(page.locator('html')).not.toHaveClass(/board-open/);
+  expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden');
+  await expect(ed(page)).toHaveClass(/active/);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('the phone back button closes the board but stays in the editor', async ({ page }) => {
+  const { errors } = await open(page);
+  await openNewAnimation(page);
+  await tool(page, 'Atacante').click();
+  await page.goBack();
+  await expect(bf(page)).not.toHaveClass(/active/);
+  await expect(ed(page)).toHaveClass(/active/);
+  await expect(page.locator('html')).not.toHaveClass(/board-open/);
+  // The draft is still there.
+  await expect(ed(page).locator('.play-editor-open')).toContainText('1 fichas · 1 pasos');
+  await page.locator('#editor-open-board').click();
+  await expect(bf(page)).toHaveClass(/active/);
+  await expect(edToken(page, 'a1')).toHaveCount(1);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
 test('admin draws a new play step by step and saves it', async ({ page }) => {
   const { backend, errors } = await open(page);
   await openNewAnimation(page);
 
-  await expect(ed(page).locator('h2')).toHaveText('Nueva jugada');
-  await expect(page.locator('#editor-title-input')).toHaveValue('Lineout 5');
-  await expect(page.locator('#editor-category-input')).toHaveValue('touch');
-  await expect(ed(page)).toContainText('Añade atacantes, defensas y el balón');
+  await expect(bf(page).locator('.pbf-title')).toContainText('Lineout 5');
+  await expect(bf(page).locator('.pbf-title')).toContainText('Paso 1 de 1');
+  await expect(bf(page)).toContainText('Añade atacantes, defensas y el balón');
   await expect(page.locator('#editor-preview-btn')).toBeDisabled();
 
   await tool(page, 'Atacante').click();
@@ -570,7 +627,7 @@ test('admin draws a new play step by step and saves it', async ({ page }) => {
   await tool(page, 'Defensa').click();
   await tool(page, 'Balón').click();
   await expect(tool(page, 'Balón')).toBeDisabled();
-  await expect(ed(page).locator('.play-board [data-token]')).toHaveCount(4);
+  await expect(bf(page).locator('.play-board [data-token]')).toHaveCount(4);
   await expect(edToken(page, 'a1')).toContainText('1');
   await expect(edToken(page, 'a2')).toContainText('2');
   await expect(edToken(page, 'ball')).toHaveClass(/selected/);
@@ -589,28 +646,32 @@ test('admin draws a new play step by step and saves it', async ({ page }) => {
 
   // Step 2: copies step 1; moving a token draws an arrow from where it was.
   await page.locator('#editor-add-step').click();
-  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1', '2']);
-  await expect(ed(page).locator('.play-editor-chips .play-anim-dot.active')).toHaveText('2');
+  await expect(chips(page)).toHaveText(['1', '2']);
+  await expect(bf(page).locator('.play-editor-chips .play-anim-dot.active')).toHaveText('2');
+  await expect(bf(page).locator('.pbf-title')).toContainText('Paso 2 de 2');
   expect(await tokenPos(page, 'a1')).toEqual([near(20), near(40)]);
-  await expect(ed(page).locator('.board-arrow')).toHaveCount(0);
+  await expect(bf(page).locator('.board-arrow')).toHaveCount(0);
   await drag(page, 'a1', [30, 30]);
-  await expect(ed(page).locator('.board-arrow')).toHaveCount(1);
-  await ed(page).locator('[data-speed="fast"]').click();
-  await expect(ed(page).locator('[data-speed="fast"]')).toHaveClass(/active/);
+  await expect(bf(page).locator('.board-arrow')).toHaveCount(1);
+  await bf(page).locator('[data-speed="fast"]').click();
+  await expect(bf(page).locator('[data-speed="fast"]')).toHaveClass(/active/);
 
   // Going back to step 1 shows the old position.
-  await ed(page).locator('.play-editor-chips .play-anim-dot', { hasText: '1' }).click();
+  await chips(page).filter({ hasText: '1' }).click();
   expect(await tokenPos(page, 'a1')).toEqual([near(20), near(40)]);
-  await expect(ed(page).locator('[data-speed]')).toHaveCount(0);
+  await expect(bf(page).locator('[data-speed]')).toHaveCount(0);
 
   // Try it before saving.
   await page.locator('#editor-preview-btn').click();
-  await expect(ed(page).locator('.play-anim')).toHaveAttribute('data-state', 'ended', { timeout: 10_000 });
-  await page.getByRole('button', { name: 'Volver a editar' }).click();
-  await expect(ed(page).locator('.play-editor-board')).toBeVisible();
+  await expect(bf(page).locator('.play-anim')).toHaveAttribute('data-state', 'ended', { timeout: 10_000 });
+  await bf(page).getByRole('button', { name: 'Volver a editar' }).click();
+  await expect(bf(page).locator('.pbf-board .play-board')).toBeVisible();
 
-  await page.locator('#editor-save-btn').click();
+  // Save straight from the board.
+  await page.locator('#board-save-btn').click();
   await expect(sec(page)).toHaveClass(/active/);
+  await expect(bf(page)).not.toHaveClass(/active/);
+  await expect(page.locator('html')).not.toHaveClass(/board-open/);
   const inserts = restWrites(backend, 'plays');
   expect(inserts).toHaveLength(1);
   expect(inserts[0].method).toBe('INSERT');
@@ -636,6 +697,7 @@ test('admin draws a new play step by step and saves it', async ({ page }) => {
   await modal(page).getByRole('button', { name: 'Cerrar' }).click();
   await page.goBack();
   await expect(ed(page)).not.toHaveClass(/active/);
+  await expect(bf(page)).not.toHaveClass(/active/);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -646,24 +708,24 @@ test('admin removes a token from every step and deletes a step', async ({ page }
   await tool(page, 'Defensa').click();
   await page.locator('#editor-add-step').click();
   await page.locator('#editor-add-step').click();
-  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1', '2', '3']);
+  await expect(chips(page)).toHaveText(['1', '2', '3']);
 
   await expect(tool(page, 'Quitar')).toBeEnabled();
   await tool(page, 'Quitar').click(); // the defender (last added, still selected)
   await expect(edToken(page, 'd1')).toHaveCount(0);
   await expect(tool(page, 'Quitar')).toBeDisabled();
-  await ed(page).locator('.play-editor-chips .play-anim-dot', { hasText: '1' }).click();
+  await chips(page).filter({ hasText: '1' }).click();
   await expect(edToken(page, 'd1')).toHaveCount(0);
 
   await page.locator('#editor-delete-step').click();
-  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1', '2']);
+  await expect(chips(page)).toHaveText(['1', '2']);
   await page.locator('#editor-delete-step').click();
-  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1']);
+  await expect(chips(page)).toHaveText(['1']);
   await expect(page.locator('#editor-delete-step')).toBeDisabled();
 
   // Attacker numbers fill the gaps, up to 15.
   for (let i = 0; i < 14; i++) await tool(page, 'Atacante').click();
-  await expect(ed(page).locator('.play-board [data-token^="a"]')).toHaveCount(15);
+  await expect(bf(page).locator('.play-board [data-token^="a"]')).toHaveCount(15);
   await expect(tool(page, 'Atacante')).toBeDisabled();
   expect(relevantErrors(errors)).toEqual([]);
 });
@@ -674,15 +736,22 @@ test('admin edits an existing animated play (UPDATE, not INSERT)', async ({ page
   await card(page, 'Salida del 8').click();
   await modal(page).getByRole('button', { name: 'Editar animación' }).click();
 
+  // Editing opens the page first (name, category...), with a preview of the board.
   await expect(ed(page)).toHaveClass(/active/);
+  await expect(bf(page)).not.toHaveClass(/active/);
   await expect(modal(page)).not.toHaveClass(/active/);
   await expect(ed(page).locator('h2')).toHaveText('Editar jugada');
   await expect(page.locator('#editor-title-input')).toHaveValue('Salida del 8');
-  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1', '2', '3']);
-  await ed(page).locator('.play-editor-chips .play-anim-dot', { hasText: '3' }).click();
+  await expect(ed(page).locator('.play-editor-open')).toContainText('4 fichas · 3 pasos');
+  await page.locator('#editor-title-input').fill('Salida del 8 por el ciego');
+
+  await page.locator('#editor-open-board').click();
+  await expect(bf(page)).toHaveClass(/active/);
+  await expect(chips(page)).toHaveText(['1', '2', '3']);
+  await chips(page).filter({ hasText: '3' }).click();
   expect(await tokenPos(page, 'a9')).toEqual([20, 58]);
   await drag(page, 'a9', [15, 50]);
-  await page.locator('#editor-title-input').fill('Salida del 8 por el ciego');
+  await page.locator('#board-done-btn').click();
   await page.locator('#editor-save-btn').click();
 
   await expect(sec(page)).toHaveClass(/active/);
@@ -703,12 +772,14 @@ test('leaving the editor with unsaved changes asks first', async ({ page }) => {
   await openNewAnimation(page);
 
   // Nothing changed yet: leaves without asking.
+  await page.locator('#board-done-btn').click();
   await ed(page).locator('.back-link').click();
   await expect(sec(page)).toHaveClass(/active/);
   expect(seen).toEqual([]);
 
   await openNewAnimation(page);
   await tool(page, 'Atacante').click();
+  await page.locator('#board-done-btn').click();
   // setupApp dismisses dialogs, so "Cancel": it stays in the editor.
   await ed(page).locator('.back-link').click();
   await expect.poll(() => seen).toEqual(['Tienes cambios sin guardar. ¿Salir igualmente?']);
@@ -721,9 +792,11 @@ test('the editor needs a name and at least one token to save', async ({ page }) 
   const { backend, errors } = await open(page);
   const seen = dialogs(page);
   await openNewAnimation(page);
-  await page.locator('#editor-save-btn').click();
+  await page.locator('#board-save-btn').click();
   await expect.poll(() => seen).toEqual(['Añade al menos una ficha a la pizarra.']);
+  await expect(bf(page)).toHaveClass(/active/);
   await tool(page, 'Balón').click();
+  await page.locator('#board-done-btn').click();
   await page.locator('#editor-title-input').fill(' ');
   await page.locator('#editor-save-btn').click();
   await expect.poll(() => seen).toEqual(['Añade al menos una ficha a la pizarra.', 'Elige una categoría y ponle un nombre a la jugada.']);
@@ -740,14 +813,11 @@ test('"Editar animación" is only for admins', async ({ page }) => {
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('mobile: the editor uses the full width and dragging works', async ({ page }) => {
+test('mobile: dragging on the full-screen board, with and without zoom', async ({ page }) => {
   await page.setViewportSize(VIEWPORTS.mobile);
   const { backend, errors } = await open(page);
   await openNewAnimation(page);
-  const board = await ed(page).locator('.play-editor-board').boundingBox();
-  expect(board.width).toBeGreaterThan(VIEWPORTS.mobile.width - 40);
   await tool(page, 'Atacante').click();
-  await edToken(page, 'a1').scrollIntoViewIfNeeded();
   await drag(page, 'a1', [50, 64]);
   expect(await tokenPos(page, 'a1')).toEqual([near(50), near(64)]);
 
@@ -761,7 +831,9 @@ test('mobile: the editor uses the full width and dragging works', async ({ page 
   await page.getByRole('button', { name: 'Ver el campo entero' }).click();
   await drag(page, 'a1', [50, 64]);
   expect(await tokenPos(page, 'a1')).toEqual([near(50), near(64)]);
-  await page.locator('#editor-save-btn').click();
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+
+  await page.locator('#board-save-btn').click();
   await expect(sec(page)).toHaveClass(/active/);
   expect(restWrites(backend, 'plays')[0].body[0].animation.steps[0].pos.a1).toEqual([near(50), near(64)]);
   expect(relevantErrors(errors)).toEqual([]);
@@ -771,10 +843,14 @@ test('Catalan: editor texts', async ({ page }) => {
   const { errors } = await open(page);
   await page.evaluate(() => window.setLang('ca'));
   await openNewAnimation(page);
-  await expect(ed(page).locator('h2')).toHaveText('Nova jugada');
-  await expect(ed(page).locator('.play-editor-tools button')).toHaveText(['Atacant', 'Defensa', 'Pilota', 'Treure']);
+  await expect(bf(page).locator('.play-editor-tools button')).toHaveText(['Atacant', 'Defensa', 'Pilota', 'Treure']);
   await expect(page.locator('#editor-add-step')).toHaveText('+ Pas');
   await expect(page.locator('#editor-preview-btn')).toHaveText('▶ Provar');
+  await expect(page.locator('#board-done-btn')).toHaveText('Fet');
+  await expect(bf(page).locator('.pbf-title')).toContainText('Pas 1 de 1');
+  await page.locator('#board-done-btn').click();
+  await expect(ed(page).locator('h2')).toHaveText('Nova jugada');
+  await expect(ed(page).locator('.play-editor-open')).toContainText('Obrir la pissarra');
   await expect(page.locator('#editor-save-btn')).toHaveText('Desa');
   expect(relevantErrors(errors)).toEqual([]);
 });

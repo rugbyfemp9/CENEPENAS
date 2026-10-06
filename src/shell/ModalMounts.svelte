@@ -131,3 +131,6 @@
 
 <!-- MODAL: AÑADIR UNA JUGADA (solo admins) -->
 <div data-mount="add-play-modal"></div>
+
+<!-- PIZARRA DEL EDITOR DE JUGADAS, A PANTALLA COMPLETA (solo admins) -->
+<div data-mount="play-board-full"></div>
