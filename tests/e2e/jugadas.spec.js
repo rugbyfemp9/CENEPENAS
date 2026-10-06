@@ -481,3 +481,300 @@ test('Catalan: animated play badge and player controls', async ({ page }) => {
   await expect(anim(page).getByRole('button', { name: 'Pas 3' })).toBeVisible();
   expect(relevantErrors(errors)).toEqual([]);
 });
+
+// ---------------------------------------------------------------------------
+// Board editor (admins): section "jugada-editor"
+// ---------------------------------------------------------------------------
+
+const ed = (page) => page.locator('#sec-jugada-editor');
+const edToken = (page, id) => ed(page).locator(`.play-board [data-token="${id}"]`);
+const tool = (page, name) => ed(page).locator('.play-editor-tools').getByRole('button', { name, exact: true });
+const near = (n) => expect.closeTo(n, 0);
+
+// Pitch metres → screen pixels of the editor's board.
+const toScreen = (page, [x, y]) => page.evaluate(([px, py]) => {
+  const svg = document.querySelector('#sec-jugada-editor .play-board');
+  const pt = svg.createSVGPoint();
+  pt.x = px; pt.y = py;
+  const s = pt.matrixTransform(svg.getScreenCTM());
+  return [s.x, s.y];
+}, [x, y]);
+
+async function drag(page, id, to) {
+  const box = await edToken(page, id).boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  const [sx, sy] = await toScreen(page, to);
+  await page.mouse.move(sx, sy, { steps: 6 });
+  await page.mouse.up();
+}
+
+const tokenPos = async (page, id) => {
+  const tr = await edToken(page, id).getAttribute('transform');
+  return tr.match(/translate\(([-\d.]+) ([-\d.]+)\)/).slice(1).map(Number);
+};
+
+async function openNewAnimation(page, { title = 'Lineout 5', category = 'touch' } = {}) {
+  await goToSection(page, 'jugadas');
+  await addBtn(page).click();
+  await addModal(page).locator('[data-kind="animation"]').click();
+  await page.locator('#play-category-input').selectOption(category);
+  await page.locator('#play-title-input').fill(title);
+  await page.locator('#play-continue-btn').click();
+  await expect(ed(page)).toHaveClass(/active/);
+}
+
+test('players (and admins with nothing loaded) cannot open the editor', async ({ page }) => {
+  const { errors } = await open(page, { user: USERS.player });
+  await page.evaluate(() => window.setSection('jugada-editor'));
+  await expect(sec(page)).toHaveClass(/active/);
+  await expect(ed(page)).not.toHaveClass(/active/);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('admin: the add form switches between video and animation', async ({ page }) => {
+  const { errors } = await open(page);
+  const seen = dialogs(page);
+  await goToSection(page, 'jugadas');
+  await addBtn(page).click();
+  await expect(addModal(page).locator('[data-kind="video"]')).toHaveClass(/active/);
+  await expect(page.locator('#play-video-input')).toBeVisible();
+
+  await addModal(page).locator('[data-kind="animation"]').click();
+  await expect(page.locator('#play-video-input')).toHaveCount(0);
+  await expect(page.locator('#play-save-btn')).toHaveCount(0);
+  await expect(addModal(page)).toContainText('colocas a las jugadoras y el balón en el campo');
+  await page.locator('#play-continue-btn').click();
+  await expect.poll(() => seen).toEqual(['Elige una categoría y ponle un nombre a la jugada.']);
+  await expect(ed(page)).not.toHaveClass(/active/);
+
+  // Reopening starts on "Vídeo" again.
+  await addModal(page).getByRole('button', { name: 'Cancelar' }).click();
+  await addBtn(page).click();
+  await expect(addModal(page).locator('[data-kind="video"]')).toHaveClass(/active/);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('admin draws a new play step by step and saves it', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  await openNewAnimation(page);
+
+  await expect(ed(page).locator('h2')).toHaveText('Nueva jugada');
+  await expect(page.locator('#editor-title-input')).toHaveValue('Lineout 5');
+  await expect(page.locator('#editor-category-input')).toHaveValue('touch');
+  await expect(ed(page)).toContainText('Añade atacantes, defensas y el balón');
+  await expect(page.locator('#editor-preview-btn')).toBeDisabled();
+
+  await tool(page, 'Atacante').click();
+  await tool(page, 'Atacante').click();
+  await tool(page, 'Defensa').click();
+  await tool(page, 'Balón').click();
+  await expect(tool(page, 'Balón')).toBeDisabled();
+  await expect(ed(page).locator('.play-board [data-token]')).toHaveCount(4);
+  await expect(edToken(page, 'a1')).toContainText('1');
+  await expect(edToken(page, 'a2')).toContainText('2');
+  await expect(edToken(page, 'ball')).toHaveClass(/selected/);
+
+  // Step 1: starting positions.
+  await drag(page, 'a1', [20, 40]);
+  await expect(edToken(page, 'a1')).toHaveClass(/selected/);
+  await drag(page, 'ball', [21, 41]);
+  await expect(edToken(page, 'ball')).toHaveClass(/selected/);
+  await expect(edToken(page, 'a1')).not.toHaveClass(/selected/);
+  expect(await tokenPos(page, 'a1')).toEqual([near(20), near(40)]);
+  // The ball now sits 1.4 m from the 1: grabbing the 1 still moves the 1, not the ball.
+  await drag(page, 'a1', [20, 40]);
+  await expect(edToken(page, 'a1')).toHaveClass(/selected/);
+  expect(await tokenPos(page, 'ball')).toEqual([near(21), near(41)]);
+
+  // Step 2: copies step 1; moving a token draws an arrow from where it was.
+  await page.locator('#editor-add-step').click();
+  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1', '2']);
+  await expect(ed(page).locator('.play-editor-chips .play-anim-dot.active')).toHaveText('2');
+  expect(await tokenPos(page, 'a1')).toEqual([near(20), near(40)]);
+  await expect(ed(page).locator('.board-arrow')).toHaveCount(0);
+  await drag(page, 'a1', [30, 30]);
+  await expect(ed(page).locator('.board-arrow')).toHaveCount(1);
+  await ed(page).locator('[data-speed="fast"]').click();
+  await expect(ed(page).locator('[data-speed="fast"]')).toHaveClass(/active/);
+
+  // Going back to step 1 shows the old position.
+  await ed(page).locator('.play-editor-chips .play-anim-dot', { hasText: '1' }).click();
+  expect(await tokenPos(page, 'a1')).toEqual([near(20), near(40)]);
+  await expect(ed(page).locator('[data-speed]')).toHaveCount(0);
+
+  // Try it before saving.
+  await page.locator('#editor-preview-btn').click();
+  await expect(ed(page).locator('.play-anim')).toHaveAttribute('data-state', 'ended', { timeout: 10_000 });
+  await page.getByRole('button', { name: 'Volver a editar' }).click();
+  await expect(ed(page).locator('.play-editor-board')).toBeVisible();
+
+  await page.locator('#editor-save-btn').click();
+  await expect(sec(page)).toHaveClass(/active/);
+  const inserts = restWrites(backend, 'plays');
+  expect(inserts).toHaveLength(1);
+  expect(inserts[0].method).toBe('INSERT');
+  const body = inserts[0].body[0];
+  expect(body).toMatchObject({ category_id: 'touch', title: 'Lineout 5', description: null, video_url: null, sort_order: 30 });
+  expect(body.animation.tokens).toEqual([
+    { id: 'a1', team: 'attack', label: '1' }, { id: 'a2', team: 'attack', label: '2' },
+    { id: 'd1', team: 'defense', label: '' }, { id: 'ball', team: 'ball', label: '' },
+  ]);
+  expect(body.animation.steps).toHaveLength(2);
+  expect(body.animation.steps[0].pos.a1).toEqual([near(20), near(40)]);
+  expect(body.animation.steps[1].pos.a1).toEqual([near(30), near(30)]);
+  expect(body.animation.steps[1].ms).toBe(700);
+  expect(body.animation.steps[1].pos.d1).toEqual(body.animation.steps[0].pos.d1);
+
+  // The new play shows up as an animation, and plays.
+  await expect(card(page, 'Lineout 5').locator('.play-soon')).toHaveText('Animación');
+  await card(page, 'Lineout 5').click();
+  await expect(anim(page)).toHaveAttribute('data-state', 'ended', { timeout: 10_000 });
+  await expect(anim(page).locator('.play-anim-dot')).toHaveText(['1', '2']);
+
+  // Back from Jugadas does not reopen an editor that has already been saved.
+  await modal(page).getByRole('button', { name: 'Cerrar' }).click();
+  await page.goBack();
+  await expect(ed(page)).not.toHaveClass(/active/);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('admin removes a token from every step and deletes a step', async ({ page }) => {
+  const { errors } = await open(page);
+  await openNewAnimation(page);
+  await tool(page, 'Atacante').click();
+  await tool(page, 'Defensa').click();
+  await page.locator('#editor-add-step').click();
+  await page.locator('#editor-add-step').click();
+  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1', '2', '3']);
+
+  await expect(tool(page, 'Quitar')).toBeEnabled();
+  await tool(page, 'Quitar').click(); // the defender (last added, still selected)
+  await expect(edToken(page, 'd1')).toHaveCount(0);
+  await expect(tool(page, 'Quitar')).toBeDisabled();
+  await ed(page).locator('.play-editor-chips .play-anim-dot', { hasText: '1' }).click();
+  await expect(edToken(page, 'd1')).toHaveCount(0);
+
+  await page.locator('#editor-delete-step').click();
+  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1', '2']);
+  await page.locator('#editor-delete-step').click();
+  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1']);
+  await expect(page.locator('#editor-delete-step')).toBeDisabled();
+
+  // Attacker numbers fill the gaps, up to 15.
+  for (let i = 0; i < 14; i++) await tool(page, 'Atacante').click();
+  await expect(ed(page).locator('.play-board [data-token^="a"]')).toHaveCount(15);
+  await expect(tool(page, 'Atacante')).toBeDisabled();
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('admin edits an existing animated play (UPDATE, not INSERT)', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Salida del 8').click();
+  await modal(page).getByRole('button', { name: 'Editar animación' }).click();
+
+  await expect(ed(page)).toHaveClass(/active/);
+  await expect(modal(page)).not.toHaveClass(/active/);
+  await expect(ed(page).locator('h2')).toHaveText('Editar jugada');
+  await expect(page.locator('#editor-title-input')).toHaveValue('Salida del 8');
+  await expect(ed(page).locator('.play-editor-chips .play-anim-dot')).toHaveText(['1', '2', '3']);
+  await ed(page).locator('.play-editor-chips .play-anim-dot', { hasText: '3' }).click();
+  expect(await tokenPos(page, 'a9')).toEqual([20, 58]);
+  await drag(page, 'a9', [15, 50]);
+  await page.locator('#editor-title-input').fill('Salida del 8 por el ciego');
+  await page.locator('#editor-save-btn').click();
+
+  await expect(sec(page)).toHaveClass(/active/);
+  const writes = restWrites(backend, 'plays');
+  expect(writes).toHaveLength(1);
+  expect(writes[0].method).toBe('UPDATE');
+  expect(writes[0].body).toMatchObject({ category_id: 'mele', title: 'Salida del 8 por el ciego', description: null });
+  expect(writes[0].body.animation.steps[2].pos.a9).toEqual([near(15), near(50)]);
+  expect(writes[0].body.animation.steps[1]).toEqual({ ms: 1000, pos: { a8: [33, 66], a9: [26, 66], d7: [35, 64], ball: [33, 67.5] } });
+  await expect(card(page, 'Salida del 8 por el ciego')).toHaveCount(1);
+  await expect(card(page, 'Salida del 8 por el ciego').locator('.play-soon')).toHaveText('Animación');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('leaving the editor with unsaved changes asks first', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  const seen = dialogs(page);
+  await openNewAnimation(page);
+
+  // Nothing changed yet: leaves without asking.
+  await ed(page).locator('.back-link').click();
+  await expect(sec(page)).toHaveClass(/active/);
+  expect(seen).toEqual([]);
+
+  await openNewAnimation(page);
+  await tool(page, 'Atacante').click();
+  // setupApp dismisses dialogs, so "Cancel": it stays in the editor.
+  await ed(page).locator('.back-link').click();
+  await expect.poll(() => seen).toEqual(['Tienes cambios sin guardar. ¿Salir igualmente?']);
+  await expect(ed(page)).toHaveClass(/active/);
+  expect(restWrites(backend, 'plays')).toEqual([]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('the editor needs a name and at least one token to save', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  const seen = dialogs(page);
+  await openNewAnimation(page);
+  await page.locator('#editor-save-btn').click();
+  await expect.poll(() => seen).toEqual(['Añade al menos una ficha a la pizarra.']);
+  await tool(page, 'Balón').click();
+  await page.locator('#editor-title-input').fill(' ');
+  await page.locator('#editor-save-btn').click();
+  await expect.poll(() => seen).toEqual(['Añade al menos una ficha a la pizarra.', 'Elige una categoría y ponle un nombre a la jugada.']);
+  expect(restWrites(backend, 'plays')).toEqual([]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('"Editar animación" is only for admins', async ({ page }) => {
+  const { errors } = await open(page, { user: USERS.player });
+  await goToSection(page, 'jugadas');
+  await card(page, 'Salida del 8').click();
+  await expect(anim(page)).toBeVisible();
+  await expect(page.locator('#play-edit-anim-btn')).toHaveCount(0);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('mobile: the editor uses the full width and dragging works', async ({ page }) => {
+  await page.setViewportSize(VIEWPORTS.mobile);
+  const { backend, errors } = await open(page);
+  await openNewAnimation(page);
+  const board = await ed(page).locator('.play-editor-board').boundingBox();
+  expect(board.width).toBeGreaterThan(VIEWPORTS.mobile.width - 40);
+  await tool(page, 'Atacante').click();
+  await edToken(page, 'a1').scrollIntoViewIfNeeded();
+  await drag(page, 'a1', [50, 64]);
+  expect(await tokenPos(page, 'a1')).toEqual([near(50), near(64)]);
+
+  // Zoom: the token gets bigger on screen and dragging still lands in pitch metres.
+  const small = (await edToken(page, 'a1').boundingBox()).width;
+  await page.getByRole('button', { name: 'Acercar' }).click();
+  await expect(page.locator('#editor-zoom-btn')).toHaveAttribute('aria-pressed', 'true');
+  expect((await edToken(page, 'a1').boundingBox()).width).toBeGreaterThan(small * 1.6);
+  await drag(page, 'a1', [45, 70]);
+  expect(await tokenPos(page, 'a1')).toEqual([near(45), near(70)]);
+  await page.getByRole('button', { name: 'Ver el campo entero' }).click();
+  await drag(page, 'a1', [50, 64]);
+  expect(await tokenPos(page, 'a1')).toEqual([near(50), near(64)]);
+  await page.locator('#editor-save-btn').click();
+  await expect(sec(page)).toHaveClass(/active/);
+  expect(restWrites(backend, 'plays')[0].body[0].animation.steps[0].pos.a1).toEqual([near(50), near(64)]);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('Catalan: editor texts', async ({ page }) => {
+  const { errors } = await open(page);
+  await page.evaluate(() => window.setLang('ca'));
+  await openNewAnimation(page);
+  await expect(ed(page).locator('h2')).toHaveText('Nova jugada');
+  await expect(ed(page).locator('.play-editor-tools button')).toHaveText(['Atacant', 'Defensa', 'Pilota', 'Treure']);
+  await expect(page.locator('#editor-add-step')).toHaveText('+ Pas');
+  await expect(page.locator('#editor-preview-btn')).toHaveText('▶ Provar');
+  await expect(page.locator('#editor-save-btn')).toHaveText('Desa');
+  expect(relevantErrors(errors)).toEqual([]);
+});

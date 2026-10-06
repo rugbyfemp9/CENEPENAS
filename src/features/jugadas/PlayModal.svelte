@@ -3,7 +3,8 @@
   import { t } from '../../lib/i18n.svelte.js';
   import { safeUrl } from '../../lib/url.js';
   import PlayAnimation from './PlayAnimation.svelte';
-  import { jugadas, openedPlay, categoryName, animationOf } from './jugadas.svelte.js';
+  import { jugadas, openedPlay, categoryName, animationOf, canManagePlays } from './jugadas.svelte.js';
+  import { editAnimation } from './editor.svelte.js';
 
   const play = $derived(openedPlay());
   const videoUrl = $derived(play ? safeUrl(play.video_url) : '');
@@ -48,6 +49,10 @@
     </div>
   {/if}
   <div class="modal-actions">
+    <!-- Las admins pueden retocar la animación (también la de una jugada con vídeo). -->
+    {#if play && canManagePlays() && animationOf(play)}
+      <button class="btn-ghost" id="play-edit-anim-btn" onclick={() => editAnimation(play)}>{t('jugadas.editAnimation')}</button>
+    {/if}
     <button class="btn" onclick={() => (jugadas.modalOpen = false)}>{t('att.close')}</button>
   </div>
 </Modal>
