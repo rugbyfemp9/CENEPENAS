@@ -54,6 +54,11 @@
       <div class="txt"><b>{t('nav.fantasy')}</b><span>{t('vestuario.fantasy.subtitle')}</span></div>
       <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
     </button>
+    <button class="vest-card i-jugadas" onclick={() => setSection('jugadas')}>
+      <div class="ic emoji">📋</div>
+      <div class="txt"><b>{t('nav.jugadas')}</b><span>{t('vestuario.jugadas.subtitle')}</span></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+    </button>
     <button class="vest-card i-partidos" onclick={() => setSection('partidos')}>
       <div class="ic emoji">🏟️</div>
       <div class="txt"><b>{t('nav.partidos')}</b><span>{t('vestuario.partidos.subtitle')}</span></div>
