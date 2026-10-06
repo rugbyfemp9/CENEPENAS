@@ -1,0 +1,34 @@
+src/features/jugadas/AddPlayModal.svelte
+  s_db282c67488fed::t_bd5b0d15e5ac66 1-42
+src/shell/ModalMounts.svelte
+  s_db282c67488fed::t_bd5b0d15e5ac66 131-133
+tests/e2e/jugadas.spec.js
+  s_db282c67488fed::t_18b3d7ee5d52ae 158-171,173-274,276-277
+  s_db282c67488fed::t_655388c564495a 172,275
+src/features/jugadas/Jugadas.svelte
+  s_db282c67488fed::t_bd5b0d15e5ac66 5,20-24
+src/features/jugadas/jugadas.svelte.js
+  s_db282c67488fed::t_bd5b0d15e5ac66 7-8,11,14-17,25-26,29-30,83-163
+src/lib/i18n/ca.js
+  s_db282c67488fed::t_bd5b0d15e5ac66 611-625
+src/features/jugadas/index.js
+  s_db282c67488fed::t_bd5b0d15e5ac66 4,9
+src/lib/i18n/es.js
+  s_db282c67488fed::t_bd5b0d15e5ac66 612-626
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d9262b046e81f98e17b6cffedf6cfe66f30afd3c",
+  "prompts": {},
+  "sessions": {
+    "s_db282c67488fed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3d95ab8-a6e5-4408-a412-5bb0b9d04234",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
