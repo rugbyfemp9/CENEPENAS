@@ -26,6 +26,7 @@ import { onEnterStaffPanel } from '../features/wellness/wellness-staff.svelte.js
 import { treasury } from '../features/tesoreria/tesoreria.svelte.js';
 import { loadShoppingItems, tercerTreasury } from '../features/comi-tercer-temps/comi-tercer-temps.svelte.js';
 import { loadExpenses, loadSettlements } from '../features/tricount/tricount.svelte.js';
+import { loadPlays } from '../features/jugadas/jugadas.svelte.js';
 
 export const nav = $state({
   // La app siempre arranca en "Inicio".
@@ -120,6 +121,11 @@ export function setSection(id, opts) {
   // mismo (por si se han creado o editado partidos desde que se cargó la página).
   if (id === 'partidos') {
     renderPartidosList();
+  }
+
+  // Jugadas: se traen de Supabase cada vez que se entra, por si han añadido alguna.
+  if (id === 'jugadas') {
+    loadPlays();
   }
 
   // Wellness / RPE equipo: solo Cos Tècnic (ver canViewWellnessStaff()). Si alguien

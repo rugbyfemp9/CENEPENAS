@@ -1,58 +1,84 @@
 // Tests for the "Jugadas" section: the team's playbook, one animation/video per play,
-// organised by category. For now every play is a placeholder without a video.
+// organised by category. Categories and plays are read from Supabase
+// ("play_categories" and "plays", see the seed); the app never writes them.
 import { test, expect } from '@playwright/test';
 import { setupApp, openApp, goToSection, USERS, VIEWPORTS, relevantErrors } from './support/app.js';
+import { seed } from './fixtures/seed.js';
 
 const sec = (page) => page.locator('#sec-jugadas');
 const filter = (page, name) => sec(page).locator('.jugadas-filter').filter({ hasText: name });
+const card = (page, title) => sec(page).locator('.play-card').filter({ hasText: title });
 const modal = (page) => page.locator('#play-modal');
+const restWrites = (backend, table) => backend.mutations.filter((m) => m.kind === 'rest' && m.table === table);
+
+async function open(page, opts = {}) {
+  const ctx = await setupApp(page, opts);
+  // The seeded video is never really downloaded.
+  await page.route(/videos\.cnpenas\.test/, (route) => route.fulfill({ contentType: 'video/mp4', body: '' }));
+  await openApp(page);
+  return ctx;
+}
 
 test('Vestuario card opens Jugadas and the back link returns to Vestuario', async ({ page }) => {
   await page.setViewportSize(VIEWPORTS.mobile);
-  const { errors } = await setupApp(page, { user: USERS.player });
-  await openApp(page);
+  const { errors } = await open(page, { user: USERS.player });
   await goToSection(page, 'vestuario');
   await page.locator('#sec-vestuario .vest-card.i-jugadas').click();
   await expect(sec(page)).toHaveClass(/active/);
   await expect(sec(page).locator('h2')).toHaveText('Jugadas');
+  await expect(sec(page).locator('.play-card')).toHaveCount(5);
 
   await sec(page).locator('.back-link').click();
   await expect(page.locator('#sec-vestuario')).toHaveClass(/active/);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('lists the placeholder plays grouped by category, and filters by category', async ({ page }) => {
-  const { errors } = await setupApp(page);
-  await openApp(page);
+test('reads the plays from Supabase, grouped by category in sort_order', async ({ page }) => {
+  const { backend, errors } = await open(page);
   await goToSection(page, 'jugadas');
 
-  await expect(sec(page).locator('.jugadas-filter')).toHaveText(['Todas 12', 'Touch 3', 'Melé 2', 'Ataque 3', 'Defensa 2', 'Patadas 2']);
+  await expect(sec(page).locator('.jugadas-filter')).toHaveText(['Todas 5', 'Touch 2', 'Melé 1', 'Ataque 2', 'Defensa 0']);
   await expect(filter(page, 'Todas')).toHaveClass(/active/);
-  await expect(sec(page).locator('.jugadas-group-title')).toHaveText([/Touch/, /Melé/, /Ataque/, /Defensa/, /Patadas/]);
-  await expect(sec(page).locator('.play-card')).toHaveCount(12);
-  await expect(sec(page).locator('.play-card .play-soon').first()).toHaveText('Próximamente');
-
-  await filter(page, 'Touch').click();
-  await expect(filter(page, 'Touch')).toHaveClass(/active/);
-  await expect(filter(page, 'Todas')).not.toHaveClass(/active/);
-  await expect(sec(page).locator('.jugadas-group-title')).toHaveText([/Touch/]);
-  await expect(sec(page).locator('.play-card .play-cap b')).toHaveText(['Touch 1', 'Touch 2', 'Touch 3']);
-
-  await filter(page, 'Todas').click();
-  await expect(sec(page).locator('.play-card')).toHaveCount(12);
+  // "Defensa" has no plays, so it has no group under "Todas".
+  await expect(sec(page).locator('.jugadas-group-title')).toHaveText([/Touch/, /Melé/, /Ataque/]);
+  await expect(sec(page).locator('.jugadas-group[data-category="touch"] .play-cap b')).toHaveText(['Touch corta', 'Touch al fondo']);
+  await expect(card(page, 'Touch corta').locator('.play-cap span')).toHaveText('Saltadora delantera, 3 jugadoras');
+  // Only plays without a video say "Próximamente".
+  await expect(card(page, 'Touch corta').locator('.play-soon')).toHaveText('Próximamente');
+  await expect(card(page, 'Bucle del 10').locator('.play-soon')).toHaveCount(0);
+  expect(restWrites(backend, 'plays')).toEqual([]);
+  expect(restWrites(backend, 'play_categories')).toEqual([]);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('a play opens in a modal with the "video coming soon" placeholder', async ({ page }) => {
-  const { errors } = await setupApp(page);
-  await openApp(page);
+test('filters by category, and an empty category says so', async ({ page }) => {
+  const { errors } = await open(page);
   await goToSection(page, 'jugadas');
+
   await filter(page, 'Ataque').click();
-  await sec(page).locator('.play-card').filter({ hasText: 'Ataque 2' }).click();
+  await expect(filter(page, 'Ataque')).toHaveClass(/active/);
+  await expect(filter(page, 'Todas')).not.toHaveClass(/active/);
+  await expect(sec(page).locator('.jugadas-group-title')).toHaveText([/Ataque/]);
+  await expect(sec(page).locator('.play-cap b')).toHaveText(['Bucle del 10', 'Cruce en el centro']);
+
+  await filter(page, 'Defensa').click();
+  await expect(sec(page).locator('.jugadas-group-title')).toHaveText([/Defensa/]);
+  await expect(sec(page).locator('.jugadas-group')).toContainText('Todavía no hay jugadas en esta categoría.');
+
+  await filter(page, 'Todas').click();
+  await expect(sec(page).locator('.play-card')).toHaveCount(5);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('a play without a video opens the "coming soon" placeholder', async ({ page }) => {
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Touch corta').click();
 
   await expect(modal(page)).toHaveClass(/active/);
-  await expect(modal(page).locator('h3')).toHaveText('Ataque 2');
-  await expect(modal(page).locator('.modal-sub')).toHaveText('Ataque');
+  await expect(modal(page).locator('h3')).toHaveText('Touch corta');
+  await expect(modal(page).locator('.modal-sub')).toHaveText('Touch');
+  await expect(modal(page).locator('.play-description')).toHaveText('Saltadora delantera, 3 jugadoras');
   await expect(modal(page).locator('.play-frame')).toContainText('El vídeo de esta jugada llegará pronto.');
   await expect(modal(page).locator('video')).toHaveCount(0);
 
@@ -61,26 +87,71 @@ test('a play opens in a modal with the "video coming soon" placeholder', async (
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('players see the same plays from the desktop sidebar', async ({ page }) => {
-  const { errors } = await setupApp(page, { user: USERS.player });
-  await openApp(page);
-  await page.locator('.sidebar .nav button[data-section="jugadas"]').click();
-  await expect(sec(page)).toHaveClass(/active/);
-  await expect(sec(page).locator('.play-card')).toHaveCount(12);
+test('a play with a video plays it in the modal, and closing removes the player', async ({ page }) => {
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await card(page, 'Bucle del 10').click();
+
+  await expect(modal(page).locator('h3')).toHaveText('Bucle del 10');
+  await expect(modal(page).locator('video')).toHaveAttribute('src', 'https://videos.cnpenas.test/bucle-10.mp4');
+  await expect(modal(page).locator('video')).toHaveAttribute('controls', '');
+  await expect(modal(page).locator('.play-frame-empty')).toHaveCount(0);
+
+  await modal(page).getByRole('button', { name: 'Cerrar' }).click();
+  await expect(modal(page).locator('video')).toHaveCount(0);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('Catalan: title, filters and placeholder texts are translated', async ({ page }) => {
-  const { errors } = await setupApp(page);
-  await openApp(page);
+test('no plays yet: the section says so', async ({ page }) => {
+  const { errors } = await open(page, { seed: { ...seed, plays: [] } });
+  await goToSection(page, 'jugadas');
+  await expect(sec(page)).toContainText('Todavía no hay jugadas.');
+  await expect(sec(page).locator('.jugadas-filter, .play-card')).toHaveCount(0);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('plays added since the last visit show up when coming back', async ({ page }) => {
+  const { backend, errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await expect(sec(page).locator('.play-card')).toHaveCount(5);
+
+  backend.table('plays').push({
+    id: '95000000-0000-4000-8000-000000000099', category_id: 'defensa', title: 'Defensa en línea',
+    description: null, video_url: null, poster_url: null, sort_order: 10, created_at: '2026-10-05T10:00:00Z', created_by: null,
+  });
+  // Skip the 5-minute cache so the reload goes to Supabase.
+  await page.evaluate(() => window.storage.set('cache:plays', 'null'));
+  await goToSection(page, 'vestuario');
+  await goToSection(page, 'jugadas');
+  await expect(sec(page).locator('.play-card')).toHaveCount(6);
+  await expect(filter(page, 'Defensa')).toHaveText('Defensa 1');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('players see the same plays from the desktop sidebar', async ({ page }) => {
+  const { errors } = await open(page, { user: USERS.player });
+  await page.locator('.sidebar .nav button[data-section="jugadas"]').click();
+  await expect(sec(page)).toHaveClass(/active/);
+  await expect(sec(page).locator('.play-card')).toHaveCount(5);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('Catalan: section texts and category names (name_ca, or name_es when empty)', async ({ page }) => {
+  const { errors } = await open(page);
   await page.evaluate(() => window.setLang('ca'));
   await goToSection(page, 'jugadas');
   await expect(sec(page).locator('h2')).toHaveText('Jugades');
   await expect(sec(page).locator('.back-link')).toHaveText(/Vestidor/);
-  await expect(sec(page).locator('.jugadas-filter')).toHaveText(['Totes 12', 'Touch 3', 'Melé 2', 'Atac 3', 'Defensa 2', 'Xuts 2']);
-  await expect(sec(page).locator('.play-card .play-soon').first()).toHaveText('Properament');
+  await expect(sec(page).locator('.jugadas-filter')).toHaveText(['Totes 5', 'Touch 2', 'Melé 1', 'Atac 2', 'Defensa 0']);
+  await expect(card(page, 'Touch corta').locator('.play-soon')).toHaveText('Properament');
 
-  await sec(page).locator('.play-card').filter({ hasText: 'Xuts 1' }).click();
+  await card(page, 'Cruce en el centro').click();
+  await expect(modal(page).locator('.modal-sub')).toHaveText('Atac');
   await expect(modal(page).locator('.play-frame')).toContainText("El vídeo d'aquesta jugada arribarà aviat.");
+  await modal(page).getByRole('button', { name: 'Tancar' }).click();
+
+  // Switching language with the section open renames the categories too.
+  await page.evaluate(() => window.setLang('es'));
+  await expect(filter(page, 'Ataque')).toHaveText('Ataque 2');
   expect(relevantErrors(errors)).toEqual([]);
 });

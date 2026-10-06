@@ -604,6 +604,23 @@ export const seed = {
     { profile_id: ID.paula, points: 8, updated_at: '2026-09-19T20:00:00Z' }
   ],
 
+  // play_categories + plays: jugadas.svelte.js loadPlays, both select('*') ordered by
+  // sort_order (then id / created_at). Read-only from the app. "defensa" has no plays
+  // (hidden under "Todas"); name_ca null falls back to name_es; one play has a video.
+  play_categories: [
+    { id: 'touch', name_es: 'Touch', name_ca: 'Touch', emoji: '🙌', sort_order: 10, created_at: '2026-10-01T10:00:00Z' },
+    { id: 'mele', name_es: 'Melé', name_ca: null, emoji: '🤝', sort_order: 20, created_at: '2026-10-01T10:00:00Z' },
+    { id: 'ataque', name_es: 'Ataque', name_ca: 'Atac', emoji: '⚡', sort_order: 30, created_at: '2026-10-01T10:00:00Z' },
+    { id: 'defensa', name_es: 'Defensa', name_ca: 'Defensa', emoji: '🛡️', sort_order: 40, created_at: '2026-10-01T10:00:00Z' }
+  ],
+  plays: [
+    { id: uid('95000000', 1), category_id: 'ataque', title: 'Bucle del 10', description: 'La 10 pasa a la 12 y vuelve por fuera', video_url: 'https://videos.cnpenas.test/bucle-10.mp4', poster_url: null, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
+    { id: uid('95000000', 2), category_id: 'touch', title: 'Touch al fondo', description: null, video_url: null, poster_url: null, sort_order: 20, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
+    { id: uid('95000000', 3), category_id: 'touch', title: 'Touch corta', description: 'Saltadora delantera, 3 jugadoras', video_url: null, poster_url: null, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
+    { id: uid('95000000', 4), category_id: 'mele', title: 'Salida del 8', description: null, video_url: null, poster_url: null, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
+    { id: uid('95000000', 5), category_id: 'ataque', title: 'Cruce en el centro', description: null, video_url: null, poster_url: null, sort_order: 20, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin }
+  ],
+
   // push_subscriptions: write-only from js/push.js upsert (profile_id, fcm_token,
   // platform, updated_at) onConflict 'fcm_token'. Never read by the app.
   push_subscriptions: []
