@@ -7,7 +7,7 @@
   import PlayBoard from './PlayBoard.svelte';
   import PlayAnimation from './PlayAnimation.svelte';
   import {
-    editor, STEP_SPEEDS, canAdd, addToken, selectToken, removeSelected, moveToken,
+    editor, STEP_SPEEDS, SHIRT_NUMBERS, canAdd, addToken, toggleAttacker, onPitch, selectToken, removeSelected, moveToken,
     setStep, addStep, deleteStep, setStepSpeed, togglePreview, toggleZoom, closeBoard, saveAnimation,
   } from './editor.svelte.js';
 
@@ -124,8 +124,16 @@
 
       <div class="pbf-panel">
         {#if !editor.preview}
+          <div class="pbf-bench" role="group" aria-label={t('jugadas.benchLabel')}>
+            <span class="pbf-bench-label">{t('jugadas.benchLabel')}</span>
+            <div class="pbf-bench-grid">
+              {#each SHIRT_NUMBERS as n (n)}
+                <button class="bench-chip" data-num={n} aria-pressed={onPitch(n)} onclick={() => toggleAttacker(n)}
+                        aria-label={t('jugadas.benchChipAria', { n })} title={t('jugadas.benchChipAria', { n })}>{n}</button>
+              {/each}
+            </div>
+          </div>
           <div class="play-editor-tools" role="group" aria-label={t('jugadas.editorToolsAria')}>
-            <button class="editor-btn tool-attack" onclick={() => addToken('attack')} disabled={!canAdd('attack')}><span class="dot attack"></span>{t('jugadas.addAttacker')}</button>
             <button class="editor-btn tool-defense" onclick={() => addToken('defense')} disabled={!canAdd('defense')}><span class="dot defense"></span>{t('jugadas.addDefender')}</button>
             <button class="editor-btn tool-ball" onclick={() => addToken('ball')} disabled={!canAdd('ball')}><span class="dot ball"></span>{t('jugadas.addBall')}</button>
             <button class="editor-btn danger" onclick={removeSelected} disabled={!editor.selectedId}>{t('jugadas.removeToken')}</button>
