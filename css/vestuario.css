@@ -37,6 +37,14 @@
 
 /* ============ TEST (quiz de 10 preguntas) ============ */
 .test-quiz-intro-card{ text-align:center; padding:32px 24px; }
+/* Portada de Test: los dos tests, uno al lado del otro (uno debajo del otro en móvil) */
+.test-hub{ display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; }
+.test-hub .test-quiz-intro-card{ display:flex; flex-direction:column; align-items:center; padding:26px 22px; }
+.test-hub h3{ margin:10px 0 6px; font-size:16px; text-transform:uppercase; letter-spacing:.02em; }
+.test-hub .test-quiz-intro-card p{ margin:0 0 18px; flex:1; }
+.test-hub-ic{ width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; background:var(--bg); }
+.test-hub-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.test-plays-anim{ margin-bottom:16px; }
 .test-quiz-intro-card p{ margin:0 0 20px; color:var(--text-muted); font-size:14.5px; }
 .test-quiz-progress{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
 .test-quiz-progress-bar{ flex:1; height:8px; border-radius:99px; background:var(--line); overflow:hidden; }

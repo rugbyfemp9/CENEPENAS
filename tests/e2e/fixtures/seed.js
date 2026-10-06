@@ -80,6 +80,21 @@ export const SALIDA_DEL_8 = {
   ]
 };
 
+// "Bucle del 10" (it also has a video, which wins in Jugadas; the plays quiz shows its
+// animation): the 10 passes to the 12 and loops round. 2 steps.
+export const BUCLE_DEL_10 = {
+  v: 1,
+  tokens: [
+    { id: 'a10', team: 'attack', label: '10' },
+    { id: 'a12', team: 'attack', label: '12' },
+    { id: 'ball', team: 'ball' }
+  ],
+  steps: [
+    { ms: 1200, pos: { a10: [26, 68], a12: [21, 71], ball: [26.5, 67] } },
+    { ms: 900, pos: { a10: [16, 72], a12: [22, 66], ball: [16.5, 71] } }
+  ]
+};
+
 const mapsUrl = (q) => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
 
 // ---------------------------------------------------------------------------
@@ -625,7 +640,8 @@ export const seed = {
   // sort_order (then id / created_at). "defensa" has no plays (hidden under "Todas");
   // name_ca null falls back to name_es; one play has a video.
   // animation (board.js format, metres on a portrait 70x120 pitch): "Salida del 8" is a
-  // 3-step animation; "Bucle del 10" has a video AND an animation (the video wins);
+  // 3-step animation; "Bucle del 10" has a video AND an animation (BUCLE_DEL_10; the
+// video wins in Jugadas, the plays quiz uses the animation);
   // "Cruce en el centro" has an unusable one (falls back to "Vídeo no disponible").
   play_categories: [
     { id: 'touch', name_es: 'Touch', name_ca: 'Touch', emoji: '🙌', sort_order: 10, created_at: '2026-10-01T10:00:00Z' },
@@ -634,7 +650,7 @@ export const seed = {
     { id: 'defensa', name_es: 'Defensa', name_ca: 'Defensa', emoji: '🛡️', sort_order: 40, created_at: '2026-10-01T10:00:00Z' }
   ],
   plays: [
-    { id: uid('95000000', 1), category_id: 'ataque', title: 'Bucle del 10', description: 'La 10 pasa a la 12 y vuelve por fuera', video_url: 'https://videos.cnpenas.test/bucle-10.mp4', poster_url: null, animation: SALIDA_DEL_8, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
+    { id: uid('95000000', 1), category_id: 'ataque', title: 'Bucle del 10', description: 'La 10 pasa a la 12 y vuelve por fuera', video_url: 'https://videos.cnpenas.test/bucle-10.mp4', poster_url: null, animation: BUCLE_DEL_10, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
     { id: uid('95000000', 2), category_id: 'touch', title: 'Touch al fondo', description: null, video_url: null, poster_url: null, sort_order: 20, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
     { id: uid('95000000', 3), category_id: 'touch', title: 'Touch corta', description: 'Saltadora delantera, 3 jugadoras', video_url: null, poster_url: null, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
     { id: uid('95000000', 4), category_id: 'mele', title: 'Salida del 8', description: null, video_url: null, poster_url: null, animation: SALIDA_DEL_8, sort_order: 10, created_at: '2026-10-02T10:00:00Z', created_by: ID.admin },
