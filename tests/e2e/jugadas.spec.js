@@ -43,8 +43,8 @@ test('reads the plays from Supabase, grouped by category in sort_order', async (
   await expect(sec(page).locator('.jugadas-group-title')).toHaveText([/Touch/, /Melé/, /Ataque/]);
   await expect(sec(page).locator('.jugadas-group[data-category="touch"] .play-cap b')).toHaveText(['Touch corta', 'Touch al fondo']);
   await expect(card(page, 'Touch corta').locator('.play-cap span')).toHaveText('Saltadora delantera, 3 jugadoras');
-  // Only plays without a video say "Próximamente".
-  await expect(card(page, 'Touch corta').locator('.play-soon')).toHaveText('Próximamente');
+  // Only plays without a video say "Vídeo no disponible".
+  await expect(card(page, 'Touch corta').locator('.play-soon')).toHaveText('Vídeo no disponible');
   await expect(card(page, 'Bucle del 10').locator('.play-soon')).toHaveCount(0);
   expect(restWrites(backend, 'plays')).toEqual([]);
   expect(restWrites(backend, 'play_categories')).toEqual([]);
@@ -143,7 +143,7 @@ test('Catalan: section texts and category names (name_ca, or name_es when empty)
   await expect(sec(page).locator('h2')).toHaveText('Jugades');
   await expect(sec(page).locator('.back-link')).toHaveText(/Vestidor/);
   await expect(sec(page).locator('.jugadas-filter')).toHaveText(['Totes 5', 'Touch 2', 'Melé 1', 'Atac 2', 'Defensa 0']);
-  await expect(card(page, 'Touch corta').locator('.play-soon')).toHaveText('Properament');
+  await expect(card(page, 'Touch corta').locator('.play-soon')).toHaveText('Vídeo no disponible');
 
   await card(page, 'Cruce en el centro').click();
   await expect(modal(page).locator('.modal-sub')).toHaveText('Atac');
@@ -242,7 +242,7 @@ test('admin adds a play with a video: uploads it to the "plays" bucket and saves
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('admin adds a play without a video: nothing is uploaded and it says "Próximamente"', async ({ page }) => {
+test('admin adds a play without a video: nothing is uploaded and it says "Vídeo no disponible"', async ({ page }) => {
   const { backend, errors } = await open(page);
   await goToSection(page, 'jugadas');
   await addBtn(page).click();
@@ -256,7 +256,7 @@ test('admin adds a play without a video: nothing is uploaded and it says "Próxi
   // Touch already has sort_order 10 and 20: the new one goes last.
   expect(restWrites(backend, 'plays')[0].body).toEqual([{ category_id: 'touch', title: 'Touch en dos tiempos', description: null, video_url: null, sort_order: 30 }]);
   await expect(sec(page).locator('.jugadas-group[data-category="touch"] .play-cap b')).toHaveText(['Touch corta', 'Touch al fondo', 'Touch en dos tiempos']);
-  await expect(card(page, 'Touch en dos tiempos').locator('.play-soon')).toHaveText('Próximamente');
+  await expect(card(page, 'Touch en dos tiempos').locator('.play-soon')).toHaveText('Vídeo no disponible');
   expect(relevantErrors(errors)).toEqual([]);
 });
 
