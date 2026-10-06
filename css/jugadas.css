@@ -73,6 +73,24 @@
     linear-gradient(135deg, #3FA66B, #1E6B40);
 }
 
+/* Botón flotante "+" de las admins: abajo a la derecha; en móvil, por encima de la nav
+   inferior. El hueco del final evita que tape la última fila de jugadas. */
+.jugadas-fab{
+  all:unset; cursor:pointer; box-sizing:border-box;
+  position:fixed; right:28px; bottom:28px; z-index:150;
+  width:56px; height:56px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--sky), var(--sky-dark)); color:#fff;
+  box-shadow:0 12px 28px -10px rgba(15,27,45,.6); transition:transform .15s ease, box-shadow .15s ease;
+}
+.jugadas-fab:hover{ transform:scale(1.06); box-shadow:0 16px 32px -10px rgba(15,27,45,.7); }
+.jugadas-fab:focus-visible{ outline:3px solid var(--navy); outline-offset:3px; }
+.jugadas-fab svg{ width:24px; height:24px; }
+.jugadas-fab-space{ height:72px; }
+@media (max-width:900px){
+  .jugadas-fab{ right:16px; bottom:calc(80px + env(safe-area-inset-bottom)); }
+}
+
 @media (max-width:640px){
   .jugadas-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; }
   .play-cap{ padding:8px 10px 10px; }

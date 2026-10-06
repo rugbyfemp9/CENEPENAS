@@ -17,11 +17,6 @@
 <div class="back-link" onclick={() => setSection('vestuario')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> <span>{t('fines.backLabel')}</span></div>
 <div class="section-head">
   <h2>{t('nav.jugadas')}</h2>
-  {#if canManagePlays()}
-    <button class="cal-open-btn" id="add-play-btn" onclick={openAddPlayModal} aria-label={t('jugadas.addPlay')} title={t('jugadas.addPlay')}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-    </button>
-  {/if}
 </div>
 
 {#if jugadas.status === 'loading' || jugadas.status === 'idle'}
@@ -66,4 +61,13 @@
       {/if}
     </div>
   {/each}
+{/if}
+
+<!-- Botón flotante "+" (solo admins), abajo a la derecha. Vive dentro de la sección,
+     así que se oculta solo al salir de Jugadas. -->
+{#if canManagePlays()}
+  <div class="jugadas-fab-space"></div>
+  <button class="jugadas-fab" id="add-play-btn" onclick={openAddPlayModal} aria-label={t('jugadas.addPlay')} title={t('jugadas.addPlay')}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
 {/if}

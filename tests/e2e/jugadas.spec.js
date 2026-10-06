@@ -177,6 +177,28 @@ test('players do not see the + button', async ({ page }) => {
   expect(relevantErrors(errors)).toEqual([]);
 });
 
+test('admin + button floats in the bottom-right corner, above the mobile bottom nav', async ({ page }) => {
+  const { errors } = await open(page);
+  await goToSection(page, 'jugadas');
+  await expect(addBtn(page)).toBeVisible();
+  await expect(addBtn(page)).toHaveCSS('position', 'fixed');
+  const vp = page.viewportSize();
+  let box = await addBtn(page).boundingBox();
+  expect(vp.width - (box.x + box.width)).toBeLessThanOrEqual(40);
+  expect(vp.height - (box.y + box.height)).toBeLessThanOrEqual(40);
+
+  await page.setViewportSize(VIEWPORTS.mobile);
+  box = await addBtn(page).boundingBox();
+  const nav = await page.locator('.bottom-nav').boundingBox();
+  expect(box.y + box.height).toBeLessThanOrEqual(nav.y);
+  expect(VIEWPORTS.mobile.width - (box.x + box.width)).toBeLessThanOrEqual(24);
+
+  // It only exists inside Jugadas.
+  await goToSection(page, 'vestuario');
+  await expect(addBtn(page)).toBeHidden();
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
 test('admin adds a play with a video: uploads it to the "plays" bucket and saves its URL', async ({ page }) => {
   const { backend, errors } = await open(page);
   await goToSection(page, 'jugadas');
