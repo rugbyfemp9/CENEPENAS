@@ -34,8 +34,8 @@ export function setMyRsvp(eventId, status, btnEl) {
   // Guarda mi respuesta de forma compartida para que la vean todas las jugadoras
   saveMyAttendanceToStorage(eventId, ev.attendance.me, ev.comments.me);
 
-  // Al declinar, pedimos justificación en un modal
-  if (!isUndo && status === 'no') {
+  // Al declinar (o quedarse en "Dubtant"), pedimos el motivo en un modal
+  if (!isUndo && (status === 'no' || status === 'maybe')) {
     openCommentModal(eventId, 'me');
   }
 }
@@ -159,7 +159,7 @@ function spawnRsvpHeartBurst(btnEl, status) {
   const rect = btnEl.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
-  const emoji = status === 'yes' ? '💙' : '💔';
+  const emoji = status === 'yes' ? '💙' : status === 'maybe' ? '🤞' : '💔';
   const count = 5;
   for (let i = 0; i < count; i++) {
     const el = document.createElement('span');
@@ -196,7 +196,8 @@ export function openCommentModal(eventId, playerId) {
   if (!ev || !player) return;
 
   commentModalCtx = { eventId, playerId };
-  commentModal.title = translate('att.justifyAbsence');
+  // "Dubtant": el comentario explica de qué depende que pueda venir.
+  commentModal.title = translate(ev.attendance.me === 'maybe' ? 'att.maybeReason' : 'att.justifyAbsence');
   commentModal.sub = `${ev.label} · ${eventWhenDisplay(ev)}`;
   commentModal.text = ev.comments[playerId] || '';
   commentModal.open = true;

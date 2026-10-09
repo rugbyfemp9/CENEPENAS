@@ -235,7 +235,7 @@ test('creating a training with intensity writes att_events and shows it in the l
   await expect(card.locator('.info b')).toHaveText('Entreno 🔥');
   await expect(card.locator('.att-event-intensity')).toHaveText('🔥');
   await expect(card.locator('.info > span').first()).toHaveText('Jueves 08/10/26 · CEM Mar Bella · 20:30 - 22:00h');
-  await expect(card.locator('.actions button')).toHaveText(['Declinar', 'Confirmar']);
+  await expect(card.locator('.actions button')).toHaveText(['Declinar', 'Dudosa', 'Confirmar']);
   expect(relevantErrors(errors)).toEqual([]);
 });
 

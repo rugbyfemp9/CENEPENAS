@@ -33,6 +33,8 @@
         <span>{card.when}</span>
         {#if card.my === 'yes'}
           <span class="rsvp-state ok">{card.rsvpLabel}</span>
+        {:else if card.my === 'maybe'}
+          <span class="rsvp-state warn">{card.rsvpLabel}</span>
         {:else if card.my === 'no'}
           <span class="rsvp-state bad">{card.rsvpLabel}</span>
         {/if}
@@ -43,6 +45,7 @@
         <button class="wstaff-quicklink" onclick={(event) => { event.stopPropagation(); goToWellnessStaffAnalysis(card.id); }} aria-label={card.staffLabel} title={card.staffLabel}>📊</button>
       {/if}
       <button class="decline {card.my === 'no' ? 'is-active' : ''}" onclick={(event) => { event.stopPropagation(); setMyRsvp(card.id, 'no', event.currentTarget); }}>{card.declineLabel}</button>
+      <button class="maybe {card.my === 'maybe' ? 'is-active' : ''}" onclick={(event) => { event.stopPropagation(); setMyRsvp(card.id, 'maybe', event.currentTarget); }}>{card.maybeLabel}</button>
       <button class="confirm {card.my === 'yes' ? 'is-active' : ''}" onclick={(event) => { event.stopPropagation(); setMyRsvp(card.id, 'yes', event.currentTarget); }}>{card.confirmLabel}</button>
     </div>
   </div>

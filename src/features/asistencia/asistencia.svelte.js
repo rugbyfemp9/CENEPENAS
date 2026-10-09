@@ -1,6 +1,6 @@
 /* ================= ASISTENCIA (lista y detalle) ================= */
 // Lista de eventos (próximos / pasados, agrupados por mes, filtro por tipo) y el
-// detalle de un evento (cabecera, pestañas Asistirán / No asistirán / Sin contestar).
+// detalle de un evento (cabecera, pestañas Asistirán / Dudosas / No asistirán / Sin contestar).
 //
 // Los eventos (events.js) y el roster no son reactivos: igual que antes, la lista y el
 // detalle solo cambian al llamar a renderEventList() / renderEventDetail(), que
@@ -52,13 +52,14 @@ function attEventCardView(ev) {
   return {
     ...base,
     my,
-    rsvpLabel: my === 'yes' ? t('att.confirmedState') : my === 'no' ? t('att.declinedState') : '',
+    rsvpLabel: my === 'yes' ? t('att.confirmedState') : my === 'no' ? t('att.declinedState') : my === 'maybe' ? t('att.maybeState') : '',
     intensity: type === 'training' ? trainingIntensityEmoji(ev.intensity) : '',
     // Botón 📊 de acceso directo al Panel de Análisis Wellness/RPE de este evento
     // concreto: solo Cos Tècnic, y solo si el evento ya existe en ese panel (mismo
     // criterio que el desplegable del panel, src/features/wellness/: ya ha terminado).
     staffLabel: (canViewWellnessStaff() && hasEventEnded(ev)) ? t('wstaff.quickAccessButton') : null,
     declineLabel: t('att.decline'),
+    maybeLabel: t('att.maybe'),
     confirmLabel: t('att.confirm'),
   };
 }
@@ -200,12 +201,13 @@ export function renderEventDetail() {
 
   // Se recorre siempre el roster completo (todas las jugadoras registradas ahora
   // mismo en la app), no solo las claves que ya hubiera en ev.attendance: así,
-  // cualquiera que no haya contestado "confirmar" ni "declinar" cae automáticamente
-  // en "Sin contestar", aunque se haya dado de alta después de crearse el evento.
-  const buckets = { yes: [], no: [], pending: [] };
+  // cualquiera que no haya contestado "confirmar", "dubtant" ni "declinar" cae
+  // automáticamente en "Sin contestar", aunque se haya dado de alta después de crearse
+  // el evento.
+  const buckets = { yes: [], maybe: [], no: [], pending: [] };
   roster.forEach((player) => {
     const status = ev.attendance[player.id];
-    if (status === 'yes' || status === 'no') buckets[status].push(player);
+    if (status === 'yes' || status === 'maybe' || status === 'no') buckets[status].push(player);
     else buckets.pending.push(player);
   });
 
@@ -224,8 +226,9 @@ export function renderEventDetail() {
     isTraining,
     intensity,
     my: ev.attendance.me,
-    counts: { yes: buckets.yes.length, no: buckets.no.length, pending: buckets.pending.length },
+    counts: { yes: buckets.yes.length, maybe: buckets.maybe.length, no: buckets.no.length, pending: buckets.pending.length },
     yes: attRosterYesGrouped(ev, buckets.yes),
+    maybe: buckets.maybe.map((p) => attRosterRowView(ev, p)),
     no: buckets.no.map((p) => attRosterRowView(ev, p)),
     pending: buckets.pending.map((p) => attRosterRowView(ev, p)),
     nobodyYet: t('att.nobodyYet'),

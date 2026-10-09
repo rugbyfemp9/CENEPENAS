@@ -66,6 +66,11 @@ export function renderNextMatchBanner() {
     b.showStatus = true;
     b.statusKey = 'nextMatch.statusConfirmed';
     b.statusClass = 'ok';
+  } else if (myStatus === 'maybe') {
+    b.showCta = false;
+    b.showStatus = true;
+    b.statusKey = 'nextMatch.statusMaybe';
+    b.statusClass = 'warn';
   } else if (myStatus === 'no') {
     b.showCta = false;
     b.showStatus = true;

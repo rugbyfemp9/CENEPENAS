@@ -1,5 +1,5 @@
 <script>
-  // Asistencia — detalle de un evento: cabecera y pestañas Asistirán / No asistirán / Sin contestar.
+  // Asistencia — detalle de un evento: cabecera y pestañas Asistirán / Dudosas / No asistirán / Sin contestar.
   import { t } from '../../lib/i18n.svelte.js';
   import { setSection } from '../../shell/navigation.svelte.js';
   import { attDetail, getDetailView, setAttTab } from './asistencia.svelte.js';
@@ -25,6 +25,7 @@
 
 <div class="att-tabs">
   <button data-att-tab="yes" class:active={attDetail.tab === 'yes'} onclick={() => setAttTab('yes')}><span>{t('att.willAttend')}</span> <span class="count" id="att-count-yes">{v ? v.counts.yes : 0}</span></button>
+  <button data-att-tab="maybe" class:active={attDetail.tab === 'maybe'} onclick={() => setAttTab('maybe')}><span>{t('att.maybeTab')}</span> <span class="count" id="att-count-maybe">{v ? v.counts.maybe : 0}</span></button>
   <button data-att-tab="no" class:active={attDetail.tab === 'no'} onclick={() => setAttTab('no')}><span>{t('att.willNotAttend')}</span> <span class="count" id="att-count-no">{v ? v.counts.no : 0}</span></button>
   <button data-att-tab="pending" class:active={attDetail.tab === 'pending'} onclick={() => setAttTab('pending')}><span>{t('att.noAnswer')}</span> <span class="count" id="att-count-pending">{v ? v.counts.pending : 0}</span></button>
 </div>
@@ -43,5 +44,6 @@
     {/if}
   {/if}
 </div></div>
+<div class="att-roster" data-att-roster="maybe" class:active={attDetail.tab === 'maybe'}><div class="att-roster-list" id="att-roster-maybe">{#if v}{@render rows(v.maybe)}{/if}</div></div>
 <div class="att-roster" data-att-roster="no" class:active={attDetail.tab === 'no'}><div class="att-roster-list" id="att-roster-no">{#if v}{@render rows(v.no)}{/if}</div></div>
 <div class="att-roster" data-att-roster="pending" class:active={attDetail.tab === 'pending'}><div class="att-roster-list" id="att-roster-pending">{#if v}{@render rows(v.pending)}{/if}</div></div>
