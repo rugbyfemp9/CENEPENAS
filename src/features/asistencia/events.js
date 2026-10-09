@@ -1,7 +1,7 @@
 /* ================= EVENTOS (datos) ================= */
 // Entrenos, partidos y reuniones de Asistencia (antes el array attEvents de
 // js/core/state.js), con la respuesta de cada jugadora en ev.attendance
-// ('yes' | 'no' | 'pending') y su comentario en ev.comments.
+// ('yes' | 'maybe' | 'no' | 'pending') y su comentario en ev.comments.
 //
 // Lo leen también Partidos, Tercer tiempo, Wellness, Fantasy, Mi perfil, Tullidas...
 // No es reactivo a propósito: igual que antes, cada vista solo cambia cuando alguien

@@ -127,6 +127,19 @@ test('banner shows "Confirmada" and counts the player when she already said yes'
   expect(relevantErrors(errors)).toEqual([]);
 });
 
+test('banner shows "En duda" (not counted as confirmed) when the player is unsure', async ({ page }) => {
+  const s = clone(seed);
+  s.att_attendance.push({ event_id: 'ce1', user_id: IDS.player, status: 'maybe', comment: 'Depende del trabajo', updated_at: '2026-09-24T10:00:00Z' });
+  const { errors } = await setupApp(page, { user: USERS.player, seed: s });
+  await openAppReady(page);
+
+  await expect(page.locator('#next-match-status')).toHaveText('En duda');
+  await expect(page.locator('#next-match-status')).toHaveClass('scoreboard-status warn');
+  await expect(page.locator('#next-match-confirmed')).toHaveText('0');
+  await expect(page.locator('#next-match-cta')).toBeHidden();
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
 test('without upcoming matches the banner shows the empty message and no actions', async ({ page }) => {
   const s = clone(seed);
   s.att_events = s.att_events.filter((e) => e.iso < '2026-09-25');

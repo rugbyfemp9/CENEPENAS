@@ -203,6 +203,7 @@
   white-space:nowrap; background:rgba(255,255,255,.16);
 }
 .scoreboard-status.ok{ color:#7BE0B0; }
+.scoreboard-status.warn{ color:#F5BE8C; }
 .scoreboard-status.bad{ color:#FF9C92; }
 
 /* Los banners de Inicio son clicables y llevan a su página; leve feedback al pasar el ratón */

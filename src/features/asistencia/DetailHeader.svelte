@@ -47,6 +47,7 @@
   </div>
   <div class="att-detail-actions">
     <button class="decline" id="att-detail-decline-btn" class:is-active={v && v.my === 'no'} onclick={(event) => setMyRsvp(attSelection.currentEventId, 'no', event.currentTarget)}>{t('att.decline')}</button>
+    <button class="maybe" id="att-detail-maybe-btn" class:is-active={v && v.my === 'maybe'} onclick={(event) => setMyRsvp(attSelection.currentEventId, 'maybe', event.currentTarget)}>{t('att.maybe')}</button>
     <button class="confirm" id="att-detail-confirm-btn" class:is-active={v && v.my === 'yes'} onclick={(event) => setMyRsvp(attSelection.currentEventId, 'yes', event.currentTarget)}>{t('att.confirm')}</button>
   </div>
 </div>

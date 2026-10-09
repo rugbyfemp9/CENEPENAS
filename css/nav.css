@@ -78,14 +78,19 @@ body.select-open .bottom-nav{ visibility:hidden; }
     white-space:nowrap;
   }
 
-  /* Pestañas Asistirán / No asistirán / Sin contestar: mismo criterio, siempre en una fila */
-  .att-tabs{ justify-content:center; flex-wrap:nowrap; }
+  /* Pestañas Asistirán / Dudosas / No asistirán / Sin contestar: mismo criterio, siempre
+     en una fila; con cuatro no caben en horizontal, así que cada una ocupa lo mismo y
+     lleva el contador debajo del nombre. */
+  .att-tabs{ justify-content:center; flex-wrap:nowrap; gap:6px; }
   .att-tabs button{
-    font-size:clamp(9px, 3.2cqw, 16px);
-    padding:clamp(7px, 2.4cqw, 16px) clamp(8px, 3cqw, 26px);
+    flex:1 1 0; min-width:0; flex-direction:column; justify-content:center; text-align:center;
+    font-size:clamp(9px, 2.9cqw, 16px);
+    padding:clamp(7px, 2.4cqw, 16px) 4px;
     gap:clamp(3px, 1.2cqw, 9px);
-    white-space:nowrap;
   }
+  /* Declinar / Dudosa / Confirmar (tarjeta y detalle) ocupan todo el ancho, a partes iguales */
+  .att-event .actions{ flex:1 1 100%; }
+  .att-event .actions button, .att-detail-actions button{ flex:1 1 0; text-align:center; padding:9px 6px; }
   .att-tabs button .count{
     font-size:clamp(8px, 2.6cqw, 14px);
     padding:2px clamp(4px, 1.6cqw, 11px);

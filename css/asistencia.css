@@ -41,6 +41,7 @@
 .att-event .info span{ font-size:12.5px; color:var(--text-muted); }
 .att-event .info .rsvp-state{ display:block; margin-top:4px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
 .att-event .info .rsvp-state.ok{ color:var(--ok); }
+.att-event .info .rsvp-state.warn{ color:var(--warn); }
 .att-event .info .rsvp-state.bad{ color:var(--bad); }
 .att-event .actions{ display:flex; gap:8px; flex-shrink:0; }
 .att-event .actions button, .att-detail-actions button{
@@ -50,6 +51,7 @@
   border:1.5px solid var(--line); color:var(--text-muted);
 }
 .att-event .actions button.confirm.is-active, .att-detail-actions button.confirm.is-active{ background:var(--ok); border-color:var(--ok); color:#fff; }
+.att-event .actions button.maybe.is-active, .att-detail-actions button.maybe.is-active{ background:var(--warn); border-color:var(--warn); color:#fff; }
 .att-event .actions button.decline.is-active, .att-detail-actions button.decline.is-active{ background:var(--bad); border-color:var(--bad); color:#fff; }
 .att-event .actions button:hover, .att-detail-actions button:hover{ border-color:var(--sky); color:var(--sky-dark); }
 .att-detail-actions{ display:flex; justify-content:center; gap:8px; margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
@@ -126,10 +128,12 @@
 .att-event.att-event--match .info b{ color:#fff; }
 .att-event.att-event--match .info span{ color:rgba(255,255,255,.72); }
 .att-event.att-event--match .info .rsvp-state.ok{ color:#7BE0B0; }
+.att-event.att-event--match .info .rsvp-state.warn{ color:#F5BE8C; }
 .att-event.att-event--match .info .rsvp-state.bad{ color:#FF9C92; }
 .att-event.att-event--match .actions button{ border-color:rgba(255,255,255,.4); color:rgba(255,255,255,.85); }
 .att-event.att-event--match .actions button:hover{ border-color:#fff; color:#fff; }
 .att-event.att-event--match .actions button.confirm.is-active{ background:var(--ok); border-color:var(--ok); color:#fff; }
+.att-event.att-event--match .actions button.maybe.is-active{ background:var(--warn); border-color:var(--warn); color:#fff; }
 .att-event.att-event--match .actions button.decline.is-active{ background:var(--bad); border-color:var(--bad); color:#fff; }
 .att-event.att-event--match .att-event-edit-btn{ background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.4); color:#fff; }
 .att-event.att-event--match .att-event-edit-btn:hover{ background:rgba(255,255,255,.24); border-color:#fff; color:#fff; }
