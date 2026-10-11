@@ -362,7 +362,7 @@ test('"No puedo asistir": the swap modal, cancel and sending a request', async (
   await expect(modal.locator('h3')).toHaveText('No puedo asistir');
   await expect(page.locator('#swap-modal-sub')).toHaveText('Vas a pedir que alguien te cubra en "Partido vs Santboi". En cuanto lo confirmes, le llegará un aviso a tu compañera para que acepte el cambio.');
   // NOTE: every roster member except me is offered, staff and other-group players included.
-  await expect(page.locator('#swap-teammate-select option')).toHaveText(['Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
+  await expect(page.locator('#swap-teammate-select option')).toHaveText(['Montse', 'Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
 
   await modal.getByRole('button', { name: 'Cancelar' }).click();
   await expect(modal).not.toHaveClass(/active/);
@@ -515,7 +515,7 @@ test('food: signing up a teammate and filling a category', async ({ page }) => {
   await expect(page.locator('.food-modal-teammate-btn')).toHaveClass(/active/);
   await expect(page.locator('#food-teammate-picker')).toBeVisible();
   // Whole roster, me included and preselected.
-  await expect(page.locator('#food-teammate-select option')).toHaveText(['Juls', 'Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
+  await expect(page.locator('#food-teammate-select option')).toHaveText(['Juls', 'Montse', 'Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
   await expect(page.locator('#food-teammate-select option:checked')).toHaveText('Juls');
 
   await page.locator('#food-teammate-select').selectOption({ label: 'Tanke' });

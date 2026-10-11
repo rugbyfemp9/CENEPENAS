@@ -6,7 +6,7 @@
 // Seed (tests/e2e/fixtures/seed.js):
 //   player = Júlia Serra "Juls", jugadora, 3/4, veterana, Comi Gira, licence CAT-10234,
 //            appears (by licence) in the one seeded match report -> 1 match played.
-//   admin  = Montse Puig, directiva, is_admin, Comi Tesoreria (hidden for staff roles).
+//   admin  = Montse Puig, directiva, is_admin, no commission (staff roles have none).
 // Injuries are only kept in memory (never written to Supabase).
 import zlib from 'node:zlib';
 import { test, expect } from '@playwright/test';
@@ -471,7 +471,9 @@ test('commission/rank/position fields follow the role; a non-player role saves t
 });
 
 test('admin (directiva) saving the own profile wipes the hidden commission', async ({ page }) => {
-  const { backend, errors } = await openProfile(page, { user: USERS.admin });
+  // A commission left over from before she was staff.
+  const profiles = seed.profiles.map((p) => (p.id === IDS.admin ? { ...p, comision: 'Comi Tesoreria' } : p));
+  const { backend, errors } = await openProfile(page, { user: USERS.admin, seed: { ...seed, profiles } });
   await openEditModal(page);
   await expect(page.locator('#profile-name-input')).toHaveValue('Montse Puig');
   await expect(page.locator('#profile-rol-input')).toHaveValue('directiva');
@@ -480,7 +482,7 @@ test('admin (directiva) saving the own profile wipes the hidden commission', asy
   await modal(page).getByRole('button', { name: 'Guardar' }).click();
   await expect(modal(page)).not.toHaveClass(/active/);
 
-  // NOTE: the seeded admin has comision 'Comi Tesoreria', but directiva is not a player
+  // NOTE: the admin has comision 'Comi Tesoreria', but directiva is not a player
   // role, so saving without touching anything writes comision: null.
   expect(restWrites(backend)).toEqual([{
     kind: 'rest', method: 'UPDATE', table: 'profiles', filters: [['id', `eq.${IDS.admin}`]],
@@ -584,7 +586,7 @@ test('admin edits another player from Jugadoras; the admin\'s own profile is unt
   await expect(plantillaRow(page, 'Carlota').locator('td')).toHaveText([
     'C Carlota', '23/07/2001', 'jugadora', 'novata', '3/4', 'Comi Tesoreria', 'CAT-10411', 'Editar',
   ]);
-  await expect(page.locator('#plantilla-grid .col-player b')).toHaveText(['Carlota', 'Jordi', 'Juls', 'Núria', 'Paula', 'Rovi', 'Sergi', 'Tanke']);
+  await expect(page.locator('#plantilla-grid .col-player b')).toHaveText(['Carlota', 'Jordi', 'Juls', 'Montse', 'Núria', 'Paula', 'Rovi', 'Sergi', 'Tanke']);
 
   // The admin's own profile did not change, and the next own edit is the admin's again.
   await goToSection(page, 'perfil');

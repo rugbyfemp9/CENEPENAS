@@ -106,13 +106,13 @@ export const seed = {
   // Allowed values from index.html selects: rol jugadora|Capitana|entrenador/a|delegado/a|
   // directiva|fisio; rango veterana|novata|sang_de_fang; posicion delantera|3/4;
   // comision Comi Xarxes|Comi Tesoreria|Comi Gira|Comi Tercer Temps|Comi Activitats.
-  // is_admin rows are hidden from Jugadoras / tercer-temps groups (applyPlantillaRows).
+  // is_admin rows are listed like any other profile (applyPlantillaRows).
   // Injuries are NOT persisted in profiles (only in-memory, perfil.js), so no column.
   profiles: [
     {
       id: ID.admin, nombre: 'Montse', apellido: 'Puig', mote: '', telefono: '600100001',
       fecha_nacimiento: '1985-03-14', rol: 'directiva', rango: null, posicion: null,
-      comision: 'Comi Tesoreria', licencia: null, grupo_tercer_tiempo: null,
+      comision: null, licencia: null, grupo_tercer_tiempo: null,
       avatar_url: null, is_admin: true
     },
     {

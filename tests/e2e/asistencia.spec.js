@@ -10,7 +10,7 @@
 //     30/09 Entreno, then October (away match 03/10 confirmed, home match 10/10...).
 //   - ce1 answers in att_attendance: yes Rovi, Carla, Paula, Jordi; no Tanke (with a
 //     comment). Everyone else is pending.
-//   - Roster (player session): 'me' (Juls) + every non-admin profile but herself.
+//   - Roster (player session): 'me' (Juls) + every profile but herself (the admin too).
 import { test, expect } from '@playwright/test';
 import { setupApp, openApp, goToSection, USERS, relevantErrors } from './support/app.js';
 import { seed, IDS, EVENT_IDS } from './fixtures/seed.js';
@@ -241,7 +241,7 @@ test('match detail: header, meeting/kick-off times and the three roster tabs', a
   await expect(page.locator('#att-detail-wellness-btn')).toBeVisible();
   await expect(page.locator('#att-detail-wellness-staff-btn')).toBeHidden();
 
-  await expect(page.locator('.att-tabs button')).toHaveText([/^Sí\s+4/, /Dudosas\s+0/, /^No\s+1/, /Sin contestar\s+3/]);
+  await expect(page.locator('.att-tabs button')).toHaveText([/^Sí\s+4/, /Dudosas\s+0/, /^No\s+1/, /Sin contestar\s+4/]);
   await expect(tab(page, 'yes')).toHaveClass(/active/);
   await expect(page.locator('.att-roster[data-att-roster="yes"]')).toHaveClass(/active/);
   await expect(page.locator('.att-roster[data-att-roster="no"]')).not.toHaveClass(/active/);
@@ -267,7 +267,7 @@ test('match detail: header, meeting/kick-off times and the three roster tabs', a
   await expect(roster(page, 'no').locator('.att-comment-btn')).toHaveCount(0);
 
   await tab(page, 'pending').click();
-  await expect(rowNames(page, 'pending')).toHaveText(['Juls', 'Núria', 'Sergi']);
+  await expect(rowNames(page, 'pending')).toHaveText(['Juls', 'Montse', 'Núria', 'Sergi']);
   await expect(roster(page, 'pending').locator('.att-comment-btn')).toHaveText(['+ Comentario']);
   await expect(roster(page, 'pending').locator('.att-roster-row').first().locator('.avatar')).toHaveText('J');
 
@@ -287,12 +287,12 @@ test('training detail hides the meeting time and KO label; empty tabs say nobody
   await expect(page.locator('#att-detail-tullides-btn')).toBeHidden();
   await expect(page.locator('#att-detail-intensity-badge')).toHaveText('');
 
-  await expect(page.locator('.att-tabs .count')).toHaveText(['0', '0', '0', '8']);
+  await expect(page.locator('.att-tabs .count')).toHaveText(['0', '0', '0', '9']);
   await expect(roster(page, 'yes').locator('.att-roster-empty')).toHaveText('Nadie en esta lista todavía.');
   await tab(page, 'no').click();
   await expect(roster(page, 'no').locator('.att-roster-empty')).toHaveText('Nadie en esta lista todavía.');
   await tab(page, 'pending').click();
-  await expect(rowNames(page, 'pending')).toHaveText(['Juls', 'Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
+  await expect(rowNames(page, 'pending')).toHaveText(['Juls', 'Montse', 'Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
 
   // Back link returns to the list
   await detail(page).locator('.back-link').click();
@@ -305,7 +305,7 @@ test('today\'s training detail shows my saved answer and my teammates\' comments
   await openDetail(page, 'Viernes 25/09/26');
 
   await expect(page.locator('#att-detail-confirm-btn')).toHaveClass(/is-active/);
-  await expect(page.locator('.att-tabs .count')).toHaveText(['2', '0', '1', '5']);
+  await expect(page.locator('.att-tabs .count')).toHaveText(['2', '0', '1', '6']);
   await expect(rowNames(page, 'yes')).toHaveText(['Rovi', 'Juls']);
   // Juls (3/4) and Rovi (delantera)
   await expect(roster(page, 'yes').locator('.is-subgroup > .att-roster-group-title')).toHaveText([/Delanteras\s+1/, /3\/4\s+1/]);
@@ -360,6 +360,19 @@ test('answers from people without a profile appear as "Alguien" with no role', a
   expect(relevantErrors(errors)).toEqual([]);
 });
 
+test('answers from the admin account show her name and role, like anyone else', async ({ page }) => {
+  const s = seedWith((d) => {
+    d.att_attendance.push({ event_id: EVENT_IDS.matchNext, user_id: IDS.admin, status: 'yes', comment: '', updated_at: '2026-09-22T10:00:00Z' });
+  });
+  const { errors } = await openAsistencia(page, { seed: s });
+  await openDetail(page, 'Partido vs Santboi');
+  await expect(tab(page, 'yes').locator('.count')).toHaveText('5');
+  await expect(roster(page, 'yes').locator('> .att-roster-group > .att-roster-group-title')).toHaveText([/Jugadoras\s+3/, /directiva\s+1/, /entrenador\/a\s+1/]);
+  await expect(roster(page, 'yes')).not.toContainText('Alguien');
+  await expect(rowNames(page, 'yes')).toContainText(['Montse']);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
 // ---------------------------------------------------------------------------
 // RSVP
 // ---------------------------------------------------------------------------
@@ -372,7 +385,7 @@ test('confirming from the detail saves "yes", moves me to Asistirán and bursts 
   await expect(page.locator('body > .rsvp-heart-burst')).toHaveCount(5);
   await expect(page.locator('body > .rsvp-heart-burst').first()).toHaveText('💙');
   await expect(page.locator('#att-detail-confirm-btn')).toHaveClass(/is-active/);
-  await expect(page.locator('.att-tabs .count')).toHaveText(['5', '0', '1', '2']);
+  await expect(page.locator('.att-tabs .count')).toHaveText(['5', '0', '1', '3']);
   await expect(roster(page, 'yes').locator('.is-subgroup').nth(1).locator('.meta b')).toHaveText(['Juls', 'Paula']);
   await expect(roster(page, 'yes').locator('.att-comment-btn')).toHaveText(['+ Comentario']);
   await expect(page.locator('#comment-modal')).not.toHaveClass(/active/);
@@ -411,7 +424,7 @@ test('pressing my current answer again undoes it (row deleted, back to pending, 
   expect(backend.db.att_attendance.find((r) => r.event_id === 'auto-2026-09-25' && r.user_id === IDS.player)).toBeUndefined();
 
   await openDetail(page, 'Viernes 25/09/26');
-  await expect(page.locator('.att-tabs .count')).toHaveText(['1', '0', '1', '6']);
+  await expect(page.locator('.att-tabs .count')).toHaveText(['1', '0', '1', '7']);
   await tab(page, 'pending').click();
   await expect(rowNames(page, 'pending').first()).toHaveText('Juls');
   expect(relevantErrors(errors)).toEqual([]);
@@ -445,7 +458,7 @@ test('declining from a list card saves "no", bursts broken hearts and asks for a
   // In the detail I'm in "No asistirán" with my comment and an "Editar" button
   await openDetail(page, 'Partido vs Santboi');
   await expect(page.locator('#att-detail-decline-btn')).toHaveClass(/is-active/);
-  await expect(page.locator('.att-tabs .count')).toHaveText(['4', '0', '2', '2']);
+  await expect(page.locator('.att-tabs .count')).toHaveText(['4', '0', '2', '3']);
   await tab(page, 'no').click();
   await expect(rowNames(page, 'no')).toHaveText(['Juls', 'Tanke']);
   await expect(roster(page, 'no').locator('.comment')).toHaveText(['Tengo una boda', 'Estoy de viaje con la familia']);
@@ -475,7 +488,7 @@ test('"Dudosa" saves "maybe", moves me to Dudosas and asks what it depends on', 
 
   await openDetail(page, 'Partido vs Santboi');
   await expect(page.locator('#att-detail-maybe-btn')).toHaveClass(/is-active/);
-  await expect(page.locator('.att-tabs .count')).toHaveText(['4', '1', '1', '2']);
+  await expect(page.locator('.att-tabs .count')).toHaveText(['4', '1', '1', '3']);
   await tab(page, 'maybe').click();
   await expect(rowNames(page, 'maybe')).toHaveText(['Juls']);
   await expect(roster(page, 'maybe').locator('.comment')).toHaveText(['Depende del turno del trabajo']);
@@ -483,7 +496,7 @@ test('"Dudosa" saves "maybe", moves me to Dudosas and asks what it depends on', 
 
   // Pressing it again undoes it
   await page.locator('#att-detail-maybe-btn').click();
-  await expect(page.locator('.att-tabs .count')).toHaveText(['4', '0', '1', '3']);
+  await expect(page.locator('.att-tabs .count')).toHaveText(['4', '0', '1', '4']);
   await expect.poll(() => attWrites(backend).length).toBe(3);
   expect(attWrites(backend)[2].method).toBe('DELETE');
   expect(relevantErrors(errors)).toEqual([]);
@@ -568,7 +581,7 @@ test('undoing a decline clears my comment; declining again asks with an empty bo
   await page.locator('#att-detail-decline-btn').click(); // undo
   await expect(modal).not.toHaveClass(/active/);
   await expect(page.locator('#att-detail-decline-btn')).not.toHaveClass(/is-active/);
-  await expect(page.locator('.att-tabs .count')).toHaveText(['4', '0', '1', '3']);
+  await expect(page.locator('.att-tabs .count')).toHaveText(['4', '0', '1', '4']);
   await tab(page, 'pending').click();
   await expect(roster(page, 'pending').locator('.comment')).toHaveCount(0);
 
@@ -724,7 +737,7 @@ test('Catalan: list, detail and comment modal are translated', async ({ page }) 
 
   await openDetail(page, 'Partido vs Santboi');
   await expect(page.locator('#att-detail-when')).toHaveText('Dissabte 26/09/26');
-  await expect(page.locator('.att-tabs button')).toHaveText([/^Sí\s+4/, /Dubtants\s+0/, /^No\s+1/, /Sense contestar\s+3/]);
+  await expect(page.locator('.att-tabs button')).toHaveText([/^Sí\s+4/, /Dubtants\s+0/, /^No\s+1/, /Sense contestar\s+4/]);
   await expect(roster(page, 'yes').locator('> .att-roster-group > .att-roster-group-title').first()).toHaveText(/Jugadores\s+3/);
   await expect(roster(page, 'yes').locator('.is-subgroup > .att-roster-group-title').first()).toHaveText(/Davanteres\s+2/);
   await tab(page, 'pending').click();

@@ -1,5 +1,5 @@
 // Characterization tests for "Jugadoras" (sec-plantilla): the members table read from
-// `profiles` (admin account hidden), the position filter, the sort menu, the
+// `profiles` (the admin account included), the position filter, the sort menu, the
 // "Datos" / "Estadísticas" tabs (stats summed from own-team match report rows), the
 // stats sort menu, menus closing on outside click, admin-only edit column, Catalan and
 // the mobile layout.
@@ -8,6 +8,7 @@
 //   Carla   2001-07-23 jugadora     novata       delantera Comi Tesoreria    CAT-10411
 //   Jordi   1980-05-18 entrenador/a                                          ENT-0042
 //   Juls    1998-04-12 jugadora     veterana     3/4       Comi Gira         CAT-10234  (the player account)
+//   Montse  1985-03-14 directiva                                            (the admin account)
 //   Núria   1990-12-09 fisio
 //   Paula   1999-01-30 jugadora     sang_de_fang 3/4       Comi Tercer Temps CAT-10302
 //   Rovi    1995-11-02 Capitana     veterana     delantera Comi Activitats   CAT-10187  (has a photo)
@@ -33,7 +34,7 @@ const statsSortMenu = (page) => page.locator('#plantilla-stats-sort-menu');
 const rowOf = (page, name) => rows(page).filter({ has: page.locator('.col-player b', { hasText: new RegExp(`^${name}$`) }) });
 const tab = (page, name) => sec(page).locator('.gym-day-group-tab', { hasText: name });
 
-const ALPHA = ['Carla', 'Jordi', 'Juls', 'Núria', 'Paula', 'Rovi', 'Sergi', 'Tanke'];
+const ALPHA = ['Carla', 'Jordi', 'Juls', 'Montse', 'Núria', 'Paula', 'Rovi', 'Sergi', 'Tanke'];
 
 async function openJugadoras(page, opts = {}) {
   const ctx = await setupApp(page, { user: USERS.player, ...opts });
@@ -57,7 +58,7 @@ async function statsSortBy(page, option) {
   await expect(statsSortMenu(page)).not.toHaveClass(/active/);
 }
 
-test('lists every registered member except the admin account, alphabetically, with all columns', async ({ page }) => {
+test('lists every registered member (the admin account too), alphabetically, with all columns', async ({ page }) => {
   const { backend, errors } = await openJugadoras(page);
   await expect(sec(page).locator('h2')).toHaveText('Jugadoras');
   await expect(sec(page).locator('thead').first().locator('th:visible')).toHaveText([
@@ -66,17 +67,17 @@ test('lists every registered member except the admin account, alphabetically, wi
   await expect(page.locator('#plantilla-th-actions')).toBeHidden();
 
   await expect(names(page)).toHaveText(ALPHA);
-  await expect(sec(page)).not.toContainText('Montse');
   // Players show rank/position/commission ("Sin asignar" when empty); staff show "—".
   await expect(rows(page).nth(0).locator('td')).toHaveText(['C Carla', '23/07/2001', 'jugadora', 'novata', 'Delantera', 'Comi Tesoreria', 'CAT-10411']);
   await expect(rows(page).nth(1).locator('td')).toHaveText(['J Jordi', '18/05/1980', 'entrenador/a', '—', '—', '—', 'ENT-0042']);
   await expect(rows(page).nth(2).locator('td')).toHaveText(['J Juls', '12/04/1998', 'jugadora', 'veterana', '3/4', 'Comi Gira', 'CAT-10234']);
-  await expect(rows(page).nth(3).locator('td')).toHaveText(['N Núria', '09/12/1990', 'fisio', '—', '—', '—', 'Sin asignar']);
+  await expect(rows(page).nth(3).locator('td')).toHaveText(['M Montse', '14/03/1985', 'directiva', '—', '—', '—', 'Sin asignar']);
+  await expect(rows(page).nth(4).locator('td')).toHaveText(['N Núria', '09/12/1990', 'fisio', '—', '—', '—', 'Sin asignar']);
   // NOTE: the rank is shown as the raw value ("sang_de_fang"), not as the "Sang de Fang" label.
-  await expect(rows(page).nth(4).locator('td')).toHaveText(['P Paula', '30/01/1999', 'jugadora', 'sang_de_fang', '3/4', 'Comi Tercer Temps', 'CAT-10302']);
-  await expect(rows(page).nth(5).locator('td')).toHaveText(['Rovi', '02/11/1995', 'Capitana', 'veterana', 'Delantera', 'Comi Activitats', 'CAT-10187']);
-  await expect(rows(page).nth(6).locator('td')).toHaveText(['S Sergi', '26/02/1987', 'delegado/a', '—', '—', '—', 'Sin asignar']);
-  await expect(rows(page).nth(7).locator('td')).toHaveText(['T Tanke', '05/09/2003', 'jugadora', 'novata', '3/4', 'Comi Xarxes', 'CAT-10455']);
+  await expect(rows(page).nth(5).locator('td')).toHaveText(['P Paula', '30/01/1999', 'jugadora', 'sang_de_fang', '3/4', 'Comi Tercer Temps', 'CAT-10302']);
+  await expect(rows(page).nth(6).locator('td')).toHaveText(['Rovi', '02/11/1995', 'Capitana', 'veterana', 'Delantera', 'Comi Activitats', 'CAT-10187']);
+  await expect(rows(page).nth(7).locator('td')).toHaveText(['S Sergi', '26/02/1987', 'delegado/a', '—', '—', '—', 'Sin asignar']);
+  await expect(rows(page).nth(8).locator('td')).toHaveText(['T Tanke', '05/09/2003', 'jugadora', 'novata', '3/4', 'Comi Xarxes', 'CAT-10455']);
 
   // Photo or initials in the avatar; empty/staff cells are muted.
   await expect(rowOf(page, 'Rovi').locator('.avatar img')).toHaveAttribute('src', 'assets/img/1.jpg');
@@ -95,7 +96,7 @@ test('admin sees the "Editar" column with a button per member', async ({ page })
   await expect(page.locator('#plantilla-th-actions')).toBeVisible();
   await expect(page.locator('#plantilla-th-actions')).toHaveText('Editar');
   await expect(names(page)).toHaveText(ALPHA);
-  await expect(rows(page).getByRole('button', { name: 'Editar' })).toHaveCount(8);
+  await expect(rows(page).getByRole('button', { name: 'Editar' })).toHaveCount(9);
   await expect(rowOf(page, 'Juls').locator('td')).toHaveText(['J Juls', '12/04/1998', 'jugadora', 'veterana', '3/4', 'Comi Gira', 'CAT-10234', 'Editar']);
 
   await rowOf(page, 'Paula').getByRole('button', { name: 'Editar' }).click();
@@ -159,7 +160,7 @@ test('sort menu: alphabetical, birth date, commission and number of cards', asyn
 
   // Oldest first.
   await sortBy(page, 'Fecha de nacimiento');
-  await expect(names(page)).toHaveText(['Jordi', 'Sergi', 'Núria', 'Rovi', 'Juls', 'Paula', 'Carla', 'Tanke']);
+  await expect(names(page)).toHaveText(['Jordi', 'Montse', 'Sergi', 'Núria', 'Rovi', 'Juls', 'Paula', 'Carla', 'Tanke']);
   await expect(page.locator('#plantilla-sort-btn')).not.toHaveClass(/active/);
   await page.locator('#plantilla-sort-btn').click();
   await expect(sortMenu(page).locator('button.active')).toHaveText('Fecha de nacimiento');
@@ -167,12 +168,12 @@ test('sort menu: alphabetical, birth date, commission and number of cards', asyn
 
   // By commission name; members without one (staff) at the end, in load order.
   await sortBy(page, 'Comisión');
-  await expect(names(page)).toHaveText(['Rovi', 'Juls', 'Paula', 'Carla', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
+  await expect(names(page)).toHaveText(['Rovi', 'Juls', 'Paula', 'Carla', 'Tanke', 'Montse', 'Jordi', 'Núria', 'Sergi']);
 
   // Most cards (yellow/red fines) first. NOTE: ties keep the order in which profiles
   // were loaded from Supabase, not alphabetical order.
   await sortBy(page, 'Nº de tarjetas');
-  await expect(names(page)).toHaveText(['Rovi', 'Juls', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
+  await expect(names(page)).toHaveText(['Rovi', 'Juls', 'Montse', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
 
   await sortBy(page, 'Alfabéticamente');
   await expect(names(page)).toHaveText(ALPHA);
@@ -317,12 +318,11 @@ test('without match reports the stats tab says so (also in Catalan)', async ({ p
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('with only the admin account registered the table says there are no members', async ({ page }) => {
+test('with only the admin account registered the table lists just her', async ({ page }) => {
   // (fines of unknown players are dropped too: they would break the Multas table)
   const onlyAdmin = { ...seed, profiles: seed.profiles.filter((p) => p.is_admin), fines: [] };
   const { errors } = await openJugadoras(page, { user: USERS.admin, seed: onlyAdmin });
-  await expect(rows(page)).toHaveCount(1);
-  await expect(rows(page)).toHaveText('Todavía no hay miembros registrados.');
+  await expect(names(page)).toHaveText(['Montse']);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -340,7 +340,7 @@ test('shown names: mote, else first name, else first name + surname initial when
   ] } });
   // NOTE: a member without name nor mote is shown as "Sin" (the first word of the
   // "Sin nombre" placeholder), with initial "S".
-  await expect(names(page)).toHaveText(['Carla F.', 'Carla P.', 'Jordi', 'Juls', 'Marta', 'Núria', 'Paula', 'Rovi', 'Sergi', 'Sin', 'Tanke']);
+  await expect(names(page)).toHaveText(['Carla F.', 'Carla P.', 'Jordi', 'Juls', 'Marta', 'Montse', 'Núria', 'Paula', 'Rovi', 'Sergi', 'Sin', 'Tanke']);
   // Everything unassigned: "Sin asignar" cells (no role -> "—" for player-only columns).
   await expect(rowOf(page, 'Sin').locator('td')).toHaveText(['S Sin', 'Sin asignar', 'Sin asignar', '—', '—', '—', 'Sin asignar']);
   await expect(rowOf(page, 'Sin').locator('td').nth(1)).toHaveClass(/muted-cell/);
@@ -358,7 +358,7 @@ test('the refresh button reloads the members from Supabase', async ({ page }) =>
   });
   backend.db.profiles.find((p) => p.id === IDS.paula).mote = 'Pauleta';
   await sec(page).getByRole('button', { name: 'Actualizar' }).click();
-  await expect(names(page)).toHaveText(['Bertu', 'Carla', 'Jordi', 'Juls', 'Núria', 'Pauleta', 'Rovi', 'Sergi', 'Tanke']);
+  await expect(names(page)).toHaveText(['Bertu', 'Carla', 'Jordi', 'Juls', 'Montse', 'Núria', 'Pauleta', 'Rovi', 'Sergi', 'Tanke']);
   await expect(rowOf(page, 'Bertu').locator('td')).toHaveText(['B Bertu', '02/02/2004', 'jugadora', 'novata', 'Delantera', 'Sin asignar', 'Sin asignar']);
   expect(backend.mutations).toEqual([]);
   expect(relevantErrors(errors)).toEqual([]);

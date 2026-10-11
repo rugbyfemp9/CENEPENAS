@@ -84,9 +84,7 @@ export async function loadPlantilla() {
 // loadPlantilla() para poder pintar primero con la copia en caché y luego repetir
 // exactamente lo mismo en cuanto llega la versión fresca de la red.
 function applyPlantillaRows(data) {
-  // La cuenta admin es solo de gestión: no debe aparecer en ningún listado, grupo
-  // ni estadística de cara al resto del equipo.
-  plantillaData = (data || []).filter((p) => !p.is_admin);
+  plantillaData = data || [];
   if (!plantillaData.length) {
     plantilla.grid = { key: 'plantilla.noMembers', colspan: 6 };
     thirdTimeGroups.A = [];

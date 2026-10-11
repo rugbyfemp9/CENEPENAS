@@ -628,9 +628,9 @@ test('publishing to one person lets you pick anyone in the roster', async ({ pag
   await expect(page.locator('#publish-person-wrap')).toBeVisible();
   await expect(page.locator('#publish-person-wrap')).toContainText('Persona');
   const person = page.locator('#publish-person-select');
-  // NOTE: the user herself is the first option (value 'me'); staff are listed too and
-  // the admin account is not.
-  await expect(person.locator('option')).toHaveText(['Juls', 'Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
+  // NOTE: the user herself is the first option (value 'me'); staff and the admin
+  // account are listed too.
+  await expect(person.locator('option')).toHaveText(['Juls', 'Montse', 'Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
 
   // Choosing another audience hides the person picker again.
   await publishModal(page).locator('.publish-audience-opt', { hasText: 'Jugadoras' }).click();

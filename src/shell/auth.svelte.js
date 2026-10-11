@@ -67,8 +67,8 @@ export function registerAsksPlayerFields() {
 // quede repartida lo más igualada posible según se va registrando gente.
 async function nextThirdTimeGroup() {
   const [countA, countB] = await Promise.all([
-    supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('grupo_tercer_tiempo', 'A').eq('is_admin', false),
-    supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('grupo_tercer_tiempo', 'B').eq('is_admin', false)
+    supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('grupo_tercer_tiempo', 'A'),
+    supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('grupo_tercer_tiempo', 'B')
   ]);
   return (countB.count || 0) < (countA.count || 0) ? 'B' : 'A';
 }

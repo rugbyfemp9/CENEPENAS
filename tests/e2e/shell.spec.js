@@ -58,7 +58,7 @@ async function exposeProfileCounts(page, backend) {
     if (req.method() !== 'HEAD') return route.fallback();
     const url = new URL(req.url());
     const group = (url.searchParams.get('grupo_tercer_tiempo') || '').replace(/^eq\./, '');
-    const n = backend.db.profiles.filter((p) => p.grupo_tercer_tiempo === group && !p.is_admin).length;
+    const n = backend.db.profiles.filter((p) => p.grupo_tercer_tiempo === group).length;
     return route.fulfill({
       status: 200, body: '',
       headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Expose-Headers': 'Content-Range', 'Content-Range': n ? `0-${n - 1}/${n}` : `*/0` },

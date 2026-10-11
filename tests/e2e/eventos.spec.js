@@ -667,10 +667,11 @@ test('birthdays come from the profiles birth dates every year, including the log
   await expect(page.locator('#cal-month-label')).toHaveText('abril 2026');
   await expect(page.locator('#cal-grid .cal-chip')).toHaveText(['Juls']);
   await expect(calDay(page, 12).locator('.cal-chip')).toHaveText(['Juls']);
-  // March 2026: the admin (14/03) is hidden from the roster, so no birthday.
+  // March 2026: the admin (14/03) has her birthday like anyone else.
   await prev.click();
   await expect(page.locator('#cal-month-label')).toHaveText('marzo 2026');
-  await expect(page.locator('#cal-grid .cal-chip')).toHaveCount(0);
+  await expect(page.locator('#cal-grid .cal-chip')).toHaveText(['Montse']);
+  await expect(calDay(page, 14).locator('.cal-chip.t-birthday')).toHaveText('Montse');
   expect(relevantErrors(errors)).toEqual([]);
 });
 

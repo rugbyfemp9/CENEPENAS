@@ -255,7 +255,7 @@ test('player pays her own fine: it waits for the treasurer\'s confirmation', asy
   await expect(modal).toHaveClass(/active/);
   await expect(modal.locator('h3')).toHaveText('Pagar multa');
   await expect(modal.locator('.modal-sub')).toHaveText('¿A quién de Comi Tesoreria se le ha pagado? El ingreso se añadirá solo a su tabla de movimientos.');
-  // The admin account is not part of the roster, so only Carla is offered.
+  // Only Carla is in Comi Tesoreria.
   await expect(page.locator('#pay-fine-responsible-input option')).toHaveText(['Carla']);
   await expect(page.locator('#pay-fine-responsible-empty')).toBeHidden();
 
@@ -291,10 +291,10 @@ test('clicking a chip already awaiting confirmation only shows a message', async
   await expect.poll(() => messages).toEqual(['Ya está marcada como pagada a Carla, a la espera de que lo confirme.']);
   await expect(payModal(page)).not.toHaveClass(/active/);
 
-  // Paula's fine is awaiting the admin, who is not in the roster.
+  // Paula's fine is awaiting the admin, shown by her name like anyone else.
   await rowOf(page, 'Paula').locator('.fine-chip').click();
   await expect.poll(() => messages).toHaveLength(2);
-  expect(messages[1]).toBe('Ya está marcada como pagada a Alguien, a la espera de que lo confirme.');
+  expect(messages[1]).toBe('Ya está marcada como pagada a Montse, a la espera de que lo confirme.');
   expect(fineWrites(backend)).toEqual([]);
   expect(relevantErrors(errors)).toEqual([]);
 });

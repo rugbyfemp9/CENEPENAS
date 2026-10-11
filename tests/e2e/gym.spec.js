@@ -546,8 +546,8 @@ test('quick calculator can use a teammate\'s 1RM and go back to mine', async ({ 
   const menu = page.locator('#gym-quick-calc-player-menu');
   await page.locator('#gym-quick-calc-player-btn').click();
   await expect(menu).toBeVisible();
-  // Everyone in the roster, staff included (the admin account is not in it).
-  await expect(menu.locator('.gym-quick-calc-player-option')).toHaveText(['Juls', 'Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
+  // Everyone in the roster, staff and the admin account included.
+  await expect(menu.locator('.gym-quick-calc-player-option')).toHaveText(['Juls', 'Montse', 'Rovi', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi']);
   await expect(menu.locator('.gym-quick-calc-player-option.selected')).toHaveText('Juls');
   await menu.getByRole('button', { name: 'Rovi' }).click();
   await expect(menu).toBeHidden();
@@ -989,6 +989,7 @@ test('team ranking per exercise: heaviest first, then everyone without a mark', 
     ['3', 'Juls', '85 kg', '18/09/26'],
     ['4', 'Tanke', '75 kg', '22/09/26'],
     ['5', 'Paula', '70 kg', '14/09/26'],
+    ['—', 'Montse', 'Sin registrar', '—'],
     ['—', 'Jordi', 'Sin registrar', '—'],
     ['—', 'Núria', 'Sin registrar', '—'],
     ['—', 'Sergi', 'Sin registrar', '—'],
@@ -1000,16 +1001,16 @@ test('team ranking per exercise: heaviest first, then everyone without a mark', 
   await expect.poll(() => cells(rankingRows(page))).toEqual([
     ['1', 'Rovi', '130 kg', '17/09/26'],
     ['2', 'Juls', '100 kg', '18/09/26'],
-    ...['Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi'].map((n) => ['—', n, 'Sin registrar', '—']),
+    ...['Montse', 'Carla', 'Paula', 'Tanke', 'Jordi', 'Núria', 'Sergi'].map((n) => ['—', n, 'Sin registrar', '—']),
   ]);
 
   await select.selectOption('Hip thrust');
   await expect(rankingRows(page).first()).toHaveText(/^\s*1\s*Tanke\s*120 kg\s*22\/09\/26\s*$/);
-  await expect(rankingRows(page)).toHaveCount(8);
+  await expect(rankingRows(page)).toHaveCount(9);
 
   await select.selectOption('Press militar');
   await expect(page.locator('#gym-ranking-table-body tr.gym-rank-top')).toHaveCount(0);
-  await expect(rankingRows(page).locator('.rank-cell')).toHaveText(Array(8).fill('—'));
+  await expect(rankingRows(page).locator('.rank-cell')).toHaveText(Array(9).fill('—'));
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -1017,8 +1018,8 @@ test('admin view: the admin account appears in the ranking and the attendance as
   const { backend, errors } = await setupApp(page);
   await openApp(page);
   await openTeam(page);
-  // NOTE: the admin account is hidden from every other list (applyPlantillaRows), but in
-  // Gym it is the "me" roster entry, so it shows up in the ranking and can check in.
+  // In Gym the admin account is the "me" roster entry, so it shows up in the ranking
+  // and can check in like anyone else.
   await expect(rankingRows(page).locator('.player-row')).toHaveText(['Rovi', 'Carla', 'Juls', 'Tanke', 'Paula', 'Montse', 'Jordi', 'Núria', 'Sergi']);
   await page.locator('#gym-checkin-btn').click();
   await page.locator('#gym-checkin-time-input').fill('20:00');
