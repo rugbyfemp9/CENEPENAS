@@ -1,0 +1,47 @@
+tests/e2e/gym.spec.js
+  s_2614831490e5f5::t_323b27e68d0db0 549-550,992,1004,1009,1013,1021-1022
+tests/e2e/asistencia.spec.js
+  s_2614831490e5f5::t_eb7cd28ac93288 270,295
+  s_2614831490e5f5::t_86a5e7f8014b89 370
+  s_2614831490e5f5::t_694bb84ec76251 13,244,290,308,388,427,461,491,499,584,740
+  s_2614831490e5f5::t_6a7565428c2039 363-369,371-375
+src/shell/auth.svelte.js
+  s_2614831490e5f5::t_80448a794cc733 70-71
+src/features/jugadoras/jugadoras.svelte.js
+  s_2614831490e5f5::t_80448a794cc733 87
+tests/e2e/multas.spec.js
+  s_2614831490e5f5::t_5afbfcee807c0c 258,294,297
+tests/e2e/shell.spec.js
+  s_2614831490e5f5::t_0a360c0029745d 61
+tests/e2e/perfil.spec.js
+  s_2614831490e5f5::t_e01b5354f39da8 589
+  s_2614831490e5f5::t_5afbfcee807c0c 9,474-476,485
+tests/e2e/eventos.spec.js
+  s_2614831490e5f5::t_323b27e68d0db0 670,673-674
+tests/e2e/fantasy.spec.js
+  s_2614831490e5f5::t_323b27e68d0db0 631-633
+tests/e2e/jugadoras.spec.js
+  s_2614831490e5f5::t_77aa3e89fde70d 176
+  s_2614831490e5f5::t_d18d2efcb4a1cd 2,11,37,61,74-75,77-80,99,163,321,325,343,361
+  s_2614831490e5f5::t_03cbeafd3a0d75 171
+tests/e2e/tercer-tiempo.spec.js
+  s_2614831490e5f5::t_03cbeafd3a0d75 365,518
+tests/e2e/fixtures/seed.js
+  s_2614831490e5f5::t_5afbfcee807c0c 109,115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ff4ed968efd63961e5cf862c4282ce7d035f70f5",
+  "prompts": {},
+  "sessions": {
+    "s_2614831490e5f5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7dfeaf02-93d5-4e99-a362-de872ca94479",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Laia MP <laiamogasp@gmail.com>"
+    }
+  }
+}
