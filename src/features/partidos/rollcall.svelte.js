@@ -8,9 +8,10 @@ import { rosterById } from '../../lib/roster.js';
 import { displayName, initials } from '../../lib/names.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso } from '../../lib/dates.js';
-import { finesState, canManageFines, persistFineInsert, refreshAfterChange, loadFines } from '../multas/multas.svelte.js';
+import { finesState, persistFineInsert, refreshAfterChange, loadFines } from '../multas/multas.svelte.js';
 import { findNextMatch } from './partidos.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
+import { canManageFines } from '../../lib/permissions.js';
 
 export const rollcall = $state({
   open: false,

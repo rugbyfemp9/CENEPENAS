@@ -6,8 +6,9 @@
   import TreasuryEditButton from '../../lib/treasury/TreasuryEditButton.svelte';
   import {
     comiTercer, setComiTercerTab, shopping, addShoppingItem, toggleShoppingItem, deleteShoppingItem,
-    tercerTreasury, canManageTercerTemps,
+    tercerTreasury,
   } from './comi-tercer-temps.svelte.js';
+  import { canManageTercerTemps } from '../../lib/permissions.js';
 
   const canManage = $derived(canManageTercerTemps());
 </script>

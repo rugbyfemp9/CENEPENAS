@@ -1,6 +1,7 @@
 <script>
   // Formulario de registro del overlay de acceso (src/shell/AuthOverlay.svelte).
   import { t } from '../lib/i18n.svelte.js';
+  import { ROLE_OPTIONS, ROLES, COMISION_OPTIONS } from '../lib/roles.js';
   import { authUi, registerForm, showAuthView, handleRegister, registerAsksPlayerFields, authMessage } from './auth.svelte.js';
 </script>
 
@@ -28,12 +29,10 @@
     <label>{t('plantilla.role')}
       <select id="register-rol-input" bind:value={registerForm.rol}>
         <option value="">{t('auth.selectRole')}</option>
-        <option value="jugadora">{t('role.player')}</option>
-        <option value="Capitana">{t('role.captain')}</option>
-        <option value="entrenador/a">{t('role.coach')}</option>
-        <option value="delegado/a">{t('role.delegate')}</option>
-        <option value="directiva">{t('role.board')}</option>
-        <option value="fisio">{t('role.physio')}</option>
+        <!-- El rol admin no se ofrece al registrarse: solo lo da otra admin. -->
+        {#each ROLE_OPTIONS.filter((r) => r.value !== ROLES.admin) as r (r.value)}
+          <option value={r.value}>{t(r.label)}</option>
+        {/each}
       </select>
     </label>
     <div id="register-jugadora-fields" style="flex-direction:column; gap:12px;" style:display={registerAsksPlayerFields() ? 'flex' : 'none'}>
@@ -55,11 +54,9 @@
       <label>{t('plantilla.commission')}
         <select id="register-comision-input" bind:value={registerForm.comision}>
           <option value="">{t('plantilla.unassigned')}</option>
-          <option value="Comi Xarxes">Comi Xarxes</option>
-          <option value="Comi Tesoreria">Comi Tesoreria</option>
-          <option value="Comi Gira">Comi Gira</option>
-          <option value="Comi Tercer Temps">Comi Tercer Temps</option>
-          <option value="Comi Activitats">Comi Activitats</option>
+          {#each COMISION_OPTIONS as c (c)}
+            <option value={c}>{c}</option>
+          {/each}
         </select>
       </label>
       <label>{t('plantilla.license')}

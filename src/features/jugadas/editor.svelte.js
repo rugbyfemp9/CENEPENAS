@@ -8,8 +8,9 @@ import { supabase } from '../../lib/supabase.js';
 import { writeCache } from '../../lib/storage.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { setSection } from '../../shell/navigation.svelte.js';
-import { jugadas, playForm, canManagePlays, playsOf, animationOf } from './jugadas.svelte.js';
+import { jugadas, playForm, playsOf, animationOf } from './jugadas.svelte.js';
 import { clampPoint, STEP_MS_DEFAULT, PITCH_W, PITCH_L, FULL_PITCH_VIEWBOX } from './board.js';
+import { canManagePlays } from '../../lib/permissions.js';
 
 export const MAX_DEFENDERS = 15;
 // Dorsales del banquillo del editor: en rugby el número es el puesto (9 = medio melé...).

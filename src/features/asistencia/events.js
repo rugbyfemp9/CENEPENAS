@@ -7,8 +7,7 @@
 // No es reactivo a propósito: igual que antes, cada vista solo cambia cuando alguien
 // la vuelve a pintar (renderEventList(), renderEventDetail(), renderNextMatchBanner()...).
 import { supabase } from '../../lib/supabase.js';
-import { auth } from '../../lib/session.svelte.js';
-import { myProfile, roster } from '../../lib/roster.js';
+import { roster } from '../../lib/roster.js';
 import { weekdayFullLabel, formatShortDate, autoMonthAbbr } from '../../lib/dates.js';
 import { forgetTullidesForEvent } from '../tullidas/tullidas.svelte.js';
 import { SEASON, autoTrainingDates, autoTrainingId } from '../../../supabase/functions/_shared/season.js';
@@ -19,17 +18,6 @@ export const attEvents = [];
 // "Tullidas" desde el banner de Inicio (src/features/tullidas). No es reactivo: el
 // detalle solo cambia al volver a pintarlo.
 export const attSelection = { currentEventId: null };
-
-// ---- Permisos: "Añadir evento" en Asistencia ----
-// Entrenador/a, delegado/a, junta directiva y Capitana pueden crear/editar/borrar
-// eventos (a Capitana se le da aparte, porque jugadora normal no tiene este permiso:
-// ver el comentario sobre effectiveRoleForPermissions en src/lib/permissions.js).
-export const rolesWithEventManagement = ['entrenador/a', 'delegado/a', 'directiva', 'Capitana'];
-export function canManageEvents() {
-  // Ojo: aquí NO se pasa por effectiveRoleForPermissions, porque este es justo un
-  // permiso donde Capitana y jugadora se diferencian (jugadora normal no lo tiene).
-  return auth.isAdmin || rolesWithEventManagement.includes(myProfile.rol);
-}
 
 // Sede fija para la opción rápida "🏠 Casa": siempre enlaza con el CEM Mar Bella,
 // independientemente de lo que se haya escrito antes en el campo Lugar.

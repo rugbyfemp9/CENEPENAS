@@ -24,7 +24,7 @@
 
   <!-- WELLNESS / RPE — COS TÈCNIC: vista d'anàlisi agregada de tot l'equip per a un
        entrenament concret. Només visible per a rols de gestió (entrenador/a, delegado/a,
-       directiva, fisio, admin) — ver STAFF_WELLNESS_ROLES / canViewWellnessStaff() y
+       directiva, fisio, admin) — ver STAFF_ROLES / canViewWellnessStaff() y
        toggleWellnessStaffCardVisibility(). Ni la pestanya de "Vestuario" ni el botón del
        sidebar aparecen para el resto de roles (p.ej. jugadora), y setSection() redirige
        igualmente si alguien intenta entrar a mano. -->

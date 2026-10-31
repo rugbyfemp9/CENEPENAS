@@ -3,8 +3,9 @@
   import { t } from '../../lib/i18n.svelte.js';
   import { safeUrl } from '../../lib/url.js';
   import PlayAnimation from './PlayAnimation.svelte';
-  import { jugadas, openedPlay, categoryName, animationOf, canManagePlays, askDeletePlay } from './jugadas.svelte.js';
+  import { jugadas, openedPlay, categoryName, animationOf, askDeletePlay } from './jugadas.svelte.js';
   import { editAnimation } from './editor.svelte.js';
+  import { canManagePlays } from '../../lib/permissions.js';
 
   const play = $derived(openedPlay());
   const videoUrl = $derived(play ? safeUrl(play.video_url) : '');

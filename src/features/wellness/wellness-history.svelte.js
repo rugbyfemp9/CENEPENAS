@@ -8,7 +8,7 @@
 import { supabase } from '../../lib/supabase.js';
 import { roster, rosterById } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
-import { canViewWellnessStaff, effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { canViewWellnessStaff, isPlayerRole } from '../../lib/permissions.js';
 import { attEvents } from '../asistencia/events.js';
 import { attEventIso, attEventType, hasEventEnded, todayLocalIso } from '../../lib/dates.js';
 import { wellnessStaffEventMinutes } from './minutes.js';
@@ -74,7 +74,7 @@ export const history = $state({
 let wellnessHistoryRawRows = [];
 
 const sortedPlayers = () => roster
-  .filter((p) => effectiveRoleForPermissions(p.rol) === 'jugadora')
+  .filter((p) => isPlayerRole(p.rol))
   .sort((a, b) => displayName(a).localeCompare(displayName(b), 'es'));
 
 // Trae de Supabase todas las valoraciones de los últimos WSTAFF_WEEKS_BACK semanas

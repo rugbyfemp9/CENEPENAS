@@ -207,7 +207,7 @@ test('register form: the player-only fields appear only for Jugadora and Capitan
   await page.locator('#register-rol-input').selectOption('jugadora');
   await expect(page.locator('#register-rango-input option')).toHaveText(['Selecciona un rango', 'Veterana', 'Novata', 'Sang de Fang']);
   await expect(page.locator('#register-posicion-input option')).toHaveText(['Selecciona una posición', 'Delantera', '3/4']);
-  await expect(page.locator('#register-comision-input option')).toHaveText(['Sin asignar', 'Comi Xarxes', 'Comi Tesoreria', 'Comi Gira', 'Comi Tercer Temps', 'Comi Activitats']);
+  await expect(page.locator('#register-comision-input option')).toHaveText(['Sin asignar', 'Comi Activitats', 'Comi Xarxes', 'Comi Tercer Temps', 'Comi Tesoreria', 'Comi Gira']);
   await expect(page.locator('#register-licencia-input')).toBeVisible();
   expect(relevantErrors(errors)).toEqual([]);
 });

@@ -4,17 +4,10 @@
 // ver src/lib/treasury/).
 import { supabase } from '../../lib/supabase.js';
 import { roster } from '../../lib/roster.js';
-import { session } from '../../lib/session.svelte.js';
 import { createTreasury } from '../../lib/treasury/treasury.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
-
-// Solo Comi Tercer Temps puede añadir/marcar/borrar cosas de la lista de la compra y
-// de su saldo; el resto del equipo puede consultar todo con total normalidad (la
-// escritura real también la bloquea la política RLS de "tercer_shopping_items" y
-// "tercer_treasury_entries" en Supabase).
-export function canManageTercerTemps() {
-  return session.isAdmin || session.comision === 'Comi Tercer Temps';
-}
+import { canManageTercerTemps } from '../../lib/permissions.js';
+import { COMISIONES } from '../../lib/roles.js';
 
 // ---- Pestañas Lista / Saldo ----
 export const comiTercer = $state({ tab: 'lista' });
@@ -68,7 +61,7 @@ export async function deleteShoppingItem(id) {
 // ---- Saldo ----
 // Personas de la plantilla que tienen marcado "Comi Tercer Temps" en su perfil
 export function tercerTreasuryCommissionMembers() {
-  return roster.filter((p) => p.comision === 'Comi Tercer Temps');
+  return roster.filter((p) => p.comision === COMISIONES.tercerTemps);
 }
 
 export const tercerTreasury = createTreasury({

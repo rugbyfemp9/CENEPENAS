@@ -8,7 +8,7 @@
 // entrar en Perfil...), que guarda aquí lo que toca mostrar en ese momento.
 import { supabase } from '../../lib/supabase.js';
 import { currentUserId, myProfile, myRosterEntry } from '../../lib/roster.js';
-import { effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { isPlayerRole } from '../../lib/permissions.js';
 import { attEvents, attSelection } from '../asistencia/events.js';
 import { attEventIso, attEventType, todayLocalIso, formatFullDate } from '../../lib/dates.js';
 import { renderEventDetail, toggleAttAddButtonVisibility } from '../asistencia/asistencia.svelte.js';
@@ -103,10 +103,10 @@ export function renderProfile() {
     comision: myProfile.comision || '—',
     rango: myProfile.rango || '—',
     posicion: posicionLabel(myProfile.posicion),
-    // Comisión, Rango y Posición son datos propios de jugadoras (a Capitana se la
-    // trata como jugadora en toda la app, ver effectiveRoleForPermissions): si el rol
+    // Comisión, Rango y Posición son datos propios de jugadoras (a Capitana y admin se las
+    // trata como jugadoras en toda la app, ver isPlayerRole): si el rol
     // es otro (entrenador/a, delegado/a, directiva...) esas filas no se muestran.
-    esJugadora: effectiveRoleForPermissions(myProfile.rol) === 'jugadora',
+    esJugadora: isPlayerRole(myProfile.rol),
     rol: myProfile.rol || '—',
     licencia: myProfile.licencia || '—',
     licenciaHero: myProfile.licencia ? t('profile.licenseHero', { num: myProfile.licencia }) : '',
@@ -181,8 +181,9 @@ export function refreshAvatarEverywhere() {
 // Tras editar el perfil propio: el rol y la comisión pueden cambiar qué botones ves en
 // el resto de la app (añadir evento, multa, álbum, subir rutina...).
 export function refreshPermissionsEverywhere() {
-  toggleAttAddButtonVisibility();
+  // Primero la sesión: todos los permisos (src/lib/permissions.js) la leen.
   refreshSession();
+  toggleAttAddButtonVisibility();
   finesPermissionsChanged();
   treasury.permissionsChanged();
   tercerTreasury.permissionsChanged();

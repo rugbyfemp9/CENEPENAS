@@ -3,11 +3,11 @@
   import { setSection } from '../../shell/navigation.svelte.js';
   import { formatShortDate } from '../../lib/dates.js';
   import {
-    gym, routineMenu, canEditGymRoutine, hasWeeklyRoutine, openGymRoutineUploadModal, toggleGymRoutineMoreMenu,
+    gym, routineMenu, hasWeeklyRoutine, openGymRoutineUploadModal, toggleGymRoutineMoreMenu,
     closeGymRoutineMoreMenu, loadLastGymRoutine, openGymRoutineArchiveTab, openGymRoutineDay, gymMarksRows,
-    canManageGeneralExercises, newExerciseInputs, openGymRmHistoryModal, openGymRmModal, deleteGymExercise,
-    addGymCustomExercise,
+    newExerciseInputs, openGymRmHistoryModal, openGymRmModal, deleteGymExercise, addGymCustomExercise,
   } from './gym.svelte.js';
+  import { canManageGeneralExercises, canEditGymRoutine } from '../../lib/permissions.js';
 
   const canEdit = $derived(canEditGymRoutine());
   const marks = $derived(gymMarksRows());

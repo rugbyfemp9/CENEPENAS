@@ -3,21 +3,14 @@
 // (tabla "treasury_entries") para que estén sincronizados entre todo el mundo; la
 // lógica es la misma que la de Comi Tercer Temps (ver src/lib/treasury/).
 import { rosterById } from '../../lib/roster.js';
-import { session } from '../../lib/session.svelte.js';
 import { createTreasury } from '../../lib/treasury/treasury.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
-
-// Solo Comi Tesoreria puede añadir/editar/borrar movimientos de la tesorería del
-// club; el resto del equipo puede consultar el saldo y la tabla con total normalidad
-// (la escritura real también la bloquea la política RLS de "treasury_entries" en
-// Supabase).
-export function canManageClubTreasury() {
-  return session.isAdmin || session.comision === 'Comi Tesoreria';
-}
+import { canManageClubTreasury } from '../../lib/permissions.js';
+import { COMISIONES } from '../../lib/roles.js';
 
 // Personas de la plantilla que tienen marcado "Comi Tesoreria" en su perfil
 export function treasuryCommissionMembers() {
-  return Object.values(rosterById).filter((p) => p.comision === 'Comi Tesoreria');
+  return Object.values(rosterById).filter((p) => p.comision === COMISIONES.tesoreria);
 }
 
 export const treasury = createTreasury({

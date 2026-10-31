@@ -18,10 +18,11 @@ import { supabase } from '../../lib/supabase.js';
 import { currentUserId, rosterById } from '../../lib/roster.js';
 import { computeDisplayNames, displayName, initials } from '../../lib/names.js';
 import { todayLocalIso, formatFullDate } from '../../lib/dates.js';
-import { session, auth, toRemotePlayerId } from '../../lib/session.svelte.js';
+import { auth, toRemotePlayerId } from '../../lib/session.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { treasury, treasuryCommissionMembers } from '../tesoreria/tesoreria.svelte.js';
 import { loadPlantilla } from '../jugadoras/jugadoras.svelte.js';
+import { canManageFines } from '../../lib/permissions.js';
 
 // Los 4 motivos fijos, cada uno con su importe
 export const fineReasons = [
@@ -53,12 +54,6 @@ export const multas = $state({
   // abre el panel de editar/eliminar en vez de marcarla como pagada.
   editMode: false,
 });
-
-// Solo Comi Tesoreria puede dar de alta multas nuevas (el resto del equipo puede
-// ver la lista, pagar las suyas y confirmar pagos recibidos con total normalidad).
-export function canManageFines() {
-  return session.isAdmin || session.comision === 'Comi Tesoreria';
-}
 
 // Tras iniciar sesión o editar el perfil (refreshSession() ya ha refrescado
 // la sesión): los botones "Añadir multa" / "Editar multas" dependen solos de la sesión.

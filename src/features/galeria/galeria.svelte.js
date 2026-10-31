@@ -9,8 +9,8 @@
 import { setSection } from '../../shell/navigation.svelte.js';
 import { supabase } from '../../lib/supabase.js';
 import { readCache, writeCache } from '../../lib/storage.js';
-import { session } from '../../lib/session.svelte.js';
 import { t } from '../../lib/i18n.svelte.js';
+import { canManageGallery } from '../../lib/permissions.js';
 
 const DEFAULT_SEASONS = [
   {
@@ -114,12 +114,6 @@ export const galeria = $state({
 
 export function currentSeason() {
   return galeria.seasons.find((s) => s.id === galeria.activeSeasonId) || null;
-}
-
-// Solo Comi Xarxes (o la cuenta de administración) puede añadir álbumes nuevos; el
-// resto del equipo puede ver todos los álbumes con total normalidad.
-export function canManageGallery() {
-  return session.isAdmin || session.comision === 'Comi Xarxes';
 }
 
 // Las fotos se movieron de "foto/" a "assets/img/" (y sus extensiones pasaron a

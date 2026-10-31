@@ -3,7 +3,7 @@
 import { supabase } from '../lib/supabase.js';
 import { setAuthUserId, refreshSession } from '../lib/session.svelte.js';
 import { myProfile, rosterById } from '../lib/roster.js';
-import { effectiveRoleForPermissions } from '../lib/permissions.js';
+import { isPlayerRole } from '../lib/permissions.js';
 import { t } from '../lib/i18n.svelte.js';
 import { flushPendingPushToken } from '../lib/push.svelte.js';
 import { openSectionFromHash } from './navigation.svelte.js';
@@ -59,7 +59,7 @@ export function showAuthView(view) {
 // Solo si el rol elegido en el registro es "jugadora" (o "Capitana", que es una
 // jugadora con galones extra) se piden Rango y Comisión
 export function registerAsksPlayerFields() {
-  return effectiveRoleForPermissions(registerForm.rol) === 'jugadora';
+  return isPlayerRole(registerForm.rol);
 }
 
 // Calcula a qué grupo (A o B) le toca la próxima jugadora que se registre: al que
@@ -84,7 +84,7 @@ export async function handleRegister() {
   const mote = f.mote.trim();
   const fecha_nacimiento = f.fecha_nacimiento || null;
   const rol = f.rol;
-  const esJugadora = effectiveRoleForPermissions(rol) === 'jugadora';
+  const esJugadora = isPlayerRole(rol);
   const rango = esJugadora ? (f.rango || null) : null;
   const posicion = esJugadora ? (f.posicion || null) : null;
   const comision = esJugadora ? (f.comision || null) : null;
@@ -214,12 +214,13 @@ export async function onAuthenticated(user) {
     rosterById['me'].rol = myProfile.rol;
     rosterById['me'].licencia = myProfile.licencia;
     rosterById['me'].birthdate = myProfile.birthdate;
+    // Primero la sesión: todos los permisos (src/lib/permissions.js) la leen.
+    refreshSession();
     renderProfile();
     // El botón "Añadir evento" depende del rol real, y los de "Añadir multa",
     // "Añadir álbum" y los de tesorería de las comisiones reales: todos ellos solo
     // se conocen a partir de aquí.
     toggleAttAddButtonVisibility();
-    refreshSession();
     finesPermissionsChanged();
     treasury.permissionsChanged();
     tercerTreasury.permissionsChanged();
