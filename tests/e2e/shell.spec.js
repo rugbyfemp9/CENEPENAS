@@ -4,7 +4,8 @@
 // language switch (ES / CAT) and the PWA bits in the DOM.
 //
 // Seed accounts: USERS.player = Júlia Serra "Juls" (jugadora, group A),
-// USERS.admin = Montse Puig (directiva, is_admin -> treated as staff / "Cos Tècnic").
+// USERS.admin = Montse Puig (rol admin: a player who can manage everything and also
+// sees the staff "Percepción del esfuerzo" page).
 import { test, expect } from '@playwright/test';
 import { setupApp, openApp, goToSection, USERS, VIEWPORTS, relevantErrors } from './support/app.js';
 import { PROJECT_REF, SUPABASE_ORIGIN } from './support/fake-supabase.js';
@@ -491,8 +492,21 @@ test('browser back with a modal open only closes the modal', async ({ page }) =>
 // Staff-only visibility
 // ---------------------------------------------------------------------------
 
-test('staff (admin) do not see the player pages and see the effort analysis page', async ({ page }) => {
+test('admin sees the player pages and also the effort analysis page', async ({ page }) => {
   const { errors } = await start(page, { user: USERS.admin });
+  await expect(page.locator('.sidebar .nav button[data-section]:visible')).toHaveText([...PLAYER_SIDEBAR.slice(0, -1), 'Percepción del esfuerzo', 'Mi perfil']);
+  await expect(page.locator('#inicio-tercer-banner')).toBeVisible();
+  for (const id of ['tercer', 'comisiones', 'tricount']) {
+    await goToSection(page, id);
+    await expect(page.locator(`#sec-${id}`)).toHaveClass(/active/);
+  }
+  await sidebarBtn(page, 'wellness-staff').click();
+  await expect(page.locator('#sec-wellness-staff')).toHaveClass(/active/);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('staff (coach) do not see the player pages and see the effort analysis page', async ({ page }) => {
+  const { errors } = await start(page, { user: JORDI });
   await expect(page.locator('.sidebar .nav button[data-section]:visible')).toHaveText(STAFF_SIDEBAR);
   await expect(page.locator('#inicio-tercer-banner')).toBeHidden();
   await expect(page.locator('#inicio-tricount-banner')).toBeHidden();

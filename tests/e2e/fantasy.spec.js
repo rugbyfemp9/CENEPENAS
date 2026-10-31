@@ -88,7 +88,7 @@ function withExtraPlayers(n) {
     const mote = `Extra${String(i).padStart(2, '0')}`;
     profiles.push({ id, nombre: 'Extra', apellido: String(i), mote, telefono: '', fecha_nacimiento: '2000-01-01',
       rol: 'jugadora', rango: 'novata', posicion: 'delantera', comision: null, licencia: null,
-      grupo_tercer_tiempo: 'A', avatar_url: null, is_admin: false });
+      grupo_tercer_tiempo: 'A', avatar_url: null });
     attendance.push({ event_id: EVENT_IDS.matchNext, user_id: id, status: 'yes', comment: '', updated_at: '2026-09-22T10:00:00Z' });
   }
   return { ...seed, profiles, att_attendance: attendance };

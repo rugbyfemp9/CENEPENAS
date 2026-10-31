@@ -1,7 +1,7 @@
 // ================= INICIO DE SESIÓN / REGISTRO (Supabase Auth) =================
 // (antes js/core/auth.js) El formulario lo pinta src/shell/AuthOverlay.svelte.
 import { supabase } from '../lib/supabase.js';
-import { setAuthUserId, setIsAdmin, refreshSession } from '../lib/session.svelte.js';
+import { setAuthUserId, refreshSession } from '../lib/session.svelte.js';
 import { myProfile, rosterById } from '../lib/roster.js';
 import { effectiveRoleForPermissions } from '../lib/permissions.js';
 import { t } from '../lib/i18n.svelte.js';
@@ -206,9 +206,6 @@ export async function onAuthenticated(user) {
     myProfile.rol = profile.rol || '';
     myProfile.licencia = profile.licencia || '';
     myProfile.avatarUrl = profile.avatar_url || '';
-    // La cuenta de administración (marcada con is_admin en Supabase) puede editar
-    // todo, incluida la información de cualquier jugadora registrada.
-    setIsAdmin(!!profile.is_admin);
     rosterById['me'].name = myProfile.name;
     rosterById['me'].mote = myProfile.mote;
     rosterById['me'].comision = myProfile.comision;

@@ -9,8 +9,7 @@
 //   18/09 Hielo y vasos                    gasto   38,90 —
 //   12/09 Barra tercer temps vs Tarragona  ingreso 150   Paula
 //   11/09 Compra bebidas Mercadona         gasto   72,30 Paula
-// Only Comi Tercer Temps members (Paula) can write. The admin account is treated as
-// staff and is redirected away from the commission pages.
+// Only Comi Tercer Temps members (Paula) and the admin can write.
 import { test, expect } from '@playwright/test';
 import { setupApp, openApp, goToSection, USERS, relevantErrors } from './support/app.js';
 import { seed, IDS } from './fixtures/seed.js';
@@ -327,12 +326,11 @@ test('Catalan texts', async ({ page }) => {
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('the admin account (treated as staff) is redirected away from Comi Tercer Temps', async ({ page }) => {
+test('the admin account (a player) can open Comi Tercer Temps', async ({ page }) => {
   const { backend, errors } = await setupApp(page, { user: USERS.admin });
   await openApp(page);
   await goToSection(page, 'comi-tercer-temps');
-  await expect(page.locator('#sec-comi-tercer-temps')).not.toHaveClass(/active/);
-  await expect(page.locator('#sec-vestuario')).toHaveClass(/active/);
+  await expect(page.locator('#sec-comi-tercer-temps')).toHaveClass(/active/);
   expect(writesTo(backend, 'tercer_shopping_items')).toEqual([]);
   expect(writesTo(backend, 'tercer_treasury_entries')).toEqual([]);
   expect(relevantErrors(errors)).toEqual([]);

@@ -17,7 +17,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export const REMIND_WITHIN_MS = 25 * 60 * 60 * 1000;
 
 // Solo se avisa a las jugadoras (Capitana incluida), nunca al staff.
-export const PLAYER_ROLES = ['jugadora', 'Capitana'];
+export const PLAYER_ROLES = ['jugadora', 'Capitana', 'admin'];
 
 // Tipos de evento con control de asistencia (las reuniones no llevan).
 const REMINDED_TYPES = ['training', 'match'];

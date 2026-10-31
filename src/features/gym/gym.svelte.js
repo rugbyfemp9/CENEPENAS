@@ -48,8 +48,7 @@ export const gym = $state({
   attendanceByDate: {},
 });
 
-// Algo de fuera de Svelte ha cambiado (marcas en el roster, el roster en sí, el rol o
-// is_admin): se vuelve a pintar todo lo que depende de ello.
+// Algo de fuera de Svelte ha cambiado (marcas en el roster, el roster en sí o el rol): se vuelve a pintar todo lo que depende de ello.
 export function refresh() {
   gym.version++;
 }

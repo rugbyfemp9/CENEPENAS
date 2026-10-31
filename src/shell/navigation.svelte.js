@@ -10,7 +10,7 @@
 // resalta; las secciones (src/shell/Section.svelte) y los menús lo leen.
 import { flushSync } from 'svelte';
 import { bottomTabOf, sidebarTabOf } from './sections.js';
-import { canViewWellnessStaff, STAFF_HIDDEN_SECTIONS } from '../lib/permissions.js';
+import { canViewWellnessStaff, isCosTecnic, STAFF_HIDDEN_SECTIONS } from '../lib/permissions.js';
 import { auth } from '../lib/session.svelte.js';
 import { showSeasons, loadGalleryData } from '../features/galeria/galeria.svelte.js';
 import { refreshFantasyMatchesAndUI, checkInicioSharedLineupBanner } from '../features/fantasy/fantasy.svelte.js';
@@ -155,7 +155,7 @@ export function setSection(id, opts) {
   // llega aquí a mano (URL, atrás del navegador...), se le redirige a Vestuario.
   // NOTE: la entrada de historial de la página prohibida se queda, así que "atrás"
   // vuelve a caer en ella y redirige otra vez a Vestuario.
-  if (STAFF_HIDDEN_SECTIONS.includes(id) && canViewWellnessStaff()) {
+  if (STAFF_HIDDEN_SECTIONS.includes(id) && isCosTecnic()) {
     setSection('vestuario');
     return;
   }

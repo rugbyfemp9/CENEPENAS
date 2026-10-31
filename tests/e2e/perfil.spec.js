@@ -6,7 +6,8 @@
 // Seed (tests/e2e/fixtures/seed.js):
 //   player = Júlia Serra "Juls", jugadora, 3/4, veterana, Comi Gira, licence CAT-10234,
 //            appears (by licence) in the one seeded match report -> 1 match played.
-//   admin  = Montse Puig, directiva, is_admin, no commission (staff roles have none).
+//   admin  = Montse Puig, rol admin (a player who can edit anyone's profile).
+//   Jordi Casals: entrenador/a (staff), licence ENT-0042.
 // Injuries are only kept in memory (never written to Supabase).
 import zlib from 'node:zlib';
 import { test, expect } from '@playwright/test';
@@ -16,6 +17,7 @@ import { seed, IDS, EVENT_IDS } from './fixtures/seed.js';
 const authUser = (id, email) => ({ id, email, aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {} });
 // Marta Rovira "Rovi": Capitana, delantera, has a (local) photo.
 const ROVI = authUser(IDS.marta, 'rovi@cnpenas.test');
+const JORDI = authUser(IDS.jordi, 'jordi@cnpenas.test');
 
 const SUPABASE = 'https://tpbuxspqibwitqzstdcz.supabase.co';
 const NOW_MS = 1790323200000; // 2026-09-25T10:00:00+02:00 (fixed clock)
@@ -184,11 +186,11 @@ test('shows the logged-in player\'s profile, stats and data from Supabase', asyn
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('staff profile (admin, directiva) hides commission, rank and position rows', async ({ page }) => {
-  const { errors } = await openProfile(page, { user: USERS.admin });
-  await expect(page.locator('#profile-name-display')).toHaveText('Montse Puig');
-  await expect(page.locator('#profile-mote-role-display')).toHaveText('directiva');
-  await expect(page.locator('#profile-licencia-hero-display')).toHaveText('');
+test('staff profile (entrenador/a) hides commission, rank and position rows', async ({ page }) => {
+  const { errors } = await openProfile(page, { user: JORDI });
+  await expect(page.locator('#profile-name-display')).toHaveText('Jordi Casals');
+  await expect(page.locator('#profile-mote-role-display')).toHaveText('entrenador/a');
+  await expect(page.locator('#profile-licencia-hero-display')).toHaveText('Licencia ENT-0042');
   await expect(page.locator('#pf-stat-matches')).toHaveText('0');
   await expect(page.locator('#pf-stat-attendance')).toHaveText('0%');
 
@@ -196,7 +198,7 @@ test('staff profile (admin, directiva) hides commission, rank and position rows'
   await expect(page.locator('#profile-rango-row')).toBeHidden();
   await expect(page.locator('#profile-posicion-row')).toBeHidden();
   await expect(page.locator('.profile-info-table tr:visible td:last-child')).toHaveText([
-    'admin@cnpenas.test', '600100001', '14/03/1985', 'directiva', '—',
+    'jordi@cnpenas.test', '600100007', '18/05/1980', 'entrenador/a', 'ENT-0042',
   ]);
   expect(relevantErrors(errors)).toEqual([]);
 });
@@ -470,28 +472,28 @@ test('commission/rank/position fields follow the role; a non-player role saves t
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('admin (directiva) saving the own profile wipes the hidden commission', async ({ page }) => {
-  // A commission left over from before she was staff.
-  const profiles = seed.profiles.map((p) => (p.id === IDS.admin ? { ...p, comision: 'Comi Tesoreria' } : p));
-  const { backend, errors } = await openProfile(page, { user: USERS.admin, seed: { ...seed, profiles } });
+test('staff (entrenador/a) saving the own profile wipes the hidden commission', async ({ page }) => {
+  // A commission left over from before he was staff.
+  const profiles = seed.profiles.map((p) => (p.id === IDS.jordi ? { ...p, comision: 'Comi Tesoreria' } : p));
+  const { backend, errors } = await openProfile(page, { user: JORDI, seed: { ...seed, profiles } });
   await openEditModal(page);
-  await expect(page.locator('#profile-name-input')).toHaveValue('Montse Puig');
-  await expect(page.locator('#profile-rol-input')).toHaveValue('directiva');
+  await expect(page.locator('#profile-name-input')).toHaveValue('Jordi Casals');
+  await expect(page.locator('#profile-rol-input')).toHaveValue('entrenador/a');
   await expect(page.locator('#profile-comision-field')).toBeHidden();
   await expect(page.locator('#profile-comision-input')).toHaveValue('Comi Tesoreria');
   await modal(page).getByRole('button', { name: 'Guardar' }).click();
   await expect(modal(page)).not.toHaveClass(/active/);
 
-  // NOTE: the admin has comision 'Comi Tesoreria', but directiva is not a player
+  // NOTE: Jordi has comision 'Comi Tesoreria', but entrenador/a is not a player
   // role, so saving without touching anything writes comision: null.
   expect(restWrites(backend)).toEqual([{
-    kind: 'rest', method: 'UPDATE', table: 'profiles', filters: [['id', `eq.${IDS.admin}`]],
+    kind: 'rest', method: 'UPDATE', table: 'profiles', filters: [['id', `eq.${IDS.jordi}`]],
     body: {
-      nombre: 'Montse', apellido: 'Puig', mote: '', telefono: '600100001', fecha_nacimiento: '1985-03-14',
-      comision: null, rango: null, posicion: null, rol: 'directiva', licencia: null,
+      nombre: 'Jordi', apellido: 'Casals', mote: '', telefono: '600100007', fecha_nacimiento: '1980-05-18',
+      comision: null, rango: null, posicion: null, rol: 'entrenador/a', licencia: 'ENT-0042',
     },
   }]);
-  expect(backend.db.profiles.find((p) => p.id === IDS.admin).comision).toBeNull();
+  expect(backend.db.profiles.find((p) => p.id === IDS.jordi).comision).toBeNull();
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -591,10 +593,13 @@ test('admin edits another player from Jugadoras; the admin\'s own profile is unt
   // The admin's own profile did not change, and the next own edit is the admin's again.
   await goToSection(page, 'perfil');
   await expect(page.locator('#profile-name-display')).toHaveText('Montse Puig');
-  await expect(page.locator('#profile-mote-role-display')).toHaveText('directiva');
+  await expect(page.locator('#profile-mote-role-display')).toHaveText('admin');
   await openEditModal(page);
   await expect(modal(page).locator('h3')).toHaveText('Editar perfil');
   await expect(page.locator('#profile-name-input')).toHaveValue('Montse Puig');
+  // Only an admin is offered the "Admin" role.
+  await expect(page.locator('#profile-rol-input')).toHaveValue('admin');
+  await expect(page.locator('#profile-rol-input option')).toHaveText(['Sin asignar', 'Jugadora', 'Capitana', 'Admin', 'Entrenador/a', 'Delegado/a', 'Junta directiva', 'Fisios']);
   await expect(page.locator('#profile-mote-input')).toHaveValue('');
   expect(relevantErrors(errors)).toEqual([]);
 });

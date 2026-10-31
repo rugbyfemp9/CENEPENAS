@@ -3,6 +3,7 @@
   // desde Jugadoras).
   import Modal from '../../lib/Modal.svelte';
   import { t } from '../../lib/i18n.svelte.js';
+  import { session } from '../../lib/session.svelte.js';
   import { editProfile, editProfileEsJugadora, closeEditProfileModal, saveProfileEdits } from './edit-profile.svelte.js';
 
   const labelStyle = 'display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;';
@@ -66,6 +67,8 @@
         <option value="">{t('plantilla.unassigned')}</option>
         <option value="jugadora">{t('role.player')}</option>
         <option value="Capitana">{t('role.captain')}</option>
+        <!-- Solo una admin puede dar (o quitarse) el rol admin. -->
+        {#if session.isAdmin}<option value="admin">{t('role.admin')}</option>{/if}
         <option value="entrenador/a">{t('role.coach')}</option>
         <option value="delegado/a">{t('role.delegate')}</option>
         <option value="directiva">{t('role.board')}</option>

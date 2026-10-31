@@ -760,6 +760,7 @@ export const ca = {
   // Opciones de rol y rango (registro y "Editar perfil"; el value guardado no cambia)
   'role.player': 'Jugadora',
   'role.captain': 'Capitana',
+  'role.admin': 'Admin',
   'role.coach': 'Entrenador/a',
   'role.delegate': 'Delegat/da',
   'role.board': 'Junta directiva',

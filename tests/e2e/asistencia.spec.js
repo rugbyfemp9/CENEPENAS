@@ -367,7 +367,8 @@ test('answers from the admin account show her name and role, like anyone else', 
   const { errors } = await openAsistencia(page, { seed: s });
   await openDetail(page, 'Partido vs Santboi');
   await expect(tab(page, 'yes').locator('.count')).toHaveText('5');
-  await expect(roster(page, 'yes').locator('> .att-roster-group > .att-roster-group-title')).toHaveText([/Jugadoras\s+3/, /directiva\s+1/, /entrenador\/a\s+1/]);
+  // The admin is a player: she is counted with the jugadoras.
+  await expect(roster(page, 'yes').locator('> .att-roster-group > .att-roster-group-title')).toHaveText([/Jugadoras\s+4/, /entrenador\/a\s+1/]);
   await expect(roster(page, 'yes')).not.toContainText('Alguien');
   await expect(rowNames(page, 'yes')).toContainText(['Montse']);
   expect(relevantErrors(errors)).toEqual([]);
@@ -651,7 +652,7 @@ test('a training with intensity shows its emoji, rains it on open and then settl
 // Permissions
 // ---------------------------------------------------------------------------
 
-test('admin: add/edit buttons, staff 📊 shortcut on ended events, no wellness button', async ({ page }) => {
+test('admin: add/edit buttons, staff 📊 shortcut on ended events, and her own wellness button', async ({ page }) => {
   const { errors } = await openAsistencia(page, { user: USERS.admin });
   await expect(page.locator('#att-add-event-btn')).toBeVisible();
   await expect(card(page, 'Reunión de equipo').locator('.att-event-edit-btn')).toBeVisible();
@@ -667,10 +668,9 @@ test('admin: add/edit buttons, staff 📊 shortcut on ended events, no wellness 
   await openDetail(page, 'Partido vs Gòtics');
   await expect(page.locator('#att-detail-edit-btn')).toBeVisible();
   await expect(page.locator('#att-detail-tullides-btn')).toBeVisible();
-  await expect(page.locator('#att-detail-wellness-btn')).toBeHidden();
+  // The admin is a player (her own Wellness) who also sees the staff panel.
+  await expect(page.locator('#att-detail-wellness-btn')).toBeVisible();
   await expect(page.locator('#att-detail-wellness-staff-btn')).toBeVisible();
-  // Admin's own row (directiva) is "me" under its role name; the admin profile itself
-  // is excluded from the roster loaded from profiles.
   await expect(page.locator('.att-tabs .count')).toHaveText(['3', '0', '0', '6']);
   await expect(rowNames(page, 'yes')).toHaveText(['Rovi', 'Juls', 'Paula']);
   await tab(page, 'pending').click();
@@ -683,11 +683,11 @@ test('admin: add/edit buttons, staff 📊 shortcut on ended events, no wellness 
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('admin who confirms appears in a group named after her role', async ({ page }) => {
+test('admin who confirms is listed with the jugadoras', async ({ page }) => {
   const { backend, errors } = await openAsistencia(page, { user: USERS.admin });
   await openDetail(page, 'Partido vs Santboi');
   await page.locator('#att-detail-confirm-btn').click();
-  await expect(roster(page, 'yes').locator('> .att-roster-group > .att-roster-group-title')).toHaveText([/Jugadoras\s+3/, /directiva\s+1/, /entrenador\/a\s+1/]);
+  await expect(roster(page, 'yes').locator('> .att-roster-group > .att-roster-group-title')).toHaveText([/Jugadoras\s+4/, /entrenador\/a\s+1/]);
   await expect(rowNames(page, 'yes')).toHaveText(['Rovi', 'Carla', 'Paula', 'Montse', 'Jordi']);
   await expect.poll(() => attWrites(backend).length).toBe(1);
   expect(attWrites(backend)[0].body[0]).toMatchObject({ event_id: 'ce1', user_id: IDS.admin, status: 'yes' });

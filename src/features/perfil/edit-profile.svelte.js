@@ -13,7 +13,7 @@ import { renderProfile, refreshPermissionsEverywhere } from './perfil.svelte.js'
 const COMISION_VALUES = ['', 'Comi Activitats', 'Comi Xarxes', 'Comi Tercer Temps', 'Comi Tesoreria', 'Comi Gira'];
 const RANGO_VALUES = ['', 'veterana', 'novata', 'sang_de_fang'];
 const POSICION_VALUES = ['', 'delantera', '3/4'];
-const ROL_VALUES = ['', 'jugadora', 'Capitana', 'entrenador/a', 'delegado/a', 'directiva', 'fisio'];
+const ROL_VALUES = ['', 'jugadora', 'Capitana', 'admin', 'entrenador/a', 'delegado/a', 'directiva', 'fisio'];
 
 // Lo que antes se leía del <select> del DOM: si el valor no es ninguna de sus
 // opciones, no queda ninguna elegida y su value es ''.
@@ -115,7 +115,7 @@ export async function saveProfileEdits() {
   // Guarda también los cambios en la tabla profiles de Supabase, para que no se
   // pierdan al recargar la página o al volver a consultar la Plantilla. Si es la
   // cuenta admin editando a otra jugadora, se guarda en la fila de esa jugadora
-  // (lo permite la política de Supabase para is_admin, ver supabase_admin.sql).
+  // (lo permite la política de Supabase para el rol admin).
   if (targetId) {
     const nameParts = name.split(/\s+/).filter(Boolean);
     const nombre = nameParts[0] || '';
