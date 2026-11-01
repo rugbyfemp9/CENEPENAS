@@ -9,9 +9,8 @@
 // actas.view (0 = todavía no se ha pintado nunca, y la caja se queda vacía como el
 // marcado original).
 import { supabase } from '../../lib/supabase.js';
-import { auth } from '../../lib/session.svelte.js';
-import { myProfile, roster, rosterById } from '../../lib/roster.js';
-import { rolesWithEventManagement } from '../asistencia/events.js';
+import { roster, rosterById } from '../../lib/roster.js';
+import { canEditMatchReport } from '../../lib/permissions.js';
 import { partidoDetalle } from '../partidos/partidos.svelte.js';
 import { plantilla, loadPlantillaStats } from '../jugadoras/jugadoras.svelte.js';
 import { loadProfileMatchesPlayedStat } from '../perfil/perfil.svelte.js';
@@ -26,12 +25,6 @@ export const actas = $state({
 });
 
 let matchReportRealtimeSubscribed = false;
-
-// El acta la puede subir el mismo cuerpo técnico/directiva que gestiona los eventos
-// (incluida Capitana: mismo permiso, no pasa por effectiveRoleForPermissions).
-function canEditMatchReport() {
-  return auth.isAdmin || rolesWithEventManagement.includes(myProfile.rol);
-}
 
 export function renderMatchReport(eventId) {
   actas.shownId = eventId;

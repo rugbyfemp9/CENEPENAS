@@ -3,6 +3,8 @@
   // desde Jugadoras).
   import Modal from '../../lib/Modal.svelte';
   import { t } from '../../lib/i18n.svelte.js';
+  import { canGiveAdminRole } from '../../lib/permissions.js';
+  import { ROLE_OPTIONS, ROLES, COMISION_OPTIONS } from '../../lib/roles.js';
   import { editProfile, editProfileEsJugadora, closeEditProfileModal, saveProfileEdits } from './edit-profile.svelte.js';
 
   const labelStyle = 'display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;';
@@ -36,11 +38,9 @@
       <span>{t('plantilla.commission')}</span>
       <select id="profile-comision-input" bind:value={editProfile.comision} style={selectStyle}>
         <option value="">{t('plantilla.unassigned')}</option>
-        <option value="Comi Activitats">Comi Activitats</option>
-        <option value="Comi Xarxes">Comi Xarxes</option>
-        <option value="Comi Tercer Temps">Comi Tercer Temps</option>
-        <option value="Comi Tesoreria">Comi Tesoreria</option>
-        <option value="Comi Gira">Comi Gira</option>
+        {#each COMISION_OPTIONS as c (c)}
+          <option value={c}>{c}</option>
+        {/each}
       </select>
     </label>
     <label id="profile-rango-field" style={labelStyle} style:display={hideJugadoraField}>
@@ -64,12 +64,10 @@
       <span>{t('plantilla.role')}</span>
       <select id="profile-rol-input" bind:value={editProfile.rol} style={selectStyle}>
         <option value="">{t('plantilla.unassigned')}</option>
-        <option value="jugadora">{t('role.player')}</option>
-        <option value="Capitana">{t('role.captain')}</option>
-        <option value="entrenador/a">{t('role.coach')}</option>
-        <option value="delegado/a">{t('role.delegate')}</option>
-        <option value="directiva">{t('role.board')}</option>
-        <option value="fisio">{t('role.physio')}</option>
+        <!-- Solo una admin puede dar (o quitarse) el rol admin. -->
+        {#each ROLE_OPTIONS.filter((r) => r.value !== ROLES.admin || canGiveAdminRole()) as r (r.value)}
+          <option value={r.value}>{t(r.label)}</option>
+        {/each}
       </select>
     </label>
     <label style={labelStyle}>

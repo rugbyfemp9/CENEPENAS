@@ -5,6 +5,7 @@
 //   2. pickRecipients(): jugadoras con notificaciones activadas que aún no han dicho ni
 //      que sí ni que no, y a las que todavía no se ha avisado de ese evento;
 //   3. reminderText() / fcmMessage(): el aviso, siempre en catalán.
+import { PLAYER_ROLES } from './roles.js';
 import { autoTrainingDates, autoTrainingId, SEASON } from './season.js';
 
 export const TIME_ZONE = 'Europe/Madrid';
@@ -16,8 +17,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 // 25 h. Así cada evento recibe un solo aviso, casi siempre ~24 h antes.
 export const REMIND_WITHIN_MS = 25 * 60 * 60 * 1000;
 
-// Solo se avisa a las jugadoras (Capitana incluida), nunca al staff.
-export const PLAYER_ROLES = ['jugadora', 'Capitana'];
+// Solo se avisa a quien juega (jugadora, Capitana y admin), nunca al staff.
+export { PLAYER_ROLES };
 
 // Tipos de evento con control de asistencia (las reuniones no llevan).
 const REMINDED_TYPES = ['training', 'match'];

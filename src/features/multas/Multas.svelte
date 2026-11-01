@@ -4,7 +4,7 @@
   import Avatar from '../../lib/Avatar.svelte';
   import { t } from '../../lib/i18n.svelte.js';
   import { setSection } from '../../shell/navigation.svelte.js';
-  import { session } from '../../lib/session.svelte.js';
+  import { canManageFines } from '../../lib/permissions.js';
   import {
     multas, fineConfirmRequests, myFinesSummary, finesTable, respondFineConfirmation, payMyFine,
     onFineChipClick, openFinesHistoryModal, toggleFinesEditMode, openFineModal,
@@ -14,7 +14,7 @@
   const summary = $derived(myFinesSummary());
   const rows = $derived(finesTable());
   // Solo Comi Tesoreria (y el admin) ve "Añadir multa" y "Editar multas".
-  const canManage = $derived(session.isAdmin || session.comision === 'Comi Tesoreria');
+  const canManage = $derived(canManageFines());
 
   // "{name} te ha pagado su multa": el nombre va en <b>.
   const paidYouParts = $derived(t('fines.paidYouMsg').split('{name}'));

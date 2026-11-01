@@ -8,7 +8,7 @@
 //   Carla   2001-07-23 jugadora     novata       delantera Comi Tesoreria    CAT-10411
 //   Jordi   1980-05-18 entrenador/a                                          ENT-0042
 //   Juls    1998-04-12 jugadora     veterana     3/4       Comi Gira         CAT-10234  (the player account)
-//   Montse  1985-03-14 directiva                                            (the admin account)
+//   Montse  1985-03-14 admin                                                (the admin account, a player)
 //   Núria   1990-12-09 fisio
 //   Paula   1999-01-30 jugadora     sang_de_fang 3/4       Comi Tercer Temps CAT-10302
 //   Rovi    1995-11-02 Capitana     veterana     delantera Comi Activitats   CAT-10187  (has a photo)
@@ -71,7 +71,7 @@ test('lists every registered member (the admin account too), alphabetically, wit
   await expect(rows(page).nth(0).locator('td')).toHaveText(['C Carla', '23/07/2001', 'jugadora', 'novata', 'Delantera', 'Comi Tesoreria', 'CAT-10411']);
   await expect(rows(page).nth(1).locator('td')).toHaveText(['J Jordi', '18/05/1980', 'entrenador/a', '—', '—', '—', 'ENT-0042']);
   await expect(rows(page).nth(2).locator('td')).toHaveText(['J Juls', '12/04/1998', 'jugadora', 'veterana', '3/4', 'Comi Gira', 'CAT-10234']);
-  await expect(rows(page).nth(3).locator('td')).toHaveText(['M Montse', '14/03/1985', 'directiva', '—', '—', '—', 'Sin asignar']);
+  await expect(rows(page).nth(3).locator('td')).toHaveText(['M Montse', '14/03/1985', 'admin', 'Sin asignar', 'Sin asignar', 'Sin asignar', 'Sin asignar']);
   await expect(rows(page).nth(4).locator('td')).toHaveText(['N Núria', '09/12/1990', 'fisio', '—', '—', '—', 'Sin asignar']);
   // NOTE: the rank is shown as the raw value ("sang_de_fang"), not as the "Sang de Fang" label.
   await expect(rows(page).nth(5).locator('td')).toHaveText(['P Paula', '30/01/1999', 'jugadora', 'sang_de_fang', '3/4', 'Comi Tercer Temps', 'CAT-10302']);
@@ -320,7 +320,7 @@ test('without match reports the stats tab says so (also in Catalan)', async ({ p
 
 test('with only the admin account registered the table lists just her', async ({ page }) => {
   // (fines of unknown players are dropped too: they would break the Multas table)
-  const onlyAdmin = { ...seed, profiles: seed.profiles.filter((p) => p.is_admin), fines: [] };
+  const onlyAdmin = { ...seed, profiles: seed.profiles.filter((p) => p.rol === 'admin'), fines: [] };
   const { errors } = await openJugadoras(page, { user: USERS.admin, seed: onlyAdmin });
   await expect(names(page)).toHaveText(['Montse']);
   expect(relevantErrors(errors)).toEqual([]);
@@ -330,7 +330,7 @@ test('shown names: mote, else first name, else first name + surname initial when
   const extraProfile = (n, patch) => ({
     id: `0f000000-0000-4000-8000-00000000000${n}`, nombre: '', apellido: '', mote: '', telefono: null,
     fecha_nacimiento: null, rol: null, rango: null, posicion: null, comision: null, licencia: null,
-    grupo_tercer_tiempo: null, avatar_url: null, is_admin: false, ...patch,
+    grupo_tercer_tiempo: null, avatar_url: null, ...patch,
   });
   const { errors } = await openJugadoras(page, { seed: { ...seed, profiles: [
     ...seed.profiles,
@@ -354,7 +354,7 @@ test('the refresh button reloads the members from Supabase', async ({ page }) =>
   backend.db.profiles.push({
     id: '0f000000-0000-4000-8000-000000000009', nombre: 'Berta', apellido: 'Roca', mote: 'Bertu', telefono: null,
     fecha_nacimiento: '2004-02-02', rol: 'jugadora', rango: 'novata', posicion: 'delantera', comision: null,
-    licencia: null, grupo_tercer_tiempo: 'B', avatar_url: null, is_admin: false,
+    licencia: null, grupo_tercer_tiempo: 'B', avatar_url: null,
   });
   backend.db.profiles.find((p) => p.id === IDS.paula).mote = 'Pauleta';
   await sec(page).getByRole('button', { name: 'Actualizar' }).click();

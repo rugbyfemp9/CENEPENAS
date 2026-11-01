@@ -7,12 +7,13 @@
 // NOTA: la lista de comida no va ligada a ningún partido (se ve igual en todos).
 import { supabase } from '../../lib/supabase.js';
 import { auth, toRemotePlayerId } from '../../lib/session.svelte.js';
-import { currentUserId, myRosterEntry, roster, rosterById } from '../../lib/roster.js';
+import { currentUserId, roster, rosterById } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
 import { attEventIso, todayLocalIso } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { thirdTimeCurrentMatch } from './groups.js';
 import { checkThirdTimeAutoFines } from './auto-fines.js';
+import { canManageThirdTimeFood } from '../../lib/permissions.js';
 
 // Nota: a "Dulce" no le diste un límite concreto, así que le he puesto 3 huecos
 // igual que la mayoría de categorías; dímelo si lo quieres distinto.
@@ -64,13 +65,6 @@ export async function loadThirdTimeFood() {
   });
   renderThirdTimeFood();
   checkThirdTimeAutoFines();
-}
-
-// Solo la persona de "Comi Tercer Temps" puede marcar traído/no traído (✓/✕), igual
-// que solo Comi Tesoreria puede dar de alta multas nuevas.
-function canManageThirdTimeFood() {
-  const me = myRosterEntry();
-  return auth.isAdmin || !!(me && me.comision === 'Comi Tercer Temps');
 }
 
 // ---- Rejilla "Qué llevamos": null mientras no se ha pintado nunca.

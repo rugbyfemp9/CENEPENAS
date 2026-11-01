@@ -653,7 +653,7 @@ test('history tab: team evolution chart and summary, and a single player', async
   await page.locator('#wstaff-subtab-btn-history').click();
   await expect(page.locator('.wstaff-evo-head h3')).toHaveText('Evolución (últimos 30 días)');
   const select = page.locator('#wstaff-evo-player-select');
-  await expect(select.locator('option')).toHaveText(['Equipo (media)', 'Carla', 'Juls', 'Paula', 'Rovi', 'Tanke']);
+  await expect(select.locator('option')).toHaveText(['Equipo (media)', 'Carla', 'Juls', 'Montse', 'Paula', 'Rovi', 'Tanke']);
   await expect(select).toHaveValue('team');
 
   // Team average per rated day: 19/09 (9+10)/2, 21/09 (6+8)/2, 23/09 (7+9+5+6)/4

@@ -9,9 +9,9 @@
 // puede ser una animación de pizarra (columna "animation", ver board.js).
 import { supabase } from '../../lib/supabase.js';
 import { readCache, writeCache } from '../../lib/storage.js';
-import { session } from '../../lib/session.svelte.js';
 import { t, getLang } from '../../lib/i18n.svelte.js';
 import { normalizeAnimation } from './board.js';
+import { canManagePlays } from '../../lib/permissions.js';
 
 const VIDEO_BUCKET = 'plays';
 // El mismo límite que tiene el bucket: así se avisa antes de subir nada.
@@ -90,11 +90,6 @@ export function categoryName(categoryId) {
   const c = jugadas.categories.find((x) => x.id === categoryId);
   if (!c) return '';
   return (getLang() === 'ca' && c.name_ca) || c.name_es;
-}
-
-// ---- Añadir una jugada (solo admins) ----
-export function canManagePlays() {
-  return session.isAdmin;
 }
 
 export function openAddPlayModal() {

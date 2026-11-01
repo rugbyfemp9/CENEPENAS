@@ -8,8 +8,7 @@
 //   10/09 Cuotas de temporada (3 jugadoras)   ingreso 360     Carla
 //   05/09 Inscripción federación              gasto   450     —
 //   01/09 Subvención municipal temporada 26/27 ingreso 1200   —
-// Only Comi Tesoreria members (Carla) can write. The admin account is treated as staff
-// and is redirected away from the commission pages.
+// Only Comi Tesoreria members (Carla) and the admin can write.
 import { test, expect } from '@playwright/test';
 import { setupApp, openApp, goToSection, USERS, relevantErrors } from './support/app.js';
 import { seed, IDS } from './fixtures/seed.js';
@@ -305,12 +304,13 @@ test('Catalan texts', async ({ page }) => {
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('the admin account (treated as staff) is redirected away from Comi Tesoreria', async ({ page }) => {
+test('the admin account (a player) can open Comi Tesoreria and manage it', async ({ page }) => {
   const { backend, errors } = await setupApp(page, { user: USERS.admin });
   await openApp(page);
   await goToSection(page, 'comi-tesoreria');
-  await expect(page.locator('#sec-comi-tesoreria')).not.toHaveClass(/active/);
-  await expect(page.locator('#sec-vestuario')).toHaveClass(/active/);
+  await expect(page.locator('#sec-comi-tesoreria')).toHaveClass(/active/);
+  await expect(page.locator('#treasury-add-btn')).toBeVisible();
+  await expect(page.locator('#treasury-edit-btn')).toBeVisible();
   expect(writesTo(backend, 'treasury_entries')).toEqual([]);
   expect(relevantErrors(errors)).toEqual([]);
 });

@@ -4,7 +4,8 @@
   import { setSection } from '../../shell/navigation.svelte.js';
   import PlayBoard from './PlayBoard.svelte';
   import { fitViewBox } from './board.js';
-  import { jugadas, setFilter, openPlay, playsOf, categoryName, canManagePlays, openAddPlayModal, animationOf } from './jugadas.svelte.js';
+  import { jugadas, setFilter, openPlay, playsOf, categoryName, openAddPlayModal, animationOf } from './jugadas.svelte.js';
+  import { canManagePlays } from '../../lib/permissions.js';
 
   // En "Todas" solo salen las categorías que tienen alguna jugada; al filtrar por una
   // categoría vacía se dice que está vacía.

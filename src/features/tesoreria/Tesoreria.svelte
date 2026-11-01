@@ -4,7 +4,8 @@
   import { balanceLabel } from '../../lib/treasury/treasury.svelte.js';
   import TreasuryTable from '../../lib/treasury/TreasuryTable.svelte';
   import TreasuryEditButton from '../../lib/treasury/TreasuryEditButton.svelte';
-  import { treasury, canManageClubTreasury } from './tesoreria.svelte.js';
+  import { treasury } from './tesoreria.svelte.js';
+  import { canManageClubTreasury } from '../../lib/permissions.js';
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->

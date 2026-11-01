@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabase.js';
 import { auth, toRemotePlayerId } from '../../lib/session.svelte.js';
 import { currentUserId, roster, rosterById } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
-import { effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { isPlayerRole } from '../../lib/permissions.js';
 import { todayLocalIso, monthFullLabel, withDePrefix } from '../../lib/dates.js';
 import { t } from '../../lib/i18n.svelte.js';
 
@@ -71,9 +71,9 @@ function settlementRowToEntry(row) {
 
 // Tricount es cosa de jugadoras: el resto de roles (cos técnico, directiva...) no
 // deben aparecer como "pagado por" ni como participantes de un gasto, aunque estén
-// en el roster general del club. Capitana cuenta como jugadora (effectiveRoleForPermissions).
+// en el roster general del club. Capitana y admin cuentan como jugadoras (isPlayerRole).
 export function tricountRosterPlayers() {
-  return roster.filter((p) => effectiveRoleForPermissions(p.rol) === 'jugadora');
+  return roster.filter((p) => isPlayerRole(p.rol));
 }
 
 export async function loadExpenses() {

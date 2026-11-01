@@ -13,9 +13,9 @@ import { SvelteSet } from 'svelte/reactivity';
 import { setSection } from '../../shell/navigation.svelte.js';
 import { SUPABASE_URL, supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
-import { currentUserId, myProfile, myRosterEntry, roster, rosterById } from '../../lib/roster.js';
+import { currentUserId, myRosterEntry, roster, rosterById } from '../../lib/roster.js';
 import { displayName } from '../../lib/names.js';
-import { effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { canManageGeneralExercises } from '../../lib/permissions.js';
 import { readCache, writeCache } from '../../lib/storage.js';
 import { todayLocalIso, withDePrefix } from '../../lib/dates.js';
 import { t, translate, getLang } from '../../lib/i18n.svelte.js';
@@ -48,8 +48,7 @@ export const gym = $state({
   attendanceByDate: {},
 });
 
-// Algo de fuera de Svelte ha cambiado (marcas en el roster, el roster en sí, el rol o
-// is_admin): se vuelve a pintar todo lo que depende de ello.
+// Algo de fuera de Svelte ha cambiado (marcas en el roster, el roster en sí o el rol): se vuelve a pintar todo lo que depende de ello.
 export function refresh() {
   gym.version++;
 }
@@ -90,16 +89,6 @@ export function subscribeToGymRemovedDefaultExercisesRealtime() {
     .subscribe();
 }
 
-// Solo entrenador/a y la cuenta admin pueden añadir ejercicios "generales": quedan
-// visibles para todo el equipo y entran también en el ránking. El resto de la
-// plantilla puede seguir añadiendo sus propios ejercicios personalizados, pero esos
-// se guardan como privados (solo los ve quien los crea, ver gymAllExercises).
-const GYM_GENERAL_EXERCISE_ROLES = ['entrenador/a'];
-export function canManageGeneralExercises() {
-  rosterTick();
-  return auth.isAdmin || GYM_GENERAL_EXERCISE_ROLES.includes(myProfile.rol);
-}
-
 export async function loadGymExercises() {
   const cached = await readCache('gym_exercises');
   if (cached) gym.exercises = cached.data;
@@ -114,13 +103,6 @@ export function subscribeToGymExercisesRealtime() {
     .channel('gym-exercises-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'gym_exercises' }, () => loadGymExercises())
     .subscribe();
-}
-
-// El cuerpo técnico y las jugadoras pueden subir el PDF de la rutina.
-const GYM_ROUTINE_EDITOR_ROLES = ['entrenador/a', 'delegado/a', 'directiva', 'jugadora'];
-export function canEditGymRoutine() {
-  rosterTick();
-  return auth.isAdmin || GYM_ROUTINE_EDITOR_ROLES.includes(effectiveRoleForPermissions(myProfile.rol));
 }
 
 export function hasWeeklyRoutine() {

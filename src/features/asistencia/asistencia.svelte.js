@@ -10,13 +10,13 @@
 import { setSection } from '../../shell/navigation.svelte.js';
 import { currentUserId, roster } from '../../lib/roster.js';
 import { displayName, initials } from '../../lib/names.js';
-import { canUseWellness, canViewWellnessStaff, effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { canUseWellness, canViewWellnessStaff, isPlayerRole, canManageEvents } from '../../lib/permissions.js';
 import { translate } from '../../lib/i18n.svelte.js';
 import {
   monthAbbrLabel, monthFullLabel, todayLocalIso, attEventIso, attEventType,
   trainingIntensityEmoji, eventWeekdayDateLabel, eventWhenDisplay, hasEventEnded,
 } from '../../lib/dates.js';
-import { attEvents, attSelection, canManageEvents, loadSharedEventsFromStorage } from './events.js';
+import { attEvents, attSelection, loadSharedEventsFromStorage } from './events.js';
 import { loadEventAttendanceFromStorage, loadMyAttendanceFromStorage } from './attendance.svelte.js';
 import { renderCalendarGrid } from './calendar.svelte.js';
 import { renderPartidosList, renderNextMatchBanner } from '../partidos/partidos.svelte.js';
@@ -258,7 +258,7 @@ function attRosterRowView(ev, p) {
 
 // La lista de "Asistirán" se organiza así:
 //   Jugadoras (total) → Delanteras (total) y 3/4 (total) [incluye a Capitana, igual
-//   que el resto de la app: effectiveRoleForPermissions la trata como jugadora]
+//   que el resto de la app: isPlayerRole la trata como jugadora]
 //   Un grupo aparte por cada rol que no sea jugadora (Entrenador/a, Delegado/a...),
 //   con el nombre de ese rol tal cual y su propio contador.
 // Cada categoría (posición o rol) solo aparece en cuanto hay alguien de esa categoría
@@ -267,7 +267,7 @@ function attRosterYesGrouped(ev, players) {
   if (!players.length) return null;
   const group = (label, list) => ({ label, rows: list.map((p) => attRosterRowView(ev, p)) });
 
-  const jugadoras = players.filter((p) => effectiveRoleForPermissions(p.rol) === 'jugadora');
+  const jugadoras = players.filter((p) => isPlayerRole(p.rol));
   const delanteras = jugadoras.filter((p) => p.posicion === 'delantera');
   const tresCuartos = jugadoras.filter((p) => p.posicion === '3/4');
   const sinPosicion = jugadoras.filter((p) => p.posicion !== 'delantera' && p.posicion !== '3/4');
@@ -279,7 +279,7 @@ function attRosterYesGrouped(ev, players) {
 
   // El resto: un grupo por cada rol distinto que haya votado que sí, en el orden en
   // que va apareciendo (Entrenador/a, Delegado/a, Directiva, o cualquier otro).
-  const otros = players.filter((p) => effectiveRoleForPermissions(p.rol) !== 'jugadora');
+  const otros = players.filter((p) => !isPlayerRole(p.rol));
   const rolesVistos = [];
   otros.forEach((p) => {
     const rolLabel = p.rol || t('att.noRoleAssigned');

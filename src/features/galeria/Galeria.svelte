@@ -1,7 +1,8 @@
 <script>
   import { t } from '../../lib/i18n.svelte.js';
   import { safeUrl, cssUrl } from '../../lib/url.js';
-  import { galeria, currentSeason, canManageGallery, coverUrl, openSeason, goBack, openAddAlbumModal } from './galeria.svelte.js';
+  import { galeria, currentSeason, coverUrl, openSeason, goBack, openAddAlbumModal } from './galeria.svelte.js';
+  import { canManageGallery } from '../../lib/permissions.js';
 
   // De más reciente a menos reciente (la temporada actual, primero del todo).
   // El id sigue el formato "AAAA-AAAA", así que ordenar el texto al revés basta.

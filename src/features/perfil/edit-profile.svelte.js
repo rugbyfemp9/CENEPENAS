@@ -4,16 +4,17 @@
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myProfile, rosterById } from '../../lib/roster.js';
-import { effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { isPlayerRole } from '../../lib/permissions.js';
 import { t } from '../../lib/i18n.svelte.js';
+import { ROLE_OPTIONS, COMISION_OPTIONS } from '../../lib/roles.js';
 import { loadPlantilla, getPlantillaData } from '../jugadoras/jugadoras.svelte.js';
 import { renderProfile, refreshPermissionsEverywhere } from './perfil.svelte.js';
 
 // Valores de las opciones de cada <select> del formulario (EditProfileModal.svelte).
-const COMISION_VALUES = ['', 'Comi Activitats', 'Comi Xarxes', 'Comi Tercer Temps', 'Comi Tesoreria', 'Comi Gira'];
+const COMISION_VALUES = ['', ...COMISION_OPTIONS];
 const RANGO_VALUES = ['', 'veterana', 'novata', 'sang_de_fang'];
 const POSICION_VALUES = ['', 'delantera', '3/4'];
-const ROL_VALUES = ['', 'jugadora', 'Capitana', 'entrenador/a', 'delegado/a', 'directiva', 'fisio'];
+const ROL_VALUES = ['', ...ROLE_OPTIONS.map((r) => r.value)];
 
 // Lo que antes se leía del <select> del DOM: si el valor no es ninguna de sus
 // opciones, no queda ninguna elegida y su value es ''.
@@ -35,7 +36,7 @@ export const editProfile = $state({
 // por completo si el rol actual del formulario no lo es (igual que ya pasa
 // en la vista de "Mi perfil"), y se actualizan al vuelo si cambias el rol.
 export function editProfileEsJugadora() {
-  return effectiveRoleForPermissions(selectValue(editProfile.rol, ROL_VALUES)) === 'jugadora';
+  return isPlayerRole(selectValue(editProfile.rol, ROL_VALUES));
 }
 
 export function openEditProfileModal(targetId) {
@@ -76,7 +77,7 @@ export async function saveProfileEdits() {
 
   // Si el rol final no es jugadora, estos campos van ocultos en el formulario:
   // se guardan vacíos aunque el <select> conserve un valor antiguo por debajo.
-  const esJugadoraFinal = effectiveRoleForPermissions(rol) === 'jugadora';
+  const esJugadoraFinal = isPlayerRole(rol);
   const comisionFinal = esJugadoraFinal ? comision : '';
   const rangoFinal = esJugadoraFinal ? rango : '';
   const posicionFinal = esJugadoraFinal ? posicion : '';
@@ -115,7 +116,7 @@ export async function saveProfileEdits() {
   // Guarda también los cambios en la tabla profiles de Supabase, para que no se
   // pierdan al recargar la página o al volver a consultar la Plantilla. Si es la
   // cuenta admin editando a otra jugadora, se guarda en la fila de esa jugadora
-  // (lo permite la política de Supabase para is_admin, ver supabase_admin.sql).
+  // (lo permite la política de Supabase para el rol admin).
   if (targetId) {
     const nameParts = name.split(/\s+/).filter(Boolean);
     const nombre = nameParts[0] || '';

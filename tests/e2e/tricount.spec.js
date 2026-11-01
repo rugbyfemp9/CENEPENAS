@@ -16,7 +16,8 @@ const authUser = (id, email) => ({ id, email, aud: 'authenticated', role: 'authe
 // Carla Font: jugadora (Comi Tesoreria), paid "Peajes".
 const CARLA = authUser(IDS.carla, 'carla@cnpenas.test');
 
-const PLAYERS = ['Juls', 'Rovi', 'Carla', 'Paula', 'Tanke'];
+// Montse is the admin, who is a player too.
+const PLAYERS = ['Juls', 'Montse', 'Rovi', 'Carla', 'Paula', 'Tanke'];
 const EXPENSE_ID = { gasolina: 'b1000000-0000-4000-8000-000000000001', cena: 'b1000000-0000-4000-8000-000000000002' };
 const SETTLEMENT_ID = 'b2000000-0000-4000-8000-000000000001';
 
@@ -65,7 +66,7 @@ test('Gastos tab lists expenses grouped by date, newest first, with the summary 
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('Saldos tab shows my balance and the per-player breakdown (only jugadoras/Capitana)', async ({ page }) => {
+test('Saldos tab shows my balance and the per-player breakdown (only jugadoras/Capitana/admin)', async ({ page }) => {
   const { errors } = await openTricount(page);
   await openSaldos(page);
   await expect(page.locator('#tricount-panel-gastos')).toBeHidden();
@@ -77,10 +78,10 @@ test('Saldos tab shows my balance and the per-player breakdown (only jugadoras/C
   await expect(mine.locator('.amt')).toHaveClass(/pos/);
   await expect(mine.locator('.hint')).toHaveText('Te deben dinero');
 
-  // Staff (Jordi, Núria, Sergi) and the admin account are not part of Tricount.
+  // Staff (Jordi, Núria, Sergi) are not part of Tricount.
   await expect(page.locator('.tricount-balance-card b')).toHaveText(PLAYERS);
-  await expect(page.locator('.tricount-balance-card .amt')).toHaveText(['13,80 €', '42,00 €', '21,60 €', '18,00 €', '16,20 €']);
-  await expect(page.locator('.tricount-balance-card .hint')).toHaveText(['le deben', 'le deben', 'debe', 'debe', 'debe']);
+  await expect(page.locator('.tricount-balance-card .amt')).toHaveText(['13,80 €', '0,00 €', '42,00 €', '21,60 €', '18,00 €', '16,20 €']);
+  await expect(page.locator('.tricount-balance-card .hint')).toHaveText(['le deben', 'al día', 'le deben', 'debe', 'debe', 'debe']);
   await expect(balanceCard(page, 'Rovi').locator('.amt')).toHaveClass(/pos/);
   await expect(balanceCard(page, 'Carla').locator('.amt')).toHaveClass(/neg/);
 
@@ -430,12 +431,11 @@ test('Catalan texts', async ({ page }) => {
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('the admin account (treated as staff) cannot open Tricount', async ({ page }) => {
+test('the admin account (a player) can open Tricount', async ({ page }) => {
   const { backend, errors } = await setupApp(page, { user: USERS.admin });
   await openApp(page);
   await goToSection(page, 'tricount');
-  await expect(page.locator('#sec-tricount')).not.toHaveClass(/active/);
-  await expect(page.locator('#sec-vestuario')).toHaveClass(/active/);
+  await expect(page.locator('#sec-tricount')).toHaveClass(/active/);
   expect(writesTo(backend, 'tricount_expenses')).toEqual([]);
   expect(relevantErrors(errors)).toEqual([]);
 });

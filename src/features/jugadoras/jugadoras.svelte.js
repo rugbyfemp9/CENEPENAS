@@ -10,7 +10,7 @@ import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
 import { myProfile, roster, rosterById } from '../../lib/roster.js';
 import { computeDisplayNames, displayName, initials } from '../../lib/names.js';
-import { effectiveRoleForPermissions } from '../../lib/permissions.js';
+import { isPlayerRole, canEditOtherProfiles } from '../../lib/permissions.js';
 import { readCache, writeCache } from '../../lib/storage.js';
 import { formatFullDate } from '../../lib/dates.js';
 import { renderEventDetail } from '../asistencia/asistencia.svelte.js';
@@ -163,7 +163,7 @@ export function setPlantillaPositionFilter(value) {
 
 // Repinta la tabla de Jugadoras con el orden elegido, sin volver a pedir los datos a Supabase.
 export function renderPlantillaTable() {
-  const isAdmin = !!auth.isAdmin;
+  const isAdmin = canEditOtherProfiles();
   plantilla.showActions = isAdmin;
   const data = plantilla.positionFilter
     ? plantillaData.filter((p) => p.posicion === plantilla.positionFilter)
@@ -191,7 +191,7 @@ export function renderPlantillaTable() {
   const rows = data.map((p) => {
     const fullName = [p.nombre, p.apellido].filter(Boolean).join(' ') || p.mote || translate('plantilla.noName');
     const shownName = jugadorasDisplayNames.get(p.id) || fullName;
-    const esJugadora = effectiveRoleForPermissions(p.rol) === 'jugadora';
+    const esJugadora = isPlayerRole(p.rol);
     const esYo = p.id === auth.userId;
     const finesPlayerId = esYo ? 'me' : p.id;
     const yellowCount = fines.filter((f) => f.playerId === finesPlayerId && f.reasonId === 'amarilla').length;

@@ -19,7 +19,7 @@ const uid = (prefix, n) => `${prefix}-0000-4000-8000-${pad(n)}`;
 // People
 // ---------------------------------------------------------------------------
 const ID = {
-  admin:  uid('00000000', 1), // Montse Puig      - directiva, is_admin
+  admin:  uid('00000000', 1), // Montse Puig      - admin (a player who can manage everything)
   player: uid('00000000', 2), // Júlia Serra "Juls" - jugadora (group A)
   marta:  uid('00000000', 3), // Marta Rovira "Rovi" - Capitana (group A)
   carla:  uid('00000000', 4), // Carla Font       - jugadora, Comi Tesoreria (group B)
@@ -106,62 +106,61 @@ export const seed = {
   // Allowed values from index.html selects: rol jugadora|Capitana|entrenador/a|delegado/a|
   // directiva|fisio; rango veterana|novata|sang_de_fang; posicion delantera|3/4;
   // comision Comi Xarxes|Comi Tesoreria|Comi Gira|Comi Tercer Temps|Comi Activitats.
-  // is_admin rows are listed like any other profile (applyPlantillaRows).
   // Injuries are NOT persisted in profiles (only in-memory, perfil.js), so no column.
   profiles: [
     {
       id: ID.admin, nombre: 'Montse', apellido: 'Puig', mote: '', telefono: '600100001',
-      fecha_nacimiento: '1985-03-14', rol: 'directiva', rango: null, posicion: null,
+      fecha_nacimiento: '1985-03-14', rol: 'admin', rango: null, posicion: null,
       comision: null, licencia: null, grupo_tercer_tiempo: null,
-      avatar_url: null, is_admin: true
+      avatar_url: null
     },
     {
       id: ID.player, nombre: 'Júlia', apellido: 'Serra', mote: 'Juls', telefono: '600100002',
       fecha_nacimiento: '1998-04-12', rol: 'jugadora', rango: 'veterana', posicion: '3/4',
       comision: 'Comi Gira', licencia: 'CAT-10234', grupo_tercer_tiempo: 'A',
-      avatar_url: null, is_admin: false
+      avatar_url: null
     },
     {
       id: ID.marta, nombre: 'Marta', apellido: 'Rovira', mote: 'Rovi', telefono: '600100003',
       fecha_nacimiento: '1995-11-02', rol: 'Capitana', rango: 'veterana', posicion: 'delantera',
       comision: 'Comi Activitats', licencia: 'CAT-10187', grupo_tercer_tiempo: 'A',
-      avatar_url: 'assets/img/1.jpg', is_admin: false
+      avatar_url: 'assets/img/1.jpg'
     },
     {
       id: ID.carla, nombre: 'Carla', apellido: 'Font', mote: '', telefono: '600100004',
       fecha_nacimiento: '2001-07-23', rol: 'jugadora', rango: 'novata', posicion: 'delantera',
       comision: 'Comi Tesoreria', licencia: 'CAT-10411', grupo_tercer_tiempo: 'B',
-      avatar_url: null, is_admin: false
+      avatar_url: null
     },
     {
       id: ID.paula, nombre: 'Paula', apellido: 'Vidal', mote: '', telefono: '600100005',
       fecha_nacimiento: '1999-01-30', rol: 'jugadora', rango: 'sang_de_fang', posicion: '3/4',
       comision: 'Comi Tercer Temps', licencia: 'CAT-10302', grupo_tercer_tiempo: 'B',
-      avatar_url: null, is_admin: false
+      avatar_url: null
     },
     {
       id: ID.aina, nombre: 'Aina', apellido: 'Soler', mote: 'Tanke', telefono: '600100006',
       fecha_nacimiento: '2003-09-05', rol: 'jugadora', rango: 'novata', posicion: '3/4',
       comision: 'Comi Xarxes', licencia: 'CAT-10455', grupo_tercer_tiempo: 'A',
-      avatar_url: null, is_admin: false
+      avatar_url: null
     },
     {
       id: ID.jordi, nombre: 'Jordi', apellido: 'Casals', mote: '', telefono: '600100007',
       fecha_nacimiento: '1980-05-18', rol: 'entrenador/a', rango: null, posicion: null,
       comision: null, licencia: 'ENT-0042', grupo_tercer_tiempo: null,
-      avatar_url: null, is_admin: false
+      avatar_url: null
     },
     {
       id: ID.nuria, nombre: 'Núria', apellido: 'Pons', mote: '', telefono: '600100008',
       fecha_nacimiento: '1990-12-09', rol: 'fisio', rango: null, posicion: null,
       comision: null, licencia: null, grupo_tercer_tiempo: null,
-      avatar_url: null, is_admin: false
+      avatar_url: null
     },
     {
       id: ID.sergi, nombre: 'Sergi', apellido: 'Martí', mote: '', telefono: '600100009',
       fecha_nacimiento: '1987-02-26', rol: 'delegado/a', rango: null, posicion: null,
       comision: null, licencia: null, grupo_tercer_tiempo: null,
-      avatar_url: null, is_admin: false
+      avatar_url: null
     }
   ],
 

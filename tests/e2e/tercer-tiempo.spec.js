@@ -22,6 +22,7 @@ const authUser = (id, email) => ({ id, email, aud: 'authenticated', role: 'authe
 const CARLA = authUser(IDS.carla, 'carla@cnpenas.test'); // group B, covers Tanke on ce1
 const PAULA = authUser(IDS.paula, 'paula@cnpenas.test'); // group B, Comi Tercer Temps
 const AINA = authUser(IDS.aina, 'aina@cnpenas.test'); // "Tanke", group A, covered by Carla
+const JORDI = authUser(IDS.jordi, 'jordi@cnpenas.test'); // entrenador/a (staff)
 
 const coverId = (n) => `c1000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 const debtId = (n) => `c2000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
@@ -739,8 +740,8 @@ test('Catalan texts', async ({ page }) => {
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test('staff (the admin account) does not see Tercer tiempo and is redirected to Vestuario', async ({ page }) => {
-  const { backend, errors } = await start(page, { user: USERS.admin });
+test('staff (a coach) does not see Tercer tiempo and is redirected to Vestuario', async ({ page }) => {
+  const { backend, errors } = await start(page, { user: JORDI });
   await expect(inicioCard(page)).toBeHidden();
   for (const id of ['tercer', 'tercer-historial', 'tercer-detalle']) {
     await goToSection(page, id);

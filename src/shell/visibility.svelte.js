@@ -5,7 +5,7 @@
 // Los dos valores solo cambian cuando se llama a su toggle, justo después de conocer
 // el rol real al iniciar sesión (onAuthenticated, src/shell/auth.svelte.js); hasta
 // entonces, el menú y el Vestuario se ven como antes de iniciar sesión.
-import { canViewWellnessStaff } from '../lib/permissions.js';
+import { canViewWellnessStaff, isCosTecnic } from '../lib/permissions.js';
 
 export const visibility = $state({
   // Tarjeta de Vestuario (móvil) + botón directo del sidebar (escritorio) de
@@ -21,5 +21,5 @@ export function toggleWellnessStaffCardVisibility() {
 }
 
 export function toggleStaffOnlyPagesVisibility() {
-  visibility.staffPagesHidden = canViewWellnessStaff();
+  visibility.staffPagesHidden = isCosTecnic();
 }

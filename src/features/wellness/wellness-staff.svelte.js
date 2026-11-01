@@ -2,7 +2,7 @@
 // WELLNESS / RPE — COS TÈCNIC: vista de análisis agregado de todo el equipo para un
 // entrenamiento concreto (tabla "attendance_wellness" cruzada con el roster y con la
 // duración del entrenamiento en "attEvents"). Solo para roles de gestión: ver
-// STAFF_WELLNESS_ROLES y canViewWellnessStaff() (src/lib/permissions.js). El módulo de
+// STAFF_ROLES (src/lib/roles.js) y canViewWellnessStaff() (src/lib/permissions.js). El módulo de
 // valoración individual de cada jugadora está en wellness.svelte.js.
 //
 // attEvents (src/features/asistencia/events.js) y el roster no son reactivos: igual
