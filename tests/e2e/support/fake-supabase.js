@@ -101,6 +101,7 @@ const PRIMARY_KEYS = {
   att_attendance: ['event_id', 'user_id'],
   matchday_checklist_state: ['owner_id'],
   matchday_rollcall: ['match_id'],
+  commission_memberships: ['profile_id', 'commission'],
 };
 
 const RESERVED = new Set(['select', 'order', 'limit', 'offset', 'on_conflict', 'columns']);

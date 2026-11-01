@@ -29,12 +29,12 @@ export function rosterEntry(profileId) {
   return profileId === auth.userId ? rosterById.me : rosterById[profileId];
 }
 
-export const session = $state({ rol: '', isAdmin: false, comision: '' });
+export const session = $state({ rol: '', isAdmin: false, comisiones: [] });
 
 export function refreshSession() {
   session.rol = myProfile.rol || '';
   // Admin es un rol (rol 'admin'), no una marca aparte: una jugadora que además
   // puede gestionarlo todo.
   session.isAdmin = session.rol === ROLES.admin;
-  session.comision = myRosterEntry()?.comision || '';
+  session.comisiones = [...(myRosterEntry()?.comisiones || [])];
 }

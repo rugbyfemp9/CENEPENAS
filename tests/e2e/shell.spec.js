@@ -69,6 +69,13 @@ async function exposeProfileCounts(page, backend) {
 
 async function fillRegister(page, fields) {
   for (const [id, value] of Object.entries(fields)) {
+    // Committees are checkboxes (a person can be in several): ticks exactly these.
+    if (id === 'comisiones') {
+      for (const box of await page.locator('#register-comision-input input').all()) {
+        await box.setChecked(value.includes(await box.getAttribute('value')));
+      }
+      continue;
+    }
     const el = page.locator(`#register-${id}-input`);
     if ((await el.evaluate((e) => e.tagName)) === 'SELECT') await el.selectOption(value);
     else await el.fill(value);
@@ -207,7 +214,8 @@ test('register form: the player-only fields appear only for Jugadora and Capitan
   await page.locator('#register-rol-input').selectOption('jugadora');
   await expect(page.locator('#register-rango-input option')).toHaveText(['Selecciona un rango', 'Veterana', 'Novata', 'Sang de Fang']);
   await expect(page.locator('#register-posicion-input option')).toHaveText(['Selecciona una posición', 'Delantera', '3/4']);
-  await expect(page.locator('#register-comision-input option')).toHaveText(['Sin asignar', 'Comi Activitats', 'Comi Xarxes', 'Comi Tercer Temps', 'Comi Tesoreria', 'Comi Gira']);
+  await expect(page.locator('#register-comision-input label')).toHaveText(['Comi Activitats', 'Comi Xarxes', 'Comi Tercer Temps', 'Comi Tesoreria', 'Comi Gira']);
+  await expect(page.locator('#register-comision-input input:checked')).toHaveCount(0);
   await expect(page.locator('#register-licencia-input')).toBeVisible();
   expect(relevantErrors(errors)).toEqual([]);
 });
@@ -238,18 +246,23 @@ test('registering a player: signUp metadata, profiles upsert with the smaller gr
   await loginView(page).getByText('Regístrate', { exact: true }).click();
   await fillRegister(page, {
     email: ' nueva@cnpenas.test ', password: 'secreta123', nombre: ' Laia ', apellido: ' Mogas ', mote: ' Lai ',
-    'fecha-nacimiento': '2000-02-29', rol: 'jugadora', rango: 'novata', posicion: 'delantera', comision: 'Comi Gira', licencia: ' CAT-1 ',
+    'fecha-nacimiento': '2000-02-29', rol: 'jugadora', rango: 'novata', posicion: 'delantera', comisiones: ['Comi Gira', 'Comi Xarxes'], licencia: ' CAT-1 ',
   });
   await registerView(page).getByRole('button', { name: 'Crear cuenta' }).click();
   await expect(overlay(page)).toBeHidden();
 
   // Group A has 3 players and B has 2 (admin excluded), so the new player goes to B.
-  const profile = { nombre: 'Laia', apellido: 'Mogas', mote: 'Lai', telefono: null, fecha_nacimiento: '2000-02-29', rol: 'jugadora', rango: 'novata', posicion: 'delantera', comision: 'Comi Gira', licencia: 'CAT-1', grupo_tercer_tiempo: 'B' };
-  expect(authWrites(backend)).toEqual([{ kind: 'auth', action: 'signup', email: 'nueva@cnpenas.test', data: profile }]);
+  const profile = { nombre: 'Laia', apellido: 'Mogas', mote: 'Lai', telefono: null, fecha_nacimiento: '2000-02-29', rol: 'jugadora', rango: 'novata', posicion: 'delantera', licencia: 'CAT-1', grupo_tercer_tiempo: 'B' };
+  const comisiones = ['Comi Xarxes', 'Comi Gira'];
+  expect(authWrites(backend)).toEqual([{ kind: 'auth', action: 'signup', email: 'nueva@cnpenas.test', data: { ...profile, comisiones } }]);
   const upserts = restWrites(backend, 'profiles');
   expect(upserts).toHaveLength(1);
   expect(upserts[0].method).toBe('UPSERT');
   expect(upserts[0].body).toEqual([{ id: newId, ...profile }]);
+  // One row per committee.
+  expect(restWrites(backend, 'commission_memberships')).toMatchObject([{
+    method: 'INSERT', body: comisiones.map((commission) => ({ profile_id: newId, commission })),
+  }]);
 
   await expect(page.locator('#profile-name-display')).toHaveText('Laia Mogas');
   await expect(page.locator('#profile-email-display')).toHaveText('nueva@cnpenas.test');
@@ -266,14 +279,15 @@ test('registering with a staff role: player fields are dropped and the new accou
   backend.idCounter = 500;
   await loginView(page).getByText('Regístrate', { exact: true }).click();
   // Player fields filled first, then the role is switched to "Junta directiva".
-  await fillRegister(page, { rol: 'jugadora', rango: 'veterana', posicion: '3/4', comision: 'Comi Tesoreria', licencia: 'X' });
+  await fillRegister(page, { rol: 'jugadora', rango: 'veterana', posicion: '3/4', comisiones: ['Comi Tesoreria'], licencia: 'X' });
   await fillRegister(page, { email: 'jefa@cnpenas.test', password: 'secreta123', nombre: 'Jefa', rol: 'directiva' });
   await registerView(page).getByRole('button', { name: 'Crear cuenta' }).click();
   await expect(overlay(page)).toBeHidden();
 
-  const profile = { nombre: 'Jefa', apellido: '', mote: '', telefono: null, fecha_nacimiento: null, rol: 'directiva', rango: null, posicion: null, comision: null, licencia: null, grupo_tercer_tiempo: 'A' };
-  expect(authWrites(backend)).toEqual([{ kind: 'auth', action: 'signup', email: 'jefa@cnpenas.test', data: profile }]);
+  const profile = { nombre: 'Jefa', apellido: '', mote: '', telefono: null, fecha_nacimiento: null, rol: 'directiva', rango: null, posicion: null, licencia: null, grupo_tercer_tiempo: 'A' };
+  expect(authWrites(backend)).toEqual([{ kind: 'auth', action: 'signup', email: 'jefa@cnpenas.test', data: { ...profile, comisiones: [] } }]);
   expect(restWrites(backend, 'profiles')[0].body).toEqual([{ id: '9e9e9e9e-0000-4000-8000-000000000500', ...profile }]);
+  expect(restWrites(backend, 'commission_memberships')).toEqual([]);
   // NOTE (security): anyone can pick their own role when registering, so a brand-new
   // account can self-assign "Junta directiva" (or coach, delegate, physio) and gets the
   // staff pages straight away. Staff also get a tercer-tiempo group assigned.

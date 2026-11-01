@@ -4,7 +4,7 @@
 // Tres cosas del perfil deciden los permisos (valores en src/lib/roles.js):
 //   - el rol: jugadora, Capitana, admin, entrenador/a, delegado/a, directiva, fisio
 //   - si es admin (rol 'admin'): una jugadora que además puede gestionarlo todo
-//   - la comisión: cada comisión gestiona su propia página
+//   - las comisiones (puede estar en varias): cada una gestiona su propia página
 //
 //   Qué                                            Quién
 //   ---------------------------------------------  ---------------------------------------
@@ -45,7 +45,7 @@ export function isCosTecnic() {
 }
 
 function inComision(comision) {
-  return session.isAdmin || session.comision === comision;
+  return session.isAdmin || session.comisiones.includes(comision);
 }
 
 // ---- Wellness / RPE ----

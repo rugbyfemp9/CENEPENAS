@@ -3,7 +3,7 @@
 // cualquier jugadora desde el botón "Editar" de Jugadoras.
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
-import { myProfile, rosterById } from '../../lib/roster.js';
+import { myProfile, rosterById, comisionesOf } from '../../lib/roster.js';
 import { isPlayerRole } from '../../lib/permissions.js';
 import { t } from '../../lib/i18n.svelte.js';
 import { ROLE_OPTIONS, COMISION_OPTIONS } from '../../lib/roles.js';
@@ -11,7 +11,6 @@ import { loadPlantilla, getPlantillaData } from '../jugadoras/jugadoras.svelte.j
 import { renderProfile, refreshPermissionsEverywhere } from './perfil.svelte.js';
 
 // Valores de las opciones de cada <select> del formulario (EditProfileModal.svelte).
-const COMISION_VALUES = ['', ...COMISION_OPTIONS];
 const RANGO_VALUES = ['', 'veterana', 'novata', 'sang_de_fang'];
 const POSICION_VALUES = ['', 'delantera', '3/4'];
 const ROL_VALUES = ['', ...ROLE_OPTIONS.map((r) => r.value)];
@@ -29,7 +28,7 @@ export const editProfile = $state({
   // Si "targetId" tiene valor, es la cuenta admin editando el perfil de otra jugadora
   // (viene del botón "Editar" de Jugadoras); si no, cada persona edita el suyo propio.
   targetId: null,
-  name: '', mote: '', phone: '', birthdate: '', comision: '', rango: '', posicion: '', rol: '', licencia: '',
+  name: '', mote: '', phone: '', birthdate: '', comisiones: [], rango: '', posicion: '', rol: '', licencia: '',
 });
 
 // Comisión / Rango / Posición solo tienen sentido para jugadoras: se ocultan
@@ -49,7 +48,7 @@ export function openEditProfileModal(targetId) {
   editProfile.mote = source ? (source.mote || '') : (myProfile.mote ?? '');
   editProfile.phone = source ? (source.telefono || '') : (myProfile.phone ?? '');
   editProfile.birthdate = source ? (source.fecha_nacimiento || '') : (myProfile.birthdate ?? '');
-  editProfile.comision = source ? (source.comision || '') : (myProfile.comision ?? '');
+  editProfile.comisiones = source ? comisionesOf(source) : [...(myProfile.comisiones || [])];
   editProfile.rango = source ? (source.rango || '') : (myProfile.rango ?? '');
   editProfile.posicion = source ? (source.posicion || '') : (myProfile.posicion ?? '');
   editProfile.rol = source ? (source.rol || '') : (myProfile.rol ?? '');
@@ -69,7 +68,8 @@ export async function saveProfileEdits() {
   const mote = editProfile.mote.trim();
   const phone = editProfile.phone.trim();
   const birthdate = editProfile.birthdate;
-  const comision = selectValue(editProfile.comision, COMISION_VALUES);
+  // Solo comisiones que existen, en el orden de siempre.
+  const comisiones = COMISION_OPTIONS.filter((c) => editProfile.comisiones.includes(c));
   const rango = selectValue(editProfile.rango, RANGO_VALUES);
   const posicion = selectValue(editProfile.posicion, POSICION_VALUES);
   const rol = selectValue(editProfile.rol, ROL_VALUES);
@@ -78,12 +78,16 @@ export async function saveProfileEdits() {
   // Si el rol final no es jugadora, estos campos van ocultos en el formulario:
   // se guardan vacíos aunque el <select> conserve un valor antiguo por debajo.
   const esJugadoraFinal = isPlayerRole(rol);
-  const comisionFinal = esJugadoraFinal ? comision : '';
+  const comisionesFinal = esJugadoraFinal ? comisiones : [];
   const rangoFinal = esJugadoraFinal ? rango : '';
   const posicionFinal = esJugadoraFinal ? posicion : '';
 
   const editingSelf = !editProfile.targetId;
   const targetId = editProfile.targetId || auth.userId;
+  // Comisiones que tenía antes de guardar, para saber qué filas añadir y cuáles quitar.
+  const comisionesBefore = editingSelf
+    ? [...(myProfile.comisiones || [])]
+    : comisionesOf(getPlantillaData().find((p) => p.id === targetId));
 
   if (editingSelf) {
     const meRow = rosterById['me'];
@@ -91,7 +95,7 @@ export async function saveProfileEdits() {
     myProfile.mote = mote;
     myProfile.phone = phone;
     myProfile.birthdate = birthdate;
-    myProfile.comision = comisionFinal;
+    myProfile.comisiones = [...comisionesFinal];
     myProfile.rango = rangoFinal;
     myProfile.posicion = posicionFinal;
     myProfile.rol = rol;
@@ -100,7 +104,7 @@ export async function saveProfileEdits() {
     // para saber quién está en cada comisión, así que lo mantenemos sincronizado con el perfil.
     meRow.name = myProfile.name;
     meRow.mote = myProfile.mote;
-    meRow.comision = myProfile.comision;
+    meRow.comisiones = [...myProfile.comisiones];
     meRow.rango = myProfile.rango;
     meRow.posicion = myProfile.posicion;
     meRow.rol = myProfile.rol;
@@ -130,7 +134,6 @@ export async function saveProfileEdits() {
         mote,
         telefono: phone || null,
         fecha_nacimiento: birthdate || null,
-        comision: comisionFinal || null,
         rango: rangoFinal || null,
         posicion: posicionFinal || null,
         rol: rol || null,
@@ -140,6 +143,25 @@ export async function saveProfileEdits() {
 
     if (updateError) {
       alert(t('profile.alertSaveError', { error: updateError.message }));
+    }
+
+    // Comisiones: una fila por comisión en "commission_memberships". Solo se tocan las
+    // que cambian (se añaden las nuevas y se quitan las que ya no están).
+    const added = comisionesFinal.filter((c) => !comisionesBefore.includes(c));
+    const removed = comisionesBefore.filter((c) => !comisionesFinal.includes(c));
+    const membershipErrors = [];
+    if (added.length) {
+      const { error } = await supabase.from('commission_memberships')
+        .upsert(added.map((commission) => ({ profile_id: targetId, commission })), { onConflict: 'profile_id,commission', ignoreDuplicates: true });
+      if (error) membershipErrors.push(error.message);
+    }
+    if (removed.length) {
+      const { error } = await supabase.from('commission_memberships')
+        .delete().eq('profile_id', targetId).in('commission', removed);
+      if (error) membershipErrors.push(error.message);
+    }
+    if (membershipErrors.length) {
+      alert(t('profile.alertSaveError', { error: membershipErrors.join(' / ') }));
     }
   }
 

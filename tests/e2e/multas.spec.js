@@ -316,8 +316,8 @@ test('any player can mark someone else\'s fine as paid from the team table', asy
 });
 
 test('without any Comi Tesoreria member, paying marks the fine as paid at once', async ({ page }) => {
-  const profiles = seed.profiles.map((p) => (p.id === IDS.carla ? { ...p, comision: null } : p));
-  const { backend, errors } = await openMultas(page, { seed: { ...seed, profiles } });
+  const commission_memberships = seed.commission_memberships.filter((m) => m.profile_id !== IDS.carla);
+  const { backend, errors } = await openMultas(page, { seed: { ...seed, commission_memberships } });
   await myCard(page).getByRole('button', { name: 'Pagar multa' }).click();
   await expect(payModal(page)).toHaveClass(/active/);
   await expect(page.locator('#pay-fine-responsible-input')).toBeHidden();
