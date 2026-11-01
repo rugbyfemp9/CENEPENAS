@@ -61,7 +61,7 @@ export async function deleteShoppingItem(id) {
 // ---- Saldo ----
 // Personas de la plantilla que tienen marcado "Comi Tercer Temps" en su perfil
 export function tercerTreasuryCommissionMembers() {
-  return roster.filter((p) => p.comision === COMISIONES.tercerTemps);
+  return roster.filter((p) => p.comisiones?.includes(COMISIONES.tercerTemps));
 }
 
 export const tercerTreasury = createTreasury({

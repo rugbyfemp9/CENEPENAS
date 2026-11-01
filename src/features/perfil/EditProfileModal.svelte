@@ -34,15 +34,15 @@
       <span>{t('plantilla.birthdate')}</span>
       <input type="date" id="profile-birthdate-input" bind:value={editProfile.birthdate} style={inputStyle}>
     </label>
-    <label id="profile-comision-field" style={labelStyle} style:display={hideJugadoraField}>
-      <span>{t('plantilla.commission')}</span>
-      <select id="profile-comision-input" bind:value={editProfile.comision} style={selectStyle}>
-        <option value="">{t('plantilla.unassigned')}</option>
+    <!-- Se puede estar en varias comisiones (o en ninguna). -->
+    <div id="profile-comision-field" role="group" aria-labelledby="profile-comision-title" style={labelStyle} style:display={hideJugadoraField}>
+      <span id="profile-comision-title">{t('plantilla.commission')}</span>
+      <div class="comision-checks" id="profile-comision-input">
         {#each COMISION_OPTIONS as c (c)}
-          <option value={c}>{c}</option>
+          <label><input type="checkbox" value={c} bind:group={editProfile.comisiones}> {c}</label>
         {/each}
-      </select>
-    </label>
+      </div>
+    </div>
     <label id="profile-rango-field" style={labelStyle} style:display={hideJugadoraField}>
       <span>{t('plantilla.rango')}</span>
       <select id="profile-rango-input" bind:value={editProfile.rango} style={selectStyle}>

@@ -28,6 +28,14 @@ const withProfile = (id, patch, base = seed) => ({
   profiles: base.profiles.map((p) => (p.id === id ? { ...p, ...patch } : p)),
 });
 const restWrites = (backend) => backend.mutations.filter((m) => m.kind === 'rest');
+const profileWrites = (backend) => restWrites(backend).filter((m) => m.table === 'profiles');
+const membershipWrites = (backend) => restWrites(backend).filter((m) => m.table === 'commission_memberships');
+// Committee checkboxes of the edit modal (a person can be in several).
+const comisionBox = (page, name) => page.locator('#profile-comision-input').getByLabel(name, { exact: true });
+const expectCheckedComisiones = (page, list) =>
+  expect.poll(() => page.locator('#profile-comision-input input:checked').evaluateAll((els) => els.map((e) => e.value))).toEqual(list);
+// Committees saved for a profile in the fake backend.
+const membershipsOf = (backend, id) => backend.db.commission_memberships.filter((m) => m.profile_id === id).map((m) => m.commission).sort();
 const storageWrites = (backend) => backend.mutations.filter((m) => m.kind === 'storage');
 
 const sec = (page) => page.locator('#sec-perfil');
@@ -221,7 +229,7 @@ test('an empty profile shows placeholders (also in Catalan)', async ({ page }) =
   const { errors } = await openProfile(page, {
     seed: withProfile(IDS.player, {
       nombre: '', apellido: '', mote: '', telefono: null, fecha_nacimiento: null, rol: null,
-      rango: null, posicion: null, comision: null, licencia: null,
+      rango: null, posicion: null, licencia: null,
     }),
   });
   await expect(page.locator('#profile-name-display')).toHaveText('Tu nombre');
@@ -273,7 +281,7 @@ test('Catalan: labels, stats and table of the profile', async ({ page }) => {
 
   await sec(page).getByRole('button', { name: 'Editar perfil' }).click();
   await expect(modal(page).locator('h3')).toHaveText('Editar perfil');
-  await expect(modal(page).locator('label > span')).toHaveText([
+  await expect(modal(page).locator(':is(label, [role=group]) > span')).toHaveText([
     'Nom', 'Malnom', 'Telèfon', 'Data de naixement', 'Comissió', 'Rang', 'Posició', 'Rol', 'Núm. de Llicència',
   ]);
   await expect(modal(page).locator('.modal-actions button')).toHaveText(['Cancel·la', 'Desa']);
@@ -384,13 +392,13 @@ test('editing the own profile: prefilled modal, saved to profiles and shown ever
   await expect(page.locator('#profile-mote-input')).toHaveValue('Juls');
   await expect(page.locator('#profile-phone-input')).toHaveValue('600100002');
   await expect(page.locator('#profile-birthdate-input')).toHaveValue('1998-04-12');
-  await expect(page.locator('#profile-comision-input')).toHaveValue('Comi Gira');
+  await expectCheckedComisiones(page, ['Comi Gira']);
   await expect(page.locator('#profile-rango-input')).toHaveValue('veterana');
   await expect(page.locator('#profile-posicion-input')).toHaveValue('3/4');
   await expect(page.locator('#profile-rol-input')).toHaveValue('jugadora');
   await expect(page.locator('#profile-licencia-input')).toHaveValue('CAT-10234');
-  await expect(page.locator('#profile-comision-input option')).toHaveText([
-    'Sin asignar', 'Comi Activitats', 'Comi Xarxes', 'Comi Tercer Temps', 'Comi Tesoreria', 'Comi Gira',
+  await expect(page.locator('#profile-comision-input label')).toHaveText([
+    'Comi Activitats', 'Comi Xarxes', 'Comi Tercer Temps', 'Comi Tesoreria', 'Comi Gira',
   ]);
   await expect(page.locator('#profile-rango-input option')).toHaveText(['Sin asignar', 'Veterana', 'Novata', 'Sang de Fang']);
   await expect(page.locator('#profile-posicion-input option')).toHaveText(['Sin asignar', 'Delantera', '3/4']);
@@ -402,27 +410,36 @@ test('editing the own profile: prefilled modal, saved to profiles and shown ever
   await page.locator('#profile-mote-input').fill('Julieta');
   await page.locator('#profile-phone-input').fill('');
   await page.locator('#profile-birthdate-input').fill('1998-05-01');
-  await page.locator('#profile-comision-input').selectOption('Comi Activitats');
+  // Leaves Comi Gira and joins two committees.
+  await comisionBox(page, 'Comi Gira').uncheck();
+  await comisionBox(page, 'Comi Xarxes').check();
+  await comisionBox(page, 'Comi Activitats').check();
   await page.locator('#profile-rango-input').selectOption('novata');
   await page.locator('#profile-posicion-input').selectOption('delantera');
   await page.locator('#profile-licencia-input').fill(' CAT-20000 ');
   await modal(page).getByRole('button', { name: 'Guardar' }).click();
   await expect(modal(page)).not.toHaveClass(/active/);
 
-  const writes = restWrites(backend);
-  expect(writes).toEqual([{
+  expect(profileWrites(backend)).toEqual([{
     kind: 'rest', method: 'UPDATE', table: 'profiles', filters: [['id', `eq.${IDS.player}`]],
     body: {
       nombre: 'Júlia', apellido: 'Serra Vidal', mote: 'Julieta', telefono: null, fecha_nacimiento: '1998-05-01',
-      comision: 'Comi Activitats', rango: 'novata', posicion: 'delantera', rol: 'jugadora', licencia: 'CAT-20000',
+      rango: 'novata', posicion: 'delantera', rol: 'jugadora', licencia: 'CAT-20000',
     },
   }]);
+  // Only the committees that changed are written: the new ones added, the old one removed.
+  expect(membershipWrites(backend).map((m) => m.method)).toEqual(['UPSERT', 'DELETE']);
+  expect(membershipWrites(backend)[0].body).toEqual([
+    { profile_id: IDS.player, commission: 'Comi Activitats' },
+    { profile_id: IDS.player, commission: 'Comi Xarxes' },
+  ]);
+  expect(membershipsOf(backend, IDS.player)).toEqual(['Comi Activitats', 'Comi Xarxes']);
 
   await expect(page.locator('#profile-name-display')).toHaveText('Júlia Serra Vidal');
   await expect(page.locator('#profile-mote-role-display')).toHaveText('Julieta · jugadora');
   await expect(page.locator('#profile-licencia-hero-display')).toHaveText('Licencia CAT-20000');
   await expect(page.locator('.profile-info-table tr:visible td:last-child')).toHaveText([
-    'jugadora@cnpenas.test', '—', '01/05/1998', 'Comi Activitats', 'novata', 'Delantera', 'jugadora', 'CAT-20000',
+    'jugadora@cnpenas.test', '—', '01/05/1998', 'Comi Activitats, Comi Xarxes', 'novata', 'Delantera', 'jugadora', 'CAT-20000',
   ]);
   // NOTE: matches played is recomputed from the new licence/name, which no longer match
   // the seeded match report row ("Júlia Serra", CAT-10234): it drops to 0.
@@ -431,7 +448,7 @@ test('editing the own profile: prefilled modal, saved to profiles and shown ever
   // Jugadoras is reloaded from Supabase with the new data.
   await goToSection(page, 'plantilla');
   await expect(plantillaRow(page, 'Julieta').locator('td')).toHaveText([
-    'J Julieta', '01/05/1998', 'jugadora', 'novata', 'Delantera', 'Comi Activitats', 'CAT-20000',
+    'J Julieta', '01/05/1998', 'jugadora', 'novata', 'Delantera', 'Comi Activitats, Comi Xarxes', 'CAT-20000',
   ]);
   expect(relevantErrors(errors)).toEqual([]);
 });
@@ -449,17 +466,19 @@ test('commission/rank/position fields follow the role; a non-player role saves t
   await page.locator('#profile-rol-input').selectOption('');
   for (const f of fields) await expect(page.locator(f)).toBeHidden();
 
-  // The hidden selects keep their values, but they are saved empty.
+  // The hidden fields keep their values, but they are saved empty (the committee is left).
   await page.locator('#profile-rol-input').selectOption('fisio');
-  await expect(page.locator('#profile-comision-input')).toHaveValue('Comi Gira');
+  await expectCheckedComisiones(page, ['Comi Gira']);
   await modal(page).getByRole('button', { name: 'Guardar' }).click();
   await expect(modal(page)).not.toHaveClass(/active/);
 
-  expect(restWrites(backend)).toHaveLength(1);
-  expect(restWrites(backend)[0]).toMatchObject({
+  expect(profileWrites(backend)).toHaveLength(1);
+  expect(profileWrites(backend)[0]).toMatchObject({
     method: 'UPDATE', table: 'profiles', filters: [['id', `eq.${IDS.player}`]],
-    body: { nombre: 'Júlia', apellido: 'Serra', rol: 'fisio', comision: null, rango: null, posicion: null, licencia: 'CAT-10234' },
+    body: { nombre: 'Júlia', apellido: 'Serra', rol: 'fisio', rango: null, posicion: null, licencia: 'CAT-10234' },
   });
+  expect(membershipWrites(backend).map((m) => m.method)).toEqual(['DELETE']);
+  expect(membershipsOf(backend, IDS.player)).toEqual([]);
   await expect(page.locator('#profile-mote-role-display')).toHaveText('Juls · fisio');
   await expect(page.locator('#profile-comision-row')).toBeHidden();
   await expect(page.locator('#profile-rango-row')).toBeHidden();
@@ -474,26 +493,26 @@ test('commission/rank/position fields follow the role; a non-player role saves t
 
 test('staff (entrenador/a) saving the own profile wipes the hidden commission', async ({ page }) => {
   // A commission left over from before he was staff.
-  const profiles = seed.profiles.map((p) => (p.id === IDS.jordi ? { ...p, comision: 'Comi Tesoreria' } : p));
-  const { backend, errors } = await openProfile(page, { user: JORDI, seed: { ...seed, profiles } });
+  const commission_memberships = [...seed.commission_memberships, { profile_id: IDS.jordi, commission: 'Comi Tesoreria' }];
+  const { backend, errors } = await openProfile(page, { user: JORDI, seed: { ...seed, commission_memberships } });
   await openEditModal(page);
   await expect(page.locator('#profile-name-input')).toHaveValue('Jordi Casals');
   await expect(page.locator('#profile-rol-input')).toHaveValue('entrenador/a');
   await expect(page.locator('#profile-comision-field')).toBeHidden();
-  await expect(page.locator('#profile-comision-input')).toHaveValue('Comi Tesoreria');
+  await expectCheckedComisiones(page, ['Comi Tesoreria']);
   await modal(page).getByRole('button', { name: 'Guardar' }).click();
   await expect(modal(page)).not.toHaveClass(/active/);
 
-  // NOTE: Jordi has comision 'Comi Tesoreria', but entrenador/a is not a player
-  // role, so saving without touching anything writes comision: null.
-  expect(restWrites(backend)).toEqual([{
+  // NOTE: Jordi is in Comi Tesoreria, but entrenador/a is not a player role, so saving
+  // without touching anything takes him out of it.
+  expect(profileWrites(backend)).toEqual([{
     kind: 'rest', method: 'UPDATE', table: 'profiles', filters: [['id', `eq.${IDS.jordi}`]],
     body: {
       nombre: 'Jordi', apellido: 'Casals', mote: '', telefono: '600100007', fecha_nacimiento: '1980-05-18',
-      comision: null, rango: null, posicion: null, rol: 'entrenador/a', licencia: 'ENT-0042',
+      rango: null, posicion: null, rol: 'entrenador/a', licencia: 'ENT-0042',
     },
   }]);
-  expect(backend.db.profiles.find((p) => p.id === IDS.jordi).comision).toBeNull();
+  expect(membershipsOf(backend, IDS.jordi)).toEqual([]);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -523,11 +542,11 @@ test('changing the own commission/role updates the role-dependent buttons in oth
 
   await goToSection(page, 'perfil');
   await openEditModal(page);
-  await page.locator('#profile-comision-input').selectOption('Comi Xarxes');
+  await comisionBox(page, 'Comi Xarxes').check();
   await modal(page).getByRole('button', { name: 'Guardar' }).click();
   await expect(modal(page)).not.toHaveClass(/active/);
 
-  // Comi Xarxes manages the gallery.
+  // Comi Xarxes (now along with Comi Gira) manages the gallery.
   await goToSection(page, 'galeria');
   await expect(page.locator('#add-album-btn')).toBeVisible();
   await goToSection(page, 'comi-tesoreria');
@@ -537,10 +556,12 @@ test('changing the own commission/role updates the role-dependent buttons in oth
   await goToSection(page, 'asistencia');
   await expect(page.locator('#att-add-event-btn')).toBeHidden();
 
-  // Comi Tesoreria + Capitana: treasury, fines and event buttons; no gallery button.
+  // Comi Tesoreria (leaving Comi Xarxes) + Capitana: treasury, fines and event
+  // buttons; no gallery button.
   await goToSection(page, 'perfil');
   await openEditModal(page);
-  await page.locator('#profile-comision-input').selectOption('Comi Tesoreria');
+  await comisionBox(page, 'Comi Xarxes').uncheck();
+  await comisionBox(page, 'Comi Tesoreria').check();
   await page.locator('#profile-rol-input').selectOption('Capitana');
   await modal(page).getByRole('button', { name: 'Guardar' }).click();
   await expect(modal(page)).not.toHaveClass(/active/);
@@ -556,6 +577,31 @@ test('changing the own commission/role updates the role-dependent buttons in oth
   expect(relevantErrors(errors)).toEqual([]);
 });
 
+test('a player in two committees gets the powers of both, and is listed in each', async ({ page }) => {
+  // Juls: Comi Gira (seed) + Comi Xarxes + Comi Tesoreria.
+  const commission_memberships = [
+    ...seed.commission_memberships,
+    { profile_id: IDS.player, commission: 'Comi Xarxes' },
+    { profile_id: IDS.player, commission: 'Comi Tesoreria' },
+  ];
+  const { errors } = await openProfile(page, { seed: { ...seed, commission_memberships } });
+  await expect(page.locator('#profile-comision-display')).toHaveText('Comi Xarxes, Comi Tesoreria, Comi Gira');
+
+  await goToSection(page, 'galeria');
+  await expect(page.locator('#add-album-btn')).toBeVisible();
+  await goToSection(page, 'comi-tesoreria');
+  await expect(page.locator('#treasury-add-btn')).toBeVisible();
+  await goToSection(page, 'multas');
+  await expect(page.locator('#add-fine-btn')).toBeVisible();
+  // Not in Comi Tercer Temps, and not staff/Capitana.
+  await goToSection(page, 'asistencia');
+  await expect(page.locator('#att-add-event-btn')).toBeHidden();
+
+  await goToSection(page, 'plantilla');
+  await expect(plantillaRow(page, 'Juls').locator('td').nth(5)).toHaveText('Comi Xarxes, Comi Tesoreria, Comi Gira');
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
 test('admin edits another player from Jugadoras; the admin\'s own profile is untouched', async ({ page }) => {
   const { backend, errors } = await setupApp(page, { user: USERS.admin });
   await openApp(page);
@@ -567,7 +613,7 @@ test('admin edits another player from Jugadoras; the admin\'s own profile is unt
   await expect(page.locator('#profile-mote-input')).toHaveValue('');
   await expect(page.locator('#profile-phone-input')).toHaveValue('600100004');
   await expect(page.locator('#profile-birthdate-input')).toHaveValue('2001-07-23');
-  await expect(page.locator('#profile-comision-input')).toHaveValue('Comi Tesoreria');
+  await expectCheckedComisiones(page, ['Comi Tesoreria']);
   await expect(page.locator('#profile-rango-input')).toHaveValue('novata');
   await expect(page.locator('#profile-posicion-input')).toHaveValue('delantera');
   await expect(page.locator('#profile-rol-input')).toHaveValue('jugadora');
@@ -582,9 +628,10 @@ test('admin edits another player from Jugadoras; the admin\'s own profile is unt
     kind: 'rest', method: 'UPDATE', table: 'profiles', filters: [['id', `eq.${IDS.carla}`]],
     body: {
       nombre: 'Carla', apellido: 'Font', mote: 'Carlota', telefono: '600100004', fecha_nacimiento: '2001-07-23',
-      comision: 'Comi Tesoreria', rango: 'novata', posicion: '3/4', rol: 'jugadora', licencia: 'CAT-10411',
+      rango: 'novata', posicion: '3/4', rol: 'jugadora', licencia: 'CAT-10411',
     },
   }]);
+  // Her committees did not change, so they are not written.
   await expect(plantillaRow(page, 'Carlota').locator('td')).toHaveText([
     'C Carlota', '23/07/2001', 'jugadora', 'novata', '3/4', 'Comi Tesoreria', 'CAT-10411', 'Editar',
   ]);
@@ -624,7 +671,7 @@ test('admin turns a staff member into a player: player fields appear and are sav
     kind: 'rest', method: 'UPDATE', table: 'profiles', filters: [['id', `eq.${IDS.jordi}`]],
     body: {
       nombre: 'Jordi', apellido: 'Casals', mote: '', telefono: '600100007', fecha_nacimiento: '1980-05-18',
-      comision: null, rango: null, posicion: 'delantera', rol: 'jugadora', licencia: 'ENT-0042',
+      rango: null, posicion: 'delantera', rol: 'jugadora', licencia: 'ENT-0042',
     },
   }]);
   await expect(plantillaRow(page, 'Jordi').locator('td')).toHaveText([

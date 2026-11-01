@@ -10,7 +10,7 @@ import { COMISIONES } from '../../lib/roles.js';
 
 // Personas de la plantilla que tienen marcado "Comi Tesoreria" en su perfil
 export function treasuryCommissionMembers() {
-  return Object.values(rosterById).filter((p) => p.comision === COMISIONES.tesoreria);
+  return Object.values(rosterById).filter((p) => p.comisiones?.includes(COMISIONES.tesoreria));
 }
 
 export const treasury = createTreasury({

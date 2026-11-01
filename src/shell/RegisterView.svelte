@@ -51,14 +51,15 @@
           <option value="3/4">3/4</option>
         </select>
       </label>
-      <label>{t('plantilla.commission')}
-        <select id="register-comision-input" bind:value={registerForm.comision}>
-          <option value="">{t('plantilla.unassigned')}</option>
+      <!-- Se puede estar en varias comisiones (o en ninguna). -->
+      <div class="comision-field" role="group" aria-labelledby="register-comision-title">
+        <span id="register-comision-title">{t('plantilla.commission')}</span>
+        <div class="comision-checks" id="register-comision-input">
           {#each COMISION_OPTIONS as c (c)}
-            <option value={c}>{c}</option>
+            <label><input type="checkbox" value={c} bind:group={registerForm.comisiones}> {c}</label>
           {/each}
-        </select>
-      </label>
+        </div>
+      </div>
       <label>{t('plantilla.license')}
         <input type="text" id="register-licencia-input" placeholder={t('profile.licensePlaceholder')} bind:value={registerForm.licencia}>
       </label>

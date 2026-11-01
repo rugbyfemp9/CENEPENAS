@@ -72,8 +72,9 @@ sus rutas (`assets/img/...`) son las mismas en los dos casos.
 
 ## Roles y permisos
 
-Cada perfil tiene un **rol** (`profiles.rol`) y, si es jugadora, puede tener una
-**comisión** (`profiles.comision`). No hay ninguna otra marca: ser admin es un rol más.
+Cada perfil tiene un **rol** (`profiles.rol`) y, si es jugadora, puede estar en una o
+varias **comisiones** (tabla `commission_memberships`: una fila por persona y comisión).
+No hay ninguna otra marca: ser admin es un rol más.
 
 | Rol | Quién es |
 |---|---|

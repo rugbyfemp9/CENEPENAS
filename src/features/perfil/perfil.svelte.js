@@ -7,7 +7,7 @@
 // solo cambia cuando alguien llama a renderProfile() (al arrancar, al iniciar sesión, al
 // entrar en Perfil...), que guarda aquí lo que toca mostrar en ese momento.
 import { supabase } from '../../lib/supabase.js';
-import { currentUserId, myProfile, myRosterEntry } from '../../lib/roster.js';
+import { currentUserId, myProfile, myRosterEntry, comisionesLabel } from '../../lib/roster.js';
 import { isPlayerRole } from '../../lib/permissions.js';
 import { attEvents, attSelection } from '../asistencia/events.js';
 import { attEventIso, attEventType, todayLocalIso, formatFullDate } from '../../lib/dates.js';
@@ -100,7 +100,7 @@ export function renderProfile() {
     moteRole: moteRoleParts.length ? moteRoleParts.join(' · ') : t('profile.setUpRole'),
     phone: myProfile.phone || '—',
     birthdate: myProfile.birthdate ? formatFullDate(myProfile.birthdate) : '—',
-    comision: myProfile.comision || '—',
+    comision: comisionesLabel(myProfile.comisiones) || '—',
     rango: myProfile.rango || '—',
     posicion: posicionLabel(myProfile.posicion),
     // Comisión, Rango y Posición son datos propios de jugadoras (a Capitana y admin se las
