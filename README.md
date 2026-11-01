@@ -46,7 +46,8 @@ sw.js                       Service worker (instalación como PWA, caché y noti
 tests/e2e/                  Tests de Playwright
 scripts/                    Utilidades (comparar capturas de pantalla)
 supabase/functions/         Funciones de Supabase (Deno); _shared/ la usan también la
-                            app (season.js: el calendario de entrenos)
+                            app (season.js: el calendario de entrenos; roles.js: roles
+                            y comisiones)
 supabase/migrations/        Cambios de la base de datos
 config.toml                 Configuración local de Supabase
 ```
@@ -68,6 +69,45 @@ sus rutas (`assets/img/...`) son las mismas en los dos casos.
   `javascript:`.
 - `window.setSection`, `window.setLang` y `window.toggleLang` siguen siendo globales:
   los usan los tests.
+
+## Roles y permisos
+
+Cada perfil tiene un **rol** (`profiles.rol`) y, si es jugadora, puede tener una
+**comisión** (`profiles.comision`). No hay ninguna otra marca: ser admin es un rol más.
+
+| Rol | Quién es |
+|---|---|
+| `jugadora` | Jugadora del equipo |
+| `Capitana` | Jugadora con permisos extra (gestionar eventos y actas) |
+| `admin` | Jugadora que además puede gestionarlo todo. Solo la puede nombrar otra admin |
+| `entrenador/a` | Cos Tècnic |
+| `delegado/a` | Cos Tècnic |
+| `directiva` | Cos Tècnic (junta directiva) |
+| `fisio` | Cos Tècnic |
+
+`jugadora`, `Capitana` y `admin` cuentan como jugadoras en toda la app (Wellness,
+Tricount, recordatorios push...). Comisiones: `Comi Activitats`, `Comi Xarxes`,
+`Comi Tercer Temps`, `Comi Tesoreria` y `Comi Gira`.
+
+Quién puede hacer qué:
+
+| Qué | Quién |
+|---|---|
+| Editar el perfil de otras personas, Jugadas, dar el rol admin | admin |
+| Panel de Wellness/RPE del equipo | Cos Tècnic y admin |
+| Valorar el propio RPE, Tercer tiempo, Comisiones, Tricount | jugadoras (ocultas al Cos Tècnic) |
+| Crear y editar eventos, subir actas | entrenador/a, delegado/a, directiva, Capitana y admin |
+| Ejercicios generales de Gym | entrenador/a y admin |
+| Subir la rutina de Gym | todos menos fisio |
+| Multas y Comi Tesoreria | Comi Tesoreria y admin |
+| Comi Tercer Temps y la comida del Tercer tiempo | Comi Tercer Temps y admin |
+| Galería | Comi Xarxes y admin |
+
+Los nombres de roles y comisiones están definidos una sola vez en
+`supabase/functions/_shared/roles.js` (la app los importa vía `src/lib/roles.js`), y
+todas las reglas de la app viven en `src/lib/permissions.js`. Eso solo decide qué se ve:
+lo que se puede escribir de verdad lo bloquean las políticas de Supabase, que usan la
+función `public.is_admin()`.
 
 ## Tests
 
@@ -93,7 +133,7 @@ Una vez al día, a las 18:30 UTC (las 20:30 de Madrid en verano y las 19:30 en
 invierno), `pg_cron` (en Supabase) llama a la función
 `supabase/functions/training-reminders`. La función busca los entrenos y partidos que
 empiezan en las próximas 25 h y manda una notificación push, en catalán, a cada
-jugadora (roles `jugadora` y `Capitana`) que tiene las notificaciones activadas y aún
+jugadora (roles `jugadora`, `Capitana` y `admin`) que tiene las notificaciones activadas y aún
 no ha dicho ni que sí ni que no. Cada una recibe un solo aviso por evento: queda
 apuntado en la tabla `att_reminders_sent`. Al tocar el aviso se abre la app en
 Asistencia.
