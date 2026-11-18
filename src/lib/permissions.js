@@ -16,7 +16,8 @@
 //                                                    Capitana + admin
 //   Ejercicios generales de Gym                    entrenador/a + admin
 //   Subir la rutina de Gym                         todos menos fisio (y sin rol)
-//   Multas, Comi Tesoreria                         Comi Tesoreria + admin
+//   Multas                                         Comi Tesoreria, Comi Tercer Temps + admin
+//   Comi Tesoreria                                 Comi Tesoreria + admin
 //   Comi Tercer Temps, comida del Tercer tiempo    Comi Tercer Temps + admin
 //   Galería                                        Comi Xarxes + admin
 //
@@ -105,9 +106,10 @@ export function canEditGymRoutine() {
 // ---- Comisiones ----
 
 // Multas: dar de alta y editar (el resto del equipo puede ver la lista, pagar las
-// suyas y confirmar pagos recibidos con total normalidad).
+// suyas y confirmar pagos recibidos con total normalidad). Comi Tercer Temps también,
+// porque pone las multas de tercer tiempo; los pagos siguen yendo a Comi Tesoreria.
 export function canManageFines() {
-  return inComision(COMISIONES.tesoreria);
+  return inComision(COMISIONES.tesoreria) || inComision(COMISIONES.tercerTemps);
 }
 
 // Tesorería del club: añadir/editar/borrar movimientos (RLS de "treasury_entries").

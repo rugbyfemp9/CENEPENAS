@@ -99,7 +99,7 @@ export function onLangChange() {
 
 // ---- Multas: leídas y guardadas en la tabla "fines" de Supabase, para que cualquier
 // interacción (dar de alta, pagar, confirmar un pago, deshacer) se vea al momento desde
-// cualquier dispositivo. Solo Comi Tesoreria puede dar de alta multas nuevas — eso se
+// cualquier dispositivo. Solo Comi Tesoreria y Comi Tercer Temps pueden dar de alta multas nuevas — eso se
 // controla tanto aquí (ocultando el botón) como en Supabase con una política de RLS,
 // que es la que de verdad impide el alta aunque alguien abra la consola del navegador.
 function fineRowToLocal(row) {

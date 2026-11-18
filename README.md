@@ -99,7 +99,8 @@ Quién puede hacer qué:
 | Crear y editar eventos, subir actas | entrenador/a, delegado/a, directiva, Capitana y admin |
 | Ejercicios generales de Gym | entrenador/a y admin |
 | Subir la rutina de Gym | todos menos fisio |
-| Multas y Comi Tesoreria | Comi Tesoreria y admin |
+| Multas | Comi Tesoreria, Comi Tercer Temps y admin |
+| Comi Tesoreria | Comi Tesoreria y admin |
 | Comi Tercer Temps y la comida del Tercer tiempo | Comi Tercer Temps y admin |
 | Galería | Comi Xarxes y admin |
 

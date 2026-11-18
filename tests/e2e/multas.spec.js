@@ -11,7 +11,7 @@
 //   f4 Rovi  TA pendiente                 f8 Tanke R  pendiente
 // Paid (history): f3 Juls 3T 15/09, f5 Rovi TR 18/09, f9 Carla R 21/09.
 // Team pending total: 7 + 2 + 9 + 5 = 23 €.
-// Only Comi Tesoreria members (Carla) and the admin can add/edit/delete fines. Multas is
+// Only Comi Tesoreria (Carla), Comi Tercer Temps (Paula) and the admin can add/edit/delete fines. Multas is
 // NOT one of the sections hidden from staff, so the admin can open it too.
 import { test, expect } from '@playwright/test';
 import { setupApp, openApp, goToSection, USERS, relevantErrors } from './support/app.js';
@@ -480,6 +480,24 @@ test('add-fine player search: accent-insensitive, by name or nickname, no matche
   // Clicking outside the search box closes the results
   await fineModal(page).locator('h3').click();
   await expect(results).not.toHaveClass(/open/);
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test('a Comi Tercer Temps member can add and edit fines too', async ({ page }) => {
+  const { backend, errors } = await openMultas(page, { user: PAULA });
+  await expect(editToggle(page)).toBeVisible();
+  await addBtn(page).click();
+  await page.locator('#fine-player-search-input').fill('juli');
+  await page.locator('#fine-player-search-results').getByRole('button', { name: 'Juls' }).click();
+  await page.locator('#fine-reason-grid .fine-reason-box').nth(3).click(); // 3T
+  await fineModal(page).getByRole('button', { name: 'Guardar multa' }).click();
+  await expect(fineModal(page)).not.toHaveClass(/active/);
+
+  await expect.poll(() => fineWrites(backend)).toHaveLength(1);
+  expect(fineWrites(backend)[0].body).toEqual(
+    [{ player_id: IDS.player, reason_id: 'tercer', status: 'pendiente', paid_to_id: null, auto_match_iso: null }]);
+  // Payments still go to Comi Tesoreria: no confirmation requests for her.
+  await expect(requests(page)).toBeHidden();
   expect(relevantErrors(errors)).toEqual([]);
 });
 
