@@ -85,7 +85,7 @@ export async function loadEventAttendanceFromStorage(ev) {
     // completará con su nombre real en cuanto termine de cargar.
     if (!rosterById[row.user_id]) {
       const newPlayer = {
-        id: row.user_id, name: 'Alguien', mote: '', pos: '', comision: '',
+        id: row.user_id, name: 'Alguien', mote: '', pos: '', comisiones: [],
         avatarUrl: '', injured: false, injuryIcon: '', birthdate: '', rm: {},
       };
       rosterById[row.user_id] = newPlayer;

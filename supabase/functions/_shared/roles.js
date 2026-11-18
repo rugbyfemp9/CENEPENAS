@@ -1,6 +1,7 @@
-// Roles y comisiones: los valores tal cual se guardan en profiles.rol y
-// profiles.comision. Vive aquí, junto a las funciones de Supabase, para que la app
-// (vía src/lib/roles.js) y los avisos push (reminders.js) usen la misma lista.
+// Roles y comisiones: los valores tal cual se guardan en profiles.rol y en
+// commission_memberships.commission (una fila por persona y comisión). Vive aquí,
+// junto a las funciones de Supabase, para que la app (vía src/lib/roles.js) y los
+// avisos push (reminders.js) usen la misma lista.
 // Sin imports a propósito.
 //
 // Quién puede hacer qué con cada rol/comisión está en src/lib/permissions.js.

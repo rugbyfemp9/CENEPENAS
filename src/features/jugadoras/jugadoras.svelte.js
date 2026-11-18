@@ -8,7 +8,7 @@
 // renderPlantillaStatsRows), que guarda aquí lo que se ve en ese momento.
 import { supabase } from '../../lib/supabase.js';
 import { auth } from '../../lib/session.svelte.js';
-import { myProfile, roster, rosterById } from '../../lib/roster.js';
+import { myProfile, roster, rosterById, PROFILE_SELECT, comisionesOf, comisionesLabel } from '../../lib/roster.js';
 import { computeDisplayNames, displayName, initials } from '../../lib/names.js';
 import { isPlayerRole, canEditOtherProfiles } from '../../lib/permissions.js';
 import { readCache, writeCache } from '../../lib/storage.js';
@@ -66,7 +66,7 @@ export async function loadPlantilla() {
     plantilla.grid = { key: 'plantilla.loading', colspan: 7 };
   }
 
-  const { data, error } = await supabase.from('profiles').select('*');
+  const { data, error } = await supabase.from('profiles').select(PROFILE_SELECT);
 
   if (error) {
     if (!cached) {
@@ -112,11 +112,11 @@ function applyPlantillaRows(data) {
       if (rosterById[p.id]) {
         // Ya estaba en el roster de una carga anterior: se actualiza en el sitio
         Object.assign(rosterById[p.id], {
-          name: fullNameForRoster, mote: p.mote || '', pos: p.rango || '', posicion: p.posicion || '', rol: p.rol || '', comision: p.comision || '', avatarUrl: p.avatar_url || '', birthdate: p.fecha_nacimiento || '', licencia: p.licencia || '',
+          name: fullNameForRoster, mote: p.mote || '', pos: p.rango || '', posicion: p.posicion || '', rol: p.rol || '', comisiones: comisionesOf(p), avatarUrl: p.avatar_url || '', birthdate: p.fecha_nacimiento || '', licencia: p.licencia || '',
         });
       } else {
         const newPlayer = {
-          id: p.id, name: fullNameForRoster, mote: p.mote || '', pos: p.rango || '', posicion: p.posicion || '', rol: p.rol || '', comision: p.comision || '', avatarUrl: p.avatar_url || '', injured: false, injuryIcon: '', birthdate: p.fecha_nacimiento || '', licencia: p.licencia || '', rm: {},
+          id: p.id, name: fullNameForRoster, mote: p.mote || '', pos: p.rango || '', posicion: p.posicion || '', rol: p.rol || '', comisiones: comisionesOf(p), avatarUrl: p.avatar_url || '', injured: false, injuryIcon: '', birthdate: p.fecha_nacimiento || '', licencia: p.licencia || '', rm: {},
         };
         rosterById[p.id] = newPlayer;
         roster.push(newPlayer);
@@ -153,6 +153,8 @@ export function subscribeToProfilesRealtime() {
   supabase
     .channel('profiles-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => loadPlantilla())
+    // Las comisiones de cada persona viven en su propia tabla.
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'commission_memberships' }, () => loadPlantilla())
     .subscribe();
 }
 
@@ -214,7 +216,7 @@ export function renderPlantillaTable() {
       esJugadora,
       rango: p.rango,
       posicion: p.posicion,
-      comision: p.comision,
+      comisiones: comisionesLabel(comisionesOf(p)),
       licencia: p.licencia,
       editable: isAdmin,
     })),
@@ -300,7 +302,7 @@ function sortPlantillaRows(rows) {
     });
   } else if (plantilla.sortBy === 'comision') {
     arr.sort((a, b) => {
-      const ca = a.p.comision || '', cb = b.p.comision || '';
+      const ca = comisionesLabel(comisionesOf(a.p)), cb = comisionesLabel(comisionesOf(b.p));
       if (!ca && !cb) return 0;
       if (!ca) return 1;
       if (!cb) return -1;

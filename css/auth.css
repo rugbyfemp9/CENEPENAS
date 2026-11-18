@@ -33,3 +33,17 @@
 .auth-submit-btn{ width:100%; margin-top:14px; text-align:center; justify-content:center; }
 .auth-switch{ text-align:center; font-size:13px; color:var(--text-muted); margin-top:16px; }
 .auth-switch a{ color:var(--sky-dark); font-weight:700; cursor:pointer; }
+
+/* Comisiones: casillas (se puede estar en varias), en el registro y en "Editar perfil" */
+.comision-field{
+  display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600;
+  color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;
+}
+.comision-checks{ display:flex; flex-wrap:wrap; gap:8px 16px; padding:4px 0; }
+.auth-field-group .comision-checks label, .comision-checks label{
+  display:flex; flex-direction:row; align-items:center; gap:6px; cursor:pointer;
+  font-size:14px; font-weight:500; text-transform:none; letter-spacing:0; color:var(--navy);
+}
+.auth-field-group .comision-checks input, .comision-checks input{
+  width:18px; height:18px; padding:0; margin:0; accent-color:var(--navy); flex-shrink:0;
+}

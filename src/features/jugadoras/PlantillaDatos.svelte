@@ -74,7 +74,7 @@
               <td class={row.rol ? '' : 'muted-cell'}>{row.rol || t('plantilla.unassigned')}</td>
               <td class={row.esJugadora && row.rango ? '' : 'muted-cell'}>{row.esJugadora ? (row.rango || t('plantilla.unassigned')) : '—'}</td>
               <td class={row.esJugadora && row.posicion ? '' : 'muted-cell'}>{row.esJugadora ? (posicionLabel(row.posicion) === '—' ? t('plantilla.unassigned') : posicionLabel(row.posicion)) : '—'}</td>
-              <td class={row.esJugadora && row.comision ? '' : 'muted-cell'}>{row.esJugadora ? (row.comision || t('plantilla.unassigned')) : '—'}</td>
+              <td class={row.esJugadora && row.comisiones ? '' : 'muted-cell'}>{row.esJugadora ? (row.comisiones || t('plantilla.unassigned')) : '—'}</td>
               <td class={row.licencia ? '' : 'muted-cell'}>{row.licencia || t('plantilla.unassigned')}</td>
               {#if row.editable}<td><button class="btn-ghost" style="padding:4px 10px; font-size:12px;" onclick={() => openEditProfileModal(row.id)}>{t('att.edit')}</button></td>{/if}
             </tr>

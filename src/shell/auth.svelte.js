@@ -2,8 +2,9 @@
 // (antes js/core/auth.js) El formulario lo pinta src/shell/AuthOverlay.svelte.
 import { supabase } from '../lib/supabase.js';
 import { setAuthUserId, refreshSession } from '../lib/session.svelte.js';
-import { myProfile, rosterById } from '../lib/roster.js';
+import { myProfile, rosterById, PROFILE_SELECT, comisionesOf } from '../lib/roster.js';
 import { isPlayerRole } from '../lib/permissions.js';
+import { COMISION_OPTIONS } from '../lib/roles.js';
 import { t } from '../lib/i18n.svelte.js';
 import { flushPendingPushToken } from '../lib/push.svelte.js';
 import { openSectionFromHash } from './navigation.svelte.js';
@@ -45,7 +46,7 @@ export const loginForm = $state({ email: '', password: '' });
 
 export const registerForm = $state({
   email: '', password: '', nombre: '', apellido: '', mote: '', fecha_nacimiento: '',
-  rol: '', rango: '', posicion: '', comision: '', licencia: '',
+  rol: '', rango: '', posicion: '', comisiones: [], licencia: '',
 });
 
 // Alterna entre el formulario de login y el de registro dentro del overlay de acceso
@@ -87,7 +88,8 @@ export async function handleRegister() {
   const esJugadora = isPlayerRole(rol);
   const rango = esJugadora ? (f.rango || null) : null;
   const posicion = esJugadora ? (f.posicion || null) : null;
-  const comision = esJugadora ? (f.comision || null) : null;
+  // Solo comisiones que existen, en el orden de siempre.
+  const comisiones = esJugadora ? COMISION_OPTIONS.filter((c) => f.comisiones.includes(c)) : [];
   const licencia = esJugadora ? (f.licencia.trim() || null) : null;
 
   authUi.registerErrorColor = 'var(--bad)';
@@ -110,7 +112,7 @@ export async function handleRegister() {
     email,
     password,
     options: {
-      data: { nombre, apellido, mote, telefono, fecha_nacimiento, rol, rango, posicion, comision, licencia, grupo_tercer_tiempo }
+      data: { nombre, apellido, mote, telefono, fecha_nacimiento, rol, rango, posicion, comisiones, licencia, grupo_tercer_tiempo }
     }
   });
   if (error) {
@@ -124,11 +126,20 @@ export async function handleRegister() {
   const userId = data.user ? data.user.id : (data.session ? data.session.user.id : null);
   if (userId) {
     const { error: profileError } = await supabase.from('profiles').upsert({
-      id: userId, nombre, apellido, mote, telefono, fecha_nacimiento, rol, rango, posicion, comision, licencia, grupo_tercer_tiempo
+      id: userId, nombre, apellido, mote, telefono, fecha_nacimiento, rol, rango, posicion, licencia, grupo_tercer_tiempo
     });
     if (profileError) {
       authUi.registerError = { key: 'auth.errProfileSave', vars: { error: profileError.message } };
       return;
+    }
+    // 3) Sus comisiones: una fila por comisión en "commission_memberships".
+    if (comisiones.length) {
+      const { error: membershipError } = await supabase.from('commission_memberships')
+        .insert(comisiones.map((commission) => ({ profile_id: userId, commission })));
+      if (membershipError) {
+        authUi.registerError = { key: 'auth.errProfileSave', vars: { error: membershipError.message } };
+        return;
+      }
     }
   }
 
@@ -191,7 +202,7 @@ export async function onAuthenticated(user) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select(PROFILE_SELECT)
     .eq('id', user.id)
     .maybeSingle();
 
@@ -200,7 +211,7 @@ export async function onAuthenticated(user) {
     myProfile.mote = profile.mote || '';
     myProfile.phone = profile.telefono || '';
     myProfile.birthdate = profile.fecha_nacimiento || '';
-    myProfile.comision = profile.comision || '';
+    myProfile.comisiones = comisionesOf(profile);
     myProfile.rango = profile.rango || '';
     myProfile.posicion = profile.posicion || '';
     myProfile.rol = profile.rol || '';
@@ -208,7 +219,7 @@ export async function onAuthenticated(user) {
     myProfile.avatarUrl = profile.avatar_url || '';
     rosterById['me'].name = myProfile.name;
     rosterById['me'].mote = myProfile.mote;
-    rosterById['me'].comision = myProfile.comision;
+    rosterById['me'].comisiones = [...myProfile.comisiones];
     rosterById['me'].rango = myProfile.rango;
     rosterById['me'].posicion = myProfile.posicion;
     rosterById['me'].rol = myProfile.rol;
